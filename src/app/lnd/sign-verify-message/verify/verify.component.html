@@ -1,28 +1,30 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
-    <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <textarea autoFocus matInput [(ngModel)]="message" rows="1" placeholder="Message to verify" required tabindex="1" name="message" (keyup)="onChange()"></textarea>
+  <form #form="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
+      <mat-label>Message to verify</mat-label>
+      <textarea autoFocus matInput rows="1" required tabindex="1" name="message" [(ngModel)]="message" (keyup)="onChange()"></textarea>
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
-    <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <input matInput placeholder="Signature provided" name="signature" [(ngModel)]="signature" tabindex="2" required #sign="ngModel" (keyup)="onChange()">
+    <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
+      <mat-label>Signature provided</mat-label>
+      <input #sign="ngModel" matInput name="signature" tabindex="2" required [(ngModel)]="signature" (keyup)="onChange()">
       <mat-error *ngIf="!signature">Signature is required.</mat-error>
     </mat-form-field>
     <p *ngIf="showVerifyStatus && !verifyRes.valid" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Verification failed, please double check message and signature</p>
     <div fxLayout="row" class="my-1">
-      <button mat-stroked-button class="mr-1" color="primary" tabindex="3" (click)="resetData()" type="reset">Clear Fields</button>
-      <button mat-flat-button color="primary" (click)="onVerify()" tabindex="4" type="submit">Verify</button>
+      <button mat-stroked-button class="mr-1" color="primary" tabindex="3" type="reset" (click)="resetData()">Clear Fields</button>
+      <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onVerify()">Verify</button>
     </div>
     <div *ngIf="showVerifyStatus && verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-      <mat-divider [inset]="true" class="my-2"></mat-divider>
+      <mat-divider class="my-2" [inset]="true"></mat-divider>
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
         <p *ngIf="verifyRes.valid">Pubkey Used</p>
       </div>
-      <div *ngIf="verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="bordered-box read-only h-4 padding-gap">
+      <div *ngIf="verifyRes.valid" fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="bordered-box read-only padding-gap">
         <p>{{verifyRes?.pubkey}}</p> 
       </div>
-      <div fxLayout="row" class="mt-2" *ngIf="verifyRes.valid">
-        <button mat-stroked-button color="primary" tabindex="5" rtlClipboard [payload]="verifyRes?.pubkey" (copied)="onCopyField($event)" type="button">Copy Pubkey</button>
+      <div *ngIf="verifyRes.valid" fxLayout="row" class="mt-2">
+        <button mat-stroked-button color="primary" tabindex="5" rtlClipboard type="button" [payload]="verifyRes?.pubkey" (copied)="onCopyField($event)">Copy Pubkey</button>
       </div>
     </div>
   </form> 

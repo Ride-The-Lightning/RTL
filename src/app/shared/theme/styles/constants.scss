@@ -1,25 +1,4 @@
 $font-family: 'Roboto', sans-serif;
-$small-font-size: 1.2rem;
-$medium-font-size: 1.4rem;
-$large-font-size: 1.6rem;
-
-$nodes-toolbar-height: 5.2rem;
-$horizontal-toolbar-height: 6rem;
-
-$font-size: 1.4rem;
-$toolbar-height: 5rem; 
-$regular-sidenav-width: 22rem;
-$compact-sidenav-width: 20rem;
-$mini-sidenav-width: 10rem;
-$sidenav-info-height: 9rem;
-$settings-nav-width: 15rem;
-$gap: 0.8rem;
-$icon-size: 3.6rem;
-$pubkey-info-height: 1.5rem;
-$tree-node-height:4rem;
-$fa-icon-small-size: 2rem;
-$fa-icon-regular-size: 4rem;
-
 $yellow-color: #ffbd2e;
 $yellow-alert-color: #856404;
 $yellow-background-color: #fff3cd;
@@ -29,7 +8,25 @@ $red-color: #c62828;
 $red-background-color: #f8d7da;
 $blue-color: #004085;
 $blue-background-color: #cce5ff;
-$grey-color: #AAAAAA;
-$tiny-dot-size: 0.8rem;
-$dot-size: 1.2rem;
+$grey-color: #CCCCCC;
+$dark-background-color: #050505;
+$dark-card-background-color: #121212;
+
+$nodes-toolbar-height: 3.2rem;
+$horizontal-toolbar-height: 4rem;
+$toolbar-height: 4rem; 
+$regular-sidenav-width: 16rem;
+$sidenav-info-height: 6rem;
+$settings-nav-width: 10rem;
+$gap: 0.5rem;
+$icon-size: 2.25rem;
+$pubkey-info-height: 1rem;
+$tree-node-height:3.5rem;
+$fa-icon-small-size: 1.25rem;
+$fa-icon-regular-size: 2.5rem;
+$tiny-dot-size: 0.5rem;
+$dot-size: 0.8rem;
 $badge-size: 0.8rem;
+$min-form-ctrl-height: 3rem;
+$min-form-chbox-height: 4rem;
+$table-actions-min-width: 8rem;

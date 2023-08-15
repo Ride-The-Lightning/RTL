@@ -1,0 +1,105 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
+    <div fxFlex="70">
+      <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
+      <span class="page-title">{{swapCaption}} History</span>
+    </div>
+    <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter By</mat-label>
+        <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+          <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+      </mat-form-field>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="start center" class="w-100">
+    <div class="table-container" fxFlex="100" [perfectScrollbar]>
+      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+      <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listSwaps" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+        <ng-container matColumnDef="state">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
+          <td *matCellDef="let swap" mat-cell>{{LoopStateEnum[swap?.state]}}</td>
+        </ng-container>
+        <ng-container matColumnDef="initiation_time">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Initiation Time</th>
+          <td *matCellDef="let swap" mat-cell>{{(swap?.initiation_time/1000000) | date:'dd/MMM/y HH:mm'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="last_update_time">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Last Update Time</th>
+          <td *matCellDef="let swap" mat-cell>{{(swap?.last_update_time/1000000) | date:'dd/MMM/y HH:mm'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="amt">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Amount (Sats)</th>
+          <td *matCellDef="let swap" mat-cell>
+            <span fxLayoutAlign="end center">{{swap?.amt | number}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="cost_server">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Cost Server (Sats)</th>
+          <td *matCellDef="let swap" mat-cell><span fxLayoutAlign="end center">{{swap?.cost_server | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="cost_offchain">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Cost Offchain (Sats)</th>
+          <td *matCellDef="let swap" mat-cell><span fxLayoutAlign="end center">{{swap?.cost_offchain | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="cost_onchain">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Cost Onchain (Sats)</th>
+          <td *matCellDef="let swap" mat-cell><span fxLayoutAlign="end center">
+              {{swap?.cost_onchain | number}} </span></td>
+        </ng-container>
+        <ng-container matColumnDef="htlc_address">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>HTLC Address</th>
+          <td *matCellDef="let swap" mat-cell>
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+              <span class="ellipsis-child">{{swap?.htlc_address}}</span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="id">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>
+          <td *matCellDef="let swap" mat-cell>
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+              <span class="ellipsis-child">{{swap?.id}}</span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="id_bytes">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>ID (Bytes)</th>
+          <td *matCellDef="let swap" mat-cell>
+            <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+              <span class="ellipsis-child">{{swap?.id_bytes}}</span>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell>
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                <mat-select-trigger></mat-select-trigger>
+                <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
+              </mat-select>
+            </div>
+         </th>
+          <td *matCellDef="let swap" mat-cell fxLayoutAlign="end center">
+            <button mat-stroked-button color="primary" type="button" tabindex="4"
+              class="table-actions-button" (click)="onSwapClick(swap, $event)">View Info</button>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="no_swap">
+          <td *matFooterCellDef  mat-footer-cell colspan="4">
+            <p *ngIf="!listSwaps?.data || listSwaps?.data?.length<1">{{emptyTableMessage}}</p>
+          </td>
+        </ng-container>
+        <tr *matFooterRowDef="['no_swap']" mat-footer-row [ngClass]="{'display-none': listSwaps?.data && listSwaps?.data?.length>0}"></tr>
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+      </table>
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+    </div>
+  </div>
+</div>

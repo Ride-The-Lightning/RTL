@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { LNDActions, TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { LNDActions, TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -28,10 +28,10 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild | null = {};
   public memo = '';
   public expiry: number | null;
+  public isAmp = false;
   public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;
@@ -73,11 +73,11 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
         expiryInSecs = this.expiry;
       }
     } else {
-      expiryInSecs = 3600;
+      expiryInSecs = DEFAULT_INVOICE_EXPIRY;
     }
     this.store.dispatch(saveNewInvoice({
       payload: {
-        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, invoiceValue: this.invoiceValue!, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
+        uiMessage: UI_MESSAGES.ADD_INVOICE, memo: this.memo, value: this.invoiceValue!, private: this.private, expiry: expiryInSecs, is_amp: this.isAmp, pageSize: this.pageSize, openModal: true
       }
     }));
   }
@@ -86,6 +86,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     this.memo = '';
     this.invoiceValue = null;
     this.private = false;
+    this.isAmp = false;
     this.expiry = null;
     this.invoiceValueHint = '';
     this.selTimeUnit = TimeUnitEnum.SECS;

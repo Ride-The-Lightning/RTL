@@ -1,44 +1,11 @@
-@import "../../../../../shared/theme/styles/mixins.scss";
-
-.mat-column-state {
-  flex: 0 0 15%;
-  width: 15%;
-  & .ellipsis-parent {
-    display: flex;
-  }
-}
-
-.mat-column-alias {
-  flex: 0 0 15%;
-  width: 15%;
-  & .ellipsis-parent {
-    display: flex;
-  }
+.mat-column-announceChannel {
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }
 
 .mat-column-balancedness {
   padding-left: 3rem;
-  flex: 0 0 20%;
-  width: 20%;
-}
-
-.mat-column-shortChannelId, .mat-column-toLocal, .mat-column-toRemote {
-  flex: 1 1 15%;
-  width: 15%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  @include for_screensize(phone) {
-    white-space: unset;
-  }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
-  & .bordered-box.table-actions-select {
-    flex: 0 0 100%;
-    @include for_screensize(phone) {
-      flex: 0 0 80%;
-    }
-  }
+  min-width: 15rem;
+  max-width: 30rem;
 }

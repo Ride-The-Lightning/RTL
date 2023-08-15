@@ -1,16 +1,16 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="bordered-box my-2">
-  <mat-tab-group [selectedIndex]="selectedTableIndex" (selectedIndexChange)="onSelectedIndexChanged($event)">
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [selectedIndex]="selectedTableIndex" (selectedIndexChange)="onSelectedIndexChanged($event)">
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadge="{{numUtxos}}" matBadgeOverlap="false" class="tab-badge">UTXOs</span>
+        <span matBadgeOverlap="false" class="tab-badge" matBadgeColor="primary" matBadge="{{numUtxos}}">UTXOs</span>
       </ng-template>
-      <rtl-cln-on-chain-utxos [utxos]="utxos" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" xLayout="row" fxFlex="100"></rtl-cln-on-chain-utxos>
+      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" [dustAmount]="DUST_AMOUNT"></rtl-cln-on-chain-utxos>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadge="{{numDustUtxos}}" matBadgeOverlap="false" class="tab-badge">Dust UTXOs</span>
+        <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numDustUtxos}}">Dust UTXOs</span>
       </ng-template>
-      <rtl-cln-on-chain-utxos [utxos]="dustUtxos" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" fxLayout="row" fxFlex="100"></rtl-cln-on-chain-utxos>
+      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" [dustAmount]="DUST_AMOUNT"></rtl-cln-on-chain-utxos>
     </mat-tab>
   </mat-tab-group>
 </div>

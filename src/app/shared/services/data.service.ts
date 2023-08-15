@@ -7,8 +7,7 @@ import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { environment, API_URL } from '../../../environments/environment';
-import { APICallStatusEnum, PeerswapPeersLists, UI_MESSAGES } from './consts-enums-functions';
+import { API_URL, API_END_POINTS, APICallStatusEnum, UI_MESSAGES, PeerswapPeersLists } from './consts-enums-functions';
 import { Channel, ClosedChannel, PendingChannels, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, updateRootAPICallStatus } from '../../store/rtl.actions';
@@ -26,8 +25,12 @@ export class DataService implements OnDestroy {
   private APIUrl = API_URL;
   private lnImplementation = '';
   public lnImplementationUpdated: BehaviorSubject<any> = new BehaviorSubject(null);
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(),
-    new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(), new Subject()
+  ];
 
   constructor(private httpClient: HttpClient, private store: Store<RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) { }
 
@@ -37,14 +40,14 @@ export class DataService implements OnDestroy {
   }
 
   getFiatRates() {
-    return this.httpClient.get(environment.CONF_API + '/rates');
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/rates');
   }
 
   decodePayment(payment: string, fromDialog: boolean) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + environment.PAYMENTS_API + '/decode/' + payment;
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
+      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
       if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API + '/decode/' + payment;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode/' + payment;
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
       return this.httpClient.get(url).pipe(
@@ -66,17 +69,17 @@ export class DataService implements OnDestroy {
   }
 
   decodePayments(payments: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = '';
       let msg = '';
       if (updatedLnImplementation === 'ecl') {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.PAYMENTS_API + '/getsentinfos';
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/getsentinfos';
         msg = UI_MESSAGES.GET_SENT_PAYMENTS;
       } else if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API;
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       } else {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.PAYMENTS_API;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API;
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       }
       this.store.dispatch(openSpinner({ payload: msg }));
@@ -95,21 +98,21 @@ export class DataService implements OnDestroy {
   }
 
   getAliasesFromPubkeys(pubkey: string, multiple: boolean) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       if (multiple) {
         const pubkey_params = new HttpParams().set('pubkeys', pubkey);
-        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.NETWORK_API + '/nodes', { params: pubkey_params });
+        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/nodes', { params: pubkey_params });
       } else {
-        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.NETWORK_API + '/node/' + pubkey);
+        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/node/' + pubkey);
       }
     }));
   }
 
   signMessage(msg: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + environment.MESSAGE_API + '/sign';
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
+      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/sign';
       if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API + '/sign';
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/sign';
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SIGN_MESSAGE }));
       return this.httpClient.post(url, { message: msg }).pipe(
@@ -127,10 +130,10 @@ export class DataService implements OnDestroy {
   }
 
   verifyMessage(msg: string, sign: string) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + environment.MESSAGE_API + '/verify';
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
+      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
       if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API + '/verify';
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/verify';
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_MESSAGE }));
       return this.httpClient.post(url, { message: msg, signature: sign }).pipe(
@@ -148,7 +151,7 @@ export class DataService implements OnDestroy {
   }
 
   bumpFee(txid: string, outputIndex: number, targetConf: number | null, satPerByte: number | null) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const bumpFeeBody: any = { txid: txid, outputIndex: outputIndex };
       if (targetConf) {
         bumpFeeBody.targetConf = targetConf;
@@ -157,7 +160,7 @@ export class DataService implements OnDestroy {
         bumpFeeBody.satPerByte = satPerByte;
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.BUMP_FEE }));
-      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.WALLET_API + '/bumpfee', bumpFeeBody).pipe(
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/bumpfee', bumpFeeBody).pipe(
         takeUntil(this.unSubs[4]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.BUMP_FEE }));
@@ -173,10 +176,10 @@ export class DataService implements OnDestroy {
   }
 
   labelUTXO(txid: string, label: string, overwrite: boolean = true) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const labelBody = { txid: txid, label: label, overwrite: overwrite };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LABEL_UTXO }));
-      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.WALLET_API + '/label', labelBody).pipe(
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/label', labelBody).pipe(
         takeUntil(this.unSubs[5]),
         map((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LABEL_UTXO }));
@@ -190,22 +193,17 @@ export class DataService implements OnDestroy {
   }
 
   leaseUTXO(txid: string, output_index: number) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const leaseBody: any = { txid: txid, outputIndex: output_index };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LEASE_UTXO }));
-      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.WALLET_API + '/lease', leaseBody).pipe(
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/lease', leaseBody).pipe(
         takeUntil(this.unSubs[6]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LEASE_UTXO }));
           this.store.dispatch(fetchTransactions());
           this.store.dispatch(fetchUTXOs());
           const expirationDate = new Date(res.expiration * 1000);
-          const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
-          this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().
-            substring(4, 21).
-            replace(' ', '/').
-            replace(' ', '/').
-            toUpperCase() + '.');
+          return Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
         }), catchError((err) => {
           this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LEASE_UTXO, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
@@ -218,7 +216,7 @@ export class DataService implements OnDestroy {
     if (implementation === 'LND') {
       const queryHeaders: SwitchReq = { end_time: end, start_time: start };
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
-      return this.httpClient.post(this.APIUrl + '/lnd' + environment.SWITCH_API, queryHeaders).pipe(
+      return this.httpClient.post(this.APIUrl + '/lnd' + API_END_POINTS.SWITCH_API, queryHeaders).pipe(
         takeUntil(this.unSubs[7]),
         withLatestFrom(this.store.select(allChannels)),
         mergeMap(([res, allChannelsSelector]: [any, { channels: Channel[], pendingChannels: PendingChannels, closedChannels: ClosedChannel[] }]) => {
@@ -260,12 +258,12 @@ export class DataService implements OnDestroy {
           return of(res);
         }),
         catchError((err) => {
-          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/lnd' + environment.SWITCH_API, err);
+          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/lnd' + API_END_POINTS.SWITCH_API, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         }));
     } else if (implementation === 'CLN') {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
-      return this.httpClient.get(this.APIUrl + '/cln' + environment.CHANNELS_API + '/listForwards?status=' + status).pipe(
+      return this.httpClient.get(this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + status).pipe(
         takeUntil(this.unSubs[8]),
         withLatestFrom(this.store.select(channels)),
         mergeMap(([res, channelsSelector]: [any, { activeChannels: ChannelCLN[], pendingChannels: ChannelCLN[], inactiveChannels: ChannelCLN[], apiCallStatus: ApiCallStatusPayload }]) => {
@@ -274,7 +272,7 @@ export class DataService implements OnDestroy {
           return of(forwardsWithAlias);
         }),
         catchError((err) => {
-          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/cln' + environment.CHANNELS_API + '/listForwards?status=' + status + '&start=' + start + '&end=' + end, err);
+          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + status + '&start=' + start + '&end=' + end, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         }));
     } else {
@@ -283,9 +281,9 @@ export class DataService implements OnDestroy {
   }
 
   listNetworkNodes(queryParams: string = '') {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.NETWORK_API + '/listNodes' + queryParams).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/listNodes' + queryParams).pipe(
         takeUntil(this.unSubs[9]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
@@ -299,9 +297,9 @@ export class DataService implements OnDestroy {
   }
 
   listConfigs() {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.UTILITY_API + '/listConfigs').pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/listConfigs').pipe(
         takeUntil(this.unSubs[10]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_LIST_CONFIGS }));
@@ -314,11 +312,11 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getOrUpdateFunderPolicy(policy?: any, policyMod?: any, leaseFeeBaseMsat?: any, leaseFeeBasis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: leaseFeeBaseMsat, lease_fee_basis: leaseFeeBasis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
+  getOrUpdateFunderPolicy(policy?: any, policyMod?: any, lease_feeBaseMsat?: any, lease_fee_basis?: any, channelFeeMaxBaseMsat?: any, channelFeeMaxProportional?: any) {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
+      const postParams = policy ? { policy: policy, policy_mod: policyMod, lease_fee_base_msat: lease_feeBaseMsat, lease_fee_basis: lease_fee_basis, channel_fee_max_base_msat: channelFeeMaxBaseMsat, channel_fee_max_proportional_thousandths: channelFeeMaxProportional } : null;
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
-      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + environment.CHANNELS_API + '/funderUpdate', postParams).pipe(
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.CHANNELS_API + '/funderUpdate', postParams).pipe(
         takeUntil(this.unSubs[11]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_FUNDER_POLICY }));
@@ -337,7 +335,7 @@ export class DataService implements OnDestroy {
   peerswapReloadPolicy() {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/reloadPolicy').pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PEERSWAP_API + '/reloadPolicy').pipe(
         takeUntil(this.unSubs[12]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
@@ -353,7 +351,7 @@ export class DataService implements OnDestroy {
   addPeerToPeerswap(peerNodeId: string, list: PeerswapPeersLists) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/addPeer/' + list + '/' + peerNodeId).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PEERSWAP_API + '/addPeer/' + list + '/' + peerNodeId).pipe(
         takeUntil(this.unSubs[13]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
@@ -369,7 +367,7 @@ export class DataService implements OnDestroy {
   removePeerFromPeerswap(peerNodeId: string, list: PeerswapPeersLists) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/removePeer/' + list + '/' + peerNodeId).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PEERSWAP_API + '/removePeer/' + list + '/' + peerNodeId).pipe(
         takeUntil(this.unSubs[14]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.REMOVE_PEER_PEERSWAP }));
@@ -385,7 +383,7 @@ export class DataService implements OnDestroy {
   allowPeerswapRequests(flgAllow: boolean) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_ALLOW_SWAP_REQUESTS }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + environment.PEERSWAP_API + '/allowswaprequests/' + flgAllow).pipe(
+      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PEERSWAP_API + '/allowswaprequests/' + flgAllow).pipe(
         takeUntil(this.unSubs[15]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_ALLOW_SWAP_REQUESTS }));
@@ -396,6 +394,19 @@ export class DataService implements OnDestroy {
         })
       );
     }));
+  }
+  
+  circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], format: string = 'shortChannelId') {
+    const url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
+    const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+    return this.httpClient.post(url, reqBody).pipe(
+      takeUntil(this.unSubs[12]),
+      map((res: any) => res),
+      catchError((err) => {
+        this.handleErrorWithoutAlert('Rebalance Channel', UI_MESSAGES.REBALANCE_CHANNEL, err);
+        return throwError(() => err.error);
+      })
+    );
   }
 
   mapAliases = (payload: any, storedChannels: ChannelCLN[]) => {

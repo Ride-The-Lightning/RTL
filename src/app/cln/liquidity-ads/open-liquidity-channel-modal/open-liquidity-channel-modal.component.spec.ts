@@ -55,7 +55,7 @@ describe('CLNOpenLiquidityChannelComponent', () => {
                   channel_fee_max_proportional_thousandths: 1,
                   compact_lease: '029a0032000100004e20'
                 },
-                channelOpeningFee: 22165
+                channel_opening_fee: 22165
               },
               balance: 100000, requestedAmount: 20000, feeRate: 10, localAmount: 20000
             }

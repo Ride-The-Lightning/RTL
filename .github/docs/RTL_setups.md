@@ -15,6 +15,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
   "multiPass": "<password in plain text, Default 'password'>",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "<Complete path of the folder where rtl's database file should be saved>",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
@@ -39,6 +40,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "logLevel": "INFO",
         "fiatConversion": false,
+        "unannouncedChannels": false,
         "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080; e.g. https://192.168.0.1:8080>",
         "swapServerUrl": "<https://<localhost>:8081>",
         "boltzServerUrl": "<https://<localhost>:9003>"

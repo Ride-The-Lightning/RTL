@@ -1,4 +1,4 @@
-import { NgModule, Injectable } from '@angular/core';
+import { NgModule, Injectable, Inject, Optional } from '@angular/core';
 import { CommonModule, DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
@@ -7,8 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
+import { Platform } from '@angular/cdk/platform';
 
-import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -62,6 +63,7 @@ import { AppSettingsComponent } from './components/settings/app-settings/app-set
 import { NodeConfigComponent } from './components/node-config/node-config.component';
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { PageSettingsComponent } from './components/node-config/page-settings/page-settings.component';
 import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
@@ -77,15 +79,32 @@ import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/s
 import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
+import { IsAuthorizedComponent } from './components/data-modal/is-authorized/is-authorized.component';
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
+
+import { LNServicesComponent } from './components/ln-services/ln-services.component';
+import { LoopComponent } from '../shared/components/ln-services/loop/loop.component';
+import { SwapsComponent } from '../shared/components/ln-services/loop/swaps/swaps.component';
+import { LoopModalComponent } from '../shared/components/ln-services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../shared/components/ln-services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../shared/components/ln-services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzRootComponent } from './components/ln-services/boltz/boltz-root.component';
+import { BoltzSwapsComponent } from './components/ln-services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './components/ln-services/boltz/swap-status/swap-status.component';
+import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-service-info/swap-service-info.component';
+import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe, CamelCasePipe, SwapStatePipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe, SwapStatePipe } from './pipes/app.pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -93,6 +112,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 };
 
 @Injectable() class DefaultDateAdapter extends NativeDateAdapter {
+
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
+    super(matDateLocale, platform);
+  }
 
   format(date: Date, displayFormat: Object): string {
     if (displayFormat === 'input') {
@@ -211,6 +234,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     RemoveLeadingZerosPipe,
     CamelCasePipe,
     SwapStatePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -227,6 +252,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
@@ -234,7 +260,22 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
-    TransactionsReportTableComponent
+    TransactionsReportTableComponent,
+    LNServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -251,6 +292,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
+    PageSettingsComponent,
     ServicesSettingsComponent,
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
@@ -268,6 +310,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     RemoveLeadingZerosPipe,
     CamelCasePipe,
     SwapStatePipe,
+    CamelCaseWithReplacePipe,
+    CamelCaseWithSpacesPipe,
     AuthSettingsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
@@ -276,19 +320,35 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
+    IsAuthorizedComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
-    TransactionsReportTableComponent
+    TransactionsReportTableComponent,
+    LNServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '45%' } },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog' } },
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },
-    DecimalPipe, TitleCasePipe, DatePipe, SwapStatePipe
+    DecimalPipe, TitleCasePipe, DatePipe, RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe
   ]
 })
 export class SharedModule { }

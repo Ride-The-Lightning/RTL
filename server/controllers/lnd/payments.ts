@@ -57,10 +57,6 @@ export const getPayments = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/payments?max_payments=' + req.query.max_payments + '&index_offset=' + req.query.index_offset + '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body });
-    if (body.payments && body.payments.length > 0) {
-      body.payments = common.sortDescByKey(body.payments, 'creation_date');
-    }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);

@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo, Balance } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -21,13 +21,17 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { detachPeer } from '../../store/cln.actions';
-import { nodeInfoAndBalance, peers } from '../../store/cln.selector';
+import { clnPageSettings, nodeInfoAndBalance, peers } from '../../store/cln.selector';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-cln-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
@@ -36,14 +40,18 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faUsers = faUsers;
+  public nodePageDefs = CLN_PAGE_DEFS;
+  public selFilterBy = 'all';
+  public colWidth = '20rem';
+  public PAGE_ID = 'peers_channels';
+  public tableSetting: TableSetting = { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'alias', sortOrder: SortOrderEnum.DESCENDING };
   public newlyAddedPeer = '';
   public displayedColumns: any[] = [];
   public peerAddress: string | null = '';
   public peersData: Peer[] = [];
-  public peers: any;
+  public peers: any = new MatTableDataSource([]);
   public information: GetInfo = {};
   public availableBalance = 0;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -52,23 +60,10 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    } else {
-      this.flgSticky = true;
-      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
-    }
   }
 
   ngOnInit() {
@@ -77,7 +72,26 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.information = infoBalSelector.information;
         this.availableBalance = infoBalSelector.balance.totalBalance || 0;
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.displayedColumns.unshift('connected');
+        this.displayedColumns.push('actions');
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = peersSeletor.apiCallStatus;
@@ -92,7 +106,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     this.actions.
       pipe(
-        takeUntil(this.unSubs[2]),
+        takeUntil(this.unSubs[3]),
         filter((action) => action.type === CLNActions.SET_PEERS_CLN)
       ).subscribe((setPeers: any) => {
         this.peerAddress = null;
@@ -117,6 +131,9 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           type: AlertTypeEnum.INFORMATION,
           alertTitle: 'Peer Information',
+          goToFieldValue: selPeer.id,
+          goToName: 'Graph lookup',
+          goToLink: '/cln/graph/lookups',
           showQRName: 'Public Key',
           showQRField: selPeer.id,
           message: reorderedPeer
@@ -168,7 +185,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[3])).
+      pipe(takeUntil(this.unSubs[4])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id!, force: false } }));
@@ -180,8 +197,38 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.peers.filter = this.selFilter.trim().toLowerCase();
   }
 
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithReplace.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+  }
+
+  setFilterPredicate() {
+    this.peers.filterPredicate = (rowData: Peer, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = JSON.stringify(rowData).toLowerCase();
+          break;
+
+        case 'connected':
+          rowToFilter = rowData?.connected ? 'connected' : 'disconnected';
+          break;
+
+        case 'netaddr':
+          rowToFilter = rowData.netaddr ? rowData.netaddr.reduce((acc, curr) => acc + curr, ' ') : '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return this.selFilterBy === 'connected' ? rowToFilter.indexOf(fltr) === 0 : rowToFilter.includes(fltr);
+    };
+  }
+
   loadPeersTable(peersArr: Peer[]) {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
+    this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'netaddr':
@@ -195,9 +242,8 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
-    this.peers.sort = this.sort;
-    this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
   }
 

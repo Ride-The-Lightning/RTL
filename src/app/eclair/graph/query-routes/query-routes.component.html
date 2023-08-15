@@ -1,15 +1,17 @@
-<div fxLayout="column" fxFlex="100">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" (ngSubmit)="queryRoutesForm.form.valid && onQueryRoutes()" #queryRoutesForm="ngForm">
+<div fxLayout="column">
+  <form #queryRoutesForm="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" (ngSubmit)="queryRoutesForm.form.valid && onQueryRoutes()">
     <div fxFlex="100" class="alert alert-warn">
-      <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
       <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
-    <mat-form-field fxFlex="69" fxLayoutAlign="start end">
-      <input matInput placeholder="Destination Node ID" name="nodeId" [(ngModel)]="nodeId" tabindex="1" required #destPubkey="ngModel">
+    <mat-form-field fxLayout="column" fxFlex="69" fxLayoutAlign="start end">
+      <mat-label>Destination Node ID</mat-label>
+      <input #destPubkey="ngModel" matInput name="nodeId" tabindex="1" required [(ngModel)]="nodeId">
       <mat-error *ngIf="!nodeId">Destination Node ID is required.</mat-error>
     </mat-form-field>
-    <mat-form-field fxFlex="29" fxLayoutAlign="start end">
-      <input matInput placeholder="Amount (Sats)" [(ngModel)]="amount" name="amount" tabindex="2" type="number" [step]="1000" [min]="0" required>
+    <mat-form-field fxLayout="column" fxFlex="29" fxLayoutAlign="start end">
+      <mat-label>Amount (Sats)</mat-label>
+      <input matInput name="amount" tabindex="2" type="number" required [step]="1000" [min]="0" [(ngModel)]="amount">
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-1">
@@ -17,16 +19,16 @@
       <button mat-flat-button color="primary" type="submit" tabindex="4">Query Route</button>
     </div>
   </form>
-  <div fxLayout="row" fxLayoutAlign="start center" class="page-sub-title-container mt-2 mb-1">
-    <div fxFlex="70">
-      <fa-icon [icon]="faRoute" class="page-title-img mr-1"></fa-icon>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-3 mb-1">
+    <div fxFlex="70" fxLayoutAlign="start center">
+      <fa-icon class="page-title-img mr-1" [icon]="faRoute"></fa-icon>
       <span class="page-title">Transaction Route</span>
     </div>
   </div>
   <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
   <div fxLayout="row" fxFlex="100" class="padding-gap-x" fxLayoutAlign="start start">
     <div fxLayout="column" fxFlex="100">
-      <div fxFlex="100" *ngFor="let qRoute of allQRoutes; index as i">
+      <div *ngFor="let qRoute of allQRoutes; index as i" fxFlex="100">
         <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px">
           <mat-expansion-panel-header>
               <mat-panel-title fxLayout="row" fxLayoutAlign="space-between start">
@@ -35,24 +37,34 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
           <mat-panel-description fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">
-            <div [perfectScrollbar] class="table-container mb-2" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">
-              <table mat-table #table[i] [dataSource]="qrHops[i]" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+            <div class="table-container mb-2" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" [perfectScrollbar]>
+              <table #table[i] mat-table [dataSource]="qrHops[i]" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
                 <ng-container matColumnDef="alias">
-                  <th mat-header-cell *matHeaderCellDef> Alias </th>
-                  <td mat-cell *matCellDef="let hop"> {{hop?.alias}} </td>
-                </ng-container>
-                <ng-container matColumnDef="nodeId">
-                  <th mat-header-cell *matHeaderCellDef> ID </th>
-                  <td mat-cell *matCellDef="let hop"> {{hop?.nodeId}} </td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef class="pl-4 pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-                  <td mat-cell *matCellDef="let hop" class="pl-4">
-                    <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onHopClick(hop)">View Info</button>
+                  <th *matHeaderCellDef mat-header-cell> Alias</th>
+                  <td *matCellDef="let hop" mat-cell>
+                    <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
+                      <span class="ellipsis-child">{{hop?.alias}}</span>
+                    </span>
                   </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <ng-container matColumnDef="nodeId">
+                  <th *matHeaderCellDef mat-header-cell> ID</th>
+                  <td *matCellDef="let hop" mat-cell>
+                    <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '6rem' : '30rem'}">
+                      <span class="ellipsis-child">{{hop?.nodeId}}</span>
+                    </span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                  <th *matHeaderCellDef mat-header-cell>
+                    <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
+                 </th>
+                  <td *matCellDef="let hop" mat-cell fxLayoutAlign="end center">
+                    <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onHopClick(hop)">View Info</button>
+                  </td>
+                </ng-container>
+                <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+                <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
               </table>
             </div>          
           </mat-panel-description>

@@ -35,7 +35,7 @@
       </ngx-charts-bar-vertical-2d>
     </div>
     <div class="mt-1">
-      <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [filterValue]="transactionFilterValue"></rtl-transactions-report-table>
+      <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [displayedColumns]="displayedColumns" [tableSetting]="tableSetting" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [selFilter]="transactionFilterValue"></rtl-transactions-report-table>
     </div>
   </div>
 </div>

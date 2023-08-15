@@ -4,7 +4,7 @@ import { take, map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
-import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum } from './consts-enums-functions';
+import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS } from './consts-enums-functions';
 
 @Injectable()
 export class CommonService implements OnDestroy {
@@ -167,10 +167,10 @@ export class CommonService implements OnDestroy {
             value = value / 60;
             break;
           case TimeUnitEnum.HOURS:
-            value = value / 3600;
+            value = value / HOUR_SECONDS;
             break;
           case TimeUnitEnum.DAYS:
-            value = value / (3600 * 24);
+            value = value / (HOUR_SECONDS * 24);
             break;
           default:
             break;
@@ -194,7 +194,7 @@ export class CommonService implements OnDestroy {
       case TimeUnitEnum.HOURS:
         switch (to) {
           case TimeUnitEnum.SECS:
-            value = value * 3600;
+            value = value * HOUR_SECONDS;
             break;
           case TimeUnitEnum.MINS:
             value = value * 60;
@@ -209,7 +209,7 @@ export class CommonService implements OnDestroy {
       case TimeUnitEnum.DAYS:
         switch (to) {
           case TimeUnitEnum.SECS:
-            value = value * 3600 * 24;
+            value = value * HOUR_SECONDS * 24;
             break;
           case TimeUnitEnum.MINS:
             value = value * 60 * 24;
@@ -296,6 +296,7 @@ export class CommonService implements OnDestroy {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
+    // Check for newer CLN version style compatibility
     if (currentVersion) {
       const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
       const checkVersionsArr = checkVersion.split('.');

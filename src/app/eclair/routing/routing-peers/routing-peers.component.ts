@@ -7,13 +7,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { PaymentRelayed, Payments, RoutingPeers } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
-import { payments } from '../../store/ecl.selector';
+import { eclPageSettings, payments } from '../../store/ecl.selector';
+import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
+import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
   selector: 'rtl-ecl-routing-peers',
@@ -29,11 +31,16 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('tableOut', { read: MatSort, static: false }) sortOut: MatSort;
   @ViewChild('paginatorIn', { static: false }) paginatorIn: MatPaginator | undefined;
   @ViewChild('paginatorOut', { static: false }) paginatorOut: MatPaginator | undefined;
+  public nodePageDefs = ECL_PAGE_DEFS;
+  public selFilterByIn = 'all';
+  public selFilterByOut = 'all';
+  public colWidth = '20rem';
+  public PAGE_ID = 'routing';
+  public tableSetting: TableSetting = { tableId: 'routing_peers', recordsPerPage: PAGE_SIZE, sortBy: 'totalFee', sortOrder: SortOrderEnum.DESCENDING };
   public routingPeersData: PaymentRelayed[] = [];
   public displayedColumns: any[] = [];
-  public RoutingPeersIncoming: any;
-  public RoutingPeersOutgoing: any;
-  public flgSticky = false;
+  public routingPeersIncoming: any = new MatTableDataSource([]);
+  public routingPeersOutgoing: any = new MatTableDataSource([]);
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -45,26 +52,29 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
     this.screenSize = this.commonService.getScreenSize();
-    if (this.screenSize === ScreenSizeEnum.XS) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'totalFee'];
-    } else if (this.screenSize === ScreenSizeEnum.SM) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'events', 'totalFee'];
-    } else if (this.screenSize === ScreenSizeEnum.MD) {
-      this.flgSticky = false;
-      this.displayedColumns = ['alias', 'events', 'totalAmount', 'totalFee'];
-    } else {
-      this.flgSticky = true;
-      this.displayedColumns = ['channelId', 'alias', 'events', 'totalAmount', 'totalFee'];
-    }
   }
 
   ngOnInit() {
-    this.store.select(payments).
-      pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
+        this.errorMessage = '';
+        this.apiCallStatus = settings.apiCallStatus;
+        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = this.apiCallStatus.message || '';
+        }
+        this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
+        if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+        } else {
+          this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+        }
+        this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+        this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 14) + 'rem' : '20rem';
+        this.logger.info(this.displayedColumns);
+      });
+    this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
       subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSelector.apiCallStatus;
@@ -85,26 +95,73 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  applyFilterIncoming() {
+    this.routingPeersIncoming.filter = this.filterIn.trim().toLowerCase();
+  }
+
+  applyFilterOutgoing() {
+    this.routingPeersOutgoing.filter = this.filterOut.trim().toLowerCase();
+  }
+
+  getLabel(column: string) {
+    const returnColumn: ColumnDefinition = this.nodePageDefs[this.PAGE_ID][this.tableSetting.tableId].allowedColumns.find((col) => col.column === column);
+    return returnColumn ? returnColumn.label ? returnColumn.label : this.camelCaseWithSpaces.transform(returnColumn.column, '_') : this.commonService.titleCase(column);
+  }
+
+  setFilterPredicate() {
+    this.routingPeersIncoming.filterPredicate = (rowDataIn: RoutingPeers, fltr: string) => {
+      let rowToFilterIn = '';
+      switch (this.selFilterByIn) {
+        case 'all':
+          rowToFilterIn = JSON.stringify(rowDataIn).toLowerCase();
+          break;
+
+        default:
+          rowToFilterIn = typeof rowDataIn[this.selFilterByIn] === 'string' ? rowDataIn[this.selFilterByIn].toLowerCase() : typeof rowDataIn[this.selFilterByIn] === 'boolean' ? (rowDataIn[this.selFilterByIn] ? 'yes' : 'no') : rowDataIn[this.selFilterByIn].toString();
+          break;
+      }
+      return rowToFilterIn.includes(fltr);
+    };
+
+    this.routingPeersOutgoing.filterPredicate = (rowDataOut: RoutingPeers, fltr: string) => {
+      let rowToFilterOut = '';
+      switch (this.selFilterByOut) {
+        case 'all':
+          rowToFilterOut = JSON.stringify(rowDataOut).toLowerCase();
+          break;
+
+        case 'total_amount':
+        case 'total_fee':
+          rowToFilterOut = ((+(rowDataOut[this.selFilterByOut] || 0)) / 1000)?.toString() || '';
+          break;
+
+        default:
+          rowToFilterOut = typeof rowDataOut[this.selFilterByOut] === 'string' ? rowDataOut[this.selFilterByOut].toLowerCase() : typeof rowDataOut[this.selFilterByOut] === 'boolean' ? (rowDataOut[this.selFilterByOut] ? 'yes' : 'no') : rowDataOut[this.selFilterByOut].toString();
+          break;
+      }
+      return rowToFilterOut.includes(fltr);
+    };
+  }
+
   loadRoutingPeersTable(forwardingEvents: PaymentRelayed[]) {
     if (forwardingEvents.length > 0) {
       const results = this.groupRoutingPeers(forwardingEvents);
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
-      this.RoutingPeersIncoming.sort = this.sortIn;
-      this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
-      this.RoutingPeersIncoming.paginator = this.paginatorIn;
-      this.logger.info(this.RoutingPeersIncoming);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
-      this.RoutingPeersOutgoing.sort = this.sortOut;
-      this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
-      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
-      this.logger.info(this.RoutingPeersOutgoing);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
+      this.routingPeersIncoming.sort = this.sortIn;
+      this.routingPeersIncoming.paginator = this.paginatorIn;
+      this.logger.info(this.routingPeersIncoming);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
+      this.routingPeersOutgoing.sort = this.sortOut;
+      this.routingPeersOutgoing.paginator = this.paginatorOut;
+      this.logger.info(this.routingPeersOutgoing);
     } else {
       // To reset table after other Forwarding history calls
-      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
-      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
+      this.routingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
+      this.routingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
-    this.applyIncomingFilter();
-    this.applyOutgoingFilter();
+    this.setFilterPredicate();
+    this.applyFilterIncoming();
+    this.applyFilterOutgoing();
   }
 
   groupRoutingPeers(forwardingEvents: PaymentRelayed[]) {
@@ -129,14 +186,6 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'totalFee'), this.commonService.sortDescByKey(outgoingResults, 'totalFee')];
-  }
-
-  applyIncomingFilter() {
-    this.RoutingPeersIncoming.filter = this.filterIn.toLowerCase();
-  }
-
-  applyOutgoingFilter() {
-    this.RoutingPeersOutgoing.filter = this.filterOut.toLowerCase();
   }
 
   ngOnDestroy() {

@@ -11,7 +11,8 @@ export class CommonService {
         this.initSelectedNode = null;
         this.rtl_conf_file_path = '';
         this.port = 3000;
-        this.host = null;
+        this.host = '';
+        this.db_directory_path = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
         this.rtl_pass = '';
         this.flg_allow_password_update = true;
         this.rtl_secret2fa = '';
@@ -24,7 +25,10 @@ export class CommonService {
         this.read_dummy_data = false;
         this.baseHref = '/rtl';
         this.dummy_data_array_from_file = [];
-        this.MONTHS = [{ name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 }, { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }];
+        this.MONTHS = [
+            { name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 },
+            { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }
+        ];
         this.getSwapServerOptions = (req) => {
             const swapOptions = {
                 url: req.session.selectedNode.swap_server_url,
@@ -198,18 +202,17 @@ export class CommonService {
         };
         this.newestOnTop = (array, key, value) => {
             const newlyAddedRecord = array.splice(array.findIndex((item) => item[key] === value), 1);
-            array === null || array === void 0 ? void 0 : array.unshift(newlyAddedRecord[0]);
+            array?.unshift(newlyAddedRecord[0]);
             return array;
         };
-        this.camelCase = (str) => { var _a, _b; return (_b = (_a = str === null || str === void 0 ? void 0 : str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))) === null || _a === void 0 ? void 0 : _a.replace(/\s+/g, '')) === null || _b === void 0 ? void 0 : _b.replace(/-/g, ' '); };
+        this.camelCase = (str) => str?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');
         this.titleCase = (str) => {
-            var _a, _b;
             if (str.indexOf('!\n') > 0 || str.indexOf('.\n') > 0) {
-                return (_a = str.split('\n')) === null || _a === void 0 ? void 0 : _a.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
+                return str.split('\n')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + '\n', '');
             }
             else {
                 if (str.indexOf(' ') > 0) {
-                    return (_b = str.split(' ')) === null || _b === void 0 ? void 0 : _b.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
+                    return str.split(' ')?.reduce((accumulator, currentStr) => accumulator + currentStr.charAt(0).toUpperCase() + currentStr.substring(1).toLowerCase() + ' ', '');
                 }
                 else {
                     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
@@ -217,7 +220,11 @@ export class CommonService {
             }
         };
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
-            const err = JSON.parse(JSON.stringify(errRes));
+            let err = JSON.parse(JSON.stringify(errRes));
+            if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
+                errRes.error = errRes.error.stack || errRes.error.message;
+                err = JSON.parse(JSON.stringify(errRes));
+            }
             if (!selectedNode) {
                 selectedNode = this.initSelectedNode;
             }
@@ -252,17 +259,30 @@ export class CommonService {
                     }
                     break;
             }
-            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : (typeof err === 'string') ? err : 'Unknown Error') });
-            const newErrorObj = {
-                statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
-                message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg,
-                error: ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-                    (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-                        (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
-                            (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
-                                (err.error && typeof err.error === 'string') ? err.error :
-                                    (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error')
-            };
+            this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : err) });
+            let newErrorObj = { statusCode: 500, message: '', error: '' };
+            if (err.code && err.code === 'ENOENT') {
+                newErrorObj = {
+                    statusCode: 500,
+                    message: 'No such file or directory ' + (err.path ? err.path : ''),
+                    error: 'No such file or directory ' + (err.path ? err.path : '')
+                };
+            }
+            else {
+                newErrorObj = {
+                    statusCode: err.statusCode ? err.statusCode : err.status ? err.status : (err.error && err.error.code && err.error.code === 'ECONNREFUSED') ? 503 : 500,
+                    message: (err.error && err.error.message) ? err.error.message : err.message ? err.message : errMsg,
+                    error: ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
+                        (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
+                            (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message :
+                                (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message :
+                                    (err.error && typeof err.error === 'string') ? err.error :
+                                        (err.message && typeof err.message === 'string') ? err.message : (typeof err === 'string') ? err : 'Unknown Error')
+                };
+            }
+            if (selectedNode.ln_implementation === 'ECL' && err.message && err.message.indexOf('Authentication Error') < 0 && err.name && err.name === 'StatusCodeError') {
+                newErrorObj.statusCode = 500;
+            }
             return newErrorObj;
         };
         this.getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
@@ -301,7 +321,7 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading cookie: \n' + err });
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading cookie: \n' + err });
                     throw new Error(err);
                 }
             }
@@ -313,7 +333,7 @@ export class CommonService {
                     this.cookie_value = fs.readFileSync(this.rtl_cookie_path, 'utf-8');
                 }
                 catch (err) {
-                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while reading the cookie: \n' + err });
+                    this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading the cookie: \n' + err });
                     throw new Error(err);
                 }
             }
@@ -329,9 +349,8 @@ export class CommonService {
             }
         };
         this.createDirectory = (directoryName) => {
-            var _a;
             const initDir = isAbsolute(directoryName) ? sep : '';
-            (_a = directoryName.split(sep)) === null || _a === void 0 ? void 0 : _a.reduce((parentDir, childDir) => {
+            directoryName.split(sep)?.reduce((parentDir, childDir) => {
                 const curDir = resolve(parentDir, childDir);
                 try {
                     if (!fs.existsSync(curDir)) {
@@ -400,9 +419,8 @@ export class CommonService {
             });
         };
         this.isVersionCompatible = (currentVersion, checkVersion) => {
-            var _a;
             if (currentVersion) {
-                const versionsArr = ((_a = currentVersion.trim()) === null || _a === void 0 ? void 0 : _a.replace('v', '').split('-')[0].split('.')) || [];
+                const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
                 const checkVersionsArr = checkVersion.split('.');
                 return (+versionsArr[0] > +checkVersionsArr[0]) ||
                     (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
@@ -416,6 +434,7 @@ export class CommonService {
             if (selNode && selNode.index) {
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DB_DIRECTORY_PATH: ' + this.db_directory_path });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.rtl_sso });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });

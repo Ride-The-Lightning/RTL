@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,12 +22,10 @@ import { peerLookup } from '../../store/ecl.actions';
 export class ECLLookupsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public lookupKeyCtrl = new FormControl();
-  // Public lookupKey = '';
+  public lookupKeyCtrl = new UntypedFormControl();
   public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];
   public flgSetLookupValue = false;
-  public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [
@@ -45,6 +43,10 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (window.history.state && window.history.state.lookupType) {
+      this.selectedFieldId = +window.history.state.lookupType || 0;
+      this.lookupKeyCtrl.setValue(window.history.state.lookupValue || '');
+    }
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).

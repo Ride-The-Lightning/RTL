@@ -1,23 +1,23 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
   <mat-tab *ngFor="let currencyUnit of currencyUnits" label="{{ currencyUnit }}">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
-      <div fxLayout="column" fxLayoutAlign="center start" *ngFor="let value of values" class="cc-data-block">
-        <div class="cc-data-title" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+      <div *ngFor="let value of values" fxLayout="column" fxLayoutAlign="center start" class="cc-data-block">
+        <div class="cc-data-title" fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
           {{value.title}}
-          <mat-icon *ngIf="value.tooltip" [matTooltip]="value.tooltip" matTooltipPosition="below" class="info-icon">info_outline</mat-icon>
+          <mat-icon *ngIf="value.tooltip" matTooltipPosition="below" class="info-icon" [matTooltip]="value.tooltip">info_outline</mat-icon>
         </div>
-        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.SATS">
-          {{value.dataValue | number}}
+        <span *ngIf="currencyUnit === currencyUnitEnum.SATS" class="cc-data-value">
+          {{value.dataValue | number:'1.0-0'}}
         </span>
-        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.BTC">
+        <span *ngIf="currencyUnit === currencyUnitEnum.BTC" class="cc-data-value">
           {{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}
         </span>
-        <span class="cc-data-value" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg === ''">
+        <span *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg === ''" class="cc-data-value">
           {{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}
         </span>
       </div>
     </div>
-    <div fxLayout="row" fxFlex="100" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg !== ''" class="p-1 error-border mt-1">
+    <div *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg !== ''" fxLayout="row" fxFlex="100" class="p-1 error-border mt-1">
       <div class="cc-data-block">{{conversionErrorMsg}}</div>
     </div>
   </mat-tab>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
@@ -48,7 +48,6 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
-  public isCompatibleVersion = false;
   public newAddress = '';
   public transaction: OnChain | any = {};
   public feeRateTypes = FEE_RATE_TYPES;
@@ -70,14 +69,24 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
-  passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;
-  confirmFormGroup: FormGroup;
+  passwordFormGroup: UntypedFormGroup;
+  sendFundFormGroup: UntypedFormGroup;
+  confirmFormGroup: UntypedFormGroup;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {
+  constructor(
+    public dialogRef: MatDialogRef<CLNOnChainSendModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CLNOnChainSendFunds,
+    private logger: LoggerService,
+    private store: Store<RTLState>,
+    private commonService: CommonService,
+    private decimalPipe: DecimalPipe,
+    private actions: Actions,
+    private formBuilder: UntypedFormBuilder,
+    private rtlEffects: RTLEffects,
+    private snackBar: MatSnackBar) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -130,9 +139,6 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
-        this.isCompatibleVersion =
-          this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
-          this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
       });
     this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -196,7 +202,9 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null;
       } else {
         delete this.transaction.minconf;
-        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ? ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
+        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' &&
+        !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ?
+          ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
       }
       delete this.transaction.utxos;
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
@@ -273,7 +281,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
 
   onUTXOSelectionChange(event: any) {
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((total, curr) => (total + (curr.value || 0)), 0);
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((total, curr) => (total + ((curr.amount_msat || 0) / 1000)), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }

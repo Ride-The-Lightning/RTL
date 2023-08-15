@@ -58,12 +58,7 @@ import { CLNOffersTableComponent } from './transactions/offers/offers-table/offe
 import { CLNOfferBookmarksTableComponent } from './transactions/offers/offer-bookmarks-table/offer-bookmarks-table.component';
 import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list/liquidity-ads-list.component';
 import { CLNOpenLiquidityChannelComponent } from './liquidity-ads/open-liquidity-channel-modal/open-liquidity-channel-modal.component';
-import { LNServicesComponent } from './ln-services/ln-services.component';
-import { PeerswapComponent } from './ln-services/peerswap/peerswap.component';
-import { SwapPeersComponent } from './ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsListComponent } from './ln-services/peerswap/swaps-list/swaps-list.component';
-import { CLNSwapOutModalComponent } from './ln-services/peerswap/swap-out-modal/swap-out-modal.component';
-import { CLNSwapInModalComponent } from './ln-services/peerswap/swap-in-modal/swap-in-modal.component';
+import { CLNChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 
 import { CLNUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -128,16 +123,9 @@ import { CLNUnlockedGuard } from '../shared/services/auth.guard';
     CLNOfferBookmarksTableComponent,
     CLNLiquidityAdsListComponent,
     CLNOpenLiquidityChannelComponent,
-    LNServicesComponent,
-    PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsListComponent,
-    CLNSwapOutModalComponent,
-    CLNSwapInModalComponent
+    CLNChannelActiveHTLCsTableComponent
   ],
-  providers: [
-    CLNUnlockedGuard
-  ],
+  providers: [],
   bootstrap: [CLNRootComponent]
 })
 export class CLNModule { }

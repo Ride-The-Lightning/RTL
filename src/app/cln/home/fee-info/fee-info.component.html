@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="errorMessage?.trim() === ''; else errorBlock">
+<div *ngIf="errorMessage?.trim() === '';  else errorBlock" class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch">
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
     <div>
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Total</h4>
@@ -9,6 +9,12 @@
     <div *ngIf="fees?.totalTxCount">
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
       <div class="overflow-wrap dashboard-info-value">{{fees?.totalTxCount | number}}</div>
+    </div>
+    <div *ngIf="!fees?.totalTxCount">
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
+      <a class="overflow-wrap dashboard-info-value" [routerLink]="['../routing']">
+        Go to Routing
+      </a>
     </div>
   </div>
 </div>

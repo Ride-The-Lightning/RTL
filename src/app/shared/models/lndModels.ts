@@ -40,6 +40,9 @@ export interface ChannelHTLC {
   amount?: string;
   hash_lock?: string;
   expiration_height?: number;
+  htlc_index?: number;
+  forwarding_channel?: string;
+  forwarding_htlc_index?: number;
 }
 
 export interface ChannelsSummary {
@@ -80,8 +83,9 @@ export interface Channel {
   uptime?: string;
   uptime_str?: string;
   lifetime?: string;
+  lifetime_str?: string;
   static_remote_key?: boolean;
-  balancedness?: number; // Between -1 to +1
+  balancedness?: number; // Between 0-1-0
 }
 
 export interface PendingChannel {
@@ -127,6 +131,7 @@ export interface WaitingCloseChannel {
   channel?: PendingChannel;
   limbo_balance?: string;
   commitments?: any;
+  closing_txid?: string;
 }
 
 export interface PendingChannels {
@@ -149,6 +154,8 @@ export interface ClosedChannel {
   remote_pubkey?: string;
   capacity?: string;
   settled_balance?: string;
+  open_initiator?: string;
+  close_initiator?: string;
 }
 
 export interface NodeAddress {
@@ -354,6 +361,9 @@ export interface Invoice {
   htlcs?: InvoiceHTLC[];
   features?: any;
   is_keysend?: boolean;
+  payment_addr?: string;
+  is_amp?: boolean;
+  amp_invoice_state?: any;
 }
 
 export interface ListInvoices {
@@ -502,11 +512,12 @@ export interface SavePeer {
 export interface SaveInvoice {
   uiMessage: string;
   memo: string;
-  invoiceValue: number;
+  value: number;
   private: boolean;
   expiry: number;
   pageSize: number;
   openModal: boolean;
+  is_amp: boolean;
 }
 
 export interface SaveChannel {

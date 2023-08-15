@@ -3,14 +3,13 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faCodeBranch, faCode, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faCode, faCog, faQuestion, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
 
 import { GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { VERSION } from '../../../../../environments/environment';
-import { AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
+import { VERSION, AlertTypeEnum, RTLActions } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RTLState } from '../../../../store/rtl.state';
@@ -29,7 +28,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public faCodeBranch = faCodeBranch;
   public faCode = faCode;
   public faCog = faCog;
-  public faLifeRing = faLifeRing;
+  public faQuestion = faQuestion;
   public faEject = faEject;
   public version = '';
   public information: GetInfoRoot = {};

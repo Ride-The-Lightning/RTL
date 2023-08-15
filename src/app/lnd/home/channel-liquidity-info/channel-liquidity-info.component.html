@@ -1,20 +1,20 @@
 <div  *ngIf="errorMessage?.trim() === ''; else errorBlock" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
-  <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
+  <div fxLayout="column" fxFlex="8" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number}} Sats</mat-hint>
     <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>
   </div>
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
-  <div [perfectScrollbar] *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
+  <div *ngIf="allChannels && allChannels.length > 0;  else noChannelBlock"[perfectScrollbar]>
     <div *ngFor="let channel of allChannels" fxLayout="column">
-      <a [routerLink]="['../connections/channels/open']" [state]="{filter: channel.chan_id}" class="dashboard-capacity-header mt-2" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">
+      <a class="dashboard-capacity-header mt-2" [routerLink]="['../connections/channels/open']" [state]="{filterColumn: channel.remote_alias ? 'remote_alias' : 'remote_pubkey', filterValue: channel.remote_alias || channel.remote_pubkey}" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">
         {{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}
       </a>
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
         <mat-hint *ngIf="direction === 'In'" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         <div *ngIf="direction === 'Out'" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <mat-hint fxFlex="85" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <button *ngIf="showLoop" fxFlex="15" fxLayoutAlign="end start" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
+          <mat-hint fxFlex="80" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <button *ngIf="showLoop" fxFlex="20" fxLayoutAlign="end center" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
         </div>
       </div>
       <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
@@ -25,7 +25,7 @@
 <ng-template #noChannelBlock>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
     No channels available.
-    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
+    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" tabindex="1" (click)="goToChannels()">Open Channel</button>
   </div>
 </ng-template>
 <ng-template #errorBlock>

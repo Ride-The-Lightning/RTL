@@ -4,26 +4,26 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose(false)" mat-button>X</button>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose(false)">X</button>
     </mat-card-header>    
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div *ngIf="warningMessage && warningMessage !== ''" fxFlex="100" class="alert alert-warn">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span>{{warningMessage}}</span>
         </div>
         <div *ngIf="informationMessage && informationMessage !== ''" fxFlex="100" class="alert alert-info">
-          <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
           <span>{{informationMessage}}</span>
         </div>
         <p *ngIf="data.titleMessage && !flgShowInput" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="messageObjs?.length>0">
           <div *ngFor="let objs of messageObjs; index as i;">
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-              <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
+              <div *ngFor="let obj of objs; index as j;" fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}">
                 <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                 <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
-                  <span [ngSwitch]="obj.type" class="foreground-secondary-text">
+                  <span class="foreground-secondary-text" [ngSwitch]="obj.type">
                     <ng-container *ngSwitchCase="dataTypeEnum.ARRAY" fxLayout="row wrap" fxLayoutAlign="space-between stretch">
                       <div *ngFor="let arrayObj of obj.value" [innerHTML]="arrayObj"></div>
                     </ng-container>
@@ -37,7 +37,7 @@
                   <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
                 </ng-template>
                 <mat-divider class="w-100 my-1"></mat-divider>
-              </div>                
+              </div>    
             </div>
           </div>
         </div>
@@ -45,8 +45,9 @@
           <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
           <div fxLayout="row wrap" fxLayoutAlign="space-between center">
             <ng-container *ngFor="let getInput of getInputs; index as i">
-              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">                              
-                <input matInput [autoFocus]="i === 0" [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
+              <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [fxFlex]="getInput.width">   
+                <mat-label>{{getInput.placeholder}}</mat-label>
+                <input matInput required [autoFocus]="i === 0" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [tabindex]="i+1" [(ngModel)]="getInput.inputValue">
                 <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
                 <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>
               </mat-form-field>
@@ -54,13 +55,13 @@
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="1">{{noBtnText}}</button>
-          <button *ngIf="hasAdvanced" mat-button color="primary" type="button" class="mr-1" (click)="onShowAdvanced()" tabindex="2">
+          <button mat-button color="primary" type="reset" class="mr-1" tabindex="1" (click)="onClose(false)">{{noBtnText}}</button>
+          <button *ngIf="hasAdvanced" mat-button color="primary" type="button" class="mr-1" tabindex="2" (click)="onShowAdvanced()">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus *ngIf="flgShowInput" mat-button color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)" default>{{yesBtnText}}</button>
-          <button autoFocus *ngIf="!flgShowInput" mat-button color="primary" type="submit" tabindex="4" (click)="onClose(true)" default>{{yesBtnText}}</button>
+          <button *ngIf="flgShowInput" autoFocus mat-button color="primary" type="submit" tabindex="3" default (click)="onClose(getInputs)">{{yesBtnText}}</button>
+          <button *ngIf="!flgShowInput" autoFocus mat-button color="primary" type="submit" tabindex="4" default (click)="onClose(true)">{{yesBtnText}}</button>
         </div>
       </form>
     </mat-card-content>

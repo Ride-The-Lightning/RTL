@@ -44,6 +44,7 @@ Contributions via code is the most sought after contribution and something we en
 
 ##### Install Dependencies
 * Assuming that nodejs (v14 & above) and npm are already installed on your local machine. Go into your RTL root folder and run `npm install`. 
+* Use `npm install --legacy-peer-deps` if there is any dependency conflict.
 * Sometimes after installation, user receives a message from npm to fix dependency vulnerability by running `npm audit fix`. Please do not follow this step as it can break some of the working RTL code on your machine. We audit and fix these vulnerabilities as soon as possible at our end.
 	
 ##### Node Backend Server for Development

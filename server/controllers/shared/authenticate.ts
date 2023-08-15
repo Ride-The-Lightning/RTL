@@ -120,7 +120,7 @@ export const resetPassword = (req, res, next) => {
 export const logoutUser = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Logged out' });
   if (req.session.selectedNode && req.session.selectedNode.index) {
-    databaseService.unloadDatabase(+req.session.selectedNode.index);
+    databaseService.unloadDatabase(+req.session.selectedNode.index, req.session.id);
   }
   req.session.destroy((err) => {
     res.clearCookie('connect.sid');

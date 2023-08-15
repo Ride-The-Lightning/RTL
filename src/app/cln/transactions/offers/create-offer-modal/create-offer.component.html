@@ -4,30 +4,33 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Create Offer</span>
       </div>
-      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
-      <form fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100" #addOfferForm="ngForm">
-        <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-          <input matInput autoFocus [(ngModel)]="description" placeholder="Description" tabindex="1" name="description">
+      <form #addOfferForm="ngForm" fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100">
+        <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
+          <mat-label>Description</mat-label>
+          <input matInput autoFocus tabindex="1" name="description" [(ngModel)]="description">
         </mat-form-field>
         <div fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
-          <mat-form-field fxFlex="40">
-            <input matInput [(ngModel)]="offerValue" (keyup)="onOfferValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="2" name="offerValue">
+          <mat-form-field fxLayout="column" fxFlex="40">
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" tabindex="2" name="offerValue" [step]="100" [min]="1" [(ngModel)]="offerValue" (keyup)="onOfferValueChange()">
             <span matSuffix>  Sats </span>
             <mat-hint>{{offerValueHint}}</mat-hint>
           </mat-form-field>
-          <mat-form-field fxFlex="58" fxLayoutAlign="start end">
-            <input matInput [(ngModel)]="vendor" placeholder="Vendor" tabindex="3" name="vendor">
+          <mat-form-field fxLayout="column" fxFlex="58" fxLayoutAlign="start end">
+            <mat-label>Issuer</mat-label>
+            <input matInput tabindex="3" name="issuer" [(ngModel)]="issuer">
           </mat-form-field>
           </div>
-        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="offerError !== ''">
-          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <div *ngIf="offerError !== ''" fxFlex="100" class="alert alert-danger mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="offerError !== ''">{{offerError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear Field</button>
-          <button mat-button color="primary" (click)="onAddOffer()" tabindex="5">Create Offer</button>
+          <button mat-button color="primary" tabindex="5" (click)="onAddOffer()">Create Offer</button>
         </div>
       </form>
     </mat-card-content>

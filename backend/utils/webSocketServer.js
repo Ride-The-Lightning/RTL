@@ -31,7 +31,6 @@ export class RTLWebSocketServer {
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
             this.webSocketServer = new WebSocketServer({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
             httpServer.on('upgrade', (request, socket, head) => {
-                var _a;
                 if (request.headers['upgrade'] !== 'websocket') {
                     socket.end('HTTP/1.1 400 Bad Request');
                     return;
@@ -39,7 +38,7 @@ export class RTLWebSocketServer {
                 const acceptKey = request.headers['sec-websocket-key'];
                 const hash = this.generateAcceptValue(acceptKey);
                 const responseHeaders = ['HTTP/1.1 101 Web Socket Protocol Handshake', 'Upgrade: WebSocket', 'Connection: Upgrade', 'Sec-WebSocket-Accept: ' + hash];
-                const protocols = !request.headers['sec-websocket-protocol'] ? [] : (_a = request.headers['sec-websocket-protocol'].split(',')) === null || _a === void 0 ? void 0 : _a.map((s) => s.trim());
+                const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
                 if (protocols.includes('json')) {
                     responseHeaders.push('Sec-WebSocket-Protocol: json');
                 }
@@ -53,12 +52,11 @@ export class RTLWebSocketServer {
             this.webSocketServer.emit('connection', websocket, request);
         };
         this.mountEventsOnConnection = (websocket, request) => {
-            var _a;
-            const protocols = !request.headers['sec-websocket-protocol'] ? [] : (_a = request.headers['sec-websocket-protocol'].split(',')) === null || _a === void 0 ? void 0 : _a.map((s) => s.trim());
-            const cookies = parse(request.headers.cookie);
+            const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
+            const cookies = request.headers.cookie ? parse(request.headers.cookie) : null;
             websocket.clientId = Date.now();
             websocket.isAlive = true;
-            websocket.sessionId = cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key);
+            websocket.sessionId = cookies && cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key) : null;
             websocket.clientNodeIndex = +protocols[1];
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllLNClients);

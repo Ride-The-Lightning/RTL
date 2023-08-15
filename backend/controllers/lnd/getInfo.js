@@ -9,7 +9,6 @@ const common = Common;
 const lndWsClient = LNDWSClient;
 const databaseService = Database;
 export const getInfo = (req, res, next) => {
-    var _a;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
     common.logEnvVariables(req);
     common.setOptions(req);
@@ -26,7 +25,7 @@ export const getInfo = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     else {
-        (_a = common.nodes) === null || _a === void 0 ? void 0 : _a.map((node) => {
+        common.nodes?.map((node) => {
             if (node.ln_implementation === 'LND') {
                 common.getAllNodeAllChannelBackup(node);
             }
@@ -45,7 +44,7 @@ export const getInfo = (req, res, next) => {
             else {
                 req.session.selectedNode.ln_version = body.version.split('-')[0] || '';
                 lndWsClient.updateSelectedNode(req.session.selectedNode);
-                databaseService.loadDatabase(req.session.selectedNode);
+                databaseService.loadDatabase(req.session);
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
                 return res.status(200).json(body);
             }

@@ -51,7 +51,8 @@ export class ECLInvoiceInformationComponent implements OnInit, OnDestroy {
       subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         const invoiceStatus = this.invoice.status;
         const invoices = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
-        this.invoice = invoices?.find((invoice) => invoice.paymentHash === this.invoice.paymentHash) || {};
+        const foundInvoice = invoices?.find((invoice) => invoice.paymentHash === this.invoice.paymentHash) || null;
+        if (foundInvoice) { this.invoice = foundInvoice; }
         if (invoiceStatus !== this.invoice.status && this.invoice.status === 'received') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);

@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CLNInvoiceInformation } from '../../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions } from '../../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions, DEFAULT_INVOICE_EXPIRY } from '../../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../../shared/models/clnModels';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -31,7 +31,6 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceValue: number | null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;
@@ -72,7 +71,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
     if (!this.invoiceValue) {
       this.invoiceValue = 0;
     }
-    let expiryInSecs = (this.expiry ? this.expiry : 3600);
+    let expiryInSecs = (this.expiry ? this.expiry : DEFAULT_INVOICE_EXPIRY);
     if (this.selTimeUnit !== TimeUnitEnum.SECS && this.expiry) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
@@ -100,7 +99,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.symbol;
+            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

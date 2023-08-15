@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { take, takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -16,6 +16,8 @@ import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/serv
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
+import { lndNodeSettings } from '../../store/lnd.selector';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-connect-peer',
@@ -27,6 +29,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public selNode: SelNodeChild | null = {};
   public peerAddress = '';
   public totalBalance = 0;
   public transTypes = TRANS_TYPES;
@@ -38,29 +41,35 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
-  peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  peerFormGroup: UntypedFormGroup;
+  channelFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message?.balance || 0;
+    const pAddr = this.data.message?.peer?.pub_key ? (this.data.message?.peer?.pub_key + (this.data.message?.peer?.address ? ('@' + this.data.message?.peer?.address) : '')) : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
-      peerAddress: ['', [Validators.required]]
+      peerAddress: [pAddr, [Validators.required]]
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [false],
+      isPrivate: [!!this.selNode?.unannouncedChannels],
       selTransType: [TRANS_TYPES[0].id],
       transTypeValue: [{ value: '', disabled: true }],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((transType) => {
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+      });
+    this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
         this.channelFormGroup.controls.transTypeValue.disable();
@@ -73,7 +82,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
       subscribe((action: any) => {
         if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) {
@@ -124,7 +133,8 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) ||
+    (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
       return true;
     }
     this.channelConnectionError = '';

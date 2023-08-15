@@ -13,7 +13,6 @@ import clnRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
-import { Config, ConfigService } from './config.js';
 import { CLWSClient, CLWebSocketClient } from '../controllers/cln/webSocketClient.js';
 import { ECLWSClient, ECLWebSocketClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient, LNDWebSocketClient } from '../controllers/lnd/webSocketClient.js';
@@ -25,7 +24,6 @@ export class ExpressApplication {
   public app = express();
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
-  public config: ConfigService = Config;
   public eclWsClient: ECLWebSocketClient = ECLWSClient;
   public clWsClient: CLWebSocketClient = CLWSClient;
   public lndWsClient: LNDWebSocketClient = LNDWSClient;
@@ -39,17 +37,12 @@ export class ExpressApplication {
     this.app.use(bodyParser.json({ limit: '25mb' }));
     this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
 
-    this.loadConfiguration();
     this.setCORS();
     this.setCSRF();
     this.setApplicationRoutes();
   }
 
   public getApp = () => this.app;
-
-  public loadConfiguration = () => {
-    this.config.setServerConfiguration();
-  };
 
   public setCORS = () => { CORS.mount(this.app); };
 
@@ -63,13 +56,14 @@ export class ExpressApplication {
     this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
     this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
     this.app.use((req: any, res, next) => {
-      // For Angular App
-      res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
-      // For JQuery Browser Plugin
-      res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
+      res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Angular Frontend
+      res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Quickpay JQuery
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
-    this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+    this.app.use((err, req, res, next) => {
+      this.handleApplicationErrors(err, res);
+      next();
+    });
     this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
   };
 

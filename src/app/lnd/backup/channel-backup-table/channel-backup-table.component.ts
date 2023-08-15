@@ -20,12 +20,14 @@ import { RTLState } from '../../../store/rtl.state';
 import { fetchFile, openAlert } from '../../../store/rtl.actions';
 import { backupChannels, verifyChannel } from '../../store/lnd.actions';
 import { channels, lndNodeSettings } from '../../store/lnd.selector';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-backup-table',
   templateUrl: './channel-backup-table.component.html',
   styleUrls: ['./channel-backup-table.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]
 })
@@ -42,8 +44,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public displayedColumns = ['channel_point', 'actions'];
   public selectedChannel: Channel | null;
   public channelsData: Channel[] = [];
-  public channels: any;
-  public flgSticky = false;
+  public channels: any = new MatTableDataSource([]);
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -122,15 +123,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
     this.channels.paginator = this.paginator;
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point.toLowerCase() : '') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
-        (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
-        (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-        (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-        (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-        (channel.private ? 'private' : 'public');
-      return newChannel.includes(fltr);
-    };
+    this.channels.filterPredicate = (rowData: Channel, fltr: string) => (rowData.channel_point ? rowData.channel_point.toLowerCase() : '').includes(fltr);
     this.applyFilter();
   }
 

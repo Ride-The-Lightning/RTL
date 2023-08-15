@@ -1,34 +1,47 @@
-.mat-column-actions {
-  min-height: 4.8rem;
+@import "../../../shared/theme/styles/constants.scss";
+
+.mat-column-status, .mat-column-group_status {
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }
 
-.mat-column-payment_hash {
-  flex: 0 0 20%;
-  width: 20%;
-  & .ellipsis-parent {
-    display: flex;
+.mat-column-group_actions {
+  & .htlc-group-head, & .htlc-group-details {
+    min-height: 3rem;
   }
-}
-
-.mat-column-groupAction {
-  min-height: 4.8rem;
-
+  
   & .btn-htlc-expand {
-    width: 9rem; 
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
   }
 
   & .btn-htlc-info {
-    margin-top: 0.5rem; 
-    width: 9rem; 
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
+  }
+}
+
+.mat-column-group_status, .mat-column-group_creation_date {
+  .htlc-row-span:not(:first-of-type) {
+    padding-left: 2rem;
   }
 }
 
 .htlc-row-span {
-  min-height: 4.2rem;
-  place-content: center flex-start;
-  align-items: center;
+  min-height: 3rem;
+  &.ellipsis-parent {
+    display: flex;
+    align-items: center;
+  }
+  & .dot {
+    margin-top: -0.3rem;
+    position: absolute;
+  }
 }
 
-.mat-column-groupTotal {
-  min-width: 17rem;
+.mat-column-group_creation_date {
+  min-width: 11rem;
 }

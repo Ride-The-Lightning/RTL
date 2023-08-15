@@ -1,14 +1,24 @@
-import { Injectable } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { Platform } from '@angular/cdk/platform';
+import { DOCUMENT } from '@angular/common';
+import { Directive, Inject, OnDestroy } from '@angular/core';
 
-@Injectable()
-export class ThemeOverlay extends OverlayContainer {
+@Directive()
+export class ThemeOverlay extends OverlayContainer implements OnDestroy {
 
-  _createContainer(): void {
-    const container = document.createElement('div');
-    container.classList.add('cdk-overlay-container');
-    document.getElementById('rtl-container').appendChild(container);
-    this._containerElement = container;
+  constructor(@Inject(DOCUMENT) document: Document, _platform: Platform) {
+    super(document, _platform);
+  }
+
+  protected _createContainer(): void {
+    super._createContainer();
+    if (!this._containerElement) { return; }
+    const parent = document.querySelector('#rtl-container') || document.body;
+    parent.appendChild(this._containerElement);
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
 }

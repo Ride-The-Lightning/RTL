@@ -32,7 +32,6 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgInvoicePaid = false;
-  public flgVersionCompatible = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLNInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>) { }
@@ -44,15 +43,12 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
-    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeInfo: GetInfo) => {
-        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.api_version, '0.6.0');
-      });
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
         const invoiceStatus = this.invoice.status;
         const invoices = invoicesSelector.listInvoices.invoices || [];
-        this.invoice = invoices?.find((invoice) => invoice.payment_hash === this.invoice.payment_hash)!;
+        const foundInvoice = invoices?.find((invoice) => invoice.payment_hash === this.invoice.payment_hash) || null;
+        if (foundInvoice) { this.invoice = foundInvoice; }
         if (invoiceStatus !== this.invoice.status && this.invoice.status === 'paid') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);

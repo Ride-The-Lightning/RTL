@@ -8,14 +8,14 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, ECLActions, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { createInvoice } from '../../store/ecl.actions';
-import { eclNodeInformation, eclnNodeSettings } from '../../store/ecl.selector';
+import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-create-invoices',
@@ -31,7 +31,6 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceValue: number | null = null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
-  public invoices: any;
   public information: GetInfo = {};
   public private = false;
   public expiryStep = 100;
@@ -46,7 +45,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(eclnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
@@ -74,7 +73,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (!this.description) {
       return true;
     }
-    let expiryInSecs = (this.expiry ? this.expiry : 3600);
+    let expiryInSecs = (this.expiry ? this.expiry : DEFAULT_INVOICE_EXPIRY);
     if (this.expiry && this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }

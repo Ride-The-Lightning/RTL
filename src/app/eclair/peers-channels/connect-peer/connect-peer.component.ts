@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -15,6 +15,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/ecl.actions';
+import { eclNodeSettings } from '../../store/ecl.selector';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -26,6 +28,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public selNode: SelNodeChild | null = {};
   public peerAddress = '';
   public totalBalance = 0;
   public flgChannelOpened = false;
@@ -36,12 +39,12 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
-  peerFormGroup: FormGroup;
-  channelFormGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  peerFormGroup: UntypedFormGroup;
+  channelFormGroup: UntypedFormGroup;
+  statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) { }
+  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private actions: Actions, private logger: LoggerService) { }
 
   ngOnInit() {
     if (this.data.message) {
@@ -58,11 +61,16 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [false],
+      isPrivate: [!!this.selNode?.unannouncedChannels],
       feeRate: [null],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
+    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+      });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL)).

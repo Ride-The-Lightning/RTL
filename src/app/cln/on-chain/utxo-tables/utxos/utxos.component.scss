@@ -1,11 +1,11 @@
-.mat-column-txid {
-  flex: 0 0 15%;
-  width: 15%;
-  & .ellipsis-parent {
-    display: flex;
-  }
+.mat-column-is_dust {
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }
 
-.mat-column-actions {
-  min-height: 4.8rem;
+.mat-column-status {
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
 }

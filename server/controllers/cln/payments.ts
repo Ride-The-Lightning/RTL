@@ -22,8 +22,8 @@ function paymentReducer(accumulator, currentPayment) {
 
 function summaryReducer(accumulator, mpp) {
   if (mpp.status === 'complete') {
-    accumulator.msatoshi = accumulator.msatoshi + mpp.msatoshi;
-    accumulator.msatoshi_sent = accumulator.msatoshi_sent + mpp.msatoshi_sent;
+    accumulator.amount_msat = accumulator.amount_msat + mpp.amount_msat;
+    accumulator.amount_sent_msat = accumulator.amount_sent_msat + mpp.amount_sent_msat;
     accumulator.status = mpp.status;
   }
   if (mpp.bolt11) { accumulator.bolt11 = mpp.bolt11; }
@@ -43,10 +43,10 @@ function groupBy(payments) {
       temp.total_parts = 1;
       delete temp.partid;
     } else {
-      const paySummary = curr?.reduce(summaryReducer, { msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed' });
+      const paySummary = curr?.reduce(summaryReducer, { amount_msat: 0, amount_sent_msat: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed' });
       temp = {
         is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), status: paySummary.status, payment_hash: curr[0].payment_hash,
-        destination: curr[0].destination, msatoshi: paySummary.msatoshi, msatoshi_sent: paySummary.msatoshi_sent, created_at: curr[0].created_at,
+        destination: curr[0].destination, amount_msat: paySummary.amount_msat, amount_sent_msat: paySummary.amount_sent_msat, created_at: curr[0].created_at,
         mpps: curr
       };
       if (paySummary.bolt11) { temp.bolt11 = paySummary.bolt11; }
@@ -63,10 +63,6 @@ export const listPayments = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
-    if (body && body.payments && body.payments.length > 0) {
-      body.payments = common.sortDescByKey(body.payments, 'created_at');
-    }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sorted Payments List Received', data: body.payments });
     res.status(200).json(groupBy(body.payments));
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
@@ -95,15 +91,21 @@ export const postPayment = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
     if (req.body.paymentType === 'OFFER') {
       if (req.body.saveToDB && req.body.bolt12) {
-        const offerToUpdate: Offer = { bolt12: req.body.bolt12, amountmSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
-        if (req.body.vendor) { offerToUpdate['vendor'] = req.body.vendor; }
+        const offerToUpdate: Offer = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+        if (req.body.issuer) { offerToUpdate['issuer'] = req.body.issuer; }
         if (req.body.description) { offerToUpdate['description'] = req.body.description; }
-        return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
-          logger.log({ level: 'DEBUG', fileName: 'Offer', msg: 'Offer Updated', data: updatedOffer });
-          return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
-        }).catch((errDB) => {
-          logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
-          return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+        // eslint-disable-next-line arrow-body-style
+        return databaseService.validateDocument(CollectionsEnum.OFFERS, offerToUpdate).then((validated) => {
+          return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
+            logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
+            return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
+          }).catch((errDB) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB update error', error: errDB });
+            return res.status(201).json({ paymentResponse: body, saveToDBError: errDB });
+          });
+        }).catch((errValidation) => {
+          logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Payments', msg: 'Offer DB validation error', error: errValidation });
+          return res.status(201).json({ paymentResponse: body, saveToDBError: errValidation });
         });
       } else {
         return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });

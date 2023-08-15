@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { NgModule, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'removeleadingzeros'
@@ -29,6 +29,35 @@ export class SwapStatePipe implements PipeTransform {
 
   transform(value: string, args?: any): string {
     return value?.replace('State_', '').replace('SwapInSender_', '').replace('SwapOutSender_', '').replace('SwapInReceiver_', '').replace('SwapOutReceiver_', '').replace('_', ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => ' ' + word);
+  }
+
+}
+
+@Pipe({
+  name: 'camelCaseWithSpaces'
+})
+export class CamelCaseWithSpacesPipe implements PipeTransform {
+
+  transform(value: string, arg1?: string, arg2?: string): string {
+    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (' ' + word.toUpperCase()));
+  }
+
+}
+
+@Pipe({
+  name: 'camelcaseWithReplace'
+})
+export class CamelCaseWithReplacePipe implements PipeTransform {
+
+  transform(value: string, arg1?: string, arg2?: string): string {
+    value = value ? value.toLowerCase().replace(/\s+/g, '')?.replace(/-/g, ' ') : '';
+    if (arg1) {
+      value = value.replace(new RegExp(arg1, 'g'), ' ');
+    }
+    if (arg2) {
+      value = value.replace(new RegExp(arg2, 'g'), ' ');
+    }
+    return value.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()));
   }
 
 }

@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -22,7 +23,6 @@ export class LookupTransactionsComponent implements OnInit, OnDestroy {
   public lookupKey = '';
   public lookupValue = {};
   public flgSetLookupValue = false;
-  public temp: any;
   public messageObj = [];
   public selectedFieldId = 0;
   public lookupFields = [

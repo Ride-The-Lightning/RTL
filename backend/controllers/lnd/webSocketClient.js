@@ -42,8 +42,7 @@ export class LNDWebSocketClient {
             });
         };
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
-            var _a;
-            rHash = (_a = rHash === null || rHash === void 0 ? void 0 : rHash.replace(/\+/g, '-')) === null || _a === void 0 ? void 0 : _a.replace(/[/]/g, '_');
+            rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
             options.url = selectedNode.ln_server_url + '/v2/invoices/subscribe/' + rHash;
             request(options).then((msg) => {

@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject, Observable } from 'rxjs';
@@ -15,6 +15,8 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/cln.actions';
+import { clnNodeSettings } from '../../../store/cln.selector';
+import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-open-channel',
@@ -24,10 +26,10 @@ import { saveNewChannel } from '../../../store/cln.actions';
 export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public selectedPeer = new FormControl();
+  public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
-  public isCompatibleVersion = false;
+  public selNode: SelNodeChild | null = {};
   public peer: Peer | null;
   public peers: Peer[];
   public sortedPeers: Peer[];
@@ -50,7 +52,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public minConfValue = null;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLNOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
@@ -58,14 +60,12 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.data.message) {
-      this.isCompatibleVersion = this.data.message.isCompatibleVersion;
       this.information = this.data.message.information;
       this.totalBalance = this.data.message.balance;
       this.utxos = this.data.message.utxos;
       this.peer = this.data.message.peer || null;
       this.peers = this.data.message.peers || [];
     } else {
-      this.isCompatibleVersion = false;
       this.information = {};
       this.totalBalance = 0;
       this.utxos = [];
@@ -73,8 +73,13 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: SelNodeChild | null) => {
+        this.selNode = nodeSettings;
+        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+      });
     this.actions.pipe(
-      takeUntil(this.unSubs[0]),
+      takeUntil(this.unSubs[1]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.FETCH_CHANNELS_CLN)).
       subscribe((action: any) => {
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
@@ -91,7 +96,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       y = p2.alias ? p2.alias.toLowerCase() : p1.id ? p1.id.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
-    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[2]), startWith(''),
       map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.id)),
       map((alias) => (alias ? this.filterPeers(alias) : this.sortedPeers.slice()))
     );
@@ -131,7 +136,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     this.minConfValue = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = false;
+    this.isPrivate = !!this.selNode?.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();
@@ -160,7 +165,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
 
   onUTXOSelectionChange(event: any) {
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + (curr.value || 0), 0);
+      this.totalSelectedUTXOAmount = this.selUTXOs?.reduce((acc, curr: UTXO) => acc + ((curr.amount_msat || 0) / 1000), 0);
       if (this.flgUseAllBalance) {
         this.onUTXOAllBalanceChange();
       }

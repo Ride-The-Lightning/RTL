@@ -1,47 +1,57 @@
 <div fxLayout="column" class="mt-2">
-  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" *ngIf="allRestoreExists">
+  <div *ngIf="allRestoreExists" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
     <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
     <div fxLayout="row" class="mt-2">
       <button mat-flat-button color="primary" tabindex="1" (click)="onRestoreChannels({})">Restore All</button>
     </div>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && (!channels || channels?.data?.length<=0)">
+  <div *ngIf="!allRestoreExists && (!channels || channels?.data?.length<=0)" fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap">
     <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
     <h4 fxFlex="100" class="mt-1">All channel backup file not found! To perform channel restoration, channel backup file/s must be placed at the above location.</h4>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && channels && channels?.data?.length && channels?.data?.length>0">
+  <div *ngIf="!allRestoreExists && channels && channels?.data?.length && channels?.data?.length>0" fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap">
     <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-2">
     <div fxFlex="70"></div>
-    <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" placeholder="Filter">
-    </mat-form-field>
+    <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+      <div fxFlex="49"></div>
+      <mat-form-field fxLayout="column" fxFlex="49">
+        <mat-label>Filter</mat-label>
+        <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+      </mat-form-field>
+    </div>
   </div>
-  <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div fxLayout="row" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <table #table mat-table matSort [dataSource]="channels" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="channel_point">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
-        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '45rem'}">{{channel?.channel_point}}</td>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
+        <td *matCellDef="let channel" mat-cell>
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '25rem' : '60rem'}">
+            <span class="ellipsis-child">{{channel?.channel_point}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-        <td mat-cell *matCellDef="let channel">
+        <th *matHeaderCellDef mat-header-cell>
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
+       </th>
+        <td *matCellDef="let channel" mat-cell>
           <span fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="1" (click)="onRestoreChannels(channel)">Restore</button>          
           </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">
-        <td mat-footer-cell *matFooterCellDef colspan="4">
+        <td *matFooterCellDef  mat-footer-cell colspan="4">
           <p *ngIf="!channels || !channels.data || channels?.data?.length<1">No singular channel backups available.</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels && channels.data && channels?.data?.length>0}"></tr>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr *matFooterRowDef="['no_channel']" mat-footer-row [ngClass]="{'display-none': channels && channels.data && channels?.data?.length>0}"></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
 </div>

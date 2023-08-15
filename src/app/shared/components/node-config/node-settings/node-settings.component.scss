@@ -1,0 +1,48 @@
+@use 'sass:math' as math;
+@import "../../../theme/styles/mixins";
+@import '../../../theme/styles/constants.scss';
+
+h4 {
+  margin: ($gap*1.5) 0 $gap 0;
+}
+
+.theme-name {
+  min-width: 10rem;
+  @include for_screensize(phone) {
+    min-width: unset;
+  }
+}
+
+.skin {
+  width: ($gap*2.5);
+  height: ($gap*2.5);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-right: $gap;
+
+  &.selected-color {
+    width: ($gap*2);
+    height: ($gap*2);
+    border: 2px solid;
+  }
+
+  &.purple {
+    background-color: #5e4ea5;
+  }
+
+  &.indigo {
+    background-color: #3F51B5;
+  }
+
+  &.teal {
+    background-color: #00695C;
+  }
+
+  &.pink {
+    background-color: #D81B60;
+  }
+
+  &.yellow {
+    background-color: #a1842c;
+  }
+}

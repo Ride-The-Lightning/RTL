@@ -12,7 +12,6 @@ import clnRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
-import { Config } from './config.js';
 import { CLWSClient } from '../controllers/cln/webSocketClient.js';
 import { ECLWSClient } from '../controllers/eclair/webSocketClient.js';
 import { LNDWSClient } from '../controllers/lnd/webSocketClient.js';
@@ -22,15 +21,11 @@ export class ExpressApplication {
         this.app = express();
         this.logger = Logger;
         this.common = Common;
-        this.config = Config;
         this.eclWsClient = ECLWSClient;
         this.clWsClient = CLWSClient;
         this.lndWsClient = LNDWSClient;
         this.directoryName = dirname(fileURLToPath(import.meta.url));
         this.getApp = () => this.app;
-        this.loadConfiguration = () => {
-            this.config.setServerConfiguration();
-        };
         this.setCORS = () => { CORS.mount(this.app); };
         this.setCSRF = () => { CSRF.mount(this.app); };
         this.setApplicationRoutes = () => {
@@ -41,13 +36,14 @@ export class ExpressApplication {
             this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
             this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
             this.app.use((req, res, next) => {
-                // For Angular App
-                res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
-                // For JQuery Browser Plugin
-                res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
+                res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Angular Frontend
+                res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Quickpay JQuery
                 res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
             });
-            this.app.use((err, req, res, next) => this.handleApplicationErrors(err, res));
+            this.app.use((err, req, res, next) => {
+                this.handleApplicationErrors(err, res);
+                next();
+            });
             this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
         };
         this.handleApplicationErrors = (err, res) => {
@@ -80,7 +76,6 @@ export class ExpressApplication {
         this.app.use(cookieParser(this.common.secret_key));
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
-        this.loadConfiguration();
         this.setCORS();
         this.setCSRF();
         this.setApplicationRoutes();

@@ -1,5 +1,5 @@
 import { HammerModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -13,7 +13,6 @@ import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './app.component';
 
-import { environment } from '../environments/environment';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { SessionService } from './shared/services/session.service';
@@ -31,6 +30,10 @@ import { RootReducer } from './store/rtl.reducers';
 import { LNDReducer } from './lnd/store/lnd.reducers';
 import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
+import { HOUR_SECONDS } from './shared/services/consts-enums-functions';
+
+let isDevEnvironemt = false;
+if (isDevMode()) { isDevEnvironemt = true; }
 
 @NgModule({
   imports: [
@@ -39,7 +42,7 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({ idle: 3590, timeout: 10, ping: 12000 }), // One hour
+    UserIdleModule.forRoot({ idle: (HOUR_SECONDS - 10), timeout: 10, ping: 12000 }),
     StoreModule.forRoot(
       { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {
@@ -49,12 +52,12 @@ import { ECLReducer } from './eclair/store/ecl.reducers';
         }
       }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLNEffects, ECLEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    isDevEnvironemt ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    AuthGuard, SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
+    SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
   ],
   bootstrap: [AppComponent]
 })

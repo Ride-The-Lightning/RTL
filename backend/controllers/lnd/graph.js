@@ -10,7 +10,7 @@ export const getAliasFromPubkey = (selNode, pubkey) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Graph', msg: 'Alias Received', data: res.node.alias });
         return res.node.alias;
     }).
-        catch((err) => pubkey.substring(0, 17) + '...');
+        catch((err) => pubkey.substring(0, 20));
 };
 export const getDescribeGraph = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Network Graph..' });
@@ -84,13 +84,11 @@ export const getQueryRoutes = (req, res, next) => {
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
     request(options).then((body) => {
-        var _a;
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
         if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
-            return Promise.all((_a = body.routes[0].hops) === null || _a === void 0 ? void 0 : _a.map((hop) => getAliasFromPubkey(req.session.selectedNode, hop.pub_key))).
+            return Promise.all(body.routes[0].hops?.map((hop) => getAliasFromPubkey(req.session.selectedNode, hop.pub_key))).
                 then((values) => {
-                var _a;
-                (_a = body.routes[0].hops) === null || _a === void 0 ? void 0 : _a.map((hop, i) => {
+                body.routes[0].hops?.map((hop, i) => {
                     hop.hop_sequence = i + 1;
                     hop.pubkey_alias = values[i];
                     return hop;
@@ -150,7 +148,7 @@ export const getAliasesForPubkeys = (req, res, next) => {
     }
     if (req.query.pubkeys) {
         const pubkeyArr = req.query.pubkeys.split(',');
-        return Promise.all(pubkeyArr === null || pubkeyArr === void 0 ? void 0 : pubkeyArr.map((pubkey) => getAliasFromPubkey(req.session.selectedNode, pubkey))).
+        return Promise.all(pubkeyArr?.map((pubkey) => getAliasFromPubkey(req.session.selectedNode, pubkey))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Node Alias', data: values });
             res.status(200).json(values);

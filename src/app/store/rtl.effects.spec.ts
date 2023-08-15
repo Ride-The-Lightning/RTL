@@ -21,8 +21,7 @@ import { LoggerService } from '../shared/services/logger.service';
 import { DataService } from '../shared/services/data.service';
 import { WebSocketClientService } from '../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
-import { APICallStatusEnum, RTLActions, UI_MESSAGES } from '../shared/services/consts-enums-functions';
-import { environment } from '../../environments/environment';
+import { API_END_POINTS, APICallStatusEnum, RTLActions, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 
 import { RTLEffects } from './rtl.effects';
 import { RTLState } from './rtl.state';
@@ -97,7 +96,7 @@ describe('RTL Root Effects', () => {
       done();
       setTimeout(() => sub.unsubscribe());
     });
-    const req = httpTestingController.expectOne(environment.CONF_API + '/updateSelNode/1/-1');
+    const req = httpTestingController.expectOne(API_END_POINTS.CONF_API + '/updateSelNode/1/-1');
     const expectedResponse = mockResponseData.setSelectedNodeSuccess;
     req.flush(expectedResponse);
     expect(req.request.method).toEqual('GET');
@@ -117,8 +116,8 @@ describe('RTL Root Effects', () => {
       expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(openSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
       expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
       expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(openAlert({ payload: { data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request Failed. ', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent } } }));
-      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request Failed. ', URL: environment.CONF_API + '/updateSelNode' } }));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(openAlert({ payload: { data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request Failed. ', URL: API_END_POINTS.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent } } }));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request Failed. ', URL: API_END_POINTS.CONF_API + '/updateSelNode' } }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(5);
       done();
       setTimeout(() => sub.unsubscribe());

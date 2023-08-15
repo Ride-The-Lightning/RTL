@@ -12,9 +12,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { CLNOfferInformation } from '../../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clnModels';
-import { RTLState } from '../../../../store/rtl.state';
-import { clnNodeInformation } from '../../../store/cln.selector';
+import { Offer, OfferRequest } from '../../../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-offer-information',
@@ -33,10 +31,9 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public flgOfferPaid = false;
-  public flgVersionCompatible = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNOfferInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOfferInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private store: Store<RTLState>, private dataService: DataService) { }
+  constructor(public dialogRef: MatDialogRef<CLNOfferInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOfferInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar, private dataService: DataService) { }
 
   ngOnInit() {
     this.offer = this.data.offer;
@@ -45,18 +42,11 @@ export class CLNOfferInformationComponent implements OnInit, OnDestroy {
     if (this.screenSize === ScreenSizeEnum.XS) {
       this.qrWidth = 220;
     }
-    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeInfo: GetInfo) => {
-        this.flgVersionCompatible = this.commonService.isVersionCompatible(nodeInfo.api_version, '0.6.0');
-      });
     this.dataService.decodePayment(this.offer.bolt12!, true).
       pipe(takeUntil(this.unSubs[1])).subscribe((decodedOffer: OfferRequest) => {
         this.offerDecoded = decodedOffer;
-        if (this.offerDecoded.offer_id && !this.offerDecoded.amount_msat) {
-          this.offerDecoded.amount_msat = '0msat';
-          this.offerDecoded.amount = 0;
-        } else {
-          this.offerDecoded.amount = this.offerDecoded.amount ? +this.offerDecoded.amount : this.offerDecoded.amount_msat ? +(this.offerDecoded.amount_msat)?.slice(0, -4) : null;
+        if (this.offerDecoded.offer_id && !this.offerDecoded.offer_amount_msat) {
+          this.offerDecoded.offer_amount_msat = 0;
         }
       });
   }

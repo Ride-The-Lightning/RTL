@@ -41,7 +41,6 @@ export const getUTXOs = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listFunds';
   request(options).then((body) => {
-    if (body.outputs) { body.outputs = common.sortDescByStrKey(body.outputs, 'status'); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Funds List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {

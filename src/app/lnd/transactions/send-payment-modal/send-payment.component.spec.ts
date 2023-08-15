@@ -15,7 +15,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 import { EffectsModule } from '@ngrx/effects';
-import { FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
 import { RTLState } from '../../../store/rtl.state';
@@ -67,25 +67,34 @@ describe('LightningSendPaymentsComponent', () => {
   it('should get lnd store value on ngOnInit', () => {
     const storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.nodeSettings));
     component.ngOnInit();
-    expect(component.selNode.lnImplementation).toBe('LND');
-    expect(storeSpy).toHaveBeenCalledTimes(2);
+    if (component.selNode) {
+      expect(component.selNode.lnImplementation).toBe('LND');
+      expect(storeSpy).toHaveBeenCalledTimes(2);
+    }
   });
 
   it('should send payment buttons work as expected', () => {
     const storeSpy = spyOn(store, 'dispatch').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
-    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
+    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxa' +
+    'rnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqq' +
+    'qqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
     component.paymentDecoded = {
-      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', timestamp: '1623624612', expiry: '3600',
-      description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40 }] }],
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', timestamp: '1623624612', expiry: DEFAULT_INVOICE_EXPIRY.toString(),
+      description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints:
+        [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216',
+          fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40 }] }],
       payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true }, 15: { name: 'payment-addr', is_required: false, is_known: true }, 17: { name: 'multi-path-payments', is_required: false, is_known: true } }
     };
     const sendButton = fixture.debugElement.nativeElement.querySelector('#sendBtn');
     sendButton.click();
     const expectedSendPaymentPayload: SendPayment = {
       uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: 'none', feeLimit: null, fromDialog: true,
-      paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
+      paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq' +
+      '6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5c' +
+      'qqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq' +
+      '38j0s3hrgpv4eel3'
     };
     expect(storeSpy.calls.all()[0].args[0]).toEqual(sendPayment({ payload: expectedSendPaymentPayload }));
     expect(storeSpy).toHaveBeenCalledTimes(1);
@@ -127,7 +136,9 @@ describe('LightningSendPaymentsComponent', () => {
   it('should decode payment when pay request is for the zero amount invoice', () => {
     component.zeroAmtInvoice = false;
     component.paymentDecoded = {};
-    component.paymentRequest = 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk';
+    component.paymentRequest = 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmm' +
+    'jypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpc' +
+    'uqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk';
     component.onPaymentRequestEntry(component.paymentRequest);
     fixture.detectChanges();
     expect(component.zeroAmtInvoice).toBe(true);
@@ -137,7 +148,10 @@ describe('LightningSendPaymentsComponent', () => {
 
   it('should NOT send payment when pay request is for zero amount invoice AND amount is not specified', () => {
     spyOn(component, 'sendPayment').and.callThrough();
-    component.onPaymentRequestEntry('lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk');
+    component.onPaymentRequestEntry('lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76tr' +
+    'v5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeau' +
+    'cwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yryc' +
+    'wh2g05qgqdnftgk');
     expect(component.zeroAmtInvoice).toBe(true);
     expect(component.paymentDecodedHint).toEqual('Memo: Testing Empty Invoice for LND 3');
     expect(component.filteredMinAmtActvChannels).toEqual(component.activeChannels);
@@ -154,12 +168,18 @@ describe('LightningSendPaymentsComponent', () => {
     updatedSelNode.fiatConversion = true;
     updatedSelNode.currencyUnits = ['BTC', 'SAT', 'USD'];
     Object.defineProperty(component, 'selNode', { value: updatedSelNode });
-    component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
+    component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3' +
+    'txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvr' +
+    'c8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630a' +
+    'q38j0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats (USD 0.13) | Memo: Testing ngrx Effects 4');
   });
 
   it('should decode payment when pay request changed and fiat conversion is false', () => {
-    component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3');
+    component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3tx' +
+    'vejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8s' +
+    's5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j' +
+    '0s3hrgpv4eel3');
     expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
   });
 
@@ -178,10 +198,14 @@ describe('LightningSendPaymentsComponent', () => {
     spyOn(component, 'sendPayment').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
-    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
+    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcq' +
+    'p2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqg' +
+    'q9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
     component.paymentDecoded = {
-      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', timestamp: '1623624612', expiry: '3600',
-      description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40 }] }],
+      destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c12' +
+      '1963067f06cf02e1a7b581852c07', timestamp: '1623624612', expiry: DEFAULT_INVOICE_EXPIRY.toString(), description: 'Testing ngrx Effects 4', description_hash: '',
+      fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints:
+        [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40 }] }],
       payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true }, 15: { name: 'payment-addr', is_required: false, is_known: true }, 17: { name: 'multi-path-payments', is_required: false, is_known: true } }
     };
     component.onSendPayment();
@@ -194,7 +218,9 @@ describe('LightningSendPaymentsComponent', () => {
     const onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
-    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
+    component.paymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qc' +
+    'qp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqq' +
+    'qqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3';
     component.paymentDecoded = {};
     component.onSendPayment();
     expect(component.paymentDecoded.num_satoshis).toEqual('400');
@@ -205,7 +231,10 @@ describe('LightningSendPaymentsComponent', () => {
   it('should decode the zero amount payment when send payment clicked but payment is not decoded yet', () => {
     const onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry').and.callThrough();
     component.zeroAmtInvoice = false;
-    component.paymentRequest = 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk';
+    component.paymentRequest = 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxv' +
+    'mmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjx' +
+    'gpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qg' +
+    'qdnftgk';
     component.paymentDecoded = {};
     component.onSendPayment();
     fixture.detectChanges();

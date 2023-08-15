@@ -1,5 +1,5 @@
 export class CommonSelectedNode {
-    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, fiat_conversion, currency_unit, ln_version, api_version, enable_offers, enable_peerswap) {
+    constructor(options, ln_server_url, macaroon_path, ln_api_password, swap_server_url, boltz_server_url, config_path, rtl_conf_file_path, swap_macaroon_path, boltz_macaroon_path, bitcoind_config_path, channel_backup_path, log_level, log_file, index, ln_node, ln_implementation, user_persona, theme_mode, theme_color, unannounced_channels, fiat_conversion, currency_unit, ln_version, api_version, enable_offers, enable_peerswap) {
         this.options = options;
         this.ln_server_url = ln_server_url;
         this.macaroon_path = macaroon_path;
@@ -20,6 +20,7 @@ export class CommonSelectedNode {
         this.user_persona = user_persona;
         this.theme_mode = theme_mode;
         this.theme_color = theme_color;
+        this.unannounced_channels = unannounced_channels;
         this.fiat_conversion = fiat_conversion;
         this.currency_unit = currency_unit;
         this.ln_version = ln_version;
@@ -36,10 +37,11 @@ export class AuthenticationConfiguration {
     }
 }
 export class NodeSettingsConfiguration {
-    constructor(userPersona, themeMode, themeColor, fiatConversion, currencyUnit, bitcoindConfigPath, logLevel, lnServerUrl, swapServerUrl, boltzServerUrl, channelBackupPath, enableOffers, enablePeerswap) {
+    constructor(userPersona, themeMode, themeColor, unannouncedChannels, fiatConversion, currencyUnit, bitcoindConfigPath, logLevel, lnServerUrl, swapServerUrl, boltzServerUrl, channelBackupPath, enableOffers, enablePeerswap) {
         this.userPersona = userPersona;
         this.themeMode = themeMode;
         this.themeColor = themeColor;
+        this.unannouncedChannels = unannouncedChannels;
         this.fiatConversion = fiatConversion;
         this.currencyUnit = currencyUnit;
         this.bitcoindConfigPath = bitcoindConfigPath;

@@ -1,20 +1,14 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "../frontend",
-    "types": ["node"],
-    "paths": {
-      "crypto": ["../node_modules/crypto-browserify"],
-      "stream": ["../node_modules/stream-browserify"]
-    }
+    "outDir": "../frontend"
   },
   "files": [
     "./main.ts",
     "./polyfills.ts"
   ],
   "include": [
+    "./polyfills.ts",
     "./**/*.d.ts"
   ]
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { filter, takeUntil, take } from 'rxjs/operators';
@@ -62,12 +62,22 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
   public amountError = 'Amount is Required.';
-  passwordFormGroup: FormGroup;
-  sendFundFormGroup: FormGroup;
-  confirmFormGroup: FormGroup;
+  passwordFormGroup: UntypedFormGroup;
+  sendFundFormGroup: UntypedFormGroup;
+  confirmFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) { }
+  constructor(
+    public dialogRef: MatDialogRef<OnChainSendModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds,
+    private logger: LoggerService,
+    private store: Store<RTLState>,
+    private rtlEffects: RTLEffects,
+    private commonService: CommonService,
+    private decimalPipe: DecimalPipe,
+    private snackBar: MatSnackBar,
+    private actions: Actions,
+    private formBuilder: UntypedFormBuilder) { }
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -183,7 +193,10 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   get invalidValues(): boolean {
     if (this.sweepAll) {
       return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') ||
-        (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
+        (this.sendFundFormGroup.controls.selTransType.value === '1' &&
+        (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) ||
+        (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value ||
+          this.sendFundFormGroup.controls.transactionFees.value <= 0));
     } else {
       return (!this.transactionAddress || this.transactionAddress === '') || (!this.transactionAmount || this.transactionAmount <= 0) ||
         (this.selTransType === '1' && (!this.transactionBlocks || this.transactionBlocks <= 0)) || (this.selTransType === '2' && (!this.transactionFees || this.transactionFees <= 0));

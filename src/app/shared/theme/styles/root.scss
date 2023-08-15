@@ -8,7 +8,13 @@ html {
   line-height: 1.5;
   overflow-x: hidden;
   font-family: $font-family !important;
-  font-size: 62.5%;
+  font-size: 95%;
+  @include for_screensize(tab-port) {
+    font-size: 90%;
+  }
+  @include for_screensize(phone) {
+    font-size: 80%;
+  }
 }
 
 body {
@@ -32,7 +38,7 @@ body {
     padding-bottom: 0;
   }
   .mat-nested-tree-node-child>.mat-tree-node {
-    padding-left: 4rem;
+    padding-left: ($gap*5);
   }
 }
 
@@ -45,6 +51,14 @@ body {
   width: $regular-sidenav-width;
   height: 100%;
   overflow: hidden !important;
+}  
+
+span.page-text, .mat-mdc-slide-toggle, .material-icons.mat-icon.mat-mdc-tooltip-trigger {
+  min-height: $min-form-ctrl-height;
+}
+
+.mat-mdc-checkbox {
+  min-height: $min-form-chbox-height;
 }
 
 .material-icons {
@@ -85,18 +99,17 @@ body {
   bottom:0;
   left:0;
   right:0;  
-  padding: $gap;
-  height: 95%;
+  padding: $gap*1.5;
   @include for_screensize(tab-port) {
-    padding: $gap math.div($gap, 2);
+    padding: $gap;
   }
   @include for_screensize(phone) {
-    padding: math.div($gap, 2) math.div($gap, 4);
+    padding: $gap math.div($gap, 2);
   }
 }
 
 .top-50 {
-  top: 5rem;
+  top: 50px;
 }
 
 *{
@@ -117,10 +130,66 @@ body {
   visibility: visible;
   opacity: 1;
   h4{
-    margin-top: 1rem;
+    margin-top: ($gap*1.25);
   }
 }
 
+.spinner-dialog-panel {
+  & .mat-mdc-dialog-container .mat-mdc-dialog-surface {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  overflow: hidden;
+}
+
+button.mdc-button {
+  @include for_screensize(tab-land) {
+    min-width: 50px;
+  }
+  @include for_screensize(tab-port) {
+    min-width: 40px;
+  }
+  @include for_screensize(phone) {
+    min-width: 20px;
+  }
+}
+
+button.mdc-button.mat-mdc-button-base {
+  font-size: 103%;
+  font-weight: 500;
+  font-family: $font-family;
+  &.mat-mdc-unelevated-button {
+    margin-bottom: $gap * 2;
+  }
+}
+
+.mat-mdc-icon-button.mat-mdc-button-base.btn-icon-small {
+  height: 40px;
+  padding: ($gap*1.5);
+}
+
+.mdc-floating-label {
+  will-change: unset !important;  
+}
+
+.mat-mdc-form-field.mat-form-field-disabled {
+  cursor: not-allowed;
+  & .mat-mdc-text-field-wrapper.mdc-text-field--disable {
+    cursor: not-allowed;
+  }
+  & .mdc-floating-label.mat-mdc-floating-label {
+    cursor: not-allowed;
+  }
+  & .mat-mdc-input-element.mat-mdc-form-field-input-control {
+    cursor: not-allowed;
+  }
+}
+.mat-mdc-slide-toggle .mdc-switch.mdc-switch--disabled {
+  cursor: not-allowed;
+}
 .padding-gap {
   padding: $gap !important;
   @include for_screensize(tab-port) {
@@ -147,7 +216,7 @@ body {
 .padding-gap-large {
   padding: $gap * 2 !important;
   @include for_screensize(tab-land) {
-    padding: $gap !important;
+    padding: $gap * 4 !important;
   }
   @include for_screensize(tab-port) {
     padding: math.div($gap, 2) !important;
@@ -185,18 +254,25 @@ body {
   overflow: hidden;
 }
 
-.mat-card {
+.mat-mdc-card {
   padding: 0 !important;
   overflow: hidden;
   border-radius: 2px !important;
 }
 
-.mat-card-original {
-  padding: 1.6rem !important;
+.mat-mdc-card-original {
+  padding: ($gap*2) !important;
   border-radius: 4px !important;
 }
 
-.mat-tab-body-wrapper, .card-content-gap {
+.mat-mdc-form-field-flex .mat-mdc-form-field-icon-suffix, .mat-mdc-form-field-flex .mat-mdc-form-field-icon-prefix  {
+  padding-right: $gap * 2;
+}
+
+mat-card-content.mat-mdc-card-content:first-child {
+  padding-top: 0;
+}
+.card-content-gap {
   padding: $gap*1.2 $gap*2 !important;
   height: 100%;
   @include for_screensize(tab-port) {
@@ -207,44 +283,35 @@ body {
   }
 }
 
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type,
-mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
-  @include for_screensize(tab-port) {
-    padding-left: math.div($gap, 2) !important;
-  }
-  @include for_screensize(phone) {
-    padding-left: math.div($gap, 4) !important;
-  }
-}
-
-th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type,
-mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-type {
-  @include for_screensize(tab-port) {
-    padding-right: math.div($gap, 2) !important;
-  }
-  @include for_screensize(phone) {
-    padding-right: math.div($gap, 4) !important;
-  }
-}
-
-.routing-tabs-block .mat-tab-body-wrapper {
+.routing-tabs-block .mat-mdc-tab-body-wrapper {
   padding: 0 !important;
-  min-height: 10rem;
+  min-height: 100px;
 }
 
-.mat-card-actions{
+.mat-mdc-card-actions{
   display: block;
-  margin-bottom: 1.6rem;
-  padding-left: 0.6rem;
-  padding-right: 0.6rem;
+  margin-bottom: ($gap*2);
+  padding-left: math.div($gap, 1.5);
+  padding-right: math.div($gap, 1.5);
 }
 
-.mat-card-content, .mat-card-subtitle, .mat-card-title {
+.mat-mdc-card-content, .mat-mdc-card-subtitle, .mat-mdc-card-title {
   display: block;
-  margin-bottom: 1.6rem;
+  margin-bottom: ($gap*2);
+  & form {
+    overflow: hidden;
+  }
 }
 
-.mat-card-header-text {
+.mat-mdc-card-title {
+  font-size: 125%;
+}
+
+.mat-mdc-card-subtitle {
+  font-size: 120%;
+}
+
+.mat-mdc-card-header-text {
   margin: 0 !important;
   line-height: 1;
 }
@@ -253,24 +320,24 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   width: 100%;
 }
 
-.mat-select {
-  margin: 0 1.5rem 0 0;
+.mat-mdc-select{
+  margin: 0 ($gap*2) 0 0;
 }
 
 .green {
-  color: #388e3c !important;
+  color: $green-color !important;
 }
 
 .yellow {
-  color: #ffd740 !important;
+  color: $yellow-color !important;
 }
 
 .red {
-  color: #c62828 !important;
+  color: $red-color !important;
 }
 
 .grey {
-  color: #CCCCCC !important;
+  color: $grey-color !important;
 }
 
 .mt-1px {
@@ -298,12 +365,12 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .mt-1 {
-  margin-top: 1rem !important;
+  margin-top: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin-top: 0.8rem !important;
+    margin-top: $gap !important;
   }
   @include for_screensize(phone) {
-    margin-top: 0.8rem !important;
+    margin-top: $gap !important;
   }
 }
 
@@ -320,22 +387,22 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .mb-1 {
-  margin-bottom: 1rem !important;
+  margin-bottom: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin-bottom: 0.8rem !important;
+    margin-bottom: $gap !important;
   }
   @include for_screensize(phone) {
-    margin-bottom: 0.8rem !important;
+    margin-bottom: $gap !important;
   }
 }
 
 .mb-6 {
-  margin-bottom: 6rem !important;
+  margin-bottom: ($gap*7.5) !important;
   @include for_screensize(tab-port) {
-    margin-bottom: 5rem !important;
+    margin-bottom: ($gap*6) !important;
   }
   @include for_screensize(phone) {
-    margin-bottom: 5rem !important;
+    margin-bottom: ($gap*6) !important;
   }
 }
 
@@ -344,21 +411,21 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .ml-half {
-  margin-left: 0.5rem !important;
+  margin-left: math.div($gap, 2) !important;
 }
 
 .ml-1 {
-  margin-left: 1rem !important;
+  margin-left: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin-left: 0.4rem !important;
+    margin-left: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    margin-left: 0.2rem !important;
+    margin-left: 2px !important;
   }
 }
 
 .ml-minus-1 {
-  margin-left: -1rem !important;
+  margin-left: -($gap*1.25) !important;
 }
 
 .mr-0 {
@@ -366,220 +433,220 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .mr-3px {
-  margin-right: 0.3rem !important;
+  margin-right: 3px !important;
 }
 
 .mr-5px {
-  margin-right: 0.5rem !important;
+  margin-right: 5px !important;
 }
 
 .mr-1 {
-  margin-right: 1rem !important;
+  margin-right: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin-right: 0.4rem !important;
+    margin-right: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    margin-right: 0.2rem !important;
+    margin-right: 2px !important;
   }
 }
 
 .mx-1 {
-  margin: 0 1rem !important;
+  margin: 0 ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin: 0 0.4rem !important;
+    margin: 0 math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    margin: 0 0.2rem !important;
+    margin: 0 2px !important;
   }
 }
 
 .my-1 {
-  margin: 1rem 0 !important;
+  margin: ($gap*1.25) 0 !important;
   @include for_screensize(tab-port) {
-    margin: 0.8rem 0 !important;
+    margin: $gap 0 !important;
   }
   @include for_screensize(phone) {
-    margin: 0.8rem 0 !important;
+    margin: $gap 0 !important;
   }
 }
 
 .m-1 {
-  margin: 1rem !important;
+  margin: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin: 0.8rem !important;
+    margin: $gap !important;
   }
   @include for_screensize(phone) {
-    margin: 0.8rem !important;
+    margin: $gap !important;
   }
 }
 
 .mt-2 {
-  margin-top: 2rem !important;
+  margin-top: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin-top: 1.6rem !important;
+    margin-top: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin-top: 1.6rem !important;
+    margin-top: ($gap*2) !important;
   }
 }
 
 .mt-3 {
-  margin-top: 3rem !important;
+  margin-top: ($gap*4) !important;
   @include for_screensize(tab-port) {
-    margin-top: 2.4rem !important;
+    margin-top: ($gap*3) !important;
   }
   @include for_screensize(phone) {
-    margin-top: 2.6rem !important;
+    margin-top: ($gap*3) !important;
   }
 }
 
 .mt-4 {
-  margin-top: 4rem !important;
+  margin-top: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    margin-top: 3.4rem !important;
+    margin-top: ($gap*4) !important;
   }
   @include for_screensize(phone) {
-    margin-top: 3.4rem !important;
+    margin-top: ($gap*4) !important;
   }
 }
 
 .mt-6 {
-  margin-top: 6rem !important;
+  margin-top: ($gap*7.5) !important;
   @include for_screensize(tab-port) {
-    margin-top: 4.8rem !important;
+    margin-top: ($gap*6) !important;
   }
   @include for_screensize(phone) {
-    margin-top: 4.8rem !important;
+    margin-top: ($gap*6) !important;
   }
 }
 
 .mt-minus-1 {
-  margin-top: -1rem !important;
+  margin-top: -($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    margin-top: -0.8rem !important;
+    margin-top: -$gap !important;
   }
   @include for_screensize(phone) {
-    margin-top: -0.8rem !important;
+    margin-top: -$gap !important;
   }
 }
 
 .mt-minus-2 {
-  margin-top: -2rem !important;
+  margin-top: -($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin-top: -1.6rem !important;
+    margin-top: -($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin-top: -1.6rem !important;
+    margin-top: -($gap*2) !important;
   }
 }
 
 .mb-2 {
-  margin-bottom: 2rem !important;
+  margin-bottom: ($gap*2) !important;
   @include for_screensize(tab-port) {
-    margin-bottom: 1.6rem !important;
+    margin-bottom: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin-bottom: 1.6rem !important;
+    margin-bottom: ($gap*2) !important;
   }
 }
 
 .mb-3 {
-  margin-bottom: 3rem !important;
+  margin-bottom: ($gap*4) !important;
   @include for_screensize(tab-port) {
-    margin-bottom: 2.4rem !important;
+    margin-bottom: ($gap*3) !important;
   }
   @include for_screensize(phone) {
-    margin-bottom: 2.4rem !important;
+    margin-bottom: ($gap*3) !important;
   }
 }
 
 .mb-4 {
-  margin-bottom: 4rem !important;
+  margin-bottom: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    margin-bottom: 3.2rem !important;
+    margin-bottom: ($gap*2.5) !important;
   }
   @include for_screensize(phone) {
-    margin-bottom: 3.2rem !important;
+    margin-bottom: ($gap*2.5) !important;
   }
 }
 
 .ml-2 {
-  margin-left: 2rem !important;
+  margin-left: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin-left: 0.8rem !important;
+    margin-left: $gap !important;
   }
   @include for_screensize(phone) {
-    margin-left: 0.4rem !important;
+    margin-left: math.div($gap, 2) !important;
   }
 }
 
 .mr-2 {
-  margin-right: 2rem !important;
+  margin-right: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin-right: 0.8rem !important;
+    margin-right: $gap !important;
   }
   @include for_screensize(phone) {
-    margin-right: 0.4rem !important;
+    margin-right: math.div($gap, 2) !important;
   }
 }
 
 .ml-4 {
-  margin-left: 4rem !important;
+  margin-left: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    margin-left: 1.6rem !important;
+    margin-left: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin-left: 0.8rem !important;
+    margin-left: $gap !important;
   }
 }
 
 .ml-5 {
-  margin-left: 5rem !important;
+  margin-left: ($gap*6) !important;
   @include for_screensize(tab-port) {
-    margin-left: 2rem !important;
+    margin-left: ($gap*2.5) !important;
   }
   @include for_screensize(phone) {
-    margin-left: 1rem !important;
+    margin-left: ($gap*1.25) !important;
   }
 }
 
 .mr-4 {
-  margin-right: 4rem !important;
+  margin-right: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    margin-right: 1.6rem !important;
+    margin-right: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin-right: 0.8rem !important;
+    margin-right: $gap !important;
   }
 }
 
 .mr-5 {
-  margin-right: 5rem !important;
+  margin-right: ($gap*6) !important;
   @include for_screensize(tab-port) {
-    margin-right: 2rem !important;
+    margin-right: ($gap*2.5) !important;
   }
   @include for_screensize(phone) {
-    margin-right: 1rem !important;
+    margin-right: ($gap*1.25) !important;
   }
 }
 
 .mr-6 {
-  margin-right: 6rem !important;
+  margin-right: ($gap*7.5) !important;
   @include for_screensize(tab-port) {
-    margin-right: 3rem !important;
+    margin-right: ($gap*4) !important;
   }
   @include for_screensize(phone) {
-    margin-right: 2rem !important;
+    margin-right: ($gap*2.5) !important;
   }
 }
 
 .mx-2 {
-  margin: 0 2rem !important;
+  margin: 0 ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin: 0 0.8rem !important;
+    margin: 0 $gap !important;
   }
   @include for_screensize(phone) {
-    margin: 0 0.4rem !important;
+    margin: 0 math.div($gap, 2) !important;
   }
 }
 
@@ -589,52 +656,52 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .my-2 {
-  margin: 2rem 0 !important;
+  margin: ($gap*2.5) 0 !important;
   @include for_screensize(tab-port) {
-    margin: 1.6rem 0 !important;
+    margin: ($gap*2) 0 !important;
   }
   @include for_screensize(phone) {
-    margin: 1.6rem 0 !important;
+    margin: ($gap*2) 0 !important;
   }
 }
 
 .my-3 {
-  margin: 3rem 0 !important;
+  margin: ($gap*4) 0 !important;
   @include for_screensize(tab-port) {
-    margin: 2.4rem 0 !important;
+    margin: ($gap*3) 0 !important;
   }
   @include for_screensize(phone) {
-    margin: 2.4rem 0 !important;
+    margin: ($gap*3) 0 !important;
   }
 }
 
 .my-4 {
-  margin: 4rem 0 !important;
+  margin: ($gap*5) 0 !important;
   @include for_screensize(tab-port) {
-    margin: 3.2rem 0 !important;
+    margin: ($gap*2.5) 0 !important;
   }
   @include for_screensize(phone) {
-    margin: 3.2rem 0 !important;
+    margin: ($gap*2.5) 0 !important;
   }
 }
 
 .m-2 {
-  margin: 2rem !important;
+  margin: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    margin: 1.6rem !important;
+    margin: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    margin: 1.6rem !important;
+    margin: ($gap*2) !important;
   }
 }
 
 .pt-1 {
-  padding-top: 1rem !important;
+  padding-top: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding-top: 0.8rem !important;
+    padding-top: $gap !important;
   }
   @include for_screensize(phone) {
-    padding-top: 0.8rem !important;
+    padding-top: $gap !important;
   }
 }
 
@@ -643,32 +710,42 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .pb-1 {
-  padding-bottom: 1rem !important;
+  padding-bottom: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding-bottom: 0.8rem !important;
+    padding-bottom: $gap !important;
   }
   @include for_screensize(phone) {
-    padding-bottom: 0.8rem !important;
+    padding-bottom: $gap !important;
+  }
+}
+
+.pl-5px {
+  padding-left: 5px !important;
+  @include for_screensize(tab-port) {
+    padding-left: math.div($gap, 2) !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 3px !important;
   }
 }
 
 .pl-1 {
-  padding-left: 1rem !important;
+  padding-left: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding-left: 0.4rem !important;
+    padding-left: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding-left: 0.2rem !important;
+    padding-left: 2px !important;
   }
 }
 
 .pl-15px {
-  padding-left: 1.5rem !important;
+  padding-left: ($gap*2) !important;
   @include for_screensize(tab-port) {
-    padding-left: 0.6rem !important;
+    padding-left: math.div($gap, 1.5) !important;
   }
   @include for_screensize(phone) {
-    padding-left: 0.4rem !important;
+    padding-left: math.div($gap, 2) !important;
   }
 }
 
@@ -677,37 +754,41 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .pr-1 {
-  padding-right: 1rem !important;
+  padding-right: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding-right: 0.4rem !important;
+    padding-right: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding-right: 0.2rem !important;
+    padding-right: 2px !important;
   }
 }
 
 .pr-3 {
-  padding-right: 3rem !important;
+  padding-right: ($gap*4) !important;
   @include for_screensize(tab-port) {
-    padding-right: 1.2rem !important;
+    padding-right: ($gap*1.5) !important;
   }
   @include for_screensize(phone) {
-    padding-right: 0.6rem !important;
+    padding-right: math.div($gap, 1.5) !important;
   }
 }
 
 .pr-4 {
-  padding-right: 4rem !important;
+  padding-right: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    padding-right: 1.6rem !important;
+    padding-right: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding-right: 0.8rem !important;
+    padding-right: $gap !important;
   }
 }
 
 .pr-4px {
-  padding-right: 0.4rem !important;
+  padding-right: math.div($gap, 2) !important;
+}
+
+.pr-6px {
+  padding-right: math.div($gap, 1.5) !important;
 }
 
 .p-0 {
@@ -715,7 +796,7 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .p-5px {
-  padding: 0.5rem !important;
+  padding: 5px !important;
 }
 
 .pl-0 {
@@ -723,202 +804,202 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .px-1 {
-  padding: 0 1rem !important;
+  padding: 0 ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding: 0 0.4rem !important;
+    padding: 0 math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
-    padding: 0 0.2rem !important;
+    padding: 0 2px !important;
   }
 }
 
 .py-0 {
-  padding: 1rem 0 !important;
+  padding: ($gap*1.25) 0 !important;
   @include for_screensize(tab-port) {
-    padding: 0.8rem 0 !important;
+    padding: $gap 0 !important;
   }
   @include for_screensize(phone) {
-    padding: 0.8rem 0 !important;
+    padding: $gap 0 !important;
   }
 }
 
 .py-1 {
-  padding: 1rem 0 !important;
+  padding: ($gap*1.25) 0 !important;
   @include for_screensize(tab-port) {
-    padding: 0.8rem 0 !important;
+    padding: $gap 0 !important;
   }
   @include for_screensize(phone) {
-    padding: 0.8rem 0 !important;
+    padding: $gap 0 !important;
   }
 }
 
 .p-1 {
-  padding: 1rem !important;
+  padding: ($gap*1.25) !important;
   @include for_screensize(tab-port) {
-    padding: 0.8rem !important;
+    padding: $gap !important;
   }
   @include for_screensize(phone) {
-    padding: 0.8rem !important;
+    padding: $gap !important;
   }
 }
 
 .p-16 {
-  padding: 1.6rem !important;
+  padding: ($gap*2) !important;
   @include for_screensize(tab-port) {
-    padding: 0.8rem !important;
+    padding: $gap !important;
   }
   @include for_screensize(phone) {
-    padding: 0.4rem !important;
+    padding: math.div($gap, 2) !important;
   }
 }
 
 .pt-2 {
-  padding-top: 2rem !important;
+  padding-top: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding-top: 1.6rem !important;
+    padding-top: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding-top: 1.6rem !important;
+    padding-top: ($gap*2) !important;
   }
 }
 
 .pt-3 {
-  padding-top: 3rem !important;
+  padding-top: ($gap*4) !important;
   @include for_screensize(tab-port) {
-    padding-top: 2.4rem !important;
+    padding-top: ($gap*3) !important;
   }
   @include for_screensize(phone) {
-    padding-top: 2.4rem !important;
+    padding-top: ($gap*3) !important;
   }
 }
 
 .pb-2 {
-  padding-bottom: 2rem !important;
+  padding-bottom: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding-bottom: 1.6rem !important;
+    padding-bottom: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding-bottom: 1.6rem !important;
+    padding-bottom: ($gap*2) !important;
   }
 }
 
 .pl-2 {
-  padding-left: 2rem !important;
+  padding-left: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding-left: 0.8rem !important;
+    padding-left: $gap !important;
   }
   @include for_screensize(phone) {
-    padding-left: 0.4rem !important;
+    padding-left: math.div($gap, 2) !important;
   }
 }
 
 .pt-4 {
-  padding-top: 3.2rem !important;
+  padding-top: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding-top: 2.5rem !important;
+    padding-top: ($gap*3) !important;
   }
   @include for_screensize(phone) {
-    padding-top: 2.5rem !important;
+    padding-top: ($gap*3) !important;
   }
 }
 
 .pl-3 {
-  padding-left: 3rem !important;
+  padding-left: ($gap*4) !important;
   @include for_screensize(tab-port) {
-    padding-left: 1.2rem !important;
+    padding-left: ($gap*1.5) !important;
   }
   @include for_screensize(phone) {
-    padding-left: 0.6rem !important;
+    padding-left: math.div($gap, 1.5) !important;
   }
 }
 
 .pl-4 {
-  padding-left: 4rem !important;
+  padding-left: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    padding-left: 1.6rem !important;
+    padding-left: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding-left: 0.8rem !important;
+    padding-left: $gap !important;
   }
 }
 
 .pr-2 {
-  padding-right: 2rem !important;
+  padding-right: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding-right: 0.8rem !important;
+    padding-right: $gap !important;
   }
   @include for_screensize(phone) {
-    padding-right: 0.4rem !important;
+    padding-right: math.div($gap, 2) !important;
   }
 }
 
 .pr-5 {
-  padding-right: 4rem !important;
+  padding-right: ($gap*5) !important;
   @include for_screensize(tab-port) {
-    padding-right: 1.6rem !important;
+    padding-right: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding-right: 0.8rem !important;
+    padding-right: $gap !important;
   }
 }
 
 .px-2 {
-  padding: 0 2rem !important;
+  padding: 0 ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding: 0 0.8rem !important;
+    padding: 0 $gap !important;
   }
   @include for_screensize(phone) {
-    padding: 0 0.4rem !important;
+    padding: 0 math.div($gap, 2) !important;
   }
 }
 
 .px-3 {
-  padding: 0 3rem !important;
+  padding: 0 ($gap*4) !important;
   @include for_screensize(tab-port) {
-    padding: 0 1.2rem !important;
+    padding: 0 ($gap*1.5) !important;
   }
   @include for_screensize(phone) {
-    padding: 0 0.6rem !important;
+    padding: 0 math.div($gap, 1.5) !important;
   }
 }
 
 .px-4 {
-  padding: 0 4rem !important;
+  padding: 0 ($gap*5) !important;
   @include for_screensize(tab-port) {
-    padding: 0 1.6rem !important;
+    padding: 0 ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding: 0 0.8rem !important;
+    padding: 0 $gap !important;
   }
 }
 
 .py-2 {
-  padding: 2rem 0 !important;
+  padding: ($gap*2.5) 0 !important;
   @include for_screensize(tab-port) {
-    padding: 1.6rem 0 !important;
+    padding: ($gap*2) 0 !important;
   }
   @include for_screensize(phone) {
-    padding: 1.6rem 0 !important;
+    padding: ($gap*2) 0 !important;
   }
 }
 
 .p-2 {
-  padding: 2rem !important;
+  padding: ($gap*2.5) !important;
   @include for_screensize(tab-port) {
-    padding: 1.6rem !important;
+    padding: ($gap*2) !important;
   }
   @include for_screensize(phone) {
-    padding: 1.6rem !important;
+    padding: ($gap*2) !important;
   }
 }
 
 .p-24 {
-  padding: 2.4rem !important;
+  padding: ($gap*3) !important;
   @include for_screensize(tab-port) {
-    padding: 1.2rem !important;
+    padding: ($gap*1.5) !important;
   }
   @include for_screensize(phone) {
-    padding: 1rem !important;
+    padding: ($gap*1.25) !important;
   }
 }
 
@@ -953,9 +1034,13 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .mat-row:last-child {
-  & .mat-cell {
+  & .mdc-data-table__cell {
     border-bottom: none !important;
   }
+}
+
+.mat-mdc-form-field-infix {
+	width: 14rem !important;
 }
 
 .flex-ellipsis {
@@ -963,7 +1048,7 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-right: 3rem;
+  padding-right: ($gap*4);
 }
 
 .mat-list, .mat-list .mat-list-item .mat-list-item-content, .mat-nav-list, .mat-selection-list {
@@ -972,39 +1057,34 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 
 .inline-spinner {
   display: inline-flex !important;
-  top: 0.5rem !important;
+  top: 5px !important;
 }
 
 .top-minus-5px {
   position: relative;
-  top:-0.5rem;
-}
-
-.top-minus-15px {
-  position: relative;
-  top:-1.5rem;
+  top:-5px;
 }
 
 .top-minus-25px {
   position: relative;
-  top:-2.5rem;
-  margin-bottom: -2.5rem !important;
+  top:-($gap*3);
+  margin-bottom: -($gap*3) !important;
 }
 
 .top-minus-30px {
   position: relative;
-  top:-3rem;
+  top:-($gap*4);
 }
 
-.cursor-pointer {
+.cursor-pointer:hover {
   cursor: pointer !important;
 }
 
-.cursor-default {
+.cursor-default:hover {
   cursor: default !important;
 }
 
-.cursor-not-allowed {
+.cursor-not-allowed:hover {
   cursor: not-allowed !important;
 }
 
@@ -1015,59 +1095,6 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 .error-border {
   border: 1px solid red;
   box-shadow: 0 3px 1px -2px rgba(255,0,0,.2), 0 2px 2px 0 rgba(255,0,0,.14), 0 1px 5px 0 rgba(255,0,0,.12) !important;
-}
-
-.settings-container {
-  h4{
-    margin: 1.2rem 0 0.6rem 0;
-  }
-  .skin{
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    cursor: pointer;
-    margin-right: 0.5rem;
-    &.selected-color {
-      width: 1.75rem;
-      height: 1.75rem;
-      border: 0.25rem solid;
-    }
-    &.purple{
-      background-color: #5e4ea5;
-    }
-    &.indigo{
-      background-color:#3F51B5;
-    }
-    &.teal{
-      background-color: #00695C;
-    }
-    &.pink{
-      background-color: #D81B60;
-    }
-    &.yellow{
-      background-color: #a1842c;
-    }
-  }
-  
-  .mat-radio-group{
-    flex-direction: row;
-    place-content: flex-start space-between;
-    align-items: flex-start;
-    box-sizing: border-box;
-    display: flex;
-    .mat-radio-button {
-      margin: 2px 0 2px 0;
-    }
-  }
-  
-  .mat-slide-toggle{
-    padding: 0 1.4rem 0 0.4rem;
-  }  
-
-  .mat-flat-button {
-    width: 100%;
-    max-height: 3.6rem;
-  }
 }
 
 .op-image{
@@ -1082,8 +1109,8 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   position: fixed;
   top: 30%;
   right: 0;
-  width: 4.2rem;
-  height: 4.2rem;
+  width: ($gap*.5);
+  height: ($gap*5);
   opacity: 0.6;
   cursor: pointer;
   z-index: 999999;
@@ -1098,19 +1125,20 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 
 .fa-icon-small, .top-icon-small {
   min-width: $fa-icon-small-size;
-  width: $fa-icon-small-size;
-  max-width: $fa-icon-small-size;
+  svg {
+    min-width: $fa-icon-small-size;
+  }
 }
 
 .botlz-icon-sm {
-  min-width: 1.6rem;
-  width: 1.6rem;
-  max-width: 1.6rem;
+  min-width: ($gap*2);
+  width: ($gap*2);
+  max-width: ($gap*2);
 }
 
 .copy-icon {
   position: relative;
-  top: 0.5rem;
+  top: math.div($gap, 2);
 }
 
 .copy-icon-smaller {
@@ -1120,7 +1148,7 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 
 .top-5px {
   position: relative;
-  top: 0.5rem;
+  top: 5px;
 }
 
 .animate-settings {
@@ -1138,21 +1166,17 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   100% {-webkit-transform: rotate(360deg)} 
 }
 
-.mat-icon-button.top-toolbar-icon {
-  margin-right: 2rem;
-  & .top-toolbar-img {
-    padding-right: 0.7rem;
-    cursor:pointer;
-  }
-}
-
 .mt-minus-5 {
   position: relative;
-  margin-top: -0.5rem; 
+  margin-top: -5px; 
+}
+
+.color-white {
+  color: white !important;
 }
 
 .custom-card {
-  padding: 0 0 0.8rem 0 !important;
+  padding: 0 0 $gap 0 !important;
 }
 
 .not-found-box {
@@ -1180,27 +1204,27 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
 }
 
 .h-40 {
-  height: 40rem !important;
+  height: 400px !important;
 }
 
 .h-46 {
-  height: 46rem !important;
+  height: 460px !important;
 }
 
 .h-50 {
-  height: 50rem !important;
+  height: 500px !important;
 }
 
 .h-10 {
-  height: 10rem !important;
+  height: 100px !important;
 }
 
 .h-4 {
-  height: 4rem !important;
+  height: ($gap*24) !important;
 }
 
 .h-35px {
-  height: 3.5rem !important;
+  height: 35px !important;
 }
 
 a {
@@ -1214,10 +1238,14 @@ a {
 }
 
 .mat-tree-node, .mat-nested-tree-node-parent {
-  min-height: 4rem;
-  height: 4rem;
-  padding: 0 1.2rem 0 1.2rem; 
+  min-height: ($gap*6);
+  height: ($gap*6);
+  padding: 0 ($gap*1.5) 0 ($gap*1.5); 
   cursor: pointer;
+  @include for_screensize(phone) {
+    min-height: ($gap*8);
+    height: ($gap*8);
+  }
 }
 
 .mat-tree-node:focus, .mat-tree-node:active, .mat-nested-tree-node:focus, .mat-nested-tree-node:active, .mat-nested-tree-node-parent:focus, .mat-nested-tree-node-parent:active,
@@ -1256,13 +1284,6 @@ a {
   align-content: center;
 }
 
-.top-toolbar-icon.icon-pinned {
-  width: 3rem; 
-  height: 3rem;
-  padding: 1rem 0 0 1.2rem;
-  cursor:pointer;
-}
-
 .logo {
   font-weight: 700;
   letter-spacing: 1px;
@@ -1279,13 +1300,13 @@ a {
 }
 
 .icon-small {
-  height: 2rem !important;
-  width: 2rem !important;
+  height: ($gap*2.5) !important;
+  width: ($gap*2.5) !important;
 }
 
 .icon-smaller {
-  height: 1rem !important;
-  width: 1rem !important;
+  height: ($gap*1.25) !important;
+  width: ($gap*1.25) !important;
 }
 
 .mat-icon-36 {
@@ -1293,11 +1314,12 @@ a {
   height: $icon-size !important;
 }
 
-.mat-select.multi-node-select {
-  width: 87%;
+.mat-mdc-select.multi-node-select {
+  width: 84%;
 }
 
 .page-title-container {
+  font-size: 110%;
   padding: 0 $gap*1.5;
   margin-bottom: $gap;
   @include for_screensize(tab-port) {
@@ -1314,27 +1336,44 @@ table {
   width:100%;
 }
 
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+th.mdc-data-table__header-cell, td.mdc-data-table__cell {
+  padding: 0 $gap*2 0 $gap*2;
   @include for_screensize(tab-land) {
-    padding-left: $gap*2 !important;
+    padding: 0 $gap 0 $gap;
   }
   @include for_screensize(tab-port) {
-    padding-left: $gap*1.5 !important;
+    padding: 0 math.div($gap, 2) 0 math.div($gap, 2);
   }
   @include for_screensize(phone) {
-    padding-left: $gap !important;
+    padding: 0 math.div($gap, 4) 0 math.div($gap, 4);
   }
 }
 
-th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+th.mdc-data-table__header-cell:first-of-type, td.mdc-data-table__cell:first-of-type, td.mat-footer-cell:first-of-type,
+mat-cell:first-of-type, .mdc-data-table__header-cell:first-of-type, mat-footer-cell:first-of-type {
+  padding-left: $gap*2;
   @include for_screensize(tab-land) {
-    padding-right: $gap*2 !important;
+    padding-left: $gap !important;
   }
   @include for_screensize(tab-port) {
-    padding-right: $gap*1.5 !important;
+    padding-left: math.div($gap, 2) !important;
   }
   @include for_screensize(phone) {
+    padding-left: math.div($gap, 4) !important;
+  }
+}
+
+th.mdc-data-table__header-cell:last-of-type, td.mdc-data-table__cell:last-of-type, td.mat-footer-cell:last-of-type,
+mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cell:last-of-type {
+  padding-right: $gap*2;
+  @include for_screensize(tab-land) {
     padding-right: $gap !important;
+  }
+  @include for_screensize(tab-port) {
+    padding-right: math.div($gap, 2) !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: math.div($gap, 4) !important;
   }
 }
 
@@ -1343,12 +1382,12 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   width: $dot-size;
   height: $dot-size;
   border-radius: $dot-size;
-  margin: 0.4rem 1rem 0 0;
+  margin: math.div($gap, 2) 0 0 0;
   &.tiny-dot {
     width: $tiny-dot-size;
     height: $tiny-dot-size;
     border-radius: $tiny-dot-size;
-    margin: 0 0.6rem 0.1rem 0;
+    margin: 0 math.div($gap, 1.5) 1px 0;
   }
   &.green {
     background-color: $green-color;
@@ -1384,6 +1423,10 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   font-size: 300% !important;
 }
 
+.font-weight-500 {
+  font-weight: 500 !important;
+}
+
 .font-weight-900 {
   font-weight: 900 !important;
 }
@@ -1396,8 +1439,12 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   display: none !important;
 }
 
+.mat-divider.mat-divider-horizontal.mat-divider-inset {
+  margin-left: $gap*2;
+}
+
 .mat-vertical-stepper-header {
-  padding: 1rem  1rem  1rem 0.8rem !important;
+  padding: ($gap*1.25)  ($gap*1.25)  ($gap*1.25) $gap !important;
 }
 
 .ellipsis-child {
@@ -1422,21 +1469,59 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 }
 
 .alert {
-  margin-bottom: 1rem;
-  padding: 0.6rem 1rem;
+  margin-bottom: ($gap*1.25);
+  padding: math.div($gap, 1.5) ($gap*1.25);
   border-radius: 2px;
 }
 
 .dashboard-vert-menu.mat-menu-panel {
-  min-height: 4.8rem;
+  min-height: ($gap*6);
 }
 
-.mat-tab-body-content {
+.mat-mdc-tab .mdc-tab__content {
   overflow: hidden !important;
 }
 
-.dashboard-tabs-group .mat-tab-label {
-  min-width: 32% !important;
+.mdc-tab__text-label {
+  opacity: 1;
+  padding: 0;
+  min-width: 11rem;
+  @include for_screensize(tab-port) {
+    min-width: auto;
+  }
+  @include for_screensize(phone) {
+    min-width: auto;
+  }
+}
+
+.dashboard-card {
+  margin-bottom: 0;
+  & .mat-mdc-card-header {
+    padding: 16px 0 0 16px
+  }
+  & .mat-mdc-card-content.dashboard-card-content {
+    margin-bottom: 0;
+  }
+}
+
+.dashboard-tabs-group.mat-mdc-tab-group {
+  max-width: 91%;
+}
+
+.dashboard-tabs-group .mat-mdc-tab-list {
+  width: 100%;  
+}
+
+.dashboard-tabs-group .mdc-tab {
+  margin: 0;
+  padding: 0 ($gap*3);
+  display: flex;
+  flex: 1 0 auto;
+  justify-content: center;
+}
+
+.dashboard-tabs-group.mat-mdc-tab-group .mat-mdc-tab .mdc-tab__content .mdc-tab__text-label {
+  min-width: 5.5rem;
 }
 
 .node-grid-tile.mat-grid-tile .mat-figure {
@@ -1444,7 +1529,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 }
 
 .mat-vertical-content-container {
-  margin-left: 2rem !important;
+  margin-left: ($gap*2.5) !important;
 }
 
 .xs-scroll-y {
@@ -1453,7 +1538,7 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 }
 
 .h-2 {
-  min-height: 2rem !important;
+  min-height: ($gap*2.5) !important;
 }
 .border-valid {
   border: 1px solid $green-color !important;
@@ -1476,11 +1561,11 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
 }
 
 .h-5 {
-  height: 5rem;
+  height: 50px;
 }
 
 .btn-sticky-container {
-  height: 0rem;
+  height: 0;
   opacity: 0.5;
   & .mat-icon {
     animation: scrollDownAnimation 2s infinite;
@@ -1502,6 +1587,10 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   }
 }
 
+.mat-mdc-tooltip-panel {
+  max-width: 25rem !important;
+}
+
 .ngx-charts-tooltip-content {
   &.type-tooltip {
     background: rgba(50, 50, 50, 0.9) !important;
@@ -1511,21 +1600,32 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   }
 }
 
-.mat-card.dashboard-card {
-  margin: $gap;
-  padding: 1.2rem 2.4rem !important;
+.mat-mdc-tooltip-panel {
+  & .mdc-tooltip__surface {
+    min-width: 10rem;
+    max-width: unset;
+    text-align: start;
+  }
+}
+
+.go-to-link {
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mat-mdc-card.dashboard-card {
+  padding: 0 ($gap*1.5) !important;
   @include for_screensize(tab-port) {
-    padding: 0.5rem 1rem !important;
-    margin-top: $gap*5 !important;
+    padding: math.div($gap, 2) ($gap*1.25) !important;
   }
   @include for_screensize(phone) {
-    padding: 0.4rem 0.8rem !important;
-    margin-top: $gap*5 !important;
+    padding: math.div($gap, 2) $gap !important;
   }
   &.p-0 {
     padding: 0 !important;
   }
-  & .mat-card-header-text {
+  & .mat-mdc-card-header-text {
     width: 100%;
   }
 }
@@ -1538,13 +1638,24 @@ th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:la
   text-align: left;
 }
 
+.ellipsis-parent {
+  display: flex;
+}
+
+.mat-column-actions {
+  min-height: ($gap*6.5);
+  @include for_screensize(phone) {
+    min-height: ($gap*8.2);
+  }
+}
+
 .mat-expansion-panel.flat-expansion-panel {
   box-shadow: none;
   padding: 0;
   border-radius: 2px;
   background: none;
   & .mat-expansion-panel-header {
-    padding: 0 $gap*3 0 $gap*3;
+    padding: 0 $gap*2 0 $gap*2;
     @include for_screensize(tab-port) {
       padding: 0 $gap 0 $gap;
     }

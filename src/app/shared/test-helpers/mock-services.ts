@@ -1,8 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
-import { API_URL } from '../../../environments/environment';
-import { CLNActions } from '../services/consts-enums-functions';
+import { API_URL, CLNActions } from '../services/consts-enums-functions';
 import { mockResponseData } from './test-data';
 
 export class mockMatDialogRef {
@@ -45,11 +44,14 @@ export class mockDataService {
 
   decodePayment(payment: string, fromDialog: boolean) {
     if (payment ===
-      'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
+      'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr' +
+      '58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3'
     ) {
       return of(mockResponseData.decodePayment);
     } else if (payment ===
-      'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk'
+      'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5' +
+      'feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9' +
+      'q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk'
     ) {
       mockResponseData.decodeEmptyPayment.num_satoshis = '0';
       return of(mockResponseData.decodeEmptyPayment);
@@ -103,7 +105,8 @@ export class mockDataService {
 export class mockSessionService {
 
   private sessionObj = {
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiTk9ERV9VU0VSIiwiY29uZmlnUGF0aCI6IkM6L1VzZXJzL3NoYWhhL0FwcERhdGEvTG9jYWwvTG5kL2xuZC5jb25mIiwibWFjYXJvb25QYXRoIjoiQzovVXNlcnMvc2hhaGEvQXBwRGF0YS9Mb2NhbC9MbmQvZGF0YS9jaGFpbi9iaXRjb2luL3Rlc3RuZXQiLCJpYXQiOjE2MjU4NzcwMzZ9.ybM926PINgy3RINjG1CPqQOOFOcofgKbBLLeyfgW4zg',
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiTk9ERV9VU0VSIiwiY29uZmlnUGF0aCI6IkM6L1VzZXJzL3NoYWhhL0FwcERhdGEvTG9jYWwvTG5kL2xuZC5j' +
+    'b25mIiwibWFjYXJvb25QYXRoIjoiQzovVXNlcnMvc2hhaGEvQXBwRGF0YS9Mb2NhbC9MbmQvZGF0YS9jaGFpbi9iaXRjb2luL3Rlc3RuZXQiLCJpYXQiOjE2MjU4NzcwMzZ9.ybM926PINgy3RINjG1CPqQOOFOcofgKbBLLeyfgW4zg',
     defaultPassword: false,
     lndUnlocked: true
   };

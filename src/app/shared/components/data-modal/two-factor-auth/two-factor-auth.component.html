@@ -2,17 +2,18 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title">Setup Two Factor Authentication</span></div>
-      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" mat-button>X</button>
+      <button tabindex="15" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+        <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="passwordFormGroup" [editable]="flgEditable">
-            <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1">
+            <form fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1" [formGroup]="passwordFormGroup">
               <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
               <div fxLayout="row">
-                <mat-form-field fxFlex="100">
-                  <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
+                <mat-form-field fxLayout="column" fxFlex="100">
+                  <mat-label>Password</mat-label>
+                  <input autoFocus matInput type="password" tabindex="1" formControlName="password" required>
                   <mat-error *ngIf="passwordFormGroup?.controls?.password?.errors?.required">Password is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -21,20 +22,21 @@
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="secretFormGroup" [editable]="flgEditable" *ngIf="!showDisableStepper">
-            <form [formGroup]="secretFormGroup" fxLayout="column" class="my-1 pr-1">
+          <mat-step *ngIf="!showDisableStepper" [stepControl]="secretFormGroup" [editable]="flgEditable">
+            <form fxLayout="column" class="my-1 pr-1" [formGroup]="secretFormGroup">
               <ng-template matStepLabel disabled="true">{{secretFormLabel}}</ng-template>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="start">
                 <qr-code *ngIf="otpauth" [value]="otpauth" [size]="180" [errorCorrectionLevel]="'L'"></qr-code>
               </div>
               <div fxFlex="100" class="w-100 alert alert-info">
-                <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
+                <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
                 <span>You can use a compatible authentication app to get an authentication code when you log in to RTL. e.g.: Google Authenticator.</span>
               </div>
-              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
-                <mat-form-field fxFlex="100">
-                  <input autoFocus matInput placeholder="Secret Code" type="text" tabindex="4" formControlName="secret" required>
-                  <fa-icon [icon]="faCopy" matSuffix rtlClipboard [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
+                <mat-form-field fxLayout="column" fxFlex="100">
+                  <mat-label>Secret Code</mat-label>
+                  <input autoFocus matInput type="text" tabindex="4" formControlName="secret" required>
+                  <fa-icon matSuffix rtlClipboard [icon]="faCopy" [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
                   <mat-error *ngIf="secretFormGroup?.controls?.secret?.errors?.required">Secret Code is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -43,13 +45,14 @@
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="tokenFormGroup" *ngIf="!showDisableStepper">
-            <form [formGroup]="tokenFormGroup" fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1">
+          <mat-step *ngIf="!showDisableStepper" [stepControl]="tokenFormGroup">
+            <form fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1" [formGroup]="tokenFormGroup">
               <ng-template matStepLabel>{{tokenFormLabel}}</ng-template>
-              <div fxLayout="column" *ngIf="!flgValidated || !isTokenValid">
-                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
-                  <mat-form-field fxFlex="100">
-                    <input autoFocus matInput placeholder="Token" type="text" tabindex="7" formControlName="token" required>
+              <div *ngIf="!flgValidated || !isTokenValid" fxLayout="column">
+                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
+                  <mat-form-field fxLayout="column" fxFlex="100">
+                    <mat-label>Token</mat-label>
+                    <input autoFocus matInput type="text" tabindex="7" formControlName="token" required>
                     <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.required">Token is required.</mat-error>
                     <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.notValid">Token is invalid.</mat-error>
                   </mat-form-field>
@@ -63,12 +66,12 @@
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="disableFormGroup" *ngIf="showDisableStepper">
-            <form [formGroup]="disableFormGroup" fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1">
+          <mat-step *ngIf="showDisableStepper" [stepControl]="disableFormGroup">
+            <form fxLayout="column" fxLayoutAlign="start" class="my-1 pr-1" [formGroup]="disableFormGroup">
               <ng-template matStepLabel>{{disableFormLabel}}</ng-template>
-              <div fxLayout="column" *ngIf="!flgValidated || !isTokenValid">
+              <div *ngIf="!flgValidated || !isTokenValid" fxLayout="column">
                 <div fxFlex="100" class="w-100 alert alert-warn">
-                  <fa-icon [icon]="faExclamationTriangle" class="mt-1 mr-1 alert-icon"></fa-icon>
+                  <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
                   <span>You are about to disable two-factor authentication security from RTL. Are you sure you want to turn it off?</span>
                 </div>
                 <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -82,7 +85,7 @@
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{flgValidated && isTokenValid ? 'Close' : 'Cancel'}}</button>
+          <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{flgValidated && isTokenValid ? 'Close' : 'Cancel'}}</button>
         </div>
       </div>
     </mat-card-content>

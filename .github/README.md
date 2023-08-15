@@ -35,6 +35,7 @@ RTL is available on the below platforms/services:
 * [BCubium](https://bgeometrics.com)
 * [Start9Labs](https://start9labs.com)
 * [Umbrel](https://github.com/getumbrel/umbrel)
+* [Sovran Systems](https://sovransystems.com)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
@@ -64,6 +65,10 @@ $ git clean -f -d
 $ git pull
 $ npm install --omit=dev
 ```
+
+#### Error on npm install
+If there is an error with `upstream dependency conflict` message then replace `npm install --omit=dev` with `npm install --omit=dev --legacy-peer-deps`.
+
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app.
 
@@ -79,6 +84,7 @@ Example RTL-Config.json:
   "multiPass": "password",
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "<Complete path of the folder where rtl's database file should be saved>",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
@@ -104,9 +110,10 @@ Example RTL-Config.json:
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "logLevel": "INFO",
         "fiatConversion": false,
+        "unannouncedChannels": false,
         "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080>",
-        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://localhost:8081>",
-        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://localhost:9003>"
+        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://127.0.0.1:8081>",
+        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://127.0.0.1:9003>"
       }
     }
   ]

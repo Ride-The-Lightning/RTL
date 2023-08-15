@@ -1,14 +1,15 @@
-<div fxLayout="column" class="padding-gap-x">
-  <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutAlign.gt-sm="start end">
-    <mat-form-field fxFlex="48" fxFlex.gt-md="25" fxLayoutAlign="start end" class="mr-2">
-      <mat-select [(ngModel)]="selectedAddressType" placeholder="Address Type" name="address_type" tabindex="1">
+<div fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutAlign.gt-sm="start center">
+    <mat-form-field fxLayout="column" fxFlex="48" fxFlex.gt-md="25" fxLayoutAlign="start end" class="mr-2">
+      <mat-label>Address Type</mat-label>
+      <mat-select name="address_type" tabindex="1" [(ngModel)]="selectedAddressType">
         <mat-option *ngFor="let addressType of addressTypes" [value]="addressType">
           {{addressType.addressTp}}
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <div class="mt-2">
-      <button mat-flat-button color="primary" (click)="onGenerateAddress()" tabindex="2" class="top-minus-15px">Generate Address</button>
+    <div>
+      <button mat-flat-button color="primary" tabindex="2" (click)="onGenerateAddress()">Generate Address</button>
     </div>
   </div>
 </div>

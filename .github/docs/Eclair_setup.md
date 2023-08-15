@@ -38,6 +38,10 @@ $ git clean -f -d
 $ git pull
 $ npm install --omit=dev
 ```
+
+#### Error on npm install
+If there is an error with `upstream dependency conflict` message then replace `npm install --omit=dev` with `npm install --omit=dev --legacy-peer-deps`.
+
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app. 
 * Rename the file `Sample-RTL-Config.json` to `RTL-Config.json` located at`./RTL`..
@@ -56,6 +60,7 @@ Ensure that the follow values are correct per your config:
   "multiPass": <password required for accessing RTL>,
   "port": "3000",
   "defaultNodeIndex": 1,
+  "dbDirectoryPath": "<Complete path of the folder where rtl's database file should be saved>",
   "SSO": {
     "rtlSSO": 0,
     "rtlCookiePath": "",
@@ -77,6 +82,7 @@ Ensure that the follow values are correct per your config:
         "bitcoindConfigPath": "",
         "logLevel": "INFO",
         "fiatConversion": false,
+        "unannouncedChannels": false,
         "lnServerUrl": "http://<eclair api server ip address>:port"
       }
     }

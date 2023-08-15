@@ -8,9 +8,6 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
-        },
-        "@schematics/angular:application": {
-          "strict": true
         }
       },
       "root": "",
@@ -24,70 +21,69 @@
             "outputPath": "frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "allowedCommonJsDependencies": [
-              "sha256",
-              "qrcode",
-              "otplib",
-              "pdfmake/build/pdfmake",
-              "pdfmake/build/vfs_fonts",
-              "clone-deep"
+            "polyfills": [
+              "zone.js",
+              "src/polyfills.ts"
             ],
+            "tsConfig": "src/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets"
             ],
             "styles": [
-              "src/app/shared/theme/styles/styles.scss"
+              "src/app/shared/theme/styles/styles.scss",
+              "node_modules/material-icons/iconfont/material-icons.css",
+              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css"
             ],
             "scripts": [],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
+            "allowedCommonJsDependencies": [
+              "buffer",
+              "rfdc",
+              "sha256",
+              "qrcode",
+              "otplib",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
+            ]
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "12mb",
-                  "maximumError": "12mb"
+                  "maximumWarning": "20mb",
+                  "maximumError": "50mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "20mb",
                   "maximumError": "50mb"
                 }
-              ]
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "RTLApp:build"
-          },
           "configurations": {
             "production": {
               "browserTarget": "RTLApp:build:production"
+            },
+            "development": {
+              "browserTarget": "RTLApp:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -98,15 +94,20 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing",
+              "src/polyfills.ts"
+            ],
             "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.cjs",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets"
             ],
             "styles": [
-              "src/app/shared/theme/styles/styles.scss"
+              "src/app/shared/theme/styles/styles.scss",
+              "node_modules/material-icons/iconfont/material-icons.css",
+              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css"
             ],
             "scripts": []
           }
@@ -119,12 +120,11 @@
               "src/**/*.html"
             ]
           }
-        }
+        }        
       }
     }
   },
-  "defaultProject": "RTLApp",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "analytics": false
   }
 }

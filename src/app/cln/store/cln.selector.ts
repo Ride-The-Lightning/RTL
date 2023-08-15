@@ -4,6 +4,7 @@ import { CLNState } from './cln.state';
 
 export const clnState = createFeatureSelector<CLNState>('cln');
 export const clnNodeSettings = createSelector(clnState, (state: CLNState) => state.nodeSettings);
+export const clnPageSettings = createSelector(clnState, (state: CLNState) => ({ pageSettings: state.pageSettings, apiCallStatus: state.apisCallStatus.FetchPageSettings }));
 export const clnNodeInformation = createSelector(clnState, (state: CLNState) => state.information);
 export const apiCallStatusNodeInfo = createSelector(clnState, (state: CLNState) => state.apisCallStatus.FetchInfo);
 export const allAPIsCallStatus = createSelector(clnState, (state: CLNState) => state.apisCallStatus);

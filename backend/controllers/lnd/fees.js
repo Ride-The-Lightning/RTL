@@ -21,11 +21,10 @@ export const getFees = (req, res, next) => {
         const week_start_time = current_time - 604800;
         const day_start_time = current_time - 86400;
         return getAllForwardingEvents(req, month_start_time, current_time, 0, 'fees', (history) => {
-            var _a, _b, _c;
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received', data: history });
-            const daily_sum = (_a = history.forwarding_events) === null || _a === void 0 ? void 0 : _a.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
-            const weekly_sum = (_b = history.forwarding_events) === null || _b === void 0 ? void 0 : _b.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
-            const monthly_sum = (_c = history.forwarding_events) === null || _c === void 0 ? void 0 : _c.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
+            const daily_sum = history.forwarding_events?.reduce((acc, curr) => ((curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
+            const weekly_sum = history.forwarding_events?.reduce((acc, curr) => ((curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc), [0, 0]);
+            const monthly_sum = history.forwarding_events?.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee)', data: daily_sum });
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee)', data: weekly_sum });
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee)', data: monthly_sum });

@@ -1,10 +1,7 @@
 {
   "root": true,
   "ignorePatterns": [
-    "projects/**/*",
-    "rtl.js",
-    "/backend/**/*.js",
-    "/src/prebuild.js"
+    "src/**/*.js"
   ],
   "overrides": [
     {
@@ -13,11 +10,12 @@
       ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "ecmaVersion": 2020,
+        "ecmaVersion": 2022,
         "sourceType": "module",
         "project": "./tsconfig.json",
         "createDefaultProgram": true
       },
+      "env": { "es2022": true },
       "plugins": ["deprecation"],
       "extends": [
         "plugin:@angular-eslint/all",
@@ -48,7 +46,7 @@
         "curly": "error",
         "no-unused-expressions": "error",
         "strict": "error",
-        "max-len": ["error", { "code": 450 }],
+        "max-len": ["error", { "code": 320 }],
         "no-multiple-empty-lines": "error",
         "no-trailing-spaces": "error",
         "quote-props": ["error", "as-needed"],
@@ -186,22 +184,30 @@
       "files": [
         "*.html"
       ],
+      "parser": "@angular-eslint/template-parser",
       "extends": [
         "plugin:@angular-eslint/template/all",
-        "plugin:@angular-eslint/template/recommended"
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "@angular-eslint/arrow-body-style": "off",
+        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
+        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
         "@angular-eslint/template/accessibility-elements-content": "off",
+        "@angular-eslint/template/accessibility-interactive-supports-focus": "off",
+        "@angular-eslint/template/button-has-type": "off",
         "@angular-eslint/template/click-events-have-key-events": "off",
         "@angular-eslint/template/conditional-complexity": "off",
         "@angular-eslint/template/cyclomatic-complexity": "off",
         "@angular-eslint/template/i18n": "off",
         "@angular-eslint/template/no-autofocus": "off",
         "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/no-inline-styles": "off",
+        "@angular-eslint/template/no-interpolation-in-attributes": "off",
         "@angular-eslint/template/no-positive-tabindex": "off",
         "@angular-eslint/template/use-track-by-function": "off"
       }
     }
   ]
 }
-// https://eslint.org/docs/rules/

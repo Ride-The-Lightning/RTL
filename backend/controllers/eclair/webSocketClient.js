@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
+import { ECLWSEventsEnum } from '../../models/ecl.model.js';
 export class ECLWebSocketClient {
     constructor() {
         this.logger = Logger;
@@ -45,15 +46,15 @@ export class ECLWebSocketClient {
             }
         };
         this.connectWithClient = (eclWsClt) => {
-            var _a;
             this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server..' });
-            const UpdatedLNServerURL = (_a = (eclWsClt.selectedNode.ln_server_url)) === null || _a === void 0 ? void 0 : _a.replace(/^http/, 'ws');
+            const UpdatedLNServerURL = (eclWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws');
             const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
             const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
             eclWsClt.webSocketClient = new WebSocket(WS_LINK);
             eclWsClt.webSocketClient.onopen = () => {
                 this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server..' });
                 this.waitTime = 0.5;
+                this.heartbeat(eclWsClt);
             };
             eclWsClt.webSocketClient.onclose = (e) => {
                 if (eclWsClt && eclWsClt.selectedNode && eclWsClt.selectedNode.ln_implementation === 'ECL') {
@@ -67,9 +68,11 @@ export class ECLWebSocketClient {
             eclWsClt.webSocketClient.onmessage = (msg) => {
                 this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
                 msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
-                msg['source'] = 'ECL';
-                const msgStr = JSON.stringify(msg);
-                this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
+                    msg['source'] = 'ECL';
+                    const msgStr = JSON.stringify(msg);
+                    this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                }
             };
             eclWsClt.webSocketClient.onerror = (err) => {
                 if (eclWsClt.selectedNode.ln_version === '' || !eclWsClt.selectedNode.ln_version || this.common.isVersionCompatible(eclWsClt.selectedNode.ln, '0.5.0')) {
@@ -104,6 +107,19 @@ export class ECLWebSocketClient {
             }
             newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
             this.webSocketClients[clientIdx] = newClient;
+        };
+        this.heartbeat = (eclWsClt) => {
+            this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Websocket Server Heartbeat..' });
+            if (!eclWsClt.webSocketClient) {
+                return;
+            }
+            if (eclWsClt.webSocketClient.readyState !== 1) {
+                return;
+            }
+            eclWsClt.webSocketClient.ping();
+            setTimeout(() => {
+                this.heartbeat(eclWsClt);
+            }, 59 * 1000);
         };
         this.wsServer.eventEmitterECL.on('CONNECT', (nodeIndex) => {
             this.connect(this.common.findNode(+nodeIndex));

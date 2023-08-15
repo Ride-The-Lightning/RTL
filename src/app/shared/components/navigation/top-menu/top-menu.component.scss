@@ -1,22 +1,8 @@
-.mat-menu-content {
-  cursor: default;
-  p.mat-menu-item {
-    cursor: default;
-    fa-icon, span, div {
-      cursor: default;
-    }
-  }
-  p.mat-menu-item:hover {
-    cursor: default !important;
-  }
+.mat-mdc-icon-button img.rtl-log-top {
+    width: 2rem;
+    height: 2rem;
 }
 
-.top-toolbar-icon {
-  & .mat-button-wrapper img {
-    width:3.2rem;
-  }
-  & .mat-button-wrapper .material-icons.mat-icon.logo-icon {
-    font-size: 2rem;
-    text-align: start;
-  }
+.mat-icon.material-icons.mat-icon-no-color.rtl-logo-dropdown {
+    height: 2rem;
 }

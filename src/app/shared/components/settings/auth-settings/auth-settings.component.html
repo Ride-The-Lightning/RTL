@@ -1,40 +1,41 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
-  <form *ngIf="appConfig?.allowPasswordUpdate" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1" #authForm="ngForm">
+  <form *ngIf="appConfig?.allowPasswordUpdate" #authForm="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1">
     <div fxLayout="row" fxLayoutAlign="start start" class="mb-2">
-      <fa-icon [icon]="faLock" class="page-title-img mr-1"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faLock"></fa-icon>
       <span class="page-title">Password</span>
     </div>
     <mat-form-field>
-      <input autoFocus matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="1" required>
+      <mat-label>Current Password</mat-label>
+      <input autoFocus matInput type="password" id="currpassword" name="currpassword" tabindex="1" required [(ngModel)]="currPassword">
       <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="2" required>
+      <mat-label>New Password</mat-label>
+      <input matInput type="password" id="newpassword" name="newpassword" tabindex="2" required [(ngModel)]="newPassword">
       <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="3" required>
+      <mat-label>Confirm New Password</mat-label>
+      <input matInput type="password" id="confirmpassword" name="confirmpassword" tabindex="3" required [(ngModel)]="confirmPassword">
       <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
     </mat-form-field>
     <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
-      <button class="mr-1" mat-stroked-button color="primary" type="reset" (click)="onResetPassword()" tabindex="4">Reset</button>
+      <button class="mr-1" mat-stroked-button color="primary" type="reset" tabindex="4" (click)="onResetPassword()">Reset</button>
       <button mat-flat-button color="primary" tabindex="5" type="submit" (click)="onChangePassword()">Change Password</button>
     </div>
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="end stretch" class="my-2">
-      <mat-divider [inset]="true"></mat-divider>
-    </div>
-    </form>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+  </form>
+  <mat-divider class="my-2"></mat-divider>
+  <div fxLayout="column" fxLayoutAlign="start stretch">
     <div class="mb-1 settings-container page-sub-title-container mt-1">
-      <fa-icon [icon]="faUserClock" class="page-title-img mr-1"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faUserClock"></fa-icon>
       <span class="page-title">Two Factor Authentication</span>
     </div>
     <div class="alert alert-info">
-      <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
+      <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
       <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
     </div>
     <div class="mt-1">
-      <button mat-flat-button color="primary" tabindex="6" (click)="on2FAuth()" class="mb-2">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+      <button mat-flat-button color="primary" tabindex="6" class="mb-2" (click)="on2FAuth()">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
     </div>
   </div>
 </div>

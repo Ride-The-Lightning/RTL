@@ -61,8 +61,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public operatorCards: Tile[] = [];
   public merchantCards: Tile[] = [];
   public screenSize = '';
-  public operatorCardHeight = '405px';
-  public merchantCardHeight = '65px';
+  public operatorCardHeight = '390px';
+  public merchantCardHeight = '62px';
   public sortField = 'Balance Score';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessages = ['', '', '', '', ''];
@@ -237,7 +237,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onNavigateTo(link: string) {
     if (link === 'inactive') {
-      this.router.navigateByUrl('/lnd/connections', { state: { filter: link } });
+      this.router.navigateByUrl('/lnd/connections', { state: { filterColumn: 'active', filterValue: link } });
     } else {
       this.router.navigateByUrl('/lnd/' + link);
     }

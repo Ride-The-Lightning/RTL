@@ -1,30 +1,32 @@
 <div *ngIf="errorMessage?.trim() === ''; else errorBlock" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
-  <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
+  <div fxLayout="column" fxFlex="8" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number:'1.0-0'}} Sats</mat-hint>
     <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>
   </div>
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
-  <div [perfectScrollbar] fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start">
-    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="activeChannels && activeChannels.length > 0; else noChannelBlock">
+  <div fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start" [perfectScrollbar]>
+    <div *ngIf="activeChannels && activeChannels.length > 0;  else noChannelBlock" fxLayout="column" fxFlex="100"class="w-100">
       <div *ngFor="let channel of activeChannels" class="mt-2">
-        <a [routerLink]="['../connections/channels/open']" [state]="{filter: channel.id}" class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.id}}" matTooltipDisabled="{{(channel.alias || channel.id).length < 26}}">
-          {{(channel.alias || channel.id) | slice:0:24}}{{(channel.alias || channel.id).length > 25 ? '...' : ''}}
+        <a class="dashboard-capacity-header" [routerLink]="['../connections/channels/open']" [state]="{filterColumn: channel.alias ? 'alias' : 'peer_id', filterValue: channel.alias || channel.peer_id}" matTooltip="{{channel.alias || channel.peer_id}}" matTooltipDisabled="{{(channel.alias || channel.peer_id).length < 26}}">
+          {{(channel.alias || channel.peer_id) | slice:0:24}}{{(channel.alias || channel.peer_id).length > 25 ? '...' : ''}}
         </a>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-          <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.msatoshi_to_them/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
-          <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.msatoshi_to_us/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
+          <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.to_them_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
+          <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.to_us_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
         </div>
-        <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.msatoshi_to_them/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
-        <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.msatoshi_to_us/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_them_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_us_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
       </div>
     </div>
   </div>
 </div>
 <ng-template #noChannelBlock>
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
-    No channels available.
-    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="w-100 mt-1">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+      <div>No channels available.</div>
+      <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" tabindex="1" (click)="goToChannels()">Open Channel</button>
+    </div>
   </div>
 </ng-template>
 <ng-template #errorBlock>

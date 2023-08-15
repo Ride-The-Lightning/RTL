@@ -28,7 +28,7 @@ export class ConfirmationMessageComponent implements OnInit {
   public hasAdvanced = false;
   public alertTypeEnum = AlertTypeEnum;
   public dataTypeEnum = DataTypeEnum;
-  public getInputs: Array<InputData> = [{ placeholder: '', inputType: 'text', inputValue: '', hintText: '', hintFunction: null, advancedField: false }];
+  public getInputs: Array<InputData> = [{ placeholder: '', inputType: DataTypeEnum.STRING, inputValue: '', hintText: '', hintFunction: null, advancedField: false }];
 
   private showAdvanced = false;
 

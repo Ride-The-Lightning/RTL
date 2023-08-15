@@ -5,17 +5,41 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+export const listPeerChannels = (req, res, next) => {
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Peer Channels..' });
+  options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
+  request(options).then((body) => {
+    body?.map((channel) => {
+      if (!channel.alias || channel.alias === '') { channel.alias = channel.peer_id.substring(0, 20); }
+      const local = channel.to_us_msat || 0;
+      const remote = (channel.total_msat - local) || 0;
+      const total = channel.total_msat || 0;
+      channel.to_them_msat = remote;
+      channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
+      return channel;
+    });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body });
+    res.status(200).json(body);
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Channels', 'List Peer Channels Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
 export const listChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channels..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listChannels';
+  options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
   request(options).then((body) => {
     body?.map((channel) => {
-      if (!channel.alias || channel.alias === '') { channel.alias = channel.id.substring(0, 20); }
-      const local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
-      const remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : 0;
-      const total = channel.msatoshi_total ? channel.msatoshi_total : 0;
+      if (!channel.alias || channel.alias === '') { channel.alias = channel.channel_id.substring(0, 20); }
+      const local = channel.to_us_msat || 0;
+      const remote = (channel.total_msat - local) || 0;
+      const total = channel.total_msat || 0;
+      channel.to_them_msat = remote;
       channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       return channel;
     });

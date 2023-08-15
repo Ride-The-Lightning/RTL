@@ -32,12 +32,11 @@ export const getPeers = (req, res, next) => {
                 peersNodeIds = peersNodeIds.substring(1);
                 return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
-                    body === null || body === void 0 ? void 0 : body.map((peer) => {
+                    body?.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
                         peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
                         return peer;
                     });
-                    body = common.sortDescByStrKey(body, 'alias');
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body });
                     res.status(200).json(body);
                 });
@@ -85,13 +84,12 @@ export const connectPeer = (req, res, next) => {
                 peersNodeIds = peersNodeIds.substring(1);
                 return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
                     let foundPeer = null;
-                    body === null || body === void 0 ? void 0 : body.map((peer) => {
+                    body?.map((peer) => {
                         foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
                         peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
                         return peer;
                     });
-                    let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
-                    peers = common.newestOnTop(peers, 'nodeId', req.query.nodeId ? req.query.nodeId : req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : '');
+                    const peers = common.newestOnTop(body || [], 'nodeId', req.query.nodeId ? req.query.nodeId : req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : '');
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
                     res.status(201).json(peers);
                 });

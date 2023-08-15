@@ -7,10 +7,10 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <ng-container *ngIf="data.scrollable">
-      <mat-card-content [perfectScrollbar] class="padding-gap-x-large" [ngClass]="{'h-40': data.scrollable}" #scrollContainer>
+      <mat-card-content #scrollContainer class="padding-gap-x-large" [perfectScrollbar] [ngClass]="{'h-40': data.scrollable}">
         <ng-container *ngTemplateOutlet="contentBlock"></ng-container>        
       </mat-card-content>
     </ng-container>
@@ -26,10 +26,10 @@
       </button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" class="padding-gap-x-large padding-gap-bottom-large">
-      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
-      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="(!showQRField || showQRField === '') && (showCopyName === '')" tabindex="1" autoFocus mat-button color="primary" type="submit" default [mat-dialog-close]="false">OK</button>
+      <button *ngIf="showCopyName !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" default [mat-dialog-close]="false">Close</button>
       <button *ngIf="showCopyName !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
-      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showQRField !== ''" class="mr-1" fxLayoutAlign="center center" tabindex="1" mat-button color="primary" type="button" default [mat-dialog-close]="false">Close</button>
       <button *ngIf="showQRField !== ''" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
     </div>
   </div>
@@ -45,10 +45,10 @@
       <div *ngIf="messageObjs?.length>0" fxFlex="100">
         <div *ngFor="let objs of messageObjs; index as i;">
           <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-            <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
+            <div *ngFor="let obj of objs; index as j;" fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
               <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
-                <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+                <span class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [ngSwitch]="obj.type">
                   <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
                     <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>
                   </ng-container>
@@ -56,11 +56,18 @@
                   <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number: obj.digitsInfo ? obj.digitsInfo : '1.0-3'}}</ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
                   <ng-container *ngSwitchDefault>
-                    <p fxLayout="row" *ngIf="data.openedBy === 'SWAP' && obj.key === 'state'; else noStyleBlock" [ngClass]="{'failed-status': obj.value === LoopStateEnum.FAILED}">
+                    <p *ngIf="data.openedBy === 'SWAP' && obj.key === 'state'; else noStyleBlock" fxLayout="row" [ngClass]="{'failed-status': obj.value === LoopStateEnum.FAILED}">
                       {{obj.value}}
                       <mat-icon *ngIf="obj.value === LoopStateEnum.FAILED" fxLayoutAlign="end end" class="icon-failed-status">info</mat-icon>
                     </p>
-                    <ng-template #noStyleBlock>{{obj.value}}</ng-template>
+                    <ng-template #noStyleBlock>
+                      <p *ngIf="obj.value === goToFieldValue; else noStyleChild" fxLayout="row" class="go-to-link" matTooltip="{{'Go To ' + goToName}}" (click)="onGoToLink()" >
+                        {{obj.value}}
+                      </p>
+                      <ng-template #noStyleChild>
+                        {{obj.value}}
+                      </ng-template>
+                    </ng-template>
                   </ng-container>
                 </span>
               </span>
@@ -68,7 +75,7 @@
                 <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
               </ng-template>
               <mat-divider class="w-100 my-1"></mat-divider>
-            </div>                
+            </div>    
           </div>
         </div>
       </div>

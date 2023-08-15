@@ -59,7 +59,7 @@ export class InvoiceInformationComponent implements OnInit, OnDestroy {
         const invoiceStatus = this.invoice?.state;
         const invoices = invoicesSelector.listInvoices.invoices || [];
         const foundInvoice = invoices.find((invoice) => invoice.r_hash === invoiceToCompare.r_hash) || null;
-        this.invoice = foundInvoice;
+        if (foundInvoice) { this.invoice = foundInvoice; }
         if (invoiceStatus !== this.invoice?.state && this.invoice?.state === 'SETTLED') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);

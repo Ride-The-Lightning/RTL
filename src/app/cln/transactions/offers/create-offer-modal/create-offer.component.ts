@@ -28,9 +28,8 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild | null = {};
   public description = '';
   public offerValue: number | null;
-  public vendor = '';
+  public issuer = '';
   public offerValueHint = '';
-  public offers: any;
   public information: GetInfo = {};
   public pageSize = PAGE_SIZE;
   public offerError = '';
@@ -45,7 +44,7 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
-      this.vendor = this.information.alias!;
+      this.issuer = this.information.alias!;
     });
     this.actions.pipe(
       takeUntil(this.unSubs[2]),
@@ -64,13 +63,13 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
 
   onAddOffer() {
     this.offerError = '';
-    const offerAmt = !this.offerValue ? 'any' : this.offerValue + 'sats';
-    this.store.dispatch(saveNewOffer({ payload: { amount: offerAmt, description: this.description, vendor: this.vendor } }));
+    const offerAmt = !this.offerValue ? 'any' : (this.offerValue * 1000).toString();
+    this.store.dispatch(saveNewOffer({ payload: { amount: offerAmt, description: this.description, issuer: this.issuer } }));
   }
 
   resetData() {
     this.description = '';
-    this.vendor = this.information.alias!;
+    this.issuer = this.information.alias!;
     this.offerValue = null;
     this.offerValueHint = '';
     this.offerError = '';
@@ -83,7 +82,7 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.offerValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.symbol;
+            this.offerValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
           }, error: (err) => {
             this.offerValueHint = 'Conversion Error: ' + err;
           }

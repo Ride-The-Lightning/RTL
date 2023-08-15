@@ -1,8 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
-import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain, setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers, setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment } from './lnd.actions';
+import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain,
+  setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers,
+  setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment, setPageSettings } from './lnd.actions';
 import { Channel, ClosedChannel, SetAllLightningTransactions } from '../../shared/models/lndModels';
+import { PageSettings } from '../../shared/models/pageSettings';
+import { LND_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 
 let flgTransactionsSet = false;
 let flgUTXOsSet = false;
@@ -219,6 +223,31 @@ export const LNDReducer = createReducer(initLNDState,
     return {
       ...state,
       forwardingHistory: updatedPayload
+    };
+  }),
+  on(setPageSettings, (state, { payload }) => {
+    const newPageSettings: PageSettings[] = [];
+    LND_DEFAULT_PAGE_SETTINGS.forEach((defaultPage) => {
+      const pageSetting = payload && payload.length && payload.length > 0 ? payload.find((p) => p.pageId === defaultPage.pageId) : null;
+      if (pageSetting) {
+        const tablesSettings = JSON.parse(JSON.stringify(pageSetting.tables));
+        pageSetting.tables = []; // To maintain settings order
+        defaultPage.tables.forEach((defaultTable) => {
+          const tableSetting = tablesSettings.find((t) => t.tableId === defaultTable.tableId) || null;
+          if (tableSetting) {
+            pageSetting.tables.push(tableSetting);
+          } else {
+            pageSetting.tables.push(JSON.parse(JSON.stringify(defaultTable)));
+          }
+        });
+        newPageSettings.push(pageSetting);
+      } else {
+        newPageSettings.push(JSON.parse(JSON.stringify(defaultPage)));
+      }
+    });
+    return {
+      ...state,
+      pageSettings: newPageSettings
     };
   })
 );

@@ -13,7 +13,7 @@
           <mat-card-subtitle class="m-0">
             <h4 *ngIf="conf.indexOf('[') < 0" class="ml-4">{{conf}}</h4>
           </mat-card-subtitle>
-          <mat-divider [inset]="true" *ngIf="conf.indexOf('[') < 0"></mat-divider>
+          <mat-divider *ngIf="conf.indexOf('[') < 0" [inset]="true"></mat-divider>
         </mat-list-item>
       </mat-list>
     </div>

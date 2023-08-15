@@ -1,34 +1,47 @@
-.mat-column-payment_hash {
-  flex: 0 0 25%;
-  width: 25%;
-  & .ellipsis-parent {
-    display: flex;
+@import "../../../shared/theme/styles/constants.scss";
+
+.mat-column-status, .mat-column-group_status {
+  max-width: 2.2rem;
+  width: 2.2rem;
+  text-overflow: unset;
+}
+
+.mat-column-group_actions {
+  & .mpp-group-head, .mpp-group-details {
+    min-height: 3rem;
   }
-}
-
-.mat-column-actions {
-  min-height: 4.8rem;
-}
-
-.mat-column-groupAction {
-  min-height: 4.8rem;
 
   & .btn-mpp-expand {
-    width: 9rem; 
+    min-width: $table-actions-min-width;
+    width: $table-actions-min-width;
+    margin: 0;
   }
 
   & .btn-mpp-info {
-    margin-top: 0.5rem; 
-    width: 9rem; 
+    min-width: $table-actions-min-width - 1rem;
+    min-width: $table-actions-min-width - 1rem;
+    margin: 0;
+  }
+}
+
+.mat-column-group_status, .mat-column-group_created_at {
+  .mpp-row-span:not(:first-of-type) {
+    padding-left: 2rem;
   }
 }
 
 .mpp-row-span {
-  min-height: 4.2rem;
-  place-content: center flex-start;
-  align-items: center;
+  min-height: 3rem;
+  &.ellipsis-parent {
+    display: flex;
+    align-items: center;
+  }
+  & .dot {
+    margin-top: -0.3rem;
+    position: absolute;
+  }
 }
 
-.mat-column-groupTotal {
-  min-width: 17rem;
+.mat-column-group_created_at {
+  min-width: 11rem;
 }
