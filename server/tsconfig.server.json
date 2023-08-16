@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "../backend",
+  },
+  "include": [
+    "./**/*"
+  ]
+}
