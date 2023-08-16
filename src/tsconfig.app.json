@@ -8,6 +8,7 @@
     "./polyfills.ts"
   ],
   "include": [
+    "./src/**/*",
     "./polyfills.ts",
     "./**/*.d.ts"
   ]

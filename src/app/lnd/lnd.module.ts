@@ -66,8 +66,6 @@ import { LightningSendPaymentsComponent } from './transactions/send-payment-moda
 import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
 
-import { LNDUnlockedGuard } from '../shared/services/auth.guard';
-
 @NgModule({
   imports: [
     CommonModule,

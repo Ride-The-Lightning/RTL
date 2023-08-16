@@ -24,8 +24,6 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
   constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'ignore';
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     if (linkFound) { this.activeLink = linkFound.link; }
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).

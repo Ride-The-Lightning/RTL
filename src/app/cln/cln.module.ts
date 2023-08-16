@@ -60,8 +60,6 @@ import { CLNLiquidityAdsListComponent } from './liquidity-ads/liquidity-ads-list
 import { CLNOpenLiquidityChannelComponent } from './liquidity-ads/open-liquidity-channel-modal/open-liquidity-channel-modal.component';
 import { CLNChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 
-import { CLNUnlockedGuard } from '../shared/services/auth.guard';
-
 @NgModule({
   imports: [
     CommonModule,

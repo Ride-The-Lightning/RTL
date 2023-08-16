@@ -13,7 +13,10 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer, ActiveSwap, Swap } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices,
+  Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer,
+  UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices,
+  Channel, OfferInvoice, Offer, ActiveSwap, Swap } from '../../shared/models/clnModels';
 import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum, DataTypeEnum, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
@@ -1066,10 +1069,9 @@ export class CLNEffects implements OnDestroy {
       }), catchError((err: any) => {
         this.handleErrorWithoutAlert('PeerswapSwapout', UI_MESSAGES.PEERSWAP_SWAPOUT, 'Swapout Failed.', err);
         return of({ type: RTLActions.VOID });
-      }))
+      }));
     })
   ));
-  
 
   pageSettingsFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.FETCH_PAGE_SETTINGS_CLN),
@@ -1127,30 +1129,6 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
-  reorderedSwapResponse(swapRes: Swap) {
-    const reorderedSwap = [
-      [{ key: 'id', value: swapRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'state', value: this.swapStatePipe.transform(swapRes.state || ''), title: 'State', width: 50, type: DataTypeEnum.STRING },
-      { key: 'role', value: this.titleCasePipe.transform(swapRes.role), title: 'Role', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'alias', value: swapRes.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
-        { key: 'short_channel_id', value: swapRes.short_channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'amount', value: this.decimalPipe.transform(swapRes.amount), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING },
-        { key: 'created_at', value: this.datePipe.transform(new Date(swapRes.created_at || ''), 'dd/MMM/YYYY HH:mm'), title: 'Created At', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'peer_node_id', value: swapRes.peer_node_id, title: 'Peer Node Id', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'initiator_node_id', value: swapRes.initiator_node_id, title: 'Initiator Node Id', width: 100, type: DataTypeEnum.STRING }]
-    ];
-    if (swapRes.opening_tx_id) {
-      reorderedSwap.push([{ key: 'opening_tx_id', value: swapRes.opening_tx_id, title: 'Opening Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
-    }
-    if (swapRes.claim_tx_id) {
-      reorderedSwap.push([{ key: 'claim_tx_id', value: swapRes.claim_tx_id, title: 'Claim Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
-    }
-    if (swapRes.cancel_message) {
-      reorderedSwap.push([{ key: 'cancel_message', value: swapRes.cancel_message, title: 'Cancel Message', width: 100, type: DataTypeEnum.STRING }]);
-    }
-    return reorderedSwap;
-  }
-
   savePageSettingsCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.SAVE_PAGE_SETTINGS_CLN),
     mergeMap((action: { type: string, payload: any }) => {
@@ -1175,6 +1153,30 @@ export class CLNEffects implements OnDestroy {
         );
     })
   ));
+
+  reorderedSwapResponse(swapRes: Swap) {
+    const reorderedSwap = [
+      [{ key: 'id', value: swapRes.id, title: 'Swap Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'state', value: this.swapStatePipe.transform(swapRes.state || ''), title: 'State', width: 50, type: DataTypeEnum.STRING },
+      { key: 'role', value: this.titleCasePipe.transform(swapRes.role), title: 'Role', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'alias', value: swapRes.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
+        { key: 'short_channel_id', value: swapRes.short_channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'amount', value: this.decimalPipe.transform(swapRes.amount), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING },
+        { key: 'created_at', value: this.datePipe.transform(new Date(swapRes.created_at || ''), 'dd/MMM/YYYY HH:mm'), title: 'Created At', width: 50, type: DataTypeEnum.STRING }],
+      [{ key: 'peer_node_id', value: swapRes.peer_node_id, title: 'Peer Node Id', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'initiator_node_id', value: swapRes.initiator_node_id, title: 'Initiator Node Id', width: 100, type: DataTypeEnum.STRING }]
+    ];
+    if (swapRes.opening_tx_id) {
+      reorderedSwap.push([{ key: 'opening_tx_id', value: swapRes.opening_tx_id, title: 'Opening Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    if (swapRes.claim_tx_id) {
+      reorderedSwap.push([{ key: 'claim_tx_id', value: swapRes.claim_tx_id, title: 'Claim Transaction Id', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    if (swapRes.cancel_message) {
+      reorderedSwap.push([{ key: 'cancel_message', value: swapRes.cancel_message, title: 'Cancel Message', width: 100, type: DataTypeEnum.STRING }]);
+    }
+    return reorderedSwap;
+  }
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clnUnlocked', 'true');

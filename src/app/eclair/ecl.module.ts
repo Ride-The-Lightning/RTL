@@ -46,8 +46,6 @@ import { ECLCreateInvoiceComponent } from './transactions/create-invoice-modal/c
 import { ECLOnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
 import { ECLChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
 
-import { ECLUnlockedGuard } from '../shared/services/auth.guard';
-
 @NgModule({
   imports: [
     CommonModule,

@@ -13,7 +13,6 @@ import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './app.component';
 
-import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { SessionService } from './shared/services/session.service';
 import { LoopService } from './shared/services/loop.service';
@@ -32,8 +31,8 @@ import { CLNReducer } from './cln/store/cln.reducers';
 import { ECLReducer } from './eclair/store/ecl.reducers';
 import { HOUR_SECONDS } from './shared/services/consts-enums-functions';
 
-let isDevEnvironemt = false;
-if (isDevMode()) { isDevEnvironemt = true; }
+let isDevEnvironment = false;
+if (isDevMode()) { isDevEnvironment = true; }
 
 @NgModule({
   imports: [
@@ -52,7 +51,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
         }
       }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLNEffects, ECLEffects]),
-    isDevEnvironemt ? StoreDevtoolsModule.instrument() : []
+    isDevEnvironment ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [AppComponent],
   providers: [
