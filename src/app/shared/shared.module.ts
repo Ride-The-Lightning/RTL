@@ -348,7 +348,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
     { provide: OverlayContainer, useClass: ThemeOverlay },
-    DecimalPipe, TitleCasePipe, DatePipe, RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe
+    DecimalPipe, TitleCasePipe, DatePipe, RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe, SwapStatePipe
   ]
 })
 export class SharedModule { }
