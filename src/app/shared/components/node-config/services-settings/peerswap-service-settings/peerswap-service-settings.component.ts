@@ -14,7 +14,7 @@ import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
 import { setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
-import { PeerswapReloadPolicy } from '../../../../models/clnModels';
+import { PeerswapReloadPolicy } from '../../../../models/peerswapModels';
 
 
 @Component({

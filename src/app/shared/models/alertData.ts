@@ -1,10 +1,11 @@
 import { DataTypeEnum, LoopTypeEnum, PaymentTypes, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
-import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN, SwapPeerChannelsFlattened as SwapPeerChannelsFlattenedCLN } from './clnModels';
+import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 import { ServiceInfo } from './boltzModels';
+import { SwapPeerChannelsFlattened } from './peerswapModels';
 
 export interface MessageErrorField {
   code: number;
@@ -124,8 +125,8 @@ export interface CLNOfferInformation {
   component?: any;
 }
 
-export interface CLNSwapInformation {
-  swapPeer: SwapPeerChannelsFlattenedCLN;
+export interface PSSwapInformation {
+  swapPeer: SwapPeerChannelsFlattened;
   component?: any;
 }
 
@@ -246,5 +247,5 @@ export interface DialogConfig {
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
   PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
-  OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert | CLNSwapInformation;
+  OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert | PSSwapInformation;
 }

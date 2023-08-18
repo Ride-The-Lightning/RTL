@@ -1,0 +1,39 @@
+<div fxLayout="row">
+  <div fxFlex="100">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">Initiate a Swapout</span>
+      </div>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
+    </mat-card-header>
+    <mat-card-content class="padding-gap-x-large">
+      <form #swapOutForm="ngForm" fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100">
+        <p fxLayoutAlign="start center" class="pb-2 word-break">Swapout with {{sPeer?.alias}}</p>
+        <mat-form-field fxFlex="100" fxLayoutAlign="start end">
+          <input matInput placeholder="Short Channel ID" tabindex="1" name="shortChanId" disabled [value]="sPeer.short_channel_id" >
+        </mat-form-field>
+        <mat-form-field *ngIf="sPeer.local_balance >= 100000" fxFlex="100">
+          <input #swapAmt="ngModel" matInput autoFocus placeholder="Amount" type="number"  tabindex="2" name="swapAmt" required [step]="1000" [min]="100000" [max]="sPeer.local_balance" [(ngModel)]="swapAmount" (keyup)="onAmountChange()">
+          <span matSuffix class="ml-1"> Sats </span>
+          <mat-error *ngIf="swapAmt.errors?.required">Amount is required.</mat-error>
+          <mat-error *ngIf="swapAmt.errors?.min">Amount must be greater than or equal to 100,000.</mat-error>
+          <mat-error *ngIf="swapAmt.errors?.max">Amount must be less than or equal to {{sPeer.local_balance | number}}.</mat-error>
+          <mat-hint>Amount should be between 100,000 and {{sPeer.local_balance | number}}<br>{{swapAmountHint}}</mat-hint>
+        </mat-form-field>
+        <div *ngIf="swapOutError !== ''" fxFlex="100" class="alert alert-danger mt-2">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <span *ngIf="swapOutError !== ''">{{swapOutError}}</span>
+        </div>
+        <div *ngIf="sPeer.local_balance < 100000" fxFlex="100" class="alert alert-danger mt-2">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <span>Insufficient local balance for swap out.</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
+          <button class="mr-1" mat-button color="primary" tabindex="3" type="button" [disabled]="sPeer.local_balance < 100000" (click)="resetData()">Clear Field</button>
+          <button *ngIf="flgswapCanceled" mat-button color="primary" tabindex="4" (click)="goToSwapCanceled()">Go to Swap Canceled</button>
+          <button *ngIf="!flgswapCanceled" mat-button color="primary" tabindex="5" [disabled]="sPeer.local_balance < 100000" (click)="onExecuteSwapout()">{{swapOutError !== '' ? 'Retry' : 'Execute'}}</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>

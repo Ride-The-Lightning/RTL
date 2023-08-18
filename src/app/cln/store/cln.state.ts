@@ -1,6 +1,7 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, CLN_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards, SwapRequest, Swap, SwapPeerChannelsFlattened } from '../../shared/models/clnModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
+import { SwapRequest, Swap, SwapPeerChannelsFlattened } from '../../shared/models/peerswapModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { PageSettings } from '../../shared/models/pageSettings';
 

@@ -1,0 +1,81 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap-x">
+  <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch">
+    <div fxFlex="100" class="page-sub-title-container padding-gap-large pb-0">
+      <fa-icon class="page-title-img mr-1" [icon]="faPeopleGroup"></fa-icon>
+      <span class="page-title">Number of peers enabled with Peerswap: {{totalSwapPeers}}</span>
+    </div>
+    <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
+      <div fxFlex="70"></div>
+      <mat-form-field fxFlex="30">
+        <input matInput placeholder="Filter" [(ngModel)]="selFilter" (keyup)="applyFilter()">
+      </mat-form-field>
+    </div>
+  </div>
+  <div fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
+    <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <table #table mat-table class="overflow-auto" fxFlex="100" matSort [dataSource]="swapPeers" [ngClass]="{'error-border': errorMessage !== ''}">
+      <ng-container matColumnDef="short_channel_id">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Short Channel ID</th>
+        <td *matCellDef="let sPeer" mat-cell>{{sPeer?.short_channel_id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="alias">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Node Alias</th>
+        <td *matCellDef="let sPeer" mat-cell>{{sPeer?.alias}}</td>
+      </ng-container>
+      <ng-container matColumnDef="swaps_allowed">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Swaps Allowed</th>
+        <td *matCellDef="let sPeer" mat-cell>{{sPeer?.swaps_allowed ? 'Yes' : 'No'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="local_balance">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Balance (Sats)</th>
+        <td *matCellDef="let sPeer" mat-cell><span fxLayoutAlign="end center">{{sPeer?.local_balance | number }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="remote_balance">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
+        <td *matCellDef="let sPeer" mat-cell><span fxLayoutAlign="end center">{{sPeer?.remote_balance | number }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell class="px-3">
+          <div class="bordered-box table-actions-select">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
+            </mat-select>
+          </div>
+        </th>
+        <td *matCellDef="let sPeer" mat-cell fxLayoutAlign="end center" [ngClass]="{'px-3': screenSize !== screenSizeEnum.XS}">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+            <mat-select placeholder="Actions" tabindex="2" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onSwapPeerClick(sPeer)">View Info</mat-option>
+              <mat-option (click)="onSwapOut(sPeer)">Swap Out</mat-option>
+              <mat-option (click)="onSwapIn(sPeer)">Swap In</mat-option>
+            </mat-select>
+          </div>            
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="no_swap_peer">
+        <td *matFooterCellDef mat-footer-cell colspan="4">
+          <p
+            *ngIf="(!swapPeers?.data || swapPeers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.COMPLETED">
+            No peer available for swap.</p>
+          <p
+            *ngIf="(!swapPeers?.data || swapPeers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.INITIATED">
+            Getting peers for swap...</p>
+          <p
+            *ngIf="(!swapPeers?.data || swapPeers?.data?.length<1) && apiCallStatus?.status === apiCallStatusEnum.ERROR">
+            {{errorMessage}}</p>
+        </td>
+      </ng-container>
+      <tr *matFooterRowDef="['no_swap_peer']" mat-footer-row
+        [ngClass]="{'display-none': swapPeers?.data && swapPeers?.data?.length && swapPeers?.data?.length>0}">
+      </tr>
+      <tr *matHeaderRowDef="displayedColumns; sticky: flgSticky;" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+    </table>
+  </div>
+  <mat-paginator *ngIf="errorMessage === ''" class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+    [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+</div>

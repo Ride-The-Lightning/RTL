@@ -16,7 +16,8 @@ import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices,
   Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer,
   UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices,
-  Channel, OfferInvoice, Offer, ActiveSwap, Swap } from '../../shared/models/clnModels';
+  Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
+import { ActiveSwap, Swap } from '../../shared/models/peerswapModels';
 import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum, DataTypeEnum, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
@@ -992,7 +993,7 @@ export class CLNEffects implements OnDestroy {
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwaps', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: CLNActions.SET_SWAPS_CLN,
-            payload: res || []
+            payload: Object.keys(res).length === 0 ? [] : res
           };
         }), catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swaps Failed.', err);

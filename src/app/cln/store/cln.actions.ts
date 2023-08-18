@@ -4,7 +4,8 @@ import { CLNActions, SwapTypeEnum } from '../../shared/services/consts-enums-fun
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel,
-  GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards, Swap, SwapRequest, SwapPeer } from '../../shared/models/clnModels';
+  GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
+import { Swap, SwapRequest, SwapPeer } from '../../shared/models/peerswapModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateCLAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());

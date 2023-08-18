@@ -16,7 +16,7 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   public faLayerGroup = faLayerGroup;
-  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'prswp', name: 'Peerswap' }];
+  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }];
   public activeLink = '';
   public selNode: ConfigSettingsNode | any;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];

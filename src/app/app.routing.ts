@@ -22,6 +22,7 @@ import { PeerswapServiceSettingsComponent } from './shared/components/node-confi
 import { LNServicesComponent } from './shared/components/ln-services/ln-services.component';
 import { LoopComponent } from './shared/components/ln-services/loop/loop.component';
 import { BoltzRootComponent } from './shared/components/ln-services/boltz/boltz-root.component';
+import { PeerswapComponent } from './shared/components/ln-services/peerswap/peerswap.component';
 
 type PathMatch = 'full' | 'prefix' | undefined;
 
@@ -48,7 +49,7 @@ export const routes: Routes = [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
           { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard()] },
           { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard()] },
-          { path: 'prswp', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
+          { path: 'peerswap', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
         ]
       },
       { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard()] },
@@ -62,7 +63,8 @@ export const routes: Routes = [
       { path: 'loop/:selTab', component: LoopComponent },
       { path: 'boltz', pathMatch: <PathMatch>'full', redirectTo: 'boltz/swapout' },
       { path: 'boltz/:selTab', component: BoltzRootComponent },
-      { path: 'prswp', component: PeerswapServiceSettingsComponent, canActivate: [AuthGuard] }
+      { path: 'peerswap', pathMatch: <PathMatch>'full', redirectTo: 'peerswap/pspeers' },
+      { path: 'peerswap/:selTab', component: PeerswapComponent }
     ]
   },
   { path: 'help', component: HelpComponent },

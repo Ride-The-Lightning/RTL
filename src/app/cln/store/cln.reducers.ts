@@ -6,7 +6,8 @@ import {
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings, addSwapout, addSwapin, updateSwapState, setSwapRequests, setSwapPeers, setSwaps
 } from './cln.actions';
-import { Channel, OfferBookmark, Swap } from '../../shared/models/clnModels';
+import { Channel, OfferBookmark } from '../../shared/models/clnModels';
+import { Swap } from '../../shared/models/peerswapModels';
 import { CLNForwardingEventsStatusEnum, CLN_DEFAULT_PAGE_SETTINGS, PeerswapTypes, SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 import { PageSettings } from '../../shared/models/pageSettings';
 
@@ -279,7 +280,7 @@ export const CLNReducer = createReducer(initCLNState,
     }, <any[]>[]);
     return {
       ...state,
-      totalSwapPeers: payload.length || 0,
+      totalSwapPeers: payload.length ? payload.length : 0,
       swapPeers: flattenedSwapPeers
     };
   }),
@@ -327,9 +328,9 @@ export const CLNReducer = createReducer(initCLNState,
 );
 
 const mapAliases = (payload: any, storedChannels: Channel[]) => {
-  if (payload && payload.length > 0) {
+  if (payload && payload.length && payload.length > 0) {
     payload.forEach((fhEvent, i) => {
-      if (storedChannels && storedChannels.length > 0) {
+      if (storedChannels && storedChannels.length && storedChannels.length > 0) {
         for (let idx = 0; idx < storedChannels.length; idx++) {
           if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === fhEvent.in_channel) {
             fhEvent.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : fhEvent.in_channel;
