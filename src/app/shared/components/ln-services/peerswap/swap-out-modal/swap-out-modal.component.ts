@@ -28,7 +28,7 @@ export class PSSwapOutModalComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild | null = {};
-  public psPolicy: PeerswapPolicy = {};
+  public psPolicy: PeerswapPolicy = { min_swap_amount_msat: 100000000 };
   public sPeer: SwapPeerChannelsFlattened | null = null;
   public swapAmount: number | null;
   public swapAmountHint = '';

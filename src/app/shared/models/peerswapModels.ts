@@ -1,8 +1,8 @@
 export interface PeerswapPolicy {
+  min_swap_amount_msat: number;
   accept_all_peers?: boolean;
   allow_new_swaps?: boolean;
   allowlisted_peers?: string[];
-  min_swap_amount_msat?: number;
   reserve_onchain_msat?: number;
   suspicious_peers?: string[];
 }

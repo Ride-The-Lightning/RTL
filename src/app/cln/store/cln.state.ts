@@ -81,7 +81,7 @@ export const initCLNState: CLNState = {
   offers: [],
   offersBookmarks: [],
   totalSwapPeers: 0,
-  peerswapPolicy: {},
+  peerswapPolicy: { min_swap_amount_msat: 100000000 },
   swapPeers: [],
   swapOuts: [],
   swapIns: [],

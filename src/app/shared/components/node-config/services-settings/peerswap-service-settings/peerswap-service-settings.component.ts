@@ -31,7 +31,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode | any;
   public enablePeerswap = false;
   public allowSwapRequests = false;
-  public psPolicy: PeerswapPolicy | null = null;
+  public psPolicy: PeerswapPolicy = { min_swap_amount_msat: 100000000 };
   public peerswapPeersLists = PeerswapPeersLists;
   public errorMessage = '';
   public dataForAllowedList = { icon: 'check', class: 'green', title: 'whitelisted peers', dataSource: 'allowlisted_peers', list: PeerswapPeersLists.ALLOWED, ngModelVar: '', addRemoveError: '' };
@@ -94,8 +94,8 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     }
     this.dataService.addPeerToPeerswap(ngModelVar, list).pipe(takeUntil(this.unSubs[2])).
       subscribe({
-        next: (res) => {
-          this.psPolicy = res;
+        next: (res: PeerswapPolicy) => {
+          this.psPolicy = res || { min_swap_amount_msat: 100000000 };
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.ngModelVar = '';
           } else {
@@ -126,8 +126,8 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     }
     this.dataService.removePeerFromPeerswap(peerNodeId, list).pipe(takeUntil(this.unSubs[3])).
       subscribe({
-        next: (res) => {
-          this.psPolicy = res;
+        next: (res: PeerswapPolicy) => {
+          this.psPolicy = res || { min_swap_amount_msat: 100000000 };
         }, error: (err) => {
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.addRemoveError = 'ERROR: ' + err;
