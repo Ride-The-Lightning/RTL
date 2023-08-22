@@ -1012,7 +1012,7 @@ export class CLNEffects implements OnDestroy {
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPSPolicy', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: CLNActions.SET_PS_POLICY_CLN,
-            payload: res || {}
+            payload: res || { min_swap_amount_msat: 100000000 }
           };
         }), catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchPSPolicy', UI_MESSAGES.NO_SPINNER, 'Fetching Peerswap Policy Failed.', err);

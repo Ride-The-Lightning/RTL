@@ -11,7 +11,7 @@ import { faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg
 import { updateServiceSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { fetchPSPolicy, setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
+import { fetchPSPolicy, setChildNodeSettingsCL, setPSPolicy } from '../../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 import { PeerswapPolicy } from '../../../../models/peerswapModels';
@@ -30,7 +30,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: ConfigSettingsNode | any;
   public enablePeerswap = false;
-  public allowSwapRequests = false;
+  public allowNewSwaps = false;
   public psPolicy: PeerswapPolicy = { min_swap_amount_msat: 100000000 };
   public peerswapPeersLists = PeerswapPeersLists;
   public errorMessage = '';
@@ -60,6 +60,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
         this.errorMessage = 'ERROR: ' + (!this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message);
       }
       this.psPolicy = policySeletor.policy;
+      this.allowNewSwaps = policySeletor.policy.allow_new_swaps;
       this.logger.info(policySeletor);
     });
   }
@@ -95,7 +96,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     this.dataService.addPeerToPeerswap(ngModelVar, list).pipe(takeUntil(this.unSubs[2])).
       subscribe({
         next: (res: PeerswapPolicy) => {
-          this.psPolicy = res || { min_swap_amount_msat: 100000000 };
+          this.store.dispatch(setPSPolicy({ payload: (res || { min_swap_amount_msat: 100000000 }) }));
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.ngModelVar = '';
           } else {
@@ -127,7 +128,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     this.dataService.removePeerFromPeerswap(peerNodeId, list).pipe(takeUntil(this.unSubs[3])).
       subscribe({
         next: (res: PeerswapPolicy) => {
-          this.psPolicy = res || { min_swap_amount_msat: 100000000 };
+          this.store.dispatch(setPSPolicy({ payload: (res || { min_swap_amount_msat: 100000000 }) }));
         }, error: (err) => {
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.addRemoveError = 'ERROR: ' + err;
@@ -141,6 +142,15 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
               this.dataForAllowedList.addRemoveError = '';
             }
           }, 3000);
+        }
+      });
+  }
+
+  updateAllowNewSwaps() {
+    this.dataService.allowPeerswapRequests(this.allowNewSwaps).pipe(takeUntil(this.unSubs[4])).
+      subscribe({
+        next: (res: PeerswapPolicy) => {
+          this.store.dispatch(setPSPolicy({ payload: (res || { min_swap_amount_msat: 100000000 }) }));
         }
       });
   }

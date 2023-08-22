@@ -41,23 +41,23 @@ export interface SwapData {
   coop_close_message?: string;
   cancel_message_obj?: any;
   cancel_message?: string;
-  peer_nod_id?: string;
+  peer_node_id?: string;
   initiator_node_id?: string;
   created_at?: number;
   role?: number;
   fsm_state?: string;
-  PrivkeyBytes?: string;
+  private_key?: string;
   fee_preimage?: string;
   opening_tx_fee?: number;
-  'opening_tx-hex'?: string;
+  opening_tx_hex?: string;
   opening_block_height?: string;
   claim_tx_id?: string;
   claim_payment_hash?: string;
   claim_preimage?: string;
   blinding_key?: string;
   last_message?: string;
-  NextMessage?: string;
-  NextMessageType?: number;
+  next_message?: string;
+  next_message_type?: number;
 }
 
 export interface ActiveSwap {
