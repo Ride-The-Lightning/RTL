@@ -55,7 +55,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
     this.version = VERSION;
     if (MENU_DATA.LNDChildren && MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -162,9 +162,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/lnd/services/loop' && navMenuChild.link !== '/lnd/services/boltz') ||
-          (navMenuChild.link === '/lnd/services/loop' && this.settings?.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/lnd/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+          (navMenuChild.link === '/services/loop' && this.settings?.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
+          (navMenuChild.link === '/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
@@ -176,8 +176,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/cln/services/peerswap') ||
-        (navMenuChild.link === '/cln/services/peerswap' && this.settings?.enablePeerswap));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/peerswap') ||
+        (navMenuChild.link === '/services/peerswap' && this.settings?.enablePeerswap));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;

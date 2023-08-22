@@ -37,8 +37,8 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th *matHeaderCellDef mat-header-cell class="px-3">
-          <div class="bordered-box table-actions-select">
+        <th *matHeaderCellDef mat-header-cell fxLayoutAlign="end center" [ngClass]="{'px-3': screenSize !== screenSizeEnum.XS}">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
@@ -53,7 +53,7 @@
               <mat-option (click)="onSwapOut(sPeer)">Swap Out</mat-option>
               <mat-option (click)="onSwapIn(sPeer)">Swap In</mat-option>
             </mat-select>
-          </div>            
+          </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_swap_peer">

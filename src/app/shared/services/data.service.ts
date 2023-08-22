@@ -29,6 +29,7 @@ export class DataService implements OnDestroy {
     new Subject(), new Subject(), new Subject(),
     new Subject(), new Subject(), new Subject(),
     new Subject(), new Subject(), new Subject(),
+    new Subject(), new Subject(), new Subject(), new Subject(),
     new Subject(), new Subject(), new Subject(), new Subject()
   ];
 

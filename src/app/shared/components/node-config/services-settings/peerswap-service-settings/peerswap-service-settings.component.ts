@@ -32,8 +32,8 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
   public reloadPolicy: PeerswapReloadPolicy | null = null;
   public reloadPolicyError = '';
   public peerswapPeersLists = PeerswapPeersLists;
-  public dataForAllowedList = { icon: 'check', class: 'green', title: 'whitelisted peers', dataSource: 'PeerAllowlist', list: PeerswapPeersLists.ALLOWED, ngModelVar: '', addRemoveError: '' };
-  public dataForSuspiciousList = { icon: 'close', class: 'red', title: 'suspicious peers', dataSource: 'SuspiciousPeerList', list: PeerswapPeersLists.SUSPICIOUS, ngModelVar: '', addRemoveError: '' };
+  public dataForAllowedList = { icon: 'check', class: 'green', title: 'whitelisted peers', dataSource: 'allowlisted_peers', list: PeerswapPeersLists.ALLOWED, ngModelVar: '', addRemoveError: '' };
+  public dataForSuspiciousList = { icon: 'close', class: 'red', title: 'suspicious peers', dataSource: 'suspicious_peers', list: PeerswapPeersLists.SUSPICIOUS, ngModelVar: '', addRemoveError: '' };
   public unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }

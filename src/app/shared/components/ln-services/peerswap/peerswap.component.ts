@@ -3,6 +3,7 @@ import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faHandshake } from '@fortawesome/free-solid-svg-icons';
+import { SwapTypeEnum } from 'src/app/shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-peerswap',
@@ -29,16 +30,6 @@ export class PeerswapComponent implements OnInit, OnDestroy {
         }
       });
   }
-
-  // onSelectedIndexChange(activeTab: any) {
-  //   if (activeTab.link === 'psin') {
-  //     this.selectedSwapType = SwapTypeEnum.SWAP_IN;
-  //     this.swapsData = this.swaps.swaps || [];
-  //   } else {
-  //     this.selectedSwapType = SwapTypeEnum.SWAP_OUT;
-  //     this.swapsData = this.swaps.reverseSwaps || [];
-  //   }
-  // }
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {

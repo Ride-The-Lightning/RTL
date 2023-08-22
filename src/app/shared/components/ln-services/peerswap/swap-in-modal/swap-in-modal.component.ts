@@ -61,7 +61,7 @@ export class PSSwapInModalComponent implements OnInit, OnDestroy {
 
   goToSwapCanceled() {
     this.store.dispatch(fetchSwaps());
-    this.router.navigate(['./cln/services/peerswap/pscanceled']);
+    this.router.navigate(['./services/peerswap/pscanceled']);
     this.dialogRef.close();
   }
 

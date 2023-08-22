@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { DatePipe, TitleCasePipe } from '@angular/common';
-import { Router, ResolveEnd, Event } from '@angular/router';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -69,7 +69,7 @@ export class PeerswapsListComponent implements OnInit, AfterViewInit, OnDestroy 
           this.loadTableWithSelection();
         }
       });
-    this.store.select(swaps).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(swaps).pipe(takeUntil(this.unSubs[1])).
       subscribe((swapsSeletor: { swapOuts: Swap[], swapIns: Swap[], swapsCanceled: Swap[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = swapsSeletor.apiCallStatus;

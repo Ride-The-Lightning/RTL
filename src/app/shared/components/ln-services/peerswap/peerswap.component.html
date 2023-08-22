@@ -5,18 +5,13 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <!-- <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeTab.link === link.link" [routerLink]="['../', link.link]">{{link.name}}</div>
-      </nav>
-      <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
- -->
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
         <div *ngFor="let link of links" role="tab" mat-tab-link class="mat-tab-label" [routerLink]="['../', link.link]" [active]="activeTab.link === link.link" (click)="activeTab = link">{{link.name}}</div>
       </nav>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">
         <mat-tab-nav-panel #tabPanel>
-          <rtl-peer-swaps-list></rtl-peer-swaps-list>
-          <!-- <router-outlet></router-outlet> -->
+          <rtl-peerswap-peers *ngIf="activeTab === this.links[0]"></rtl-peerswap-peers>
+          <rtl-peer-swaps-list *ngIf="activeTab !== this.links[0]"></rtl-peer-swaps-list>
         </mat-tab-nav-panel>
       </div>
     </mat-card-content>

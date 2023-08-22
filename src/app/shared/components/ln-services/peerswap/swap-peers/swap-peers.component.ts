@@ -67,10 +67,13 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(fetchSwapPeers());
-    this.store.select(swapPeers).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(swapPeers).pipe(takeUntil(this.unSubs[1])).
       subscribe((spSeletor: { totalSwapPeers: number, swapPeers: SwapPeerChannelsFlattened[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = spSeletor.apiCallStatus;
+        if (this.apiCallStatus?.status === APICallStatusEnum.UN_INITIATED) {
+          this.store.dispatch(fetchSwapPeers());
+        }
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
