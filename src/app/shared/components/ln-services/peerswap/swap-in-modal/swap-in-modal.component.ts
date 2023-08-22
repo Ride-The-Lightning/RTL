@@ -9,14 +9,15 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { PSSwapInformation } from '../../../../models/alertData';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, CLNActions } from '../../../../services/consts-enums-functions';
-import { SwapPeerChannelsFlattened } from '../../../../models/peerswapModels';
+import { PeerswapPolicy, SwapPeerChannelsFlattened } from '../../../../models/peerswapModels';
 import { CommonService } from '../../../../services/common.service';
 
 import { RTLState } from '../../../../../store/rtl.state';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
-import { clnNodeSettings } from '../../../../../cln/store/cln.selector';
+import { clnNodeSettings, psPolicy } from '../../../../../cln/store/cln.selector';
 import { fetchSwaps, swapIn } from '../../../../../cln/store/cln.actions';
 import { Router } from '@angular/router';
+import { ApiCallStatusPayload } from 'src/app/shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-swap-in-modal',
@@ -27,6 +28,7 @@ export class PSSwapInModalComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild | null = {};
+  public psPolicy: PeerswapPolicy = {};
   public sPeer: SwapPeerChannelsFlattened | null = null;
   public swapAmount: number | null;
   public swapAmountHint = '';
@@ -41,8 +43,11 @@ export class PSSwapInModalComponent implements OnInit, OnDestroy {
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
       this.selNode = nodeSettings;
     });
+    this.store.select(psPolicy).pipe(takeUntil(this.unSubs[1])).subscribe((policySeletor: { policy: PeerswapPolicy, apiCallStatus: ApiCallStatusPayload }) => {
+      this.psPolicy = policySeletor.policy;
+    });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN)).
       subscribe((action: any) => {
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.action === 'PeerswapSwapin') {

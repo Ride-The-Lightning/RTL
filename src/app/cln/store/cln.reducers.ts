@@ -4,7 +4,7 @@ import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLStore, setBalance, setChannels,
   setChildNodeSettingsCL, setFeeRates, setFees, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
-  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings, addSwapout, addSwapin, updateSwapState, setSwapRequests, setSwapPeers, setSwaps
+  updateCLAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings, addSwapout, addSwapin, updateSwapState, setSwapRequests, setSwapPeers, setSwaps, setPSPolicy
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
 import { Swap } from '../../shared/models/peerswapModels';
@@ -219,6 +219,10 @@ export const CLNReducer = createReducer(initCLNState,
       offersBookmarks: modifiedOfferBookmarks
     };
   }),
+  on(setPSPolicy, (state, { payload }) => ({
+    ...state,
+    peerswapPolicy: payload
+  })),
   on(setSwaps, (state, { payload }) => {
     const swapOutArr: Swap[] = [];
     const swapInArr: Swap[] = [];

@@ -37,7 +37,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th *matHeaderCellDef mat-header-cell fxLayoutAlign="end center" [ngClass]="{'px-3': screenSize !== screenSizeEnum.XS}">
+        <th *matHeaderCellDef mat-header-cell [ngClass]="{'px-3': screenSize !== screenSizeEnum.XS}">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>

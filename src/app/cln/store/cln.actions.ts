@@ -5,7 +5,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel,
   GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
-import { Swap, SwapRequest, SwapPeer } from '../../shared/models/peerswapModels';
+import { Swap, SwapRequest, SwapPeer, PeerswapPolicy } from '../../shared/models/peerswapModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateCLAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
@@ -139,6 +139,10 @@ export const addUpdateOfferBookmark = createAction(CLNActions.ADD_UPDATE_OFFER_B
 export const deleteOfferBookmark = createAction(CLNActions.DELETE_OFFER_BOOKMARK_CLN, props<{ payload: { bolt12: string } }>());
 
 export const removeOfferBookmark = createAction(CLNActions.REMOVE_OFFER_BOOKMARK_CLN, props<{ payload: { bolt12: string } }>());
+
+export const fetchPSPolicy = createAction(CLNActions.FETCH_PS_POLICY_CLN);
+
+export const setPSPolicy = createAction(CLNActions.SET_PS_POLICY_CLN, props<{ payload: PeerswapPolicy }>());
 
 export const fetchSwaps = createAction(CLNActions.FETCH_SWAPS_CLN);
 

@@ -1,4 +1,4 @@
-export interface PeerswapReloadPolicy {
+export interface PeerswapPolicy {
   accept_all_peers?: boolean;
   allow_new_swaps?: boolean;
   allowlisted_peers?: string[];

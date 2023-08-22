@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Initiate a Swapin</span>
       </div>
-      <button tabindex="6" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
+      <button tabindex="6" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #swapInForm="ngForm" fxLayout="row wrap" fxLayoutAlign="start space-between" fxFlex="100">
@@ -12,12 +12,12 @@
         <mat-form-field fxFlex="100" fxLayoutAlign="start end">
           <input matInput placeholder="Short Channel ID" tabindex="1" name="shortChanId" disabled [value]="sPeer.short_channel_id">
         </mat-form-field>
-        <mat-form-field *ngIf="sPeer.remote_balance >= 100000" fxFlex="100">
+        <mat-form-field *ngIf="sPeer.remote_balance >= (psPolicy.min_swap_amount_msat / 1000)" fxFlex="100">
           <input #swapAmt="ngModel" required matInput autoFocus placeholder="Amount" tabindex="2" name="swapAmt"
-            type="number" [step]="1000" [min]="100000" [max]="sPeer.remote_balance" [(ngModel)]="swapAmount" (keyup)="onAmountChange()">
+            type="number" [step]="1000" [min]="psPolicy.min_swap_amount_msat / 1000" [max]="sPeer.remote_balance" [(ngModel)]="swapAmount" (keyup)="onAmountChange()">
           <span matSuffix class="ml-1"> Sats </span>
           <mat-error *ngIf="swapAmt.errors?.required">Amount is required.</mat-error>
-          <mat-error *ngIf="swapAmt.errors?.min">Amount must be greater than or equal to 100,000.</mat-error>
+          <mat-error *ngIf="swapAmt.errors?.min">Amount must be greater than or equal to {{psPolicy.min_swap_amount_msat / 1000 | number}} Sats.</mat-error>
           <mat-error *ngIf="swapAmt.errors?.max">Amount must be less than or equal to {{sPeer.remote_balance | number}}.</mat-error>
           <mat-hint>Amount should be between 100,000 and {{sPeer.remote_balance | number}}<br>{{swapAmountHint}}</mat-hint>
         </mat-form-field>
@@ -25,14 +25,14 @@
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span *ngIf="swapInError !== ''">{{swapInError}}</span>
         </div>
-        <div *ngIf="sPeer.remote_balance < 100000" fxFlex="100" class="alert alert-danger mt-2">
+        <div *ngIf="sPeer.remote_balance < (psPolicy.min_swap_amount_msat / 1000)" fxFlex="100" class="alert alert-danger mt-2">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
           <span>Insufficient remote balance for swap in.</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" tabindex="3" type="button" [disabled]="sPeer.remote_balance < 100000" (click)="resetData()">Clear Field</button>
+          <button class="mr-1" mat-button color="primary" tabindex="3" type="button" [disabled]="sPeer.remote_balance < (psPolicy.min_swap_amount_msat / 1000)" (click)="resetData()">Clear Field</button>
           <button *ngIf="flgswapCanceled" mat-button color="primary" tabindex="4" (click)="goToSwapCanceled()">Go to Swap Canceled</button>
-          <button *ngIf="!flgswapCanceled" mat-button color="primary" tabindex="5" [disabled]="sPeer.remote_balance < 100000" (click)="onExecuteSwapin()">{{swapInError !== '' ? 'Retry' : 'Execute'}}</button>
+          <button *ngIf="!flgswapCanceled" mat-button color="primary" tabindex="5" [disabled]="sPeer.remote_balance < (psPolicy.min_swap_amount_msat / 1000)" (click)="onExecuteSwapin()">{{swapInError !== '' ? 'Retry' : 'Execute'}}</button>
         </div>
       </form>
     </mat-card-content>

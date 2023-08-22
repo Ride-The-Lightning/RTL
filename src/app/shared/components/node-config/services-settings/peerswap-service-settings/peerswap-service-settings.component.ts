@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ServicesEnum, UI_MESSAGES, PeerswapPeersLists } from '../../../../services/consts-enums-functions';
+import { ServicesEnum, UI_MESSAGES, PeerswapPeersLists, APICallStatusEnum } from '../../../../services/consts-enums-functions';
 import { ConfigSettingsNode } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { DataService } from '../../../../services/data.service';
@@ -11,10 +11,12 @@ import { faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg
 import { updateServiceSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
+import { fetchPSPolicy, setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
-import { PeerswapReloadPolicy } from '../../../../models/peerswapModels';
+import { PeerswapPolicy } from '../../../../models/peerswapModels';
+import { psPolicy } from 'src/app/cln/store/cln.selector';
+import { ApiCallStatusPayload } from 'src/app/shared/models/apiCallsPayload';
 
 
 @Component({
@@ -29,32 +31,37 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode | any;
   public enablePeerswap = false;
   public allowSwapRequests = false;
-  public reloadPolicy: PeerswapReloadPolicy | null = null;
-  public reloadPolicyError = '';
+  public psPolicy: PeerswapPolicy | null = null;
   public peerswapPeersLists = PeerswapPeersLists;
+  public errorMessage = '';
   public dataForAllowedList = { icon: 'check', class: 'green', title: 'whitelisted peers', dataSource: 'allowlisted_peers', list: PeerswapPeersLists.ALLOWED, ngModelVar: '', addRemoveError: '' };
   public dataForSuspiciousList = { icon: 'close', class: 'red', title: 'suspicious peers', dataSource: 'suspicious_peers', list: PeerswapPeersLists.SUSPICIOUS, ngModelVar: '', addRemoveError: '' };
+  public apiCallStatus: ApiCallStatusPayload | null = null;
+  public apiCallStatusEnum = APICallStatusEnum;
   public unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService) { }
 
   ngOnInit() {
-    this.dataService.peerswapReloadPolicy().pipe(takeUntil(this.unSubs[0])).
-      subscribe({
-        next: (res) => {
-          this.reloadPolicy = res;
-        }, error: (err) => {
-          this.reloadPolicyError = 'ERROR: ' + err;
-        }
-      });
-
     this.store.select(rootSelectedNode).
-      pipe(takeUntil(this.unSubs[1])).
+      pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
         this.enablePeerswap = !!selNode?.settings.enablePeerswap;
         this.logger.info(selNode);
       });
+    this.store.select(psPolicy).pipe(takeUntil(this.unSubs[1])).subscribe((policySeletor: { policy: PeerswapPolicy, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = policySeletor.apiCallStatus;
+      if (this.apiCallStatus?.status === APICallStatusEnum.UN_INITIATED) {
+        this.store.dispatch(fetchPSPolicy());
+      }
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = 'ERROR: ' + (!this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message);
+      }
+      this.psPolicy = policySeletor.policy;
+      this.logger.info(policySeletor);
+    });
   }
 
   onUpdateService(): boolean | void {
@@ -88,7 +95,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     this.dataService.addPeerToPeerswap(ngModelVar, list).pipe(takeUntil(this.unSubs[2])).
       subscribe({
         next: (res) => {
-          this.reloadPolicy = res;
+          this.psPolicy = res;
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.ngModelVar = '';
           } else {
@@ -120,7 +127,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     this.dataService.removePeerFromPeerswap(peerNodeId, list).pipe(takeUntil(this.unSubs[3])).
       subscribe({
         next: (res) => {
-          this.reloadPolicy = res;
+          this.psPolicy = res;
         }, error: (err) => {
           if (list !== PeerswapPeersLists.ALLOWED) {
             this.dataForSuspiciousList.addRemoveError = 'ERROR: ' + err;

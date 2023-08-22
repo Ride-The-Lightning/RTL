@@ -1002,6 +1002,25 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
+  peerswapPolicyFetchCL = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_PS_POLICY_CLN),
+    mergeMap((action: { type: string, payload: any }) => {
+      this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPSPolicy', status: APICallStatusEnum.INITIATED } }));
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PEERSWAP_API + '/reloadPolicy').
+        pipe(map((res: any) => {
+          this.logger.info(res);
+          this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchPSPolicy', status: APICallStatusEnum.COMPLETED } }));
+          return {
+            type: CLNActions.SET_PS_POLICY_CLN,
+            payload: res || {}
+          };
+        }), catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPSPolicy', UI_MESSAGES.NO_SPINNER, 'Fetching Peerswap Policy Failed.', err);
+          return of({ type: RTLActions.VOID });
+        }));
+    })
+  ));
+
   swapPeersFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.FETCH_SWAP_PEERS_CLN),
     mergeMap((action: { type: string, payload: any }) => {

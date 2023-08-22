@@ -333,22 +333,6 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  peerswapReloadPolicy() {
-    return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
-      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PEERSWAP_API + '/reloadPolicy').pipe(
-        takeUntil(this.unSubs[12]),
-        mergeMap((res) => {
-          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.RELOAD_POLICY_PEERSWAP }));
-          return of(res);
-        }), catchError((err) => {
-          this.handleErrorWithoutAlert('Reload Peerswap Policy', UI_MESSAGES.RELOAD_POLICY_PEERSWAP, err);
-          return throwError(() => this.extractErrorMessage(err));
-        })
-      );
-    }));
-  }
-
   addPeerToPeerswap(peerNodeId: string, list: PeerswapPeersLists) {
     return this.lnImplementationUpdated.pipe(first((val) => val !== null), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.ADD_PEER_PEERSWAP }));
