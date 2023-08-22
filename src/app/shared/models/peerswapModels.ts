@@ -85,7 +85,7 @@ export interface Swap {
   initiator_node_id?: string;
   peer_node_id?: string;
   amount?: number;
-  short_channel_id?: string;
+  channel_id?: string;
   opening_tx_id?: string;
   claim_tx_id?: string;
   cancel_message?: string;

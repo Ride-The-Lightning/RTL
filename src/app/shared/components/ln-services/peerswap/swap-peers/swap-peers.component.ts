@@ -19,12 +19,14 @@ import { fetchSwapPeers } from '../../../../../cln/store/cln.actions';
 import { swapPeers } from '../../../../../cln/store/cln.selector';
 import { PSSwapOutModalComponent } from '../swap-out-modal/swap-out-modal.component';
 import { PSSwapInModalComponent } from '../swap-in-modal/swap-in-modal.component';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-peerswap-peers',
   templateUrl: './swap-peers.component.html',
   styleUrls: ['./swap-peers.component.scss'],
   providers: [
+    { provide: MAT_SELECT_CONFIG, useValue: { overlayPanelClass: 'rtl-select-overlay' } },
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })

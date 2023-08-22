@@ -993,7 +993,7 @@ export class CLNEffects implements OnDestroy {
           this.store.dispatch(updateCLAPICallStatus({ payload: { action: 'FetchSwaps', status: APICallStatusEnum.COMPLETED } }));
           return {
             type: CLNActions.SET_SWAPS_CLN,
-            payload: Object.keys(res).length === 0 ? [] : res
+            payload: res.swaps && res.swaps.length && res.swaps.length > 0 ? res.swaps : []
           };
         }), catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchSwaps', UI_MESSAGES.NO_SPINNER, 'Fetching Swaps Failed.', err);
@@ -1180,7 +1180,7 @@ export class CLNEffects implements OnDestroy {
       [{ key: 'state', value: this.swapStatePipe.transform(swapRes.state || ''), title: 'State', width: 50, type: DataTypeEnum.STRING },
       { key: 'role', value: this.titleCasePipe.transform(swapRes.role), title: 'Role', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'alias', value: swapRes.alias, title: 'Alias', width: 50, type: DataTypeEnum.STRING },
-        { key: 'short_channel_id', value: swapRes.short_channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
+        { key: 'channel_id', value: swapRes.channel_id, title: 'Short Channel ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'amount', value: this.decimalPipe.transform(swapRes.amount), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING },
         { key: 'created_at', value: this.datePipe.transform(new Date(swapRes.created_at || ''), 'dd/MMM/YYYY HH:mm'), title: 'Created At', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'peer_node_id', value: swapRes.peer_node_id, title: 'Peer Node Id', width: 100, type: DataTypeEnum.STRING }],
