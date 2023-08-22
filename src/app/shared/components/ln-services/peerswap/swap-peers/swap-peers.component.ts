@@ -30,7 +30,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
-export class SwapPeersComponent implements OnInit, OnDestroy {
+export class PSPeersComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
@@ -161,7 +161,7 @@ export class SwapPeersComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if (this.swapPeers && this.swapPeers.data && this.swapPeers.data.length > 0) {
-      this.commonService.downloadFile(this.swapPeers.data, 'Swap Peers');
+      this.commonService.downloadFile(this.swapPeers.data, 'Peerswap Peers');
     }
   }
 

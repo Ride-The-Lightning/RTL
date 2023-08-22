@@ -11,7 +11,7 @@
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">
         <mat-tab-nav-panel #tabPanel>
           <rtl-peerswap-peers *ngIf="activeTab === this.links[0]"></rtl-peerswap-peers>
-          <rtl-peer-swaps-list *ngIf="activeTab !== this.links[0]"></rtl-peer-swaps-list>
+          <rtl-peerswap-swaps-list *ngIf="activeTab !== this.links[0]"></rtl-peerswap-swaps-list>
         </mat-tab-nav-panel>
       </div>
     </mat-card-content>

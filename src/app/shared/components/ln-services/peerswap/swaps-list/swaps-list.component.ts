@@ -24,7 +24,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from 'src/app/shared/mod
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
-  selector: 'rtl-peer-swaps-list',
+  selector: 'rtl-peerswap-swaps-list',
   templateUrl: './swaps-list.component.html',
   styleUrls: ['./swaps-list.component.scss'],
   providers: [
@@ -32,7 +32,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]
 })
-export class PeerswapsListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
@@ -151,24 +151,44 @@ export class PeerswapsListComponent implements OnInit, AfterViewInit, OnDestroy 
     }));
   }
 
+  setFilterPredicate() {
+    this.swaps.filterPredicate = (rowData: Swap, fltr: string) => {
+      let rowToFilter = '';
+      switch (this.selFilterBy) {
+        case 'all':
+          rowToFilter = (rowData.id ? rowData.id : '') +
+          (rowData.alias ? rowData.alias.toLowerCase() : '') +
+          (rowData.role ? rowData.role.toLowerCase() : '') +
+          (rowData.channel_id ? rowData.channel_id.toLowerCase() : '') +
+          (rowData.amount ? rowData.amount : '') +
+          (rowData.state ? this.swapStatePipe.transform(rowData.state || '').toLowerCase() : '') +
+          (rowData.created_at ? this.datePipe.transform(new Date(+rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
+          (rowData.cancel_message ? rowData.cancel_message.toLowerCase() : '');
+          break;
+
+        case 'state':
+          rowToFilter = rowData?.state ? this.swapStatePipe.transform(rowData.state || '').toLowerCase() : '';
+          break;
+
+        case 'created_at':
+          rowToFilter = rowData?.created_at ? this.datePipe.transform(new Date(+rowData.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '';
+          break;
+
+        default:
+          rowToFilter = typeof rowData[this.selFilterBy] === 'undefined' ? '' : typeof rowData[this.selFilterBy] === 'string' ? rowData[this.selFilterBy].toLowerCase() : typeof rowData[this.selFilterBy] === 'boolean' ? (rowData[this.selFilterBy] ? 'yes' : 'no') : rowData[this.selFilterBy].toString();
+          break;
+      }
+      return rowToFilter.includes(fltr);
+    };
+  }
+
   loadSwapsTable() {
     const selectedSwapData = (this.selSwapList === this.swapLists[0]) ? this.allSwapsData?.swapOuts : (this.selSwapList === this.swapLists[1]) ? this.allSwapsData?.swapIns : (this.selSwapList === this.swapLists[2]) ? this.allSwapsData?.swapsCanceled : [];
     this.swaps = new MatTableDataSource<Swap>([...selectedSwapData]);
     this.swaps.sort = this.sort;
     this.swaps.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    this.swaps.filterPredicate = (swap: Swap, fltr: string) => {
-      const newSwap =
-      (swap.id ? swap.id : '') +
-      (swap.alias ? swap.alias.toLowerCase() : '') +
-      (swap.role ? swap.role : '') +
-      (swap.channel_id ? swap.channel_id : '') +
-      (swap.amount ? swap.amount : '') +
-      (swap.state ? swap.state : '') +
-      ((swap.created_at) ? this.datePipe.transform(new Date(+swap.created_at * 1000), 'dd/MMM/YYYY HH:mm')?.toLowerCase() : '') +
-      (swap.cancel_message ? swap.cancel_message.toLowerCase : '');
-      return newSwap?.includes(fltr) || false;
-    };
     this.swaps.paginator = this.paginator;
+    this.setFilterPredicate();
     this.applyFilter();
     this.logger.info(this.swaps);
   }

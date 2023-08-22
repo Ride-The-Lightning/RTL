@@ -12,16 +12,16 @@ import { LNDReducer } from '../../../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
 import { DataService } from '../../../../services/data.service';
-import { PeerswapsListComponent } from './swaps-list.component';
+import { PSSwapsListComponent } from './swaps-list.component';
 import { LoggerService } from '../../../../services/logger.service';
 
-describe('PeerswapsListComponent', () => {
-  let component: PeerswapsListComponent;
-  let fixture: ComponentFixture<PeerswapsListComponent>;
+describe('PSSwapsListComponent', () => {
+  let component: PSSwapsListComponent;
+  let fixture: ComponentFixture<PSSwapsListComponent>;
   // private commonService: CommonService, private store: Store<RTLState>, private router: Router
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PeerswapsListComponent],
+      declarations: [PSSwapsListComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -39,7 +39,7 @@ describe('PeerswapsListComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PeerswapsListComponent);
+    fixture = TestBed.createComponent(PSSwapsListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

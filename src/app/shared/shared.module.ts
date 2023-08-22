@@ -99,8 +99,8 @@ import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/sw
 import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
 import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
 import { PeerswapComponent } from './components/ln-services/peerswap/peerswap.component';
-import { SwapPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
-import { PeerswapsListComponent } from './components/ln-services/peerswap/swaps-list/swaps-list.component';
+import { PSPeersComponent } from './components/ln-services/peerswap/swap-peers/swap-peers.component';
+import { PSSwapsListComponent } from './components/ln-services/peerswap/swaps-list/swaps-list.component';
 import { PSSwapOutModalComponent } from './components/ln-services/peerswap/swap-out-modal/swap-out-modal.component';
 import { PSSwapInModalComponent } from './components/ln-services/peerswap/swap-in-modal/swap-in-modal.component';
 
@@ -282,8 +282,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapInInfoGraphicsComponent,
     SwapOutInfoGraphicsComponent,
     PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsListComponent,
+    PSPeersComponent,
+    PSSwapsListComponent,
     PSSwapOutModalComponent,
     PSSwapInModalComponent
   ],
@@ -350,8 +350,8 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapInInfoGraphicsComponent,
     SwapOutInfoGraphicsComponent,
     PeerswapComponent,
-    SwapPeersComponent,
-    PeerswapsListComponent,
+    PSPeersComponent,
+    PSSwapsListComponent,
     PSSwapOutModalComponent,
     PSSwapInModalComponent
   ],
