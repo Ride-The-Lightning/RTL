@@ -266,6 +266,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
             currSelectedUnit = prevSelectedUnit;
           }
         });
+    } else {
+      this.selAmountUnit = event.value;
     }
   }
 

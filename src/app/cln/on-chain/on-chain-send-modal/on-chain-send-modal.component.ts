@@ -319,6 +319,8 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
             currSelectedUnit = prevSelectedUnit;
           }
         });
+    } else {
+      this.selAmountUnit = event.value;
     }
   }
 
