@@ -812,6 +812,9 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
   ] },
   { pageId: 'peerswap', tables: [
+    { tableId: 'pspeers', recordsPerPage: PAGE_SIZE, sortBy: 'swaps_allowed', sortOrder: SortOrderEnum.DESCENDING,
+      columnSelectionSM: ['alias', 'short_channel_id'],
+      columnSelection: ['short_channel_id', 'alias', 'swaps_allowed', 'local_balance', 'remote_balance'] },
     { tableId: 'psout', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'created_at', 'amount'],
       columnSelection: ['state', 'created_at', 'swap_id', 'alias', 'short_channel_id', 'amount'] },
@@ -929,6 +932,10 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
     }
   },
   peerswap: {
+    pspeers: {
+      maxColumns: 5,
+      allowedColumns: [{ column:'short_channel_id' }, { column:'alias' }, { column:'swaps_allowed' }, { column:'local_balance' }, { column:'remote_balance' }]
+    },
     psout: {
       maxColumns: 6,
       allowedColumns: [{ column:'state' }, { column:'created_at' }, { column:'swap_id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'amount' }]

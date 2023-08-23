@@ -6,9 +6,18 @@
     </div>
     <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
       <div fxFlex="70"></div>
-      <mat-form-field fxFlex="30">
-        <input matInput placeholder="Filter" [(ngModel)]="selFilter" (keyup)="applyFilter()">
-      </mat-form-field>
+      <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter By</mat-label>
+          <mat-select tabindex="1" name="filterBy" [(ngModel)]="selFilterBy" (selectionChange)="selFilter=''; applyFilter()">
+            <perfect-scrollbar><mat-option *ngFor="let column of ['all'].concat(displayedColumns.slice(0, -1))" [value]="column">{{getLabel(column)}}</mat-option></perfect-scrollbar>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxLayout="column" fxFlex="49">
+          <mat-label>Filter</mat-label>
+          <input matInput name="filter" [(ngModel)]="selFilter" (input)="applyFilter()" (keyup)="applyFilter()">
+        </mat-form-field>
+      </div>
     </div>
   </div>
   <div fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
@@ -20,7 +29,11 @@
       </ng-container>
       <ng-container matColumnDef="alias">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Node Alias</th>
-        <td *matCellDef="let sPeer" mat-cell>{{sPeer?.alias}}</td>
+        <td *matCellDef="let sPeer" mat-cell>
+          <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
+            <span class="ellipsis-child">{{sPeer?.alias}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="swaps_allowed">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Swaps Allowed</th>
@@ -72,7 +85,7 @@
       <tr *matFooterRowDef="['no_swap_peer']" mat-footer-row
         [ngClass]="{'display-none': swapPeers?.data && swapPeers?.data?.length && swapPeers?.data?.length>0}">
       </tr>
-      <tr *matHeaderRowDef="displayedColumns; sticky: flgSticky;" mat-header-row></tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
