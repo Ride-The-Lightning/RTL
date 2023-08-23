@@ -103,7 +103,7 @@
       <tr *matFooterRowDef="['no_swap']" mat-footer-row
         [ngClass]="{'display-none': swaps?.data && swaps?.data?.length && swaps?.data?.length>0}">
       </tr>
-      <tr *matHeaderRowDef="displayedColumns; sticky: flgSticky;" mat-header-row></tr>
+      <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>

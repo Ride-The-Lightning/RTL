@@ -45,12 +45,11 @@ export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peerswap';
-  public tableSetting: TableSetting = { tableId: 'psout', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
-  public psPageSettings: PageSettings[] = CLN_DEFAULT_PAGE_SETTINGS;
+  public tableSetting: TableSetting = { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
+  public psPageSettings: PageSettings = { pageId: this.PAGE_ID, tables: [] };
   public displayedColumns: any[] = [];
   public allSwapsData: any = null;
   public swaps: any;
-  public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -71,13 +70,10 @@ export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.selSwapList = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-    this.tableSetting.tableId = this.selSwapList;
-    this.updateTableDef();
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
       subscribe({
         next: (value: ResolveEnd) => {
           this.selSwapList = value.url.substring(value.url.lastIndexOf('/') + 1);
-          this.tableSetting.tableId = this.selSwapList;
           this.updateTableDef();
           if (this.allSwapsData && this.sort && this.paginator) {
             this.loadSwapsTable();
@@ -91,7 +87,9 @@ export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = this.apiCallStatus.message || '';
         }
-        this.psPageSettings = settings.pageSettings || CLN_DEFAULT_PAGE_SETTINGS;
+        this.psPageSettings = (settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)) || (CLN_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID));
+        this.updateTableDef();
+        this.logger.info(this.psPageSettings);
       });
     this.store.select(swaps).pipe(takeUntil(this.unSubs[2])).
       subscribe((swapsSeletor: { swapOuts: Swap[], swapIns: Swap[], swapsCanceled: Swap[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -213,17 +211,21 @@ export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateTableDef() {
-    this.tableSetting = JSON.parse(JSON.stringify(this.psPageSettings.find((page) => page.pageId === this.PAGE_ID).tables.find((table) => table.tableId === this.selSwapList)));
-    if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
-      this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
-    } else {
-      this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+    const sel_table = this.selSwapList.includes('psin') ? 'swap_in' : this.selSwapList.includes('pscanceled') ? 'swap_canceled' : 'swap_out';
+    const found_table = this.psPageSettings.tables.find((table) => table.tableId === sel_table);
+    if (found_table) {
+      this.tableSetting = JSON.parse(JSON.stringify(found_table));
+      if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+        this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
+      } else {
+        this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelection));
+      }
+      this.displayedColumns.unshift('role');
+      this.displayedColumns.push('actions');
+      this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+      this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
+      this.filterColumns = ['all', ...this.displayedColumns.slice(0, -1)];
     }
-    this.displayedColumns.unshift('role');
-    this.displayedColumns.push('actions');
-    this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-    this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
-    this.filterColumns = ['all', ...this.displayedColumns.slice(0, -1)];
     this.logger.info(this.displayedColumns);
   }
 

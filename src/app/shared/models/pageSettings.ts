@@ -138,10 +138,10 @@ export class CLNPageDefinitions {
     query_routes: TableDefinition;
   };
   peerswap: {
-    pspeers: TableDefinition;
-    psout: TableDefinition;
-    psin: TableDefinition;
-    pscanceled: TableDefinition;
+    peers: TableDefinition;
+    swap_out: TableDefinition;
+    swap_in: TableDefinition;
+    swap_canceled: TableDefinition;
   };
 
 };

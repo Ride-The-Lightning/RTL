@@ -22,7 +22,7 @@
   </div>
   <div fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
     <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
-    <table #table mat-table class="overflow-auto" fxFlex="100" matSort [dataSource]="swapPeers" [ngClass]="{'error-border': errorMessage !== ''}">
+    <table #table mat-table class="overflow-auto" fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="swapPeers" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="short_channel_id">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Short Channel ID</th>
         <td *matCellDef="let sPeer" mat-cell>{{sPeer?.short_channel_id}}</td>

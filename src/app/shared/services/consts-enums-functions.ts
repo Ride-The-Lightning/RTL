@@ -812,16 +812,16 @@ export const CLN_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelection: ['alias', 'channel', 'direction', 'delay', 'msatoshi'] }
   ] },
   { pageId: 'peerswap', tables: [
-    { tableId: 'pspeers', recordsPerPage: PAGE_SIZE, sortBy: 'swaps_allowed', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'swaps_allowed', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['alias', 'short_channel_id'],
       columnSelection: ['short_channel_id', 'alias', 'swaps_allowed', 'local_balance', 'remote_balance'] },
-    { tableId: 'psout', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'created_at', 'amount'],
       columnSelection: ['state', 'created_at', 'swap_id', 'alias', 'short_channel_id', 'amount'] },
-    { tableId: 'psin', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'created_at', 'amount'],
       columnSelection: ['state', 'created_at', 'swap_id', 'alias', 'short_channel_id', 'amount'] },
-    { tableId: 'pscanceled', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
+    { tableId: 'swap_canceled', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['created_at', 'amount', 'cancel_message'],
       columnSelection: ['created_at', 'swap_id', 'alias', 'short_channel_id', 'amount', 'cancel_message'] }
   ] }
@@ -932,19 +932,19 @@ export const CLN_PAGE_DEFS: CLNPageDefinitions = {
     }
   },
   peerswap: {
-    pspeers: {
+    peers: {
       maxColumns: 5,
       allowedColumns: [{ column:'short_channel_id' }, { column:'alias' }, { column:'swaps_allowed' }, { column:'local_balance' }, { column:'remote_balance' }]
     },
-    psout: {
+    swap_out: {
       maxColumns: 6,
       allowedColumns: [{ column:'state' }, { column:'created_at' }, { column:'swap_id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'amount' }]
     },
-    psin: {
+    swap_in: {
       maxColumns: 6,
       allowedColumns: [{ column:'state' }, { column:'created_at' }, { column:'swap_id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'amount' }]
     },
-    pscanceled: {
+    swap_canceled: {
       maxColumns: 6,
       allowedColumns: [{ column:'created_at' }, { column:'swap_id' }, { column:'alias' }, { column:'short_channel_id' }, { column:'amount' }, { column:'cancel_message' }]
     }

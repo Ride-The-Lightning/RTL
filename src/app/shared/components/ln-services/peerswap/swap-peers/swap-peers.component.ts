@@ -41,7 +41,7 @@ export class PSPeersComponent implements OnInit, OnDestroy {
   public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'peerswap';
-  public tableSetting: TableSetting = { tableId: 'pspeers', recordsPerPage: PAGE_SIZE, sortBy: 'swaps_allowed', sortOrder: SortOrderEnum.DESCENDING };
+  public tableSetting: TableSetting = { tableId: 'peers', recordsPerPage: PAGE_SIZE, sortBy: 'swaps_allowed', sortOrder: SortOrderEnum.DESCENDING };
   public displayedColumns: any[] = [];
   public totalSwapPeers = 0;
   public peersData: SwapPeerChannelsFlattened[] = [];
