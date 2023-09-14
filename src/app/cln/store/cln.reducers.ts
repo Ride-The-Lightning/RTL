@@ -229,7 +229,7 @@ export const CLNReducer = createReducer(initCLNState,
     const swapCanceledArr: Swap[] = [];
     for (let i = (payload.length - 1); i >= 0; i--) {
       payload[i].alias = state.peers?.find((peer) => peer.id === payload[i].peer_node_id)?.alias || payload[i].peer_node_id;
-      if (payload[i].state === 'State_SwapCanceled') {
+      if (payload[i].state === 'State_SwapCanceled' || payload[i].hasOwnProperty('cancel_message')) {
         swapCanceledArr.push(payload[i]);
       } else {
         if (payload[i].type === PeerswapTypes.SWAP_OUT) {

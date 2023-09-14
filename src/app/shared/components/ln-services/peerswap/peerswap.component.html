@@ -5,13 +5,32 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngFor="let link of links" role="tab" mat-tab-link class="mat-tab-label" [routerLink]="['../', link.link]" [active]="activeTab.link === link.link" (click)="activeTab = link">{{link.name}}</div>
-      </nav>
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{links[0].num_records}}">Peers</span>
+          </ng-template>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{links[1].num_records}}">Swap Out</span>
+          </ng-template>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{links[2].num_records}}">Swap In</span>
+          </ng-template>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{links[3].num_records}}">Swap Canceled</span>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">
         <mat-tab-nav-panel #tabPanel>
-          <rtl-peerswap-peers *ngIf="activeTab === this.links[0]"></rtl-peerswap-peers>
-          <rtl-peerswap-swaps-list *ngIf="activeTab !== this.links[0]"></rtl-peerswap-swaps-list>
+          <rtl-peerswap-peers *ngIf="activeLink === 0"></rtl-peerswap-peers>
+          <rtl-peerswap-swaps-list *ngIf="activeLink !== 0"></rtl-peerswap-swaps-list>
         </mat-tab-nav-panel>
       </div>
     </mat-card-content>

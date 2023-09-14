@@ -95,9 +95,6 @@ export class PSSwapsListComponent implements OnInit, AfterViewInit, OnDestroy {
       subscribe((swapsSeletor: { swapOuts: Swap[], swapIns: Swap[], swapsCanceled: Swap[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = swapsSeletor.apiCallStatus;
-        if (this.apiCallStatus?.status === APICallStatusEnum.UN_INITIATED) {
-          this.store.dispatch(fetchSwaps());
-        }
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
