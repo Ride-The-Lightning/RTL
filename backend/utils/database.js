@@ -2,13 +2,65 @@ import * as fs from 'fs';
 import { join, sep } from 'path';
 import { Common } from '../utils/common.js';
 import { Logger } from '../utils/logger.js';
-import { validateDocument, LNDCollection, ECLCollection, CLNCollection } from '../models/database.model.js';
+import { CollectionsEnum, validateDocument, LNDCollection, ECLCollection, CLNCollection, ECL_UPDATED_DB } from '../models/database.model.js';
 export class DatabaseService {
     constructor() {
         this.common = Common;
         this.logger = Logger;
         this.dbDirectory = join(this.common.db_directory_path, 'database');
         this.nodeDatabase = {};
+    }
+    migrateDatabase() {
+        this.common.nodes?.map((node) => {
+            if (node.ln_implementation === 'ECL') {
+                this.nodeDatabase[node.index] = { adapter: null, data: {} };
+                this.nodeDatabase[node.index].adapter = new DatabaseAdapter(this.dbDirectory, node);
+                this.fetchNodeData(node);
+                if (this.nodeDatabase[node.index].data.PageSettings) {
+                    try {
+                        const currPageSettings = JSON.parse(JSON.stringify(this.nodeDatabase[node.index].data.PageSettings));
+                        ECL_UPDATED_DB.forEach((updatePage) => {
+                            const foundPageDB = this.nodeDatabase[node.index].data.PageSettings.find((currPage) => currPage.pageId === updatePage.pageId);
+                            if (foundPageDB) {
+                                updatePage.tables.forEach((updateTable) => {
+                                    const foundTableDB = foundPageDB.tables.find((currTable) => currTable.tableId === updateTable.tableId);
+                                    if (foundTableDB) {
+                                        updateTable.removed.forEach((colToBeRemoved) => {
+                                            const foundIndex = foundTableDB.columnSelection.findIndex((col) => col === colToBeRemoved);
+                                            const foundIndexSM = foundTableDB.columnSelectionSM.findIndex((col) => col === colToBeRemoved);
+                                            if (foundIndex >= 0) {
+                                                foundTableDB.columnSelection?.splice(foundIndex, 1);
+                                            }
+                                            if (foundIndexSM >= 0) {
+                                                foundTableDB.columnSelectionSM?.splice(foundIndexSM, 1);
+                                            }
+                                        });
+                                        updateTable.renamed.forEach((colToBeRenamed) => {
+                                            const [oldName, newName] = colToBeRenamed.split(':');
+                                            const foundIndex = foundTableDB.columnSelection.findIndex((col) => col === oldName);
+                                            const foundIndexSM = foundTableDB.columnSelectionSM.findIndex((col) => col === oldName);
+                                            if (foundIndex >= 0) {
+                                                foundTableDB.columnSelection?.splice(foundIndex, 1, newName);
+                                            }
+                                            if (foundIndexSM >= 0) {
+                                                foundTableDB.columnSelectionSM?.splice(foundIndexSM, 1, newName);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                        if (currPageSettings !== this.nodeDatabase[node.index].data.PageSettings) {
+                            this.saveDatabase(node, CollectionsEnum.PAGE_SETTINGS);
+                        }
+                    }
+                    catch (err) {
+                        this.logger.log({ selectedNode: node, level: 'ERROR', fileName: 'Database', msg: 'Database Migration Error', error: err });
+                    }
+                }
+            }
+            return true;
+        });
     }
     loadDatabase(session) {
         const { id, selectedNode } = session;

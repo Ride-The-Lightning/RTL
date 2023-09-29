@@ -16,14 +16,12 @@ export const simplifyAllChannels = (selNode, channels) => {
             nodeId: channel.nodeId ? channel.nodeId : '',
             channelId: channel.channelId ? channel.channelId : '',
             state: channel.state ? channel.state : '',
-            announceChannel: channel.data && channel.data.commitments && channel.data.commitments.channelFlags && channel.data.commitments.channelFlags.announceChannel ? channel.data.commitments.channelFlags.announceChannel : false,
-            toLocal: (channel.data.commitments.localCommit.spec.toLocal) ? Math.round(+channel.data.commitments.localCommit.spec.toLocal / 1000) : 0,
-            toRemote: (channel.data.commitments.localCommit.spec.toRemote) ? Math.round(+channel.data.commitments.localCommit.spec.toRemote / 1000) : 0,
+            announceChannel: channel.data && channel.data.commitments && channel.data.commitments.params && channel.data.commitments.params.channelFlags && channel.data.commitments.params.channelFlags.announceChannel ? channel.data.commitments.params.channelFlags.announceChannel : false,
+            toLocal: (channel.data.commitments.active[0].localCommit.spec.toLocal) ? Math.round(+channel.data.commitments.active[0].localCommit.spec.toLocal / 1000) : 0,
+            toRemote: (channel.data.commitments.active[0].localCommit.spec.toRemote) ? Math.round(+channel.data.commitments.active[0].localCommit.spec.toRemote / 1000) : 0,
             shortChannelId: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.shortChannelId ? channel.data.channelUpdate.shortChannelId : '',
-            isFunder: channel.data && channel.data.commitments && channel.data.commitments.localParams && channel.data.commitments.localParams.isFunder ? channel.data.commitments.localParams.isFunder : false,
-            buried: channel.data && channel.data.buried ? channel.data.buried : false,
+            isInitiator: channel.data && channel.data.commitments && channel.data.commitments.params && channel.data.commitments.params.localParams && channel.data.commitments.params.localParams.isInitiator ? channel.data.commitments.params.localParams.isInitiator : false,
             feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
-            feeRatePerKw: (channel.data.commitments.localCommit.spec.feeratePerKw) ? channel.data.commitments.localCommit.spec.feeratePerKw : 0,
             feeProportionalMillionths: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeProportionalMillionths ? channel.data.channelUpdate.feeProportionalMillionths : 0,
             alias: ''
         });
@@ -159,7 +157,6 @@ export const closeChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-// options.form = { sourceNodeId: req.params.source, targetNodeId: req.params.target, amountMsat: req.params.amount, ignoreNodeIds: req.params.ignore };
 export const circularRebalance = (req, res, next) => {
     const crInvDescription = 'Circular rebalancing invoice for ' + (req.body.amountMsat / 1000) + ' Sats';
     options = common.getOptions(req);
