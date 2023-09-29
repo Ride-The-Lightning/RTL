@@ -11,6 +11,7 @@ import sharedRoutes from '../routes/shared/index.js';
 import lndRoutes from '../routes/lnd/index.js';
 import clnRoutes from '../routes/cln/index.js';
 import eclRoutes from '../routes/eclair/index.js';
+import { Database, DatabaseService } from './database.js';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 import { CLWSClient, CLWebSocketClient } from '../controllers/cln/webSocketClient.js';
@@ -27,6 +28,7 @@ export class ExpressApplication {
   public eclWsClient: ECLWebSocketClient = ECLWSClient;
   public clWsClient: CLWebSocketClient = CLWSClient;
   public lndWsClient: LNDWebSocketClient = LNDWSClient;
+  public databaseService: DatabaseService = Database;
   public directoryName = dirname(fileURLToPath(import.meta.url));
 
   constructor() {
@@ -40,6 +42,7 @@ export class ExpressApplication {
     this.setCORS();
     this.setCSRF();
     this.setApplicationRoutes();
+    this.databaseService.migrateDatabase();
   }
 
   public getApp = () => this.app;

@@ -154,3 +154,26 @@ export const CollectionFieldsEnum = { ...OfferFieldsEnum, ...PageSettingsFieldsE
 export const LNDCollection = [CollectionsEnum.PAGE_SETTINGS];
 export const ECLCollection = [CollectionsEnum.PAGE_SETTINGS];
 export const CLNCollection = [CollectionsEnum.PAGE_SETTINGS, CollectionsEnum.OFFERS];
+
+export const ECL_UPDATED_DB = [
+  {
+    pageId: 'peers_channels',
+    tables: [
+      {
+        tableId: 'open_channels',
+        removed: ['buried', 'feeRatePerKw'],
+        renamed: ['isFunder:isInitiator']
+      },
+      {
+        tableId: 'pending_channels',
+        removed: ['buried', 'feeRatePerKw'],
+        renamed: ['isFunder:isInitiator']
+      },
+      {
+        tableId: 'inactive_channels',
+        removed: ['buried', 'feeRatePerKw'],
+        renamed: ['isFunder:isInitiator']
+      }
+    ]
+  }
+];
