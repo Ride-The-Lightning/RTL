@@ -357,6 +357,7 @@ export const UI_MESSAGES = {
   VERIFY_MESSAGE: 'Verifying Message...',
   BUMP_FEE: 'Bumping Fee...',
   LEASE_UTXO: 'Leasing UTXO...',
+  GET_LOOP_INFO: 'Getting Loop Info...',
   GET_LOOP_SWAPS: 'Getting List Swaps...',
   GET_FORWARDING_HISTORY: 'Getting Forwarding History...',
   GET_LOOKUP_DETAILS: 'Getting Lookup Details...',

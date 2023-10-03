@@ -29,9 +29,10 @@ export class CommonService {
             { name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 },
             { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }
         ];
-        this.getSwapServerOptions = (req) => {
+        this.setSwapServerOptions = (req) => {
             const swapOptions = {
-                url: req.session.selectedNode.swap_server_url,
+                baseUrl: req.session.selectedNode.swap_server_url,
+                uri: '',
                 rejectUnauthorized: false,
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': '' }
