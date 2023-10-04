@@ -27,7 +27,7 @@ import { RTLEffects } from './rtl.effects';
 import { RTLState } from './rtl.state';
 import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore } from './rtl.actions';
 import { resetLNDStore, fetchInfoLND } from '../lnd/store/lnd.actions';
-import { resetCLStore } from '../cln/store/cln.actions';
+import { resetCLNStore } from '../cln/store/cln.actions';
 import { resetECLStore } from '../eclair/store/ecl.actions';
 
 describe('RTL Root Effects', () => {
@@ -89,7 +89,7 @@ describe('RTL Root Effects', () => {
       expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
       expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(resetRootStore({ payload: mockActionsData.resetRootStore }));
       expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(resetLNDStore({ payload: mockActionsData.resetChildrenStores }));
-      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(resetCLStore({ payload: mockActionsData.resetChildrenStores }));
+      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(resetCLNStore({ payload: mockActionsData.resetChildrenStores }));
       expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore({ payload: mockActionsData.resetChildrenStores }));
       expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(fetchInfoLND({ payload: { loadPage: 'HOME' } }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(9);

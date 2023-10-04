@@ -10,7 +10,7 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { ConfigSettingsNode } from '../../../models/RTLconfig';
 import { updateServiceSettings } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
+import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { DataService } from '../../../services/data.service';
 import { CommonService } from '../../../services/common.service';
@@ -98,7 +98,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
         unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
       }
     }));
-    this.store.dispatch(setChildNodeSettingsCL({
+    this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
         unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers

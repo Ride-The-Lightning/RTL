@@ -10,7 +10,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateServiceSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCL } from '../../../../../cln/store/cln.actions';
+import { setChildNodeSettingsCLN } from '../../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
@@ -64,7 +64,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
         unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
       }
     }));
-    this.store.dispatch(setChildNodeSettingsCL({
+    this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
         unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
