@@ -317,12 +317,14 @@ const mapAliases = (rlEvent: PaymentRelayed, storedChannels: Channel[]) => {
         outgoingEvent.shortChannelId = '';
       });
     }
-    rlEvent.amountIn = rlEvent.incoming?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    const amountInTotalmSats = rlEvent.incoming?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    rlEvent.amountIn = Math.round(amountInTotalmSats / 1000);
     rlEvent.fromChannelId = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].channelId : '';
     rlEvent.fromChannelAlias = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].channelAlias : '';
     rlEvent.fromShortChannelId = rlEvent.incoming && rlEvent.incoming.length ? rlEvent.incoming[0].shortChannelId : '';
 
-    rlEvent.amountOut = rlEvent.outgoing?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    const amountOutTotalmSats = rlEvent.outgoing?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    rlEvent.amountOut = Math.round(amountOutTotalmSats / 1000);
     rlEvent.toChannelId = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].channelId : '';
     rlEvent.toChannelAlias = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].channelAlias : '';
     rlEvent.toShortChannelId = rlEvent.outgoing && rlEvent.outgoing.length ? rlEvent.outgoing[0].shortChannelId : '';
