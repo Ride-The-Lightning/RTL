@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.14.0-beta';
+export const VERSION = '0.14.1-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -357,6 +357,7 @@ export const UI_MESSAGES = {
   VERIFY_MESSAGE: 'Verifying Message...',
   BUMP_FEE: 'Bumping Fee...',
   LEASE_UTXO: 'Leasing UTXO...',
+  GET_LOOP_INFO: 'Getting Loop Info...',
   GET_LOOP_SWAPS: 'Getting List Swaps...',
   GET_FORWARDING_HISTORY: 'Getting Forwarding History...',
   GET_LOOKUP_DETAILS: 'Getting Lookup Details...',
@@ -1195,20 +1196,20 @@ export const ECL_PAGE_DEFS: ECLPageDefinitions = {
   peers_channels: {
     open_channels: {
       maxColumns: 8,
-      allowedColumns: [{ column:'shortChannelId' }, { column:'channelId' }, { column:'alias' }, { column:'nodeId' }, { column:'isFunder', label: 'Funder' },
-      { column:'buried' }, { column:'feeBaseMsat', label: 'Base Fee' }, { column:'feeProportionalMillionths', label: 'Fee Rate' }, { column:'toLocal', label: 'Local Balance' }, { column:'toRemote', label: 'Remote Balance' },
-      { column:'feeRatePerKw', label: 'Fee/KW' }, { column:'balancedness', label: 'Balance Score' }]
+      allowedColumns: [{ column:'shortChannelId' }, { column:'channelId' }, { column:'alias' }, { column:'nodeId' }, { column:'isInitiator', label: 'Initiator' },
+      { column:'feeBaseMsat', label: 'Base Fee' }, { column:'feeProportionalMillionths', label: 'Fee Rate' }, { column:'toLocal', label: 'Local Balance' }, { column:'toRemote', label: 'Remote Balance' },
+      { column:'balancedness', label: 'Balance Score' }]
     },
     pending_channels: {
       maxColumns: 7,
-      allowedColumns: [{ column:'state' }, { column:'channelId' }, { column:'alias' }, { column:'nodeId' }, { column:'isFunder', label: 'Funder' },
-      { column:'buried' }, { column:'toLocal', label: 'Local Balance' }, { column:'toRemote', label: 'Remote Balance' }, { column:'feeRatePerKw', label: 'Fee/KW' }]
+      allowedColumns: [{ column:'state' }, { column:'channelId' }, { column:'alias' }, { column:'nodeId' }, { column:'isInitiator', label: 'Initiator' },
+      { column:'toLocal', label: 'Local Balance' }, { column:'toRemote', label: 'Remote Balance' }]
     },
     inactive_channels: {
       maxColumns: 8,
       allowedColumns: [{ column:'state' }, { column:'shortChannelId' }, { column:'channelId' }, { column:'alias' }, { column:'nodeId' },
-      { column:'isFunder', label: 'Funder' }, { column:'buried' }, { column:'toLocal', label: 'Local Balance' },
-      { column:'toRemote', label: 'Remote Balance' }, { column:'feeRatePerKw', label: 'Fee/KW' }, { column:'balancedness', label: 'Balance Score' }]
+      { column:'isInitiator', label: 'Initiator' }, { column:'toLocal', label: 'Local Balance' },
+      { column:'toRemote', label: 'Remote Balance' }, { column:'balancedness', label: 'Balance Score' }]
     },
     peers: {
       maxColumns: 4,

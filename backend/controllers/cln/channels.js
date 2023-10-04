@@ -40,7 +40,7 @@ export const listChannels = (req, res, next) => {
     request(options).then((body) => {
         body?.map((channel) => {
             if (!channel.alias || channel.alias === '') {
-                channel.alias = channel.id.substring(0, 20);
+                channel.alias = channel.channel_id.substring(0, 20);
             }
             const local = channel.to_us_msat || 0;
             const remote = (channel.total_msat - local) || 0;
