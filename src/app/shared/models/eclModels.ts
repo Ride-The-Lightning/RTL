@@ -111,8 +111,10 @@ export interface Channel {
   toRemote?: number;
   shortChannelId?: string;
   announceChannel?: boolean;
-  isInitiator?: boolean;
+  isFunder?: boolean;
+  buried?: boolean;
   feeBaseMsat?: number;
+  feeRatePerKw?: number;
   feeProportionalMillionths?: number;
   balancedness?: number;
 }

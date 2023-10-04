@@ -7,7 +7,13 @@ const common: CommonService = Common;
 
 export const loopOut = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping Out..' });
-  options.uri = '/v1/loop/out';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/out';
   options.body = {
     amt: req.body.amount,
     sweep_conf_target: req.body.targetConf,
@@ -33,7 +39,13 @@ export const loopOut = (req, res, next) => {
 
 export const loopOutTerms = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms..' });
-  options.uri = '/v1/loop/out/terms';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/out/terms';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms Received', data: body });
     res.status(200).json(body);
@@ -45,7 +57,13 @@ export const loopOutTerms = (req, res, next) => {
 
 export const loopOutQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
-  options.uri = '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Quotes Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url });
   request(options).then((quoteRes) => {
     quoteRes.amount = +req.params.amount;
@@ -60,12 +78,18 @@ export const loopOutQuote = (req, res, next) => {
 
 export const loopOutTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..' });
-  options.uri = '/v1/loop/out/terms';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Out Terms & Quotes Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/out/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const options1 = common.getSwapServerOptions(req); const options2 = common.getSwapServerOptions(req);
+    options1.url = options1.url + '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options2.url = options2.url + '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
@@ -88,7 +112,13 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
 
 export const loopIn = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping In..' });
-  options.uri = '/v1/loop/in';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/in';
   options.body = {
     amt: req.body.amount,
     max_swap_fee: req.body.swapFee,
@@ -107,7 +137,13 @@ export const loopIn = (req, res, next) => {
 
 export const loopInTerms = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms..' });
-  options.uri = '/v1/loop/in/terms';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Terms Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/in/terms';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms Received', data: body });
     res.status(200).json(body);
@@ -119,7 +155,13 @@ export const loopInTerms = (req, res, next) => {
 
 export const loopInQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
-  options.uri = '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Quotes Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url });
   request(options).then((body) => {
     body.amount = +req.params.amount;
@@ -134,12 +176,18 @@ export const loopInQuote = (req, res, next) => {
 
 export const loopInTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..' });
-  options.uri = '/v1/loop/in/terms';
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop In Terms & Quotes Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/in/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const options1 = common.getSwapServerOptions(req); const options2 = common.getSwapServerOptions(req);
+    options1.url = options1.url + '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options2.url = options2.url + '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
@@ -162,12 +210,13 @@ export const loopInTermsAndQuotes = (req, res, next) => {
 
 export const swaps = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting List Swaps..' });
+  options = common.getSwapServerOptions(req);
   if (options.url === '') {
     const errMsg = 'Loop Server URL is missing in the configuration.';
     const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
-  options.uri = '/v1/loop/swaps';
+  options.url = options.url + '/v1/loop/swaps';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps Received', data: body });
     res.status(200).json(body.swaps);
@@ -179,30 +228,18 @@ export const swaps = (req, res, next) => {
 
 export const swap = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..' });
-  options.uri = '/v1/loop/swap/' + req.params.id;
+  options = common.getSwapServerOptions(req);
+  if (options.url === '') {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: 'Get Swap Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  }
+  options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Loop', 'Get Swap Error', req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
-};
-
-export const loopInfo = (req, res, next) => {
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Information..' });
-  options = common.setSwapServerOptions(req);
-  if (options.url === '') {
-    const errMsg = 'Loop Server URL is missing in the configuration.';
-    const err = common.handleError({ statusCode: 500, message: 'Get Loop Info Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  }
-  options.uri = '/v1/loop/info';
-  request(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Information Received', data: body });
-    res.status(200).json(body);
-  }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Loop', 'Get Loop Info Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };

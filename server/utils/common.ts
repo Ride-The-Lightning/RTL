@@ -34,10 +34,9 @@ export class CommonService {
 
   constructor() { }
 
-  public setSwapServerOptions = (req) => {
+  public getSwapServerOptions = (req) => {
     const swapOptions = {
-      baseUrl: req.session.selectedNode.swap_server_url,
-      uri: '',
+      url: req.session.selectedNode.swap_server_url,
       rejectUnauthorized: false,
       json: true,
       headers: { 'Grpc-Metadata-macaroon': '' }

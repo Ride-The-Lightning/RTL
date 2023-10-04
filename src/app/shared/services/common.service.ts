@@ -298,19 +298,11 @@ export class CommonService implements OnDestroy {
   isVersionCompatible(currentVersion, checkVersion) {
     // Check for newer CLN version style compatibility
     if (currentVersion) {
-      const match = currentVersion.match(/v?(?<version>\d+(?:\.\d+)*)/);
-      if (match && match.groups && match.groups.version) {
-        this.logger.info('Current Version: ' + match.groups.version);
-        this.logger.info('Checking Compatiblility with Version: ' + checkVersion);
-        const versionsArr = match.groups.version.split('.') || [];
-        const checkVersionsArr = checkVersion.split('.');
-        return (+versionsArr[0] > +checkVersionsArr[0]) ||
-          (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
-          (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
-      } else {
-        this.logger.error('Invalid Version String: ' + currentVersion);
-        return false;
-      }
+      const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
+      const checkVersionsArr = checkVersion.split('.');
+      return (+versionsArr[0] > +checkVersionsArr[0]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
+        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
     }
     return false;
   }
