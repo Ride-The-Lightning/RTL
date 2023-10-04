@@ -19,14 +19,9 @@ export class LoopService implements OnDestroy {
   private loopUrl = '';
   private swaps: LoopSwapStatus[] = [];
   public swapsChanged = new BehaviorSubject<LoopSwapStatus[]>([]);
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) { }
-
-  getLoopInfo() {
-    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/info';
-    return this.httpClient.get<any>(this.loopUrl);
-  }
 
   getSwapsList() {
     return this.swaps;

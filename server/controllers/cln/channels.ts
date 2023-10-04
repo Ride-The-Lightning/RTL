@@ -35,7 +35,7 @@ export const listChannels = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
   request(options).then((body) => {
     body?.map((channel) => {
-      if (!channel.alias || channel.alias === '') { channel.alias = channel.channel_id.substring(0, 20); }
+      if (!channel.alias || channel.alias === '') { channel.alias = channel.id.substring(0, 20); }
       const local = channel.to_us_msat || 0;
       const remote = (channel.total_msat - local) || 0;
       const total = channel.total_msat || 0;

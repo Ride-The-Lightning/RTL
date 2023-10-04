@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { join, sep } from 'path';
 import { Common, CommonService } from '../utils/common.js';
 import { Logger, LoggerService } from '../utils/logger.js';
-import { Collections, CollectionsEnum, validateDocument, LNDCollection, ECLCollection, CLNCollection, ECL_UPDATED_DB } from '../models/database.model.js';
+import { Collections, CollectionsEnum, validateDocument, LNDCollection, ECLCollection, CLNCollection } from '../models/database.model.js';
 import { CommonSelectedNode } from '../models/config.model.js';
 
 export class DatabaseService {
@@ -13,58 +13,6 @@ export class DatabaseService {
   public nodeDatabase: { id?: { adapter: DatabaseAdapter, data: Collections } } = {};
 
   constructor() { }
-
-  migrateDatabase() {
-    this.common.nodes?.map((node: any) => {
-      if (node.ln_implementation === 'ECL') {
-        this.nodeDatabase[node.index] = { adapter: null, data: {} };
-        this.nodeDatabase[node.index].adapter = new DatabaseAdapter(this.dbDirectory, node);
-        this.fetchNodeData(node);
-        if (this.nodeDatabase[node.index].data.PageSettings) {
-          try {
-            const currPageSettings = JSON.parse(JSON.stringify(this.nodeDatabase[node.index].data.PageSettings));
-            ECL_UPDATED_DB.forEach((updatePage) => {
-              const foundPageDB = this.nodeDatabase[node.index].data.PageSettings.find((currPage) => currPage.pageId === updatePage.pageId);
-              if (foundPageDB) {
-                updatePage.tables.forEach((updateTable) => {
-                  const foundTableDB = foundPageDB.tables.find((currTable) => currTable.tableId === updateTable.tableId);
-                  if (foundTableDB) {
-                    updateTable.removed.forEach((colToBeRemoved) => {
-                      const foundIndex = foundTableDB.columnSelection.findIndex((col) => col === colToBeRemoved);
-                      const foundIndexSM = foundTableDB.columnSelectionSM.findIndex((col) => col === colToBeRemoved);
-                      if (foundIndex >= 0) {
-                        foundTableDB.columnSelection?.splice(foundIndex, 1);
-                      }
-                      if (foundIndexSM >= 0) {
-                        foundTableDB.columnSelectionSM?.splice(foundIndexSM, 1);
-                      }
-                    });
-                    updateTable.renamed.forEach((colToBeRenamed) => {
-                      const [oldName, newName] = colToBeRenamed.split(':');
-                      const foundIndex = foundTableDB.columnSelection.findIndex((col) => col === oldName);
-                      const foundIndexSM = foundTableDB.columnSelectionSM.findIndex((col) => col === oldName);
-                      if (foundIndex >= 0) {
-                        foundTableDB.columnSelection?.splice(foundIndex, 1, newName);
-                      }
-                      if (foundIndexSM >= 0) {
-                        foundTableDB.columnSelectionSM?.splice(foundIndexSM, 1, newName);
-                      }
-                    });
-                  }
-                });
-              }
-            });
-            if (currPageSettings !== this.nodeDatabase[node.index].data.PageSettings) {
-              this.saveDatabase(node, CollectionsEnum.PAGE_SETTINGS);
-            }
-          } catch (err) {
-            this.logger.log({ selectedNode: node, level: 'ERROR', fileName: 'Database', msg: 'Database Migration Error', error: err });
-          }
-        }
-      }
-      return true;
-    });
-  }
 
   loadDatabase(session: any) {
     const { id, selectedNode } = session;
@@ -250,7 +198,7 @@ export class DatabaseAdapter {
   private dbFilePath = '';
   private userSessions = [];
 
-  constructor(public dbDirectoryPath: string, public selNode: CommonSelectedNode = null, public id: string = '') {
+  constructor(public dbDirectoryPath: string, private selNode: CommonSelectedNode = null, private id: string = '') {
     this.dbFilePath = dbDirectoryPath + sep + 'node-' + selNode.index;
     // For backward compatibility Start
     const oldFilePath = dbDirectoryPath + sep + 'rtldb-node-' + selNode.index + '.json';
