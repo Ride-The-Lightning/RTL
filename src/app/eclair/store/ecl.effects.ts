@@ -21,7 +21,7 @@ import { ECLInvoiceInformationComponent } from '../transactions/invoice-informat
 import { RTLState } from '../../store/rtl.state';
 import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels,
   setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus,
-  updateChannelState, updateInvoice, updateRelayedPayment, fetchPageSettings } from './ecl.actions';
+  updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
@@ -775,7 +775,6 @@ export class ECLEffects implements OnDestroy {
       newRoute = '/ecl/home';
     }
     this.router.navigate([newRoute]);
-    this.store.dispatch(fetchPageSettings());
     this.store.dispatch(fetchInvoices());
     this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
     this.store.dispatch(fetchFees());

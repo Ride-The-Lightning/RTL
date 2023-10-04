@@ -27,9 +27,9 @@ import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey
 
 import { RTLState } from './rtl.state';
 import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings, setRTLConfig } from './rtl.actions';
-import { fetchInfoLND, resetLNDStore } from '../lnd/store/lnd.actions';
-import { fetchInfoCL, resetCLStore } from '../cln/store/cln.actions';
-import { fetchInfoECL, resetECLStore } from '../eclair/store/ecl.actions';
+import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
+import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN } from '../cln/store/cln.actions';
+import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL } from '../eclair/store/ecl.actions';
 import { rootAppConfig, rootNodeData } from './rtl.selector';
 
 @Injectable()
@@ -393,7 +393,7 @@ export class RTLEffects implements OnDestroy {
       withLatestFrom(this.store.select(rootAppConfig)),
       mergeMap(([action, appConfig]: [{ type: string, payload: Login }, RTLConfiguration]) => {
         this.store.dispatch(resetLNDStore({ payload: null }));
-        this.store.dispatch(resetCLStore({ payload: null }));
+        this.store.dispatch(resetCLNStore({ payload: null }));
         this.store.dispatch(resetECLStore({ payload: null }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Login', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API, {
@@ -561,7 +561,7 @@ export class RTLEffects implements OnDestroy {
     this.sessionService.removeItem('eclUnlocked');
     this.store.dispatch(resetRootStore({ payload: node }));
     this.store.dispatch(resetLNDStore({ payload: selNode }));
-    this.store.dispatch(resetCLStore({ payload: selNode }));
+    this.store.dispatch(resetCLNStore({ payload: selNode }));
     this.store.dispatch(resetECLStore({ payload: selNode }));
     if (this.sessionService.getItem('token')) {
       const nodeLnImplementation = node.lnImplementation ? node.lnImplementation.toUpperCase() : 'LND';
@@ -570,14 +570,17 @@ export class RTLEffects implements OnDestroy {
       this.wsService.connectWebSocket(apiUrl?.replace(/^http/, 'ws') + API_END_POINTS.Web_SOCKET_API, (node.index ? node.index.toString() : '-1'));
       switch (nodeLnImplementation) {
         case 'CLN':
-          this.store.dispatch(fetchInfoCL({ payload: { loadPage: landingPage } }));
+          this.store.dispatch(fetchPageSettingsCLN());
+          this.store.dispatch(fetchInfoCLN({ payload: { loadPage: landingPage } }));
           break;
 
         case 'ECL':
+          this.store.dispatch(fetchPageSettingsECL());
           this.store.dispatch(fetchInfoECL({ payload: { loadPage: landingPage } }));
           break;
 
         default:
+          this.store.dispatch(fetchPageSettingsLND());
           this.store.dispatch(fetchInfoLND({ payload: { loadPage: landingPage } }));
           break;
       }
