@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 
 import { API_URL, CLNActions } from '../services/consts-enums-functions';
 import { mockResponseData } from './test-data';
@@ -154,6 +154,7 @@ export class mockSessionService {
 export class mockLoopService {
 
   public swapsChanged = new BehaviorSubject<any[]>([]);
+  getLoopInfo() { return new Observable<any>(null); };
   getSwapsList() { };
   listSwaps() { };
   loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) { };
