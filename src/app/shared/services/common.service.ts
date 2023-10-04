@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { of, Observable, throwError, BehaviorSubject } from 'rxjs';
 import { take, map, catchError } from 'rxjs/operators';
 
@@ -17,7 +18,7 @@ export class CommonService implements OnDestroy {
   private containerSize = { width: 0, height: 0 };
   public containerSizeUpdated: BehaviorSubject<any> = new BehaviorSubject(this.containerSize);
 
-  constructor(public dataService: DataService, private logger: LoggerService) { }
+  constructor(public dataService: DataService, private logger: LoggerService, private datePipe: DatePipe) { }
 
   getScreenSize() {
     return this.screenSize;
@@ -283,7 +284,27 @@ export class CommonService implements OnDestroy {
             if (typeof obj[key] === 'object') {
               dataRow += JSON.stringify(obj[key])?.replace(/\,/g, ';') + ',';
             } else {
-              dataRow += obj[key] + ',';
+              if ((key.includes('timestamp') || key.includes('date'))) {
+                try {
+                  switch (obj[key].toString().length) {
+                    case 10:
+                      dataRow += this.datePipe.transform(new Date(obj[key] * 1000), 'dd/MMM/y HH:mm') + ',';
+                      break;
+
+                    case 13:
+                      dataRow += this.datePipe.transform(new Date(obj[key]), 'dd/MMM/y HH:mm') + ',';
+                      break;
+
+                    default:
+                      dataRow += obj[key] + ',';
+                      break;
+                  }
+                } catch (error) {
+                  dataRow += obj[key] + ',';
+                }
+              } else {
+                dataRow += obj[key] + ',';
+              }
             }
           }
         } else {
