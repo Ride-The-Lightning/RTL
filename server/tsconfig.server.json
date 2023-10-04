@@ -1,0 +1,36 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "baseUrl": "../",
+      "outDir": "../backend",
+      "forceConsistentCasingInFileNames": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": false,
+      "noImplicitOverride": false,
+      "noPropertyAccessFromIndexSignature": false,
+      "strictPropertyInitialization":false,
+      "strictNullChecks": false,
+      "noImplicitAny": false,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "sourceMap": false,
+      "declaration": false,
+      "downlevelIteration": true,
+      "moduleResolution": "node",
+      "importHelpers": true,
+      "target": "ES2022",
+      "module": "ES2022",
+      "useDefineForClassFields": false,
+      "lib": [
+        "ES2022"
+      ],
+      "paths": {
+        "crypto": ["node_modules/crypto-browserify"],
+        "stream": ["node_modules/stream-browserify"]
+      }
+    },
+    "include": [
+      "./**/*"
+    ]
+  }
+  
