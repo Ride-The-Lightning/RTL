@@ -148,6 +148,15 @@
   .cdk-overlay-pane.spinner-dialog-panel .mat-mdc-dialog-container.mdc-dialog {
     background-color: transparent;
   }
+
+  .svg-donation {
+    opacity: 1 !important;
+  }
+
+  .mat-mdc-menu-item:hover .mdc-list-item__primary-text .svg-donation {
+    color: $primary-darker !important;
+  }
+
   .mat-mdc-option:hover:not(.mdc-list-item--disabled) .mdc-list-item__primary-text,
   .mat-mdc-option:hover:not(.mdc-list-item--disabled) .fa-icon, .mat-mdc-option:hover:not(.mdc-list-item--disabled) .fa-icon-small,
   .mat-mdc-option:focus:not(.mdc-list-item--disabled) .mdc-list-item__primary-text, .mat-mdc-option:focus:not(.mdc-list-item--disabled) .fa-icon,

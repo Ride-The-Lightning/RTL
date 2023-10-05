@@ -188,11 +188,27 @@
     border-bottom-style: solid; 
     border-bottom-color: $foreground-divider;
   }
+
+  .mdc-list-item__primary-text {
+    place-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    box-sizing: border-box;
+    display: flex;
+  }
+
+  .svg-donation {
+    opacity: 0.67;
+    width: 1.5rem;
+    margin-right: 10px;
+  }
+  
   .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option:focus:not(.mdc-list-item--disabled), .mat-mdc-option.mat-mdc-option-active, .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled), 
   .mat-mdc-menu-item:hover:not([disabled]), .mat-mdc-menu-item.cdk-program-focused:not([disabled]), .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]), .mat-mdc-menu-item-highlighted:not([disabled]) {
     color: $primary-color;
-    & .mdc-list-item__primary-text, & .fa-icon, & .fa-icon-small {
+    & .mdc-list-item__primary-text, & .fa-icon, & .fa-icon-small, & .svg-donation {
       color: $primary-color;
+      opacity: 1;
     }
   }
   table.mat-mdc-table {
