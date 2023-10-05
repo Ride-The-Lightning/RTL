@@ -527,6 +527,7 @@ export interface SaveChannel {
   transType: string;
   transTypeValue: string;
   spendUnconfirmed: boolean;
+  channelType: string;
 }
 
 export interface CloseChannel {

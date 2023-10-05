@@ -22,7 +22,7 @@ import { CommonService } from '../../../shared/services/common.service';
 export class OnChainReceiveComponent implements OnInit, OnDestroy {
 
   public addressTypes = <any>[];
-  public selectedAddressType: AddressType = ADDRESS_TYPES[0];
+  public selectedAddressType: AddressType = ADDRESS_TYPES[2];
   public newAddress = '';
   public flgVersionCompatible = true;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];

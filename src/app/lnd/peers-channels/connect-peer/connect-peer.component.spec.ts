@@ -7,9 +7,11 @@ import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { ConnectPeerComponent } from './connect-peer.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { EffectsModule } from '@ngrx/effects';
@@ -29,10 +31,11 @@ describe('ConnectPeerComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
+        CommonService, LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
-        { provide: LNDEffects, useClass: mockLNDEffects }
+        { provide: LNDEffects, useClass: mockLNDEffects },
+        { provide: DataService, useClass: mockDataService }
       ]
     }).
       compileComponents();

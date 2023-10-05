@@ -1003,6 +1003,10 @@ mat-card-content.mat-mdc-card-content:first-child {
   }
 }
 
+.ps-2 {
+  padding-left: ($gap*2.5) !important;
+}
+
 .m-1px {
   margin: 1px !important;
 }

@@ -45,7 +45,7 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                  <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="50" fxLayoutAlign="start end">
                     <mat-label>Transaction Type</mat-label>
                     <mat-select tabindex="3" formControlName="selTransType">
                       <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
@@ -53,12 +53,17 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field fxLayout="column" fxFlex="30">
+                  <mat-form-field fxLayout="column" fxFlex="50">
                     <mat-label>{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
                     <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [step]="1" [required]="channelFormGroup.controls.selTransType.value !== '0'">
                     <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}} is required.</mat-error>
                   </mat-form-field>
-                  <div fxFlex="35" fxLayoutAlign="start center">
+                </div>
+                <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
+                  <div *ngIf="isTaprootAvailable" fxFlex="50" fxLayoutAlign="start center">
+                    <mat-slide-toggle class="ps-2" tabindex="6" color="primary" formControlName="taprootChannel" name="taprootChannel">Taproot Channel</mat-slide-toggle>
+                  </div>
+                  <div fxFlex="50" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="6" color="primary" formControlName="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
                   </div>
                 </div>

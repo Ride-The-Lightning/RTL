@@ -285,7 +285,8 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API, {
         node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
-        trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed
+        trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed,
+        channel_type: action.payload.channelType
       }).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
