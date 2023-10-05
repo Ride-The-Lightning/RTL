@@ -56,8 +56,11 @@
                 </mat-form-field>
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+                <div *ngIf="isTaprootAvailable" fxFlex="50" fxLayoutAlign="start center">
+                  <mat-slide-toggle tabindex="6" color="primary" name="taprootChannel" [(ngModel)]="taprootChannel">Taproot Channel</mat-slide-toggle>
+                </div>
                 <div fxFlex="50" fxLayoutAlign="start center">
-                  <mat-slide-toggle tabindex="6" color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+                  <mat-slide-toggle tabindex="7" color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
                 </div>
               </div>
             </div>

@@ -15,6 +15,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/lnd.actions';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 import { lndNodeSettings } from '../../../store/lnd.selector';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -41,12 +42,14 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public selectedPubkey = '';
   public isPrivate = false;
   public selTransType = '0';
+  public isTaprootAvailable = false;
+  public taprootChannel = false;
   public spendUnconfirmed = false;
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService) { }
 
   ngOnInit() {
     if (this.data.message) {
@@ -54,11 +57,13 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.totalBalance = this.data.message.balance;
       this.peer = this.data.message.peer || null;
       this.peers = this.data.message.peers || [];
+      this.isTaprootAvailable = this.commonService.isVersionCompatible(this.information.version, '0.17.0');
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
       this.peers = [];
+      this.isTaprootAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
@@ -123,6 +128,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
     this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.taprootChannel = false;
     this.spendUnconfirmed = false;
     this.selTransType = '0';
     this.transTypeValue = '';
@@ -135,10 +141,11 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) {
       return true;
     }
+    // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
         selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
-        transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+        transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed, commitmentType: (this.taprootChannel ? 5 : null)
       }
     }));
   }
@@ -147,7 +154,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     if (isClosed) {
       this.advancedTitle = 'Advanced Options | ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ?
         'Fee (Sats/vByte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') +
-        ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
+        ' | Taproot Channel: ' + (this.taprootChannel ? 'Yes' : 'No') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
     } else {
       this.advancedTitle = 'Advanced Options';
     }

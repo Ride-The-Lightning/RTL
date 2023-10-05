@@ -3,9 +3,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../shared/shared.module';
 import { RTLEffects } from '../../../../store/rtl.effects';
+import { CommonService } from '../../../../shared/services/common.service';
+import { DataService } from '../../../../shared/services/data.service';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
@@ -27,9 +29,11 @@ describe('OpenChannelComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
+        CommonService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
-        { provide: RTLEffects, useClass: mockRTLEffects }
+        { provide: MAT_DIALOG_DATA, useValue: { message: { information: {} } } },
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: DataService, useClass: mockDataService }
       ]
     }).
       compileComponents();
