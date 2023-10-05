@@ -141,8 +141,8 @@ export const postChannel = (req, res, next) => {
     else if (req.body.trans_type === '2') {
         options.form.sat_per_byte = req.body.trans_type_value;
     }
-    if (req.body.channel_type !== '') {
-        options.form.channel_type = req.body.channel_type;
+    if (req.body.commitment_type) {
+        options.form.commitment_type = req.body.commitment_type;
     }
     options.form = JSON.stringify(options.form);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channel Open Options', data: options.form });

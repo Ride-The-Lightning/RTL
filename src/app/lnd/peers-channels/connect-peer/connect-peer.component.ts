@@ -145,10 +145,11 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       return true;
     }
     this.channelConnectionError = '';
+    // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
         selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
-        transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, channelType: (!!this.channelFormGroup.controls.taprootChannel.value ? 'taproot' : '')
+        transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, commitmentType: (!!this.channelFormGroup.controls.taprootChannel.value ? 5 : null)
       }
     }));
   }
