@@ -1,4 +1,4 @@
-<ng-container *ngTemplateOutlet="swapStatus?.error ? swapFailedBlock : ((direction === swapTypeEnum.SWAP_OUT) ? swapOutBlock : swapInBlock)"></ng-container>
+<ng-container *ngTemplateOutlet="swapStatus?.error ? swapFailedBlock : ((direction === swapTypeEnum.SWAP_OUT) ? swapOutBlock : swapInBlock)" />
 <ng-template #swapFailedBlock>
   <div fxLayout="column"><span
       class="foreground-secondary-text">{{swapStatus?.error ? swapStatus?.error : 'Unknown Error.'}}</span>
@@ -16,7 +16,7 @@
         <span class="foreground-secondary-text">{{swapStatus?.routingFeeMilliSat | number}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="50">
         <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
@@ -41,14 +41,14 @@
         <span class="foreground-secondary-text">{{swapStatus?.expectedAmount | number}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
         <span class="foreground-secondary-text">{{swapStatus?.address}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">BIP 21</h4>

@@ -52,7 +52,7 @@
           </div>
         </mat-expansion-panel>
         <div *ngIf="paymentError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">

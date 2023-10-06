@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
     <div fxFlex="70">
-      <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faHistory" />
       <span class="page-title">{{swapCaption}} History</span>
     </div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
@@ -19,7 +19,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start center" class="w-100">
     <div class="table-container" fxFlex="100" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate" />
       <table #table mat-table matSort [matSortActive]="selectedSwapType === swapTypeEnum.SWAP_IN ? tableSettingSwapIn.sortBy : tableSettingSwapOut.sortBy" [matSortDirection]="selectedSwapType === swapTypeEnum.SWAP_IN ? tableSettingSwapIn.sortOrder : tableSettingSwapOut.sortOrder" [dataSource]="listSwaps" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
         <ng-container matColumnDef="status">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Status</th>
@@ -119,7 +119,7 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
@@ -138,7 +138,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>

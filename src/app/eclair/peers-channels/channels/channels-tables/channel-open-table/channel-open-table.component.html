@@ -15,13 +15,13 @@
     </div>
   </div>
   <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="announceChannel">
         <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Private"></th>
         <td *matCellDef="let channel" mat-cell>
-          <span *ngIf="!channel?.announceChannel" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
-          <span *ngIf="channel?.announceChannel" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+          <span *ngIf="!channel?.announceChannel" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash" /></span>
+          <span *ngIf="channel?.announceChannel" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye" /></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="shortChannelId">
@@ -82,14 +82,14 @@
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel?.balancedness || 0 | number}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel?.toLocal && channel?.toLocal > 0 ? ((+channel?.toLocal/((+channel?.toLocal)+(+channel?.toRemote)))*100) : 0}}"></mat-progress-bar>
+          <mat-progress-bar mode="determinate" value="{{channel?.toLocal && channel?.toLocal > 0 ? ((+channel?.toLocal/((+channel?.toLocal)+(+channel?.toRemote)))*100) : 0}}" />
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onChannelUpdate('all')">Update Fee Policy</mat-option>
               <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
             </mat-select>
@@ -98,7 +98,7 @@
         <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="2" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
               <mat-option (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
@@ -121,5 +121,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

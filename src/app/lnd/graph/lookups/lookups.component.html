@@ -20,7 +20,7 @@
         </div>
       </form>
       <div *ngIf="errorMessage !== ''" fxFlex="100" fxLayout="row wrap" fxLayoutAlign="space-between center" [ngClass]="{'w-100 mt-2 p-2 error-border': errorMessage !== '' && errorMessage !== 'Getting lookup details...', 'w-100 my-2 p-2': true}">
-        <mat-progress-bar *ngIf="errorMessage === 'Getting lookup details...'" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="errorMessage === 'Getting lookup details...'" mode="indeterminate" />
         {{errorMessage}}
       </div>
       <div *ngIf="errorMessage === '' && lookupValue && flgSetLookupValue" fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mt-2">
@@ -28,8 +28,8 @@
           <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
         </div>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" [ngSwitch]="selectedFieldId">
-          <span *ngSwitchCase="0" fxFlex="100"><rtl-node-lookup [lookupResult]="lookupValue"></rtl-node-lookup></span>
-          <span *ngSwitchCase="1" fxFlex="100"><rtl-channel-lookup [lookupResult]="lookupValue"></rtl-channel-lookup></span>
+          <span *ngSwitchCase="0" fxFlex="100"><rtl-node-lookup [lookupResult]="lookupValue" /></span>
+          <span *ngSwitchCase="1" fxFlex="100"><rtl-channel-lookup [lookupResult]="lookupValue" /></span>
           <span *ngSwitchDefault> fxFlex="100"<h3>Error! Unable to find details!</h3></span>
         </div>
       </div>      

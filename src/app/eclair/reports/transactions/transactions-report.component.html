@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
-  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)" />
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div *ngIf="transactionsNonZeroReportData.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportSummary">
       <div *ngIf="transactionsReportSummary.paymentsSelectedPeriod" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
@@ -35,7 +35,7 @@
       </ngx-charts-bar-vertical-2d>      
     </div>
     <div class="mt-1">
-      <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [displayedColumns]="displayedColumns" [tableSetting]="tableSetting" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [selFilter]="transactionFilterValue"></rtl-transactions-report-table>
+      <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [displayedColumns]="displayedColumns" [tableSetting]="tableSetting" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [selFilter]="transactionFilterValue" />
     </div>
   </div>
 </div>

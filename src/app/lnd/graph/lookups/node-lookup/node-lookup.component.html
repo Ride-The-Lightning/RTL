@@ -1,5 +1,5 @@
 <div *ngIf="lookupResult" fxLayout="column" class="mt-1">
-  <mat-divider class="mb-1" [inset]="true"></mat-divider>
+  <mat-divider class="mb-1" [inset]="true" />
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
@@ -10,7 +10,7 @@
       <span class="foreground-secondary-text w-100">{{lookupResult.node.pub_key}}</span>
     </div>
   </div>
-  <mat-divider class="my-1" [inset]="true"></mat-divider>
+  <mat-divider class="my-1" [inset]="true" />
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
@@ -21,7 +21,7 @@
       <span class="foreground-secondary-text">{{lookupResult.total_capacity | number}}</span>
     </div>
   </div>
-  <mat-divider class="my-1" [inset]="true"></mat-divider>
+  <mat-divider class="my-1" [inset]="true" />
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Number of Channels</h4>
@@ -32,7 +32,7 @@
       <span *ngFor="let feature of lookupResult.node.features | keyvalue" class="foreground-secondary-text w-100">{{nodeFeaturesEnum[feature.value.name] || feature.value.name}}: {{feature.value.is_required ? 'Mandatory' : 'Optional'}}</span>
     </div>
   </div>
-  <mat-divider class="my-1" [inset]="true"></mat-divider>
+  <mat-divider class="my-1" [inset]="true" />
   <div fxLayout="column">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
     <div fxLayout="row" fxFlex="100" class="table-container" [perfectScrollbar]>
@@ -52,7 +52,7 @@
          <td *matCellDef="let address" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onConnectNode(address)">Connect</mat-option>
               <mat-option rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI(address)">Copy URI</mat-option>
             </mat-select>

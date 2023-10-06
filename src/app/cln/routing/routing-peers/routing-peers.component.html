@@ -8,7 +8,7 @@
         </div>
       </div>
       <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
         <table #tableIn mat-table matSort class="overflow-auto incoming-table" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="routingPeersIncoming">
           <ng-container matColumnDef="channel_id">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
@@ -51,7 +51,7 @@
           <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </table>
       </div>
-      <mat-paginator #paginatorIn class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+      <mat-paginator #paginatorIn class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="end stretch">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
         <table #tableOut mat-table matSort class="overflow-auto outgoing-table" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="routingPeersOutgoing">
           <ng-container matColumnDef="channel_id">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
@@ -112,7 +112,7 @@
           <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
           <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </table>
-        <mat-paginator #paginatorOut class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+        <mat-paginator #paginatorOut class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
       </div>
     </div>
   </div>

@@ -1,16 +1,16 @@
 <div fxLayout="row wrap" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon class="page-title-img mr-1" [icon]="faSearch"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faSearch" />
   <span class="page-title">Graph Lookups</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngFor="let link of links" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
+        <div *ngFor="let link of links" tabindex="1" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
       </nav>
-      <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      <mat-tab-nav-panel #tabPanel />
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
-        <router-outlet></router-outlet>
+        <router-outlet />
       </div>
     </mat-card-content>
   </mat-card>

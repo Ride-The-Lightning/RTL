@@ -49,6 +49,17 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.dataList && !changes.dataList.firstChange) {
+      this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
+      this.loadTransactionsTable(this.dataList);
+    }
+    if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
+      this.applyFilter();
+    }
+  }
+
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.nodePageDefs = (selNode.lnImplementation === 'CLN') ? CLN_PAGE_DEFS : (selNode.lnImplementation === 'ECL') ? ECL_PAGE_DEFS : LND_PAGE_DEFS;
@@ -64,17 +75,6 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
     setTimeout(() => {
       this.setTableWidgets();
     }, 0);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataList && !changes.dataList.firstChange) {
-      this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-      this.loadTransactionsTable(this.dataList);
-    }
-    if (changes.selFilter && !changes.selFilter.firstChange) {
-      this.selFilterBy = 'all';
-      this.applyFilter();
-    }
   }
 
   onTransactionClick(selTransaction: any) {

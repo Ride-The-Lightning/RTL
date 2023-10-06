@@ -19,7 +19,7 @@
           </div>
           <div *ngIf="!flgPendingHtlcs" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div *ngIf="!channelToClose.active" fxFlex="100" class="alert alert-info">
-              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
               <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">

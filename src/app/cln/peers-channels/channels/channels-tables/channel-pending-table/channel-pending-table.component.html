@@ -14,14 +14,14 @@
       </mat-form-field>
     </div>
   </div>
-  <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
   <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100" [perfectScrollbar]>
     <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="private">
         <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Private"></th>
         <td *matCellDef="let channel" mat-cell>
-          <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
-          <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+          <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash" /></span>
+          <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye" /></span>
         </td>
       </ng-container>
       <ng-container matColumnDef="alias">
@@ -98,7 +98,7 @@
         <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
             </mat-select>
           </div>
@@ -106,7 +106,7 @@
         <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option *ngIf="(channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
               <mat-option *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'" (click)="onBumpFee(channel)">Bump Fee</mat-option>
@@ -127,5 +127,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
@@ -13,7 +13,7 @@ export class CLNRootComponent {
   loading = false;
 
   constructor(private router: Router) {
-    this.router.events.subscribe((event: Event) => {
+    this.router.events.subscribe((event: Event | RouterEvent) => {
       switch (true) {
         case event instanceof NavigationStart: {
           this.loading = true;

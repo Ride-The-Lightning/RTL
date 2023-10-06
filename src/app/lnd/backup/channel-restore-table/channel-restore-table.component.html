@@ -23,7 +23,7 @@
     </div>
   </div>
   <div fxLayout="row" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate" />
     <table #table mat-table matSort [dataSource]="channels" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="channel_point">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
@@ -53,5 +53,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

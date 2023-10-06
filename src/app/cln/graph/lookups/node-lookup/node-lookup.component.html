@@ -1,5 +1,5 @@
 <div *ngIf="lookupResult" fxLayout="column" class="mt-1">
-  <mat-divider class="mb-1"></mat-divider>
+  <mat-divider class="mb-1" />
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
@@ -10,7 +10,7 @@
       <span class="foreground-secondary-text w-100">{{lookupResult?.nodeid}}</span>
     </div>
   </div>
-  <mat-divider class="my-1"></mat-divider>
+  <mat-divider class="my-1" />
   <div fxLayout="row">
     <div fxFlex="30">
       <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
@@ -21,7 +21,7 @@
       <span *ngFor="let featureDescription of featureDescriptions" class="foreground-secondary-text">{{featureDescription}}</span>
     </div>
   </div>
-  <mat-divider class="my-1"></mat-divider>
+  <mat-divider class="my-1" />
   <div fxLayout="column">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
     <div fxLayout="row" fxFlex="100" class="table-container" [perfectScrollbar]>
@@ -45,7 +45,7 @@
          <td *matCellDef="let address" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onConnectNode(address)">Connect</mat-option>
               <mat-option rtlClipboard [payload]="lookupResult?.nodeid + '@' + address.address + ':' + address.port" (copied)="onCopyNodeURI($event)">Copy URI</mat-option>
             </mat-select>

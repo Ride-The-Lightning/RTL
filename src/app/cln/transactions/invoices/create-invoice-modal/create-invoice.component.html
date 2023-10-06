@@ -35,7 +35,7 @@
           <mat-icon matTooltip="Include routing hints for private channels" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
         </div>
         <div *ngIf="invoiceError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">

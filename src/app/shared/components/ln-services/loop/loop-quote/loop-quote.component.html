@@ -1,4 +1,4 @@
-<ng-container *ngTemplateOutlet="showPanel ? informationBlock : quoteDetailsBlock"></ng-container>
+<ng-container *ngTemplateOutlet="showPanel ? informationBlock : quoteDetailsBlock" />
 <ng-template #informationBlock>
   <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
     <mat-expansion-panel-header>
@@ -6,7 +6,7 @@
         <span fxLayoutAlign="start center" fxFlex="100">Quote for {{termCaption}} amount ({{quote.amount | number}} Sats)</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <ng-container *ngTemplateOutlet="quoteDetailsBlock"></ng-container>
+    <ng-container *ngTemplateOutlet="quoteDetailsBlock" />
   </mat-expansion-panel>
 </ng-template>
 <ng-template #quoteDetailsBlock>
@@ -34,7 +34,7 @@
         <span class="foreground-secondary-text">{{quote?.prepay_amt_sat | number}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="50">
         <h4 fxLayoutAlign="start center" class="font-bold-500">
@@ -51,7 +51,7 @@
         <span class="foreground-secondary-text">36</span>
       </div>
     </div>
-    <mat-divider *ngIf="quote?.swap_payment_dest !== ''" class="w-100 my-1"></mat-divider>
+    <mat-divider *ngIf="quote?.swap_payment_dest !== ''" class="w-100 my-1" />
     <div *ngIf="quote?.swap_payment_dest !== ''" fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start center" class="font-bold-500">

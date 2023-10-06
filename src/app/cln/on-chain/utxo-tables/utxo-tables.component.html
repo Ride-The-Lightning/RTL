@@ -4,13 +4,13 @@
       <ng-template mat-tab-label>
         <span matBadgeOverlap="false" class="tab-badge" matBadgeColor="primary" matBadge="{{numUtxos}}">UTXOs</span>
       </ng-template>
-      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" [dustAmount]="DUST_AMOUNT"></rtl-cln-on-chain-utxos>
+      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" [dustAmount]="DUST_AMOUNT" />
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numDustUtxos}}">Dust UTXOs</span>
       </ng-template>
-      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" [dustAmount]="DUST_AMOUNT"></rtl-cln-on-chain-utxos>
+      <rtl-cln-on-chain-utxos fxLayout="row" fxFlex="100" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" [dustAmount]="DUST_AMOUNT" />
     </mat-tab>
   </mat-tab-group>
 </div>

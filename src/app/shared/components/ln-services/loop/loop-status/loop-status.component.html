@@ -1,4 +1,4 @@
-<ng-container *ngTemplateOutlet="loopStatus?.error ? loopFailedBlock : loopSuccessfulBlock"></ng-container>
+<ng-container *ngTemplateOutlet="loopStatus?.error ? loopFailedBlock : loopSuccessfulBlock" />
 <ng-template #loopFailedBlock>
   <div fxLayout="column"><span
       class="foreground-secondary-text">{{loopStatus?.error ? loopStatus?.error : 'Unknown Error.'}}</span>
@@ -12,7 +12,7 @@
         <span class="foreground-secondary-text">{{loopStatus?.id_bytes}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">HTLC Address</h4>

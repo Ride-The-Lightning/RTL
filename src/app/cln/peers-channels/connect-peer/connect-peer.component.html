@@ -18,7 +18,7 @@
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>
               </mat-form-field>
               <div *ngIf="peerConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
                 <span>{{peerConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -61,7 +61,7 @@
                     </mat-form-field>
                   </div>
                   <div fxFlex="45" fxLayout="row" fxLayoutAlign="start center">
-                    <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
+                    <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" />
                     <mat-form-field fxLayout="column" fxFlex="93">
                       <mat-label>Min Confirmation Blocks</mat-label>
                       <input matInput formControlName="minConfValue" type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="channelFormGroup.controls.flgMinConf.value">
@@ -71,7 +71,7 @@
                 </div>
               </div>
               <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+                <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
                 <span>{{channelConnectionError}}</span>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

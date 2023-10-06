@@ -56,6 +56,20 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchPayments' };
+      this.eventsData = changes.eventsData.currentValue;
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
+    }
+    if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
+      this.applyFilter();
+    }
+  }
+
   ngOnInit() {
     this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -98,20 +112,6 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.loadForwardingEventsTable(this.eventsData);
       }
     }, 0);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
-      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchPayments' };
-      this.eventsData = changes.eventsData.currentValue;
-      if (!changes.eventsData.firstChange) {
-        this.loadForwardingEventsTable(this.eventsData);
-      }
-    }
-    if (changes.selFilter && !changes.selFilter.firstChange) {
-      this.selFilterBy = 'all';
-      this.applyFilter();
-    }
   }
 
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {

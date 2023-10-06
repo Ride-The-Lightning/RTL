@@ -4,14 +4,14 @@
     <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
       <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90"><strong class="font-weight-900 mr-5px">Local:</strong>{{channelBalances?.localBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
       <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90">
-        <fa-icon class="mr-3px" matTooltip="Balance Score" [icon]="faBalanceScale"></fa-icon>
+        <fa-icon class="mr-3px" matTooltip="Balance Score" [icon]="faBalanceScale" />
         ({{channelBalances?.balancedness || 0 | number}})
       </mat-hint>
       <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channelBalances?.remoteBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
     </div>
-    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{channelBalances?.localBalance && channelBalances?.localBalance > 0 ? ((+channelBalances?.localBalance/((+channelBalances?.localBalance)+(+channelBalances?.remoteBalance)))*100) : 0}}"></mat-progress-bar>
+    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{channelBalances?.localBalance && channelBalances?.localBalance > 0 ? ((+channelBalances?.localBalance/((+channelBalances?.localBalance)+(+channelBalances?.remoteBalance)))*100) : 0}}" />
   </div>
-  <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
+  <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider" /></div>
   <div class="channels-capacity-scroll" [perfectScrollbar]>
     <div *ngIf="activeChannels && activeChannels.length > 0;  else noChannelBlock" fxLayout="column"fxFlex="100">
       <div *ngFor="let channel of activeChannels" class="mt-2">
@@ -21,12 +21,12 @@
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
           <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.to_us_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
           <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90 color-primary">
-            <fa-icon class="color-primary mr-3px" matTooltip="Balance Score" [icon]="faBalanceScale"></fa-icon>
+            <fa-icon class="color-primary mr-3px" matTooltip="Balance Score" [icon]="faBalanceScale" />
             ({{channel.balancedness || 0 | number}})
           </mat-hint>
           <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel.to_them_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
         </div>
-        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.to_us_msat && channel.to_us_msat > 0 ? ((channel.to_us_msat/((channel.to_us_msat)+(channel.to_them_msat)))*100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.to_us_msat && channel.to_us_msat > 0 ? ((channel.to_us_msat/((channel.to_us_msat)+(channel.to_them_msat)))*100) : 0}}" />
       </div>
     </div>
   </div>

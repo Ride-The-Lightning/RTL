@@ -1,7 +1,7 @@
 <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70">
-      <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faHistory" />
       <span class="page-title">Transaction History</span>
     </div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
@@ -19,7 +19,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listTransactions" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="timestamp">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Date/Time</th>
@@ -69,7 +69,7 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
@@ -89,7 +89,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>

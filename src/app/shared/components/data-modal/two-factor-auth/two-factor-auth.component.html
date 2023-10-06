@@ -26,17 +26,17 @@
             <form fxLayout="column" class="my-1 pr-1" [formGroup]="secretFormGroup">
               <ng-template matStepLabel disabled="true">{{secretFormLabel}}</ng-template>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="start">
-                <qr-code *ngIf="otpauth" [value]="otpauth" [size]="180" [errorCorrectionLevel]="'L'"></qr-code>
+                <qr-code *ngIf="otpauth" [value]="otpauth" [size]="180" [errorCorrectionLevel]="'L'" />
               </div>
               <div fxFlex="100" class="w-100 alert alert-info">
-                <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+                <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle" />
                 <span>You can use a compatible authentication app to get an authentication code when you log in to RTL. e.g.: Google Authenticator.</span>
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">  
                 <mat-form-field fxLayout="column" fxFlex="100">
                   <mat-label>Secret Code</mat-label>
                   <input autoFocus matInput type="text" tabindex="4" formControlName="secret" required>
-                  <fa-icon matSuffix rtlClipboard [icon]="faCopy" [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
+                  <fa-icon matSuffix rtlClipboard [icon]="faCopy" [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)" />
                   <mat-error *ngIf="secretFormGroup?.controls?.secret?.errors?.required">Secret Code is required.</mat-error>
                 </mat-form-field>
               </div>
@@ -71,7 +71,7 @@
               <ng-template matStepLabel>{{disableFormLabel}}</ng-template>
               <div *ngIf="!flgValidated || !isTokenValid" fxLayout="column">
                 <div fxFlex="100" class="w-100 alert alert-warn">
-                  <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+                  <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle" />
                   <span>You are about to disable two-factor authentication security from RTL. Are you sure you want to turn it off?</span>
                 </div>
                 <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

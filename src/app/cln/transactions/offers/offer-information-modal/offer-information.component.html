@@ -1,12 +1,12 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="35" class="modal-qr-code-container padding-gap-large" [fxLayoutAlign]="offer?.bolt12 && offer?.bolt12 !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qr-code *ngIf="offer?.bolt12 && offer?.bolt12 !== ''" [value]="offer?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+    <qr-code *ngIf="offer?.bolt12 && offer?.bolt12 !== ''" [value]="offer?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
     <span *ngIf="!offer?.bolt12 || offer?.bolt12 === ''" class="font-size-300">N/A</span>
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt" />
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Offer') : (newlyAdded ? 'Offer Created' : 'Offer Information')}}</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
@@ -14,10 +14,10 @@
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxFlex="30" class="modal-qr-code-container padding-gap" [fxLayoutAlign]="offer?.bolt12 && offer?.bolt12 !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qr-code *ngIf="offer?.bolt12 && offer?.bolt12 !== ''" [value]="offer?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+          <qr-code *ngIf="offer?.bolt12 && offer?.bolt12 !== ''" [value]="offer?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
           <span *ngIf="!offer?.bolt12 || offer?.bolt12 === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
-        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true"></mat-divider>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true" />
          <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested (Sats)</h4>
@@ -32,7 +32,7 @@
             </span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
@@ -41,7 +41,7 @@
             </span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Offer</h4>
@@ -49,7 +49,7 @@
           </div>
         </div>
         <div *ngIf="showAdvanced">
-          <mat-divider *ngIf="offer?.used || offer?.single_use" class="w-100 my-1"></mat-divider>
+          <mat-divider *ngIf="offer?.used || offer?.single_use" class="w-100 my-1" />
           <div *ngIf="offer?.used || offer?.single_use" fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Used</h4>
@@ -64,35 +64,35 @@
               </span>
             </div>
           </div>          
-          <mat-divider *ngIf="offerDecoded?.issuer" class="w-100 my-1"></mat-divider>
+          <mat-divider *ngIf="offerDecoded?.issuer" class="w-100 my-1" />
           <div *ngIf="offerDecoded?.issuer" fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Issuer</h4>
               <span class="overflow-wrap foreground-secondary-text">{{offerDecoded?.offer_issuer}}</span>
             </div>
           </div>
-          <mat-divider *ngIf="offer.label" class="w-100 my-1"></mat-divider>
+          <mat-divider *ngIf="offer.label" class="w-100 my-1" />
           <div *ngIf="offer.label" fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
               <span class="foreground-secondary-text">{{ offer.label }}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>
+          <mat-divider class="w-100 my-1" />
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Offer ID</h4>
               <span class="foreground-secondary-text">{{ offerDecoded.offer_id }}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>
+          <mat-divider class="w-100 my-1" />
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Offer Node ID</h4>
               <span class="foreground-secondary-text">{{offerDecoded?.offer_node_id}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>  
+          <mat-divider class="w-100 my-1" />  
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
           <button class="mr-1" mat-button color="primary" type="reset" tabindex="1" (click)="onShowAdvanced()">

@@ -59,6 +59,23 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
+      this.eventsData = changes.eventsData.currentValue;
+      this.successfulEvents = this.eventsData;
+      this.totalForwardedTransactions = this.eventsData.length;
+      if (this.paginator) { this.paginator.firstPage(); }
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      }
+    }
+    if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
+      this.applyFilter();
+    }
+  }
+
   ngOnInit() {
     this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -108,23 +125,6 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         this.loadForwardingEventsTable(this.successfulEvents);
       }
     }, 0);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
-      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
-      this.eventsData = changes.eventsData.currentValue;
-      this.successfulEvents = this.eventsData;
-      this.totalForwardedTransactions = this.eventsData.length;
-      if (this.paginator) { this.paginator.firstPage(); }
-      if (!changes.eventsData.firstChange) {
-        this.loadForwardingEventsTable(this.successfulEvents);
-      }
-    }
-    if (changes.selFilter && !changes.selFilter.firstChange) {
-      this.selFilterBy = 'all';
-      this.applyFilter();
-    }
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {

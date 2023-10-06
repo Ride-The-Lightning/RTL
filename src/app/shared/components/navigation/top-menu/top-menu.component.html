@@ -1,21 +1,21 @@
 <mat-menu #topMenu="matMenu" class="top-menu" [overlapTrigger]="false">
-  <p mat-menu-item class="cursor-default">
-    <fa-icon class="fa-icon-small mr-1" [icon]="faCodeBranch"></fa-icon>
+  <p tabindex="1" mat-menu-item class="cursor-default">
+    <fa-icon class="fa-icon-small mr-1" [icon]="faCodeBranch" />
     <span>Version: {{version}}</span>
   </p>
-  <p *ngIf="information?.api_version" mat-menu-item class="cursor-default">
-    <fa-icon class="fa-icon-small mr-1" [icon]="faCode"></fa-icon>
+  <p *ngIf="information?.api_version" tabindex="2" mat-menu-item class="cursor-default">
+    <fa-icon class="fa-icon-small mr-1" [icon]="faCode" />
     <span>API Version: {{information?.api_version}}</span>
   </p>
-  <p *ngIf="showLogout" mat-menu-item routerLink="/settings">
-    <fa-icon class="fa-icon-small mr-1" [icon]="faUserCog"></fa-icon>
+  <p *ngIf="showLogout" tabindex="3" mat-menu-item routerLink="/settings">
+    <fa-icon class="fa-icon-small mr-1" [icon]="faUserCog" />
     <span routerLink="/settings">Settings</span>
   </p>
-  <p *ngIf="showLogout" mat-menu-item routerLink="/help">
-    <fa-icon class="fa-icon-small mr-1" [icon]="faQuestion"></fa-icon>
+  <p *ngIf="showLogout" tabindex="4" mat-menu-item routerLink="/help">
+    <fa-icon class="fa-icon-small mr-1" [icon]="faQuestion" />
     <span routerLink="/help">Help</span>
   </p>
-  <p mat-menu-item fxLayoutAlign="start center" (click)="onDonate()">
+  <p mat-menu-item tabindex="5" fxLayoutAlign="start center" (click)="onDonate()">
     <svg class="svg-donation" fill="currentColor" version="1.1" viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g>
         <path d="M62.519,17.698l-12-14c-0.659-0.768-1.786-0.923-2.628-0.362l-8.712,5.808l-16.688,4.172   c-2.485,0.622-4.537,2.412-5.487,4.791L12.21,30.09C10.206,32.512,9,35.618,9,39c0,2.974,0.939,5.73,2.527,8H5   c-2.206,0-4,1.794-4,4v6c0,2.206,1.794,4,4,4h36c2.206,0,4-1.794,4-4v-6c0-2.206-1.794-4-4-4h-6.522   c0.375-0.535,0.713-1.1,1.013-1.691l4.291-2.452l3.378-0.965c2.619-0.749,4.903-2.269,6.604-4.395   c1.39-1.736,2.317-3.813,2.682-6.006l0.412-2.472l9.48-8.532C63.145,19.76,63.225,18.523,62.519,17.698z M34.428,30.929   c-1.487-2.094-3.517-3.732-5.842-4.75L29.207,25h7.058l0.588,4.11L34.428,30.929z M31.225,33.331l-0.373,0.28   c-1.772,1.329-2.889,3.273-3.146,5.473c-0.257,2.2,0.382,4.348,1.8,6.048l0.667,0.8C28.315,47.845,25.742,49,23,49   c-5.514,0-10-4.486-10-10s4.486-10,10-10C26.299,29,29.376,30.663,31.225,33.331z M41,57H5v-6h10.826c2.101,1.261,4.55,2,7.174,2   c2.571,0,5.041-0.723,7.176-2H41V57z M49.662,26.513c-0.336,0.303-0.561,0.711-0.635,1.158L48.5,30.833   c-0.253,1.521-0.896,2.96-1.86,4.165c-1.18,1.475-2.763,2.529-4.579,3.048l-3.61,1.031c-0.155,0.044-0.303,0.106-0.443,0.187   l-5.541,3.166c-0.63-0.826-0.909-1.843-0.788-2.882c0.128-1.1,0.687-2.072,1.573-2.737l6.001-4.5   c1.169-0.877,1.767-2.32,1.56-3.766l-0.587-4.11C39.946,22.477,38.244,21,36.266,21h-7.059c-1.489,0-2.845,0.818-3.539,2.136   l-1.037,1.969C24.093,25.041,23.549,25,23,25c-1.685,0-3.294,0.314-4.791,0.862l2.509-6.271c0.476-1.189,1.501-2.084,2.743-2.395   l17.024-4.256c0.223-0.056,0.434-0.149,0.625-0.276l7.525-5.017l9.576,11.172L49.662,26.513z"/>
@@ -23,13 +23,13 @@
     </svg>
     <span>Donate</span>
   </p>
-  <p *ngIf="showLogout" mat-menu-item (click)="onClick()">
-    <fa-icon class="fa-icon-small mr-1" [icon]="faEject"></fa-icon>
+  <p *ngIf="showLogout" tabindex="6" mat-menu-item (click)="onClick()">
+    <fa-icon class="fa-icon-small mr-1" [icon]="faEject" />
     <span>Logout</span>
   </p>
 </mat-menu>
 
-<button mat-icon-button [matMenuTriggerFor]="topMenu">
-  <img class="rtl-log-top" src="assets/images/RTL-Horse-BY.svg" alt="RTL Logo">
+<button tabindex="7" mat-icon-button [matMenuTriggerFor]="topMenu">
+  <img class="rtl-log-top" alt="RTL Logo" src="assets/images/RTL-Horse-BY.svg">
   <mat-icon class="rtl-logo-dropdown color-white">arrow_drop_down</mat-icon>
 </button>

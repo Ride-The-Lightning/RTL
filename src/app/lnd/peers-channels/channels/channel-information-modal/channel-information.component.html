@@ -2,7 +2,7 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt" />
         <span class="page-title">Channel Information</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
@@ -12,7 +12,7 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
-            <span class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
+            <span tabindex="4" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
               {{channel.chan_id}}
             </span>            
           </div>
@@ -21,21 +21,21 @@
             <span class="foreground-secondary-text">{{channel.remote_alias}}</span>
           </div>
         </div>
-        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel Point</h4>
             <span class="foreground-secondary-text">{{channel.channel_point}}</span>
           </div>
         </div>
-        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
             <span class="foreground-secondary-text">{{channel.remote_pubkey}}</span>
           </div>
         </div>
-        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
           <div fxFlex="25">
             <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance</h4>
@@ -54,7 +54,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.uptime | number}}</span>
           </div>
         </div>
-        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
           <div fxFlex="25">
             <h4 fxLayoutAlign="start" class="font-bold-500">Active</h4>
@@ -73,7 +73,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.num_updates | number}}</span>
           </div>
         </div>
-        <mat-divider class="my-1" [inset]="true"></mat-divider>
+        <mat-divider class="my-1" [inset]="true" />
         <div *ngIf="showAdvanced">
           <div fxLayout="row">
             <div fxFlex="25">
@@ -93,7 +93,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.static_remote_key ? 'Yes' : 'No'}}</span>
             </div>
           </div>
-          <mat-divider class="my-1" [inset]="true"></mat-divider>
+          <mat-divider class="my-1" [inset]="true" />
           <div fxLayout="row">
             <div fxFlex="25">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Total Sats Sent' : 'Total Satoshis Sent'}}</h4>
@@ -112,7 +112,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.csv_delay | number}}</span>
             </div>
           </div>
-          <mat-divider class="my-1" [inset]="true"></mat-divider>
+          <mat-divider class="my-1" [inset]="true" />
           <div fxLayout="row">
             <div fxFlex="25">
               <h4 fxLayoutAlign="start" class="font-bold-500">Local Reserve (Sats)</h4>
@@ -131,7 +131,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel?.pending_htlcs?.length | number}}</span>
             </div>
           </div>
-          <mat-divider class="my-1" [inset]="true"></mat-divider>
+          <mat-divider class="my-1" [inset]="true" />
         </div>
         <div class="mt-1" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
           <button mat-button color="primary" type="reset" tabindex="1" class="mr-1" (click)="onShowAdvanced()">
