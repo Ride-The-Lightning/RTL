@@ -242,6 +242,9 @@ export class CommonService {
     if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
       errRes.error = errRes.error.stack || errRes.error.message;
       err = JSON.parse(JSON.stringify(errRes));
+    } else if (errRes.message || errRes.stack) {
+      errRes.error = errRes.message || errRes.stack;
+      err = JSON.parse(JSON.stringify(errRes));
     }
     if (!selectedNode) { selectedNode = this.initSelectedNode; }
     switch (selectedNode.ln_implementation) {

@@ -56,7 +56,6 @@ export const getInfo = (req, res, next) => {
         req.session.selectedNode.ln_version = body.version || '';
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Core Lightning\'s Websocket Server.' });
         clWsClient.updateSelectedNode(req.session.selectedNode);
-        databaseService.loadDatabase(req.session);
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
         return res.status(200).json(body);
       }

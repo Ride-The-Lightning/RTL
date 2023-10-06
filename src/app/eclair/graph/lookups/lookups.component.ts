@@ -43,7 +43,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (window.history.state && window.history.state.lookupType) {
+    if (window.history.state && (window.history.state.lookupType || window.history.state.lookupValue)) {
       this.selectedFieldId = +window.history.state.lookupType || 0;
       this.lookupKeyCtrl.setValue(window.history.state.lookupValue || '');
     }
