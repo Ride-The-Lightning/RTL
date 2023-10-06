@@ -226,6 +226,10 @@ export class CommonService {
                 errRes.error = errRes.error.stack || errRes.error.message;
                 err = JSON.parse(JSON.stringify(errRes));
             }
+            else if (errRes.message || errRes.stack) {
+                errRes.error = errRes.message || errRes.stack;
+                err = JSON.parse(JSON.stringify(errRes));
+            }
             if (!selectedNode) {
                 selectedNode = this.initSelectedNode;
             }

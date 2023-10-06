@@ -18,8 +18,11 @@ export const updateSelectedNode = (req, res, next) => {
     req.session.selectedNode = common.findNode(selNodeIndex);
     if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
         wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
-        if (req.params.prevNodeIndex !== -1) {
+        if (req.params.prevNodeIndex !== '-1') {
             databaseService.unloadDatabase(req.params.prevNodeIndex, req.session.id);
+        }
+        if (req.params.currNodeIndex !== '-1') {
+            databaseService.loadDatabase(req.session);
         }
     }
     const responseVal = !req.session.selectedNode.ln_node ? '' : req.session.selectedNode.ln_node;

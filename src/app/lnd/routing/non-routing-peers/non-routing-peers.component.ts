@@ -161,7 +161,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   onManagePeer(selNonRoutingChannel: Channel) {
-    this.router.navigate(['../../', 'connections', 'channels', 'open'], { relativeTo: this.activatedRoute, state: { filter: selNonRoutingChannel.chan_id } });
+    this.router.navigate(['../../', 'connections', 'channels', 'open'], { relativeTo: this.activatedRoute, state: { filterValue: selNonRoutingChannel.chan_id } });
   }
 
   // groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
