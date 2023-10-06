@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" class="padding-gap">
   <form #queryRoutesForm="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" (ngSubmit)="queryRoutesForm.form.valid && onQueryRoutes()">
     <div fxFlex="100" class="alert alert-warn">
-      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
       <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
     <mat-form-field fxLayout="column" fxFlex="69" fxLayoutAlign="start end">
@@ -21,12 +21,12 @@
   </form>
   <div fxLayout="row" fxLayoutAlign="start center" class="page-sub-title-container mt-2 mb-1">
     <div fxFlex="70">
-      <fa-icon class="page-title-img mr-1" [icon]="faRoute"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faRoute" />
       <span class="page-title">Transaction Route</span>
     </div>
   </div>
   <div class="table-container mb-6" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate" />
     <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="qrHops" [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="id">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>ID</th>

@@ -19,7 +19,7 @@
             <mat-error *ngIf="selectedPeer.errors?.notfound">Peer not found in the list.</mat-error>
           </mat-form-field>
         </div>
-        <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock" />
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
@@ -67,7 +67,7 @@
           </mat-expansion-panel>    
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
@@ -93,7 +93,7 @@
           <span class="foreground-secondary-text">{{peer.pub_key}}</span>
         </div>
       </div>
-      <mat-divider class="w-100 my-1"></mat-divider>
+      <mat-divider class="w-100 my-1" />
       <div fxLayout="row">
         <div fxFlex="50">
           <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>

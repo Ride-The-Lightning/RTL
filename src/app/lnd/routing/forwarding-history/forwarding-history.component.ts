@@ -57,6 +57,21 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
+      this.eventsData = changes.eventsData.currentValue;
+      this.forwardingHistoryData = this.eventsData;
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
+      }
+    }
+    if (changes.selFilter && !changes.selFilter.firstChange) {
+      this.selFilterBy = 'all';
+      this.applyFilter();
+    }
+  }
+
   ngOnInit() {
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -101,21 +116,6 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
         this.loadForwardingEventsTable(this.forwardingHistoryData);
       }
     }, 0);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
-      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
-      this.eventsData = changes.eventsData.currentValue;
-      this.forwardingHistoryData = this.eventsData;
-      if (!changes.eventsData.firstChange) {
-        this.loadForwardingEventsTable(this.forwardingHistoryData);
-      }
-    }
-    if (changes.selFilter && !changes.selFilter.firstChange) {
-      this.selFilterBy = 'all';
-      this.applyFilter();
-    }
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {

@@ -66,6 +66,15 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges() {
+    if (!this.isDustUTXO && this.utxos && this.utxos.length > 0) {
+      this.loadUTXOsTable(this.utxos);
+    }
+    if (this.isDustUTXO && this.dustUtxos && this.dustUtxos.length > 0) {
+      this.loadUTXOsTable(this.dustUtxos);
+    }
+  }
+
   ngOnInit() {
     this.tableSetting.tableId = this.isDustUTXO ? 'dust_utxos' : 'utxos';
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
@@ -103,15 +112,6 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.logger.info(utxosSelector);
       });
-  }
-
-  ngOnChanges() {
-    if (!this.isDustUTXO && this.utxos && this.utxos.length > 0) {
-      this.loadUTXOsTable(this.utxos);
-    }
-    if (this.isDustUTXO && this.dustUtxos && this.dustUtxos.length > 0) {
-      this.loadUTXOsTable(this.dustUtxos);
-    }
   }
 
   applyFilter() {

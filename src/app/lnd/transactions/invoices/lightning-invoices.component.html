@@ -21,7 +21,7 @@
   <div *ngIf="calledFrom === 'transactions'" fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
-        <fa-icon class="page-title-img mr-1" [icon]="faHistory"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faHistory" />
         <span class="page-title">Invoices History</span>
       </div>
       <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="invoices" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="state">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="State"></th>
@@ -51,22 +51,22 @@
         <ng-container matColumnDef="private">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Private"></th>
           <td *matCellDef="let invoice" mat-cell>
-            <span *ngIf="invoice.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
-            <span *ngIf="!invoice.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+            <span *ngIf="invoice.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash" /></span>
+            <span *ngIf="!invoice.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye" /></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_keysend">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Keysend"></th>
           <td *matCellDef="let invoice" mat-cell>
-            <span *ngIf="invoice.is_keysend" class="mr-1" matTooltip="Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnToDots"></fa-icon></span>
-            <span *ngIf="!invoice.is_keysend" class="mr-1" matTooltip="Non Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnRight"></fa-icon></span>
+            <span *ngIf="invoice.is_keysend" class="mr-1" matTooltip="Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnToDots" /></span>
+            <span *ngIf="!invoice.is_keysend" class="mr-1" matTooltip="Non Keysend Invoices" matTooltipPosition="right"><fa-icon [icon]="faArrowsTurnRight" /></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="is_amp">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="AMP"></th>
           <td *matCellDef="let invoice" mat-cell>
-            <span *ngIf="!invoice.is_amp" class="mr-1" matTooltip="Non Atomic Payment" matTooltipPosition="right"><fa-icon [icon]="faMoneyBill1"></fa-icon></span>
-            <span *ngIf="invoice.is_amp" class="mr-1" matTooltip="Atomic Multi Path Payment" matTooltipPosition="right"><fa-icon [icon]="faBurst"></fa-icon></span>
+            <span *ngIf="!invoice.is_amp" class="mr-1" matTooltip="Non Atomic Payment" matTooltipPosition="right"><fa-icon [icon]="faMoneyBill1" /></span>
+            <span *ngIf="invoice.is_amp" class="mr-1" matTooltip="Atomic Multi Path Payment" matTooltipPosition="right"><fa-icon [icon]="faBurst" /></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="creation_date">
@@ -154,7 +154,7 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
@@ -162,7 +162,7 @@
           <td *matCellDef="let invoice" mat-cell fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="4" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onInvoiceClick(invoice)">View Info</mat-option>
                 <mat-option (click)="onRefreshInvoice(invoice)">Refresh</mat-option>
               </mat-select>
@@ -180,7 +180,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)"></mat-paginator>
+      <mat-paginator class="mb-1" [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)" />
     </div>
   </div>
 </div>

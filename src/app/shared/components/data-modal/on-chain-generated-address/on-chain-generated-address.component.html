@@ -1,11 +1,11 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div *ngIf="address" fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+    <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt" />
         <span class="page-title">{{screenSize === screenSizeEnum.XS ? 'Address' : 'Generated Address'}}</span>
       </div>
       <button tabindex="2" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
@@ -13,7 +13,7 @@
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
         <div *ngIf="address" fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'"></qr-code>
+          <qr-code [value]="address" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
         </div>
         <div *ngIf="addressType!==''" fxLayout="row">
           <div fxFlex="100">
@@ -21,14 +21,14 @@
             <span class="foreground-secondary-text">{{addressType}}</span>
           </div>
         </div>
-        <mat-divider *ngIf="addressType!==''" class="w-100 my-1"></mat-divider>
+        <mat-divider *ngIf="addressType!==''" class="w-100 my-1" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
             <span class="overflow-wrap foreground-secondary-text">{{address}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>
+        <mat-divider class="w-100 my-1" />
         <div class="mt-1" fxLayout="row" fxLayoutAlign="end center">
           <button autoFocus mat-button color="primary" tabindex="1" type="submit" rtlClipboard [payload]="address" (copied)="onCopyAddress($event)">Copy Address</button>
         </div>

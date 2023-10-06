@@ -9,11 +9,11 @@
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div *ngIf="warningMessage && warningMessage !== ''" fxFlex="100" class="alert alert-warn">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span>{{warningMessage}}</span>
         </div>
         <div *ngIf="informationMessage && informationMessage !== ''" fxFlex="100" class="alert alert-info">
-          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
           <span>{{informationMessage}}</span>
         </div>
         <p *ngIf="data.titleMessage && !flgShowInput" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
@@ -36,7 +36,7 @@
                 <ng-template #emptyField>
                   <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
                 </ng-template>
-                <mat-divider class="w-100 my-1"></mat-divider>
+                <mat-divider class="w-100 my-1" />
               </div>    
             </div>
           </div>

@@ -12,7 +12,7 @@
     <div fxLayout="column">
       <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
         <div fxFlex="100" class="alert alert-info">
-          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
           <span>Circular Rebalance is a payment you make to *yourself* to affect a relative change in the balances of two channels.
             This is accomplished by sending payment out from the selected channel and receiving it back on the channel with the selected peer.
             Please note, you will be paying routing fee to balance the channels in this manner.</span>
@@ -55,7 +55,7 @@
           <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="statusFormGroup">
             <ng-template matStepLabel>Status</ng-template>
             <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-              <mat-progress-bar *ngIf="rebalanceStatus.invoice === ''" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-progress-bar *ngIf="rebalanceStatus.invoice === ''" fxFlex="100" color="primary" mode="indeterminate" />
               <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -64,7 +64,7 @@
                 </mat-expansion-panel-header>
                 <div fxLayout="column"><span class="foreground-secondary-text">{{rebalanceStatus.invoice}}</span></div>
               </mat-expansion-panel>
-              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentRoute && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus?.error && !rebalanceStatus.paymentRoute && rebalanceStatus.paymentStatus?.type !== 'pending'" fxFlex="100" color="primary" mode="indeterminate" />
               <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -77,7 +77,7 @@
                   </span>
                 </div>
               </mat-expansion-panel>
-              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+              <mat-progress-bar *ngIf="!rebalanceStatus.paymentStatus" fxFlex="100" color="primary" mode="indeterminate" />
               <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!rebalanceStatus.paymentStatus">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -101,7 +101,7 @@
   </mat-card-content>
 </div>
 <ng-template #paymentStatusBlock>
-  <ng-container *ngTemplateOutlet="rebalanceStatus.paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>
+  <ng-container *ngTemplateOutlet="rebalanceStatus.paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock" />
 </ng-template>
 <ng-template #paymentFailedBlock>
   <div fxLayout="column"><span class="foreground-secondary-text">Error: {{rebalanceStatus.paymentStatus.error}}</span></div>
@@ -118,21 +118,21 @@
         <span class="foreground-secondary-text">{{rebalanceStatus.paymentRoute && rebalanceStatus.paymentRoute !== '' ? (rebalanceStatus.paymentRoute.split(',')?.length) : 0}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
         <span class="foreground-secondary-text">{{rebalanceStatus.paymentHash}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Payment ID</h4>
         <span class="foreground-secondary-text">{{rebalanceStatus.paymentDetails.paymentId}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
+    <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Parent ID</h4>
@@ -146,14 +146,14 @@
     <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
       <div fxFlex="5" fxLayoutAlign="end center">
-        <button tabindex="19" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
+        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
-      <rtl-ecl-channel-rebalance-infographics fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-ecl-channel-rebalance-infographics>
+      <rtl-ecl-channel-rebalance-infographics fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber" />
     </mat-card-content>
     <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large padding-gap-bottom-large">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" tabindex="21" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>

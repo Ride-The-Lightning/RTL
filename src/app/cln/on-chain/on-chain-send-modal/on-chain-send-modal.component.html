@@ -43,7 +43,7 @@
               </mat-form-field>
             </div>
             <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-              <mat-checkbox fxFlex="7" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null"></mat-checkbox>
+              <mat-checkbox fxFlex="7" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" />
               <mat-form-field fxLayout="column" fxFlex="93">
                 <mat-label>Min Confirmation Blocks</mat-label>
                 <input #blocks="ngModel" matInput type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="flgMinConf" [disabled]="!flgMinConf" [(ngModel)]="minConfValue">
@@ -77,7 +77,7 @@
           </mat-expansion-panel>    
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
         <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
@@ -134,7 +134,7 @@
                 </mat-form-field>
               </div>
               <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-                <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}"></mat-checkbox>
+                <mat-checkbox fxFlex="7" tabindex="5" color="primary" formControlName="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" />
                 <mat-form-field fxLayout="column" fxFlex="93">
                   <mat-label>Min Confirmation Blocks</mat-label>
                   <input matInput formControlName="minConfValue" type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="sendFundFormGroup.controls.flgMinConf.value">
@@ -153,11 +153,11 @@
           <ng-template matStepLabel>{{confirmFormLabel}}</ng-template>
           <div fxLayout="column">
             <div fxFlex="100" class="w-100 alert alert-warn">
-              <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+              <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faExclamationTriangle" />
               <span>You are about to sweep all funds from RTL. Are you sure?</span>
             </div>
             <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-              <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+              <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
               <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
             </div>
             <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

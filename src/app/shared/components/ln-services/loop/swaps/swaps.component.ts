@@ -60,6 +60,11 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(change: SimpleChanges) {
+    this.swapCaption = (this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
+    this.loadSwapsTable(this.swapsData);
+  }
+
   ngOnInit() {
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -83,11 +88,6 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     if (this.swapsData && this.swapsData.length > 0) {
       this.loadSwapsTable(this.swapsData);
     }
-  }
-
-  ngOnChanges(change: SimpleChanges) {
-    this.swapCaption = (this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
-    this.loadSwapsTable(this.swapsData);
   }
 
   applyFilter() {

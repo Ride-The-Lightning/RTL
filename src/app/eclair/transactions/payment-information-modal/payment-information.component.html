@@ -18,42 +18,42 @@
             <span class="foreground-secondary-text">{{(payment.firstPartTimestamp) | date:'dd/MMM/y HH:mm'}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
             <span class="foreground-secondary-text">{{payment.id}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
             <span class="foreground-secondary-text">{{payment.paymentHash}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Payment Preimage</h4>
             <span class="foreground-secondary-text">{{payment.paymentPreimage}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Recipient Node</h4>
             <span class="foreground-secondary-text">{{payment.recipientNodeAlias}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>   
+        <mat-divider class="w-100 my-1" />   
         <div *ngIf="description" fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
             <span class="foreground-secondary-text">{{description}}</span>
           </div>
         </div>
-        <mat-divider *ngIf="description" class="w-100 my-1"></mat-divider>   
+        <mat-divider *ngIf="description" class="w-100 my-1" />   
         <div fxLayout="row">
           <div fxFlex="100">
             <mat-accordion>
@@ -75,14 +75,14 @@
                       <span class="foreground-secondary-text">{{(part.timestamp) | date:'dd/MMM/y HH:mm'}}</span>
                     </div>
                   </div>
-                  <mat-divider class="w-100 my-1"></mat-divider>
+                  <mat-divider class="w-100 my-1" />
                   <div fxLayout="row">
                     <div fxFlex="100">
                       <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
                       <span class="overflow-wrap foreground-secondary-text">{{part.id}}</span>
                     </div>
                   </div>
-                  <mat-divider class="w-100 my-1"></mat-divider>
+                  <mat-divider class="w-100 my-1" />
                   <div fxLayout="row">
                     <div fxFlex="100">
                       <h4 fxLayoutAlign="start" class="font-bold-500">To Channel</h4>

@@ -2,7 +2,7 @@
   <div *ngIf="errorMessage !== ''" class="p-2 error-border my-2">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="100" class="alert alert-warn mt-1">
-      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
       <span>Maximum 1,000 local failed transactions only.</span>
     </div>
     <div fxFlex="100">
@@ -22,7 +22,7 @@
     </div>
   </div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <table #table mat-table fxFlex="100" matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="failedLocalForwardingEvents">
       <ng-container matColumnDef="received_time">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Received Time</th>
@@ -72,7 +72,7 @@
         <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
             </mat-select>
           </div>
@@ -93,5 +93,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator *ngIf="errorMessage === ''" class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+  <mat-paginator *ngIf="errorMessage === ''" class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

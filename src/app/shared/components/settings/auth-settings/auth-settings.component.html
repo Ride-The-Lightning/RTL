@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <form *ngIf="appConfig?.allowPasswordUpdate" #authForm="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1">
     <div fxLayout="row" fxLayoutAlign="start start" class="mb-2">
-      <fa-icon class="page-title-img mr-1" [icon]="faLock"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faLock" />
       <span class="page-title">Password</span>
     </div>
     <mat-form-field>
@@ -24,14 +24,14 @@
       <button mat-flat-button color="primary" tabindex="5" type="submit" (click)="onChangePassword()">Change Password</button>
     </div>
   </form>
-  <mat-divider class="my-2"></mat-divider>
+  <mat-divider class="my-2" />
   <div fxLayout="column" fxLayoutAlign="start stretch">
     <div class="mb-1 settings-container page-sub-title-container mt-1">
-      <fa-icon class="page-title-img mr-1" [icon]="faUserClock"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faUserClock" />
       <span class="page-title">Two Factor Authentication</span>
     </div>
     <div class="alert alert-info">
-      <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+      <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle" />
       <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
     </div>
     <div class="mt-1">

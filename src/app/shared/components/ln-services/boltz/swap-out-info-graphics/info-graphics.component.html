@@ -1,6 +1,5 @@
 <ng-container
-  *ngTemplateOutlet="stepNumber === 1 ? swapStepBlock1: stepNumber === 2 ? swapStepBlock2 : stepNumber === 3 ? swapStepBlock3 : stepNumber === 4 ? swapStepBlock4 : swapStepBlock5">
-</ng-container>
+  *ngTemplateOutlet="stepNumber === 1 ? swapStepBlock1: stepNumber === 2 ? swapStepBlock2 : stepNumber === 3 ? swapStepBlock3 : stepNumber === 4 ? swapStepBlock4 : swapStepBlock5" />
 <ng-template #swapStepBlock1>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between center" [@sliderAnimation]="animationDirection" (swipe)="onSwipe($event)">
     <svg fxFlex="30" width="368" height="368" viewBox="0 0 368 368" fill="none" xmlns="http://www.w3.org/2000/svg" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">

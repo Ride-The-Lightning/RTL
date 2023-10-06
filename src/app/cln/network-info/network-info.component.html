@@ -4,7 +4,7 @@
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
           <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container pl-2">
-            <fa-icon class="mr-1" [icon]="card.icon"></fa-icon>
+            <fa-icon class="mr-1" [icon]="card.icon" />
             <span>{{card.title}}</span>
           </div>
         </div>
@@ -25,14 +25,14 @@
                 (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
                 mode="indeterminate"
-              ></mat-progress-bar>
+              />
               <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
-                <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false"></rtl-cln-node-info>
-                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cln-channel-status-info>
-                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cln-fee-info>
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]"></rtl-cln-fee-rates>
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[6]"></rtl-cln-fee-rates>
-                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]"></rtl-cln-onchain-fee-estimates>
+                <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
+                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]" />
+                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[6]" />
+                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]" />
               </div>
             </mat-card-content>
           </mat-card>
@@ -45,7 +45,7 @@
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
           <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container pl-15px">
-            <fa-icon class="mr-1" [icon]="card.icon"></fa-icon>
+            <fa-icon class="mr-1" [icon]="card.icon" />
             <span>{{card.title}}</span>
           </div>
         </div>
@@ -66,14 +66,14 @@
                 (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
                 mode="indeterminate"
-              ></mat-progress-bar>
+              />
               <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
-                <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false"></rtl-cln-node-info>
-                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cln-channel-status-info>
-                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cln-fee-info>
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]"></rtl-cln-fee-rates>
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[5]"></rtl-cln-fee-rates>
-                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]"></rtl-cln-onchain-fee-estimates>
+                <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
+                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]" />
+                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]" />
               </div>
             </mat-card-content>
           </mat-card>

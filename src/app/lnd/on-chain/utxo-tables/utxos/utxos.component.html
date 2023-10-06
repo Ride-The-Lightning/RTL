@@ -15,7 +15,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listUTXOs" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="is_dust">
           <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Dust/Nondust"></th>
@@ -77,7 +77,7 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
@@ -85,7 +85,7 @@
           <td *matCellDef="let utxo" mat-cell fxLayoutAlign="end center">
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="2" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onUTXOClick(utxo)">View Info</mat-option>
                 <mat-option (click)="onLabelUTXO(utxo)">Label</mat-option>
                 <mat-option (click)="onLeaseUTXO(utxo)">Lease</mat-option>
@@ -104,10 +104,10 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>
 <ng-template #emptySpace>
-  <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon"></mat-icon>
+  <mat-icon fxLayoutAlign="start center" color="warn" class="small-icon" />
 </ng-template>

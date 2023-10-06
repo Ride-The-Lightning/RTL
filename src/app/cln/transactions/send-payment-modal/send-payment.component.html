@@ -13,9 +13,9 @@
         <mat-radio-button *ngIf="selNode.enableOffers" fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
       </mat-radio-group>
       <form #sendPaymentForm="ngForm" fxLayoutAlign="space-between stretch" fxLayout="column" (submit)="onSendPayment()" (reset)="resetData()">
-        <ng-container *ngTemplateOutlet="paymentType === paymentTypes.KEYSEND ? keysendBlock : paymentType === paymentTypes.OFFER ? offerBlock : invoiceBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="paymentType === paymentTypes.KEYSEND ? keysendBlock : paymentType === paymentTypes.OFFER ? offerBlock : invoiceBlock" />
         <div *ngIf="paymentError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">

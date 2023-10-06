@@ -16,7 +16,7 @@
       <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onVerify()">Verify</button>
     </div>
     <div *ngIf="showVerifyStatus && verifyRes.verified" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-      <mat-divider class="my-2"></mat-divider>
+      <mat-divider class="my-2" />
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
         <p *ngIf="verifyRes.verified">Pubkey Used</p>
       </div>

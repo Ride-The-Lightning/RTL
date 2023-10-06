@@ -1,16 +1,16 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon class="page-title-img mr-1" [icon]="faChartPie"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faChartPie" />
   <span class="page-title">On-chain Balance</span>
 </div>
 <div fxLayout="column" class="padding-gap-x mb-4">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <rtl-currency-unit-converter [values]="balances"></rtl-currency-unit-converter>
+      <rtl-currency-unit-converter [values]="balances" />
     </mat-card-content>
   </mat-card>
 </div>
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon class="page-title-img mr-1" [icon]="faUsers"></fa-icon>
+  <fa-icon class="page-title-img mr-1" [icon]="faUsers" />
   <span class="page-title">Connections</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
@@ -29,7 +29,7 @@
         </mat-tab>
       </mat-tab-group>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
-        <router-outlet></router-outlet>
+        <router-outlet />
       </div>
     </mat-card-content>
   </mat-card>

@@ -19,8 +19,8 @@
             <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
-                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true" />
+                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true" />
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
                 <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '35' : '48'">
@@ -57,7 +57,7 @@
           <mat-step [stepControl]="quoteFormGroup" [editable]="flgEditable">
             <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="quoteFormGroup">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
-              <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <rtl-loop-quote [quote]="quote" [showPanel]="false" />
               <p *ngIf="inputFormGroup.controls.amount.value > localBalanceToCompare" fxFlex="100" class="color-warn mt-2" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Local balance amount is insufficient for swap.</p>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="direction === LoopTypeEnum.LOOP_OUT" mat-button color="primary" tabindex="6" type="button" (click)="onValidateAmount()">Next</button>
@@ -96,7 +96,7 @@
                   </mat-expansion-panel-header>
                   <div *ngIf="!loopStatus; else loopStatusBlock"></div>
                 </mat-expansion-panel>
-                <mat-progress-bar *ngIf="!loopStatus" fxFlex="100" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar *ngIf="!loopStatus" fxFlex="100" color="primary" mode="indeterminate" />
               </div>
               <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. You can check the status of the request on the \'Loop\' menu.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -114,22 +114,22 @@
   </div>
 </div>
 <ng-template #loopStatusBlock>
-  <rtl-loop-status fxLayout="column" [loopStatus]="loopStatus"></rtl-loop-status>
+  <rtl-loop-status fxLayout="column" [loopStatus]="loopStatus" />
 </ng-template>
 <div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
     <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
       <div fxFlex="5" fxLayoutAlign="end center">
-        <button tabindex="19" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
+        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
-      <rtl-loop-out-info-graphics *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-loop-out-info-graphics>
-      <rtl-loop-in-info-graphics *ngIf="direction === LoopTypeEnum.LOOP_IN" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber"></rtl-loop-in-info-graphics>
+      <rtl-loop-out-info-graphics *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber" />
+      <rtl-loop-in-info-graphics *ngIf="direction === LoopTypeEnum.LOOP_IN" fxFlex="100" [animationDirection]="animationDirection" [(stepNumber)]="stepNumber" />
     </mat-card-content>
     <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large padding-gap-bottom-large">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" tabindex="21" fxLayoutAlign="center center" class="dots-stepper-block" (click) = "onStepChanged(i)">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
