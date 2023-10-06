@@ -20,7 +20,7 @@
       "extends": [
         "plugin:@angular-eslint/all",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/recommended--extra"
+        "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
         "deprecation/deprecation": "error",
@@ -28,9 +28,9 @@
         "@angular-eslint/sort-ngmodule-metadata-arrays": "off",
         "@angular-eslint/use-component-view-encapsulation": "off",
         "@angular-eslint/use-injectable-provided-in": "off",
-        "@typescript-eslint/member-delimiter-style": ["error", { "multiline": { "delimiter": "semi", "requireLast": true}, "singleline": { "delimiter": "comma", "requireLast": false }}],
+        "@typescript-eslint/member-delimiter-style": "off",
         "@typescript-eslint/no-non-null-assertion": "off",        
-        "@typescript-eslint/type-annotation-spacing": "error",
+        "@typescript-eslint/type-annotation-spacing": 0,
         "quotes": ["error", "single"],
         "comma-dangle": ["error", "never"],
         "comma-spacing": ["error", { "before": false, "after": true }],
