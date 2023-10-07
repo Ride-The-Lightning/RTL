@@ -32,7 +32,8 @@
     }
   },
   "include": [
-    "./server/**/*"
+    "./server/**/*",
+    "./src/**/*"
   ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

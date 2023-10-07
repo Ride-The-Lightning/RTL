@@ -1,13 +1,13 @@
 <div fxLayout="column" class="mb-2">
   <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} Sats</span>
   <mat-accordion displayMode="flat" class="mt-1">
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Open ({{pendingOpenChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
         <table #table mat-table fxFlex="100" matSort [matSortActive]="openTableSetting.sortBy" [matSortDirection]="openTableSetting.sortOrder" [dataSource]="pendingOpenChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer</th>
@@ -76,7 +76,7 @@
             <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                  <mat-select-trigger></mat-select-trigger>
+                  <mat-select-trigger />
                   <mat-option (click)="onOpenClick(channel)">View Info</mat-option>
                   <mat-option (click)="onBumpFee(channel)">Bump Fee</mat-option>
                 </mat-select>
@@ -96,7 +96,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Force Closing ({{pendingForceClosingChannelsLength}})</mat-panel-title>
@@ -192,7 +192,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
@@ -272,7 +272,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>

@@ -16,7 +16,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div class="table-container" fxFlex="100" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listUTXOs" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="is_dust">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Dust/Nondust"></th>
@@ -84,7 +84,7 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
+                <mat-select-trigger />
                 <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
               </mat-select>
             </div>
@@ -104,10 +104,10 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>
 <ng-template #emptySpace>
-  <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1"></mat-icon>
+  <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1" />
 </ng-template>

@@ -17,7 +17,7 @@
       </div>
     </div>
     <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="nonRoutingPeers">
         <ng-container matColumnDef="chan_id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
@@ -129,6 +129,6 @@
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator #paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+    <mat-paginator #paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
   </div>
 </div>

@@ -26,6 +26,12 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
 
   constructor(public commonService: CommonService, private store: Store<RTLState>) { }
 
+  ngOnChanges() {
+    if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
+      this.getCurrencyValues(this.values);
+    }
+  }
+
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.fiatConversion = selNode.settings.fiatConversion;
@@ -37,12 +43,6 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
         this.getCurrencyValues(this.values);
       }
     });
-  }
-
-  ngOnChanges() {
-    if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-      this.getCurrencyValues(this.values);
-    }
   }
 
   getCurrencyValues(values) {

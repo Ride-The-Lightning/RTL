@@ -85,7 +85,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit() {
-    if (window.history.state && window.history.state.filterColumn) {
+    if (window.history.state && (window.history.state.filterColumn || window.history.state.filterValue)) {
       this.selFilterBy = window.history.state.filterColumn || 'all';
       this.selFilter = window.history.state.filterValue || '';
     }

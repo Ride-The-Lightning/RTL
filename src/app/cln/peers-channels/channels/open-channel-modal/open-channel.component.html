@@ -19,7 +19,7 @@
             <mat-error *ngIf="selectedPeer.errors?.notfound">Peer not found in the list.</mat-error>
           </mat-form-field>
         </div>
-        <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock" />
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="70" fxLayoutAlign="start end">
@@ -58,7 +58,7 @@
                   </mat-form-field>
                 </div>
                 <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
-                  <mat-checkbox fxFlex="7" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null"></mat-checkbox>
+                  <mat-checkbox fxFlex="7" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" />
                   <mat-form-field fxLayout="column" fxFlex="93">
                     <mat-label>Min Confirmation Blocks</mat-label>
                     <input #blocks="ngModel" matInput type="number" name="blocks" tabindex="8" [step]="1" [min]="0" [required]="flgMinConf" [disabled]="!flgMinConf" [(ngModel)]="minConfValue">
@@ -83,7 +83,7 @@
           </mat-expansion-panel>    
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
@@ -109,7 +109,7 @@
           <span class="foreground-secondary-text">{{peer.id}}</span>
         </div>
       </div>
-      <mat-divider class="w-100 my-1"></mat-divider>
+      <mat-divider class="w-100 my-1" />
       <div fxLayout="row">
         <div fxFlex="50">
           <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>

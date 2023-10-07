@@ -57,6 +57,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges() {
+    if (this.transactions && this.transactions.length > 0) {
+      this.loadTransactionsTable(this.transactions);
+    }
+  }
+
   ngOnInit() {
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[0])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -89,12 +95,6 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
         }
         this.logger.info(transactionsSelector);
       });
-  }
-
-  ngOnChanges() {
-    if (this.transactions && this.transactions.length > 0) {
-      this.loadTransactionsTable(this.transactions);
-    }
   }
 
   onTransactionClick(selTransaction: Transaction) {

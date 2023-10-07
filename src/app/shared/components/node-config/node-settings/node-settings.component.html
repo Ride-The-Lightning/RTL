@@ -4,13 +4,13 @@
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <fa-icon class="page-title-img mr-1" [icon]="faEyeSlash"></fa-icon>
+            <fa-icon class="page-title-img mr-1" [icon]="faEyeSlash" />
             <span class="page-title">Open Unannounced Channels</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxLayout="row" fxFlex="100" class="alert alert-info mb-1">
-            <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+            <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
             <span>Use this control to toggle setting which defaults to opening unannounced channels only.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
@@ -21,13 +21,13 @@
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <fa-icon class="page-title-img mr-1" [icon]="faMoneyBillAlt"></fa-icon>
+            <fa-icon class="page-title-img mr-1" [icon]="faMoneyBillAlt" />
             <span class="page-title">Balance Display</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxFlex="100" class="alert alert-warn">
-            <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+            <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
             <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
@@ -47,13 +47,13 @@
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <fa-icon class="page-title-img mr-1" [icon]="faPaintBrush"></fa-icon>
+            <fa-icon class="page-title-img mr-1" [icon]="faPaintBrush" />
             <span class="page-title">Customization</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
-            <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+            <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
             <span>Dashboard layout will be tailored based on the role selected to better serve its needs.</span>
           </div>
           <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100">
@@ -64,7 +64,7 @@
               </mat-radio-button>
             </mat-radio-group>
           </div>
-          <mat-divider class="mt-1"></mat-divider>
+          <mat-divider class="mt-1" />
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
             <h4>Mode</h4>
             <mat-radio-group class="radio-group" color="primary" name="themeMode" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
@@ -72,7 +72,7 @@
               </mat-radio-button>
             </mat-radio-group>
           </div>
-          <mat-divider class="mt-1"></mat-divider>
+          <mat-divider class="mt-1" />
           <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
             <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="40" fxLayoutAlign="space-between stretch">
               <h4>Themes</h4>

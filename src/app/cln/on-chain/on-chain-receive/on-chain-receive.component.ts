@@ -18,7 +18,7 @@ import { getNewAddress } from '../../store/cln.actions';
 export class CLNOnChainReceiveComponent {
 
   public addressTypes = ADDRESS_TYPES;
-  public selectedAddressType = ADDRESS_TYPES[0];
+  public selectedAddressType = ADDRESS_TYPES[2];
   public newAddress = '';
 
   constructor(private store: Store<RTLState>, private clnEffects: CLNEffects) { }

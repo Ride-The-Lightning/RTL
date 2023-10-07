@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DatePipe } from '@angular/common';
 
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -14,6 +15,7 @@ describe('ECLNodeInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ECLNodeInfoComponent],
       providers: [
+        DatePipe,
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }

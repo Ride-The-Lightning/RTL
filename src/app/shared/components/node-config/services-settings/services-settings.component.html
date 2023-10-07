@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="page-sub-title-container my-1">
   <div fxLayout="row">
-    <fa-icon class="page-title-img mr-1" [icon]="faLayerGroup"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faLayerGroup" />
     <span class="page-title">Services</span>
   </div>
 </div>
@@ -8,13 +8,13 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" routerLink="{{links[0].link}}" (click)="activeLink = links[0].link">{{links[0].name}}</div>
-        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
-        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'CLN'" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
+        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" tabindex="1" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" routerLink="{{links[0].link}}" (click)="activeLink = links[0].link">{{links[0].name}}</div>
+        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'LND'" tabindex="2" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
+        <div *ngIf="selNode?.lnImplementation?.toUpperCase() === 'CLN'" tabindex="3" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
       </nav>
-      <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      <mat-tab-nav-panel #tabPanel />
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
-        <router-outlet></router-outlet>
+        <router-outlet />
       </div>
     </mat-card-content>
   </mat-card>

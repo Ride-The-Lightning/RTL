@@ -9,15 +9,17 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
-import { Peer } from '../../../shared/models/lndModels';
+import { GetInfo, Peer } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
-import { lndNodeSettings } from '../../store/lnd.selector';
+import { nodeInfoAndNodeSettingsAndAPIStatus } from '../../store/lnd.selector';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { CommonService } from 'src/app/shared/services/common.service';
+import { ApiCallStatusPayload } from 'src/app/shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-connect-peer',
@@ -37,6 +39,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public channelOpenStatus = null;
   public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
+  public isTaprootAvailable = false;
   public peerConnectionError = '';
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
@@ -46,7 +49,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder, private actions: Actions, private logger: LoggerService) { }
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert,
+    private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder,
+    private actions: Actions, private logger: LoggerService, private commonService: CommonService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message?.balance || 0;
@@ -60,14 +65,16 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       isPrivate: [!!this.selNode?.unannouncedChannels],
       selTransType: [TRANS_TYPES[0].id],
       transTypeValue: [{ value: '', disabled: true }],
+      taprootChannel: [false],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
-        this.selNode = nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+    this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.channelFormGroup.controls.isPrivate.setValue(!!infoSettingsStatusSelector.nodeSettings?.unannouncedChannels);
+        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoSettingsStatusSelector.information.version, '0.17.0');
       });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
@@ -138,10 +145,11 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       return true;
     }
     this.channelConnectionError = '';
+    // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
         selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
-        transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
+        transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, commitmentType: (!!this.channelFormGroup.controls.taprootChannel.value ? 5 : null)
       }
     }));
   }

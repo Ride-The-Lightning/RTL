@@ -3,9 +3,9 @@
     <button mat-icon-button color="primary" type="button" tabindex="1" class="pr-4" (click)="onStepChange('FIRST')"><mat-icon>skip_previous</mat-icon></button>
     <button mat-icon-button color="primary" type="button" tabindex="2" [disabled]="disablePrev" (click)="onStepChange('PREVIOUS')"><mat-icon>navigate_before</mat-icon></button>
   </div>
-  <ng-container *ngIf="animationDirection === 'forward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'forward'}"></ng-container>
-  <ng-container *ngIf="animationDirection === 'backward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'backward'}"></ng-container>
-  <ng-container *ngIf="animationDirection === ''" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:''}"></ng-container>
+  <ng-container *ngIf="animationDirection === 'forward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'forward'}" />
+  <ng-container *ngIf="animationDirection === 'backward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'backward'}" />
+  <ng-container *ngIf="animationDirection === ''" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:''}" />
   <div fxLayout="row" fxLayoutAlign="end center" fxFlex="20">
     <button mat-icon-button color="primary" type="button" tabindex="5" class="pr-4" [disabled]="disableNext" (click)="onStepChange('NEXT')"><mat-icon>navigate_next</mat-icon></button>
     <button mat-icon-button color="primary" type="button" tabindex="6" (click)="onStepChange('LAST')"><mat-icon>skip_next</mat-icon></button>
@@ -24,14 +24,14 @@
       <mat-form-field *ngIf="selScrollRange === scrollRanges[0]" monthlyDate fxLayoutAlign="center center">
         <input #monthlyDt="ngModel" matInput name="monthlyDate" tabindex="4"
         readonly [matDatepicker]="monthlyDatepicker" [min]="first" [max]="last" [(ngModel)]="selectedValue">
-        <mat-datepicker-toggle matSuffix [for]="monthlyDatepicker"></mat-datepicker-toggle>
-        <mat-datepicker #monthlyDatepicker startView="year" [startAt]="selectedValue" (monthSelected)="onMonthSelected($event)" (dateSelected)="onMonthSelected($event)"></mat-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="monthlyDatepicker" />
+        <mat-datepicker #monthlyDatepicker startView="year" [startAt]="selectedValue" (monthSelected)="onMonthSelected($event)" (dateSelected)="onMonthSelected($event)" />
       </mat-form-field>
       <mat-form-field *ngIf="selScrollRange === scrollRanges[1]" yearlyDate fxLayoutAlign="center center">
         <input #yearlyDt="ngModel" matInput name="yearlyDate" tabindex="4"
         readonly [matDatepicker]="yearlyDatepicker" [min]="first" [max]="last" [(ngModel)]="selectedValue">
-        <mat-datepicker-toggle matSuffix [for]="yearlyDatepicker"></mat-datepicker-toggle>
-        <mat-datepicker #yearlyDatepicker startView="multi-year" [startAt]="selectedValue" (yearSelected)="onYearSelected($event)" (monthSelected)="onYearSelected($event)" (dateSelected)="onYearSelected($event)"></mat-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="yearlyDatepicker" />
+        <mat-datepicker #yearlyDatepicker startView="multi-year" [startAt]="selectedValue" (yearSelected)="onYearSelected($event)" (monthSelected)="onYearSelected($event)" (dateSelected)="onYearSelected($event)" />
       </mat-form-field>
     </div>
   </div>

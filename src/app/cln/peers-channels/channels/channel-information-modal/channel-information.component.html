@@ -2,7 +2,7 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <fa-icon class="page-title-img mr-1" [icon]="faReceipt"></fa-icon>
+        <fa-icon class="page-title-img mr-1" [icon]="faReceipt" />
         <span class="page-title">Channel Information</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
@@ -12,7 +12,7 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Short Channel ID</h4>
-            <span class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
+            <span tabindex="4" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
               {{channel.short_channel_id}}
             </span>
           </div>
@@ -21,21 +21,21 @@
             <span class="foreground-secondary-text">{{channel.alias}}</span>
           </div>
         </div>
-        <mat-divider class="my-1"></mat-divider>
+        <mat-divider class="my-1" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
             <span class="foreground-secondary-text">{{channel.channel_id}}</span>
           </div>
         </div>
-        <mat-divider class="my-1"></mat-divider>
+        <mat-divider class="my-1" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
             <span class="foreground-secondary-text">{{channel.peer_id}}</span>
           </div>
         </div>
-        <mat-divider class="my-1"></mat-divider>
+        <mat-divider class="my-1" />
         <div fxLayout="row">
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
@@ -50,7 +50,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.private ? 'Yes' : 'No'}}</span>
           </div>
         </div>
-        <mat-divider class="my-1"></mat-divider>
+        <mat-divider class="my-1" />
         <div fxLayout="row">
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
@@ -65,7 +65,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.total_msat / 1000 | number:'1.0-0'}}</span>
           </div>
         </div>
-        <mat-divider class="my-1"></mat-divider>
+        <mat-divider class="my-1" />
         <div *ngIf="showAdvanced">
           <div fxLayout="row">
             <div fxFlex="50">
@@ -77,7 +77,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.spendable_msat / 1000 | number:'1.0-0'}}</span>
             </div>
           </div>
-          <mat-divider class="my-1"></mat-divider>
+          <mat-divider class="my-1" />
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Their Reserve (Sats)</h4>
@@ -88,14 +88,14 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.our_reserve_msat / 1000 | number:'1.0-2'}}</span>
             </div>
           </div>
-          <mat-divider class="my-1"></mat-divider>
+          <mat-divider class="my-1" />
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>
               <span class="foreground-secondary-text">{{channel.funding_txid}}</span>
             </div>
           </div>
-          <mat-divider class="my-1"></mat-divider>
+          <mat-divider class="my-1" />
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" fxFlex="100" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
           <button mat-button color="primary" type="reset" tabindex="1" class="mr-1" (click)="onShowAdvanced()">

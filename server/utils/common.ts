@@ -34,9 +34,10 @@ export class CommonService {
 
   constructor() { }
 
-  public getSwapServerOptions = (req) => {
+  public setSwapServerOptions = (req) => {
     const swapOptions = {
-      url: req.session.selectedNode.swap_server_url,
+      baseUrl: req.session.selectedNode.swap_server_url,
+      uri: '',
       rejectUnauthorized: false,
       json: true,
       headers: { 'Grpc-Metadata-macaroon': '' }
@@ -240,6 +241,9 @@ export class CommonService {
     let err = JSON.parse(JSON.stringify(errRes));
     if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
       errRes.error = errRes.error.stack || errRes.error.message;
+      err = JSON.parse(JSON.stringify(errRes));
+    } else if (errRes.message || errRes.stack) {
+      errRes.error = errRes.message || errRes.stack;
       err = JSON.parse(JSON.stringify(errRes));
     }
     if (!selectedNode) { selectedNode = this.initSelectedNode; }

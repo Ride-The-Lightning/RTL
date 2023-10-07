@@ -11,7 +11,7 @@ import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { saveSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
-import { setChildNodeSettingsCL } from '../../../../cln/store/cln.actions';
+import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 
@@ -68,7 +68,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
         lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
-    this.store.dispatch(setChildNodeSettingsCL({
+    this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
         currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
@@ -111,7 +111,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
         swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
       }
     }));
-    this.store.dispatch(setChildNodeSettingsCL({
+    this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
         selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,

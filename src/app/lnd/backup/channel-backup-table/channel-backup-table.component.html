@@ -1,11 +1,11 @@
 <div fxLayout="column">
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
     <div fxFlex="100" class="alert alert-warn">
-      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+      <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
       <span>Save your backup files in a redundant location.</span>
     </div>
     <div fxFlex="100" class="alert alert-info">
-      <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle"></fa-icon>
+      <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
       <span><strong>Backup Folder Location: </strong>{{selNode.channelBackupPath}}.</span>
     </div>
     <div fxLayout="row" class="mt-2">
@@ -16,7 +16,7 @@
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-2">
     <div fxFlex="70">
-      <fa-icon class="page-title-img mr-1" [icon]="faArchive"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faArchive" />
       <span class="page-title">Backups</span>
     </div>
     <div fxFlex.gt-xs="30" fxLayoutAlign.gt-xs="space-between center" fxLayout="row" fxLayoutAlign="space-between stretch">
@@ -28,7 +28,7 @@
     </div>
   </div>
   <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <table #table mat-table fxFlex="100" matSort [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <ng-container matColumnDef="channel_point">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel Point</th>
@@ -45,7 +45,7 @@
         <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger></mat-select-trigger>
+              <mat-select-trigger />
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
               <mat-option (click)="onDownloadBackup(channel)">Download Backup</mat-option>
@@ -66,5 +66,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true"></mat-paginator>
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

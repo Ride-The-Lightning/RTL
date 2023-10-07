@@ -1,6 +1,5 @@
 <ng-container
-  *ngTemplateOutlet="stepNumber === 1 ? infoStepBlock1: stepNumber === 2 ? infoStepBlock2 : stepNumber === 3 ? infoStepBlock3 : stepNumber === 4 ? infoStepBlock4 : infoStepBlock5">
-</ng-container>
+  *ngTemplateOutlet="stepNumber === 1 ? infoStepBlock1: stepNumber === 2 ? infoStepBlock2 : stepNumber === 3 ? infoStepBlock3 : stepNumber === 4 ? infoStepBlock4 : infoStepBlock5" />
 <ng-template #infoStepBlock1>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between starts" [@sliderAnimation]="animationDirection"
     (swipe)="onSwipe($event)">

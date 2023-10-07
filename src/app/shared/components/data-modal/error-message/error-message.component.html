@@ -11,13 +11,13 @@
         <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <h4 fxLayoutAlign="start" class="font-bold-500">Error Code</h4>
         <span>{{data.message.code}}</span>
-        <mat-divider class="w-100 my-1"></mat-divider>
+        <mat-divider class="w-100 my-1" />
         <h4 fxLayoutAlign="start" class="font-bold-500">Error Message</h4>
         <span class="word-break">{{errorMessage}}</span>
-        <mat-divider class="w-100 my-1"></mat-divider>
+        <mat-divider class="w-100 my-1" />
         <h4 fxLayoutAlign="start" class="font-bold-500">API URL</h4>
         <span class="word-break">{{data.message.URL}}</span>
-        <mat-divider class="w-100 my-1"></mat-divider>
+        <mat-divider class="w-100 my-1" />
         <div fxLayout="row" fxLayoutAlign="end center">
           <button tabindex="1" autoFocus mat-button color="primary" type="submit" default [mat-dialog-close]="false">OK</button>
         </div>

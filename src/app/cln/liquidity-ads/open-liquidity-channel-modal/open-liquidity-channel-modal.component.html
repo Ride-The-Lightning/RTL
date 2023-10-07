@@ -8,7 +8,7 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="column">
-        <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="nodeDetailsExpansionBlock" />
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
             <mat-label>Requested Amount</mat-label>
@@ -36,7 +36,7 @@
           <span>Total cost to lease {{node.channel_opening_fee | number}} (Sats)</span>
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-2">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
@@ -62,14 +62,14 @@
           <span class="foreground-secondary-text">{{node.nodeid}}</span>
         </div>
       </div>
-      <mat-divider class="w-100 my-1"></mat-divider>
+      <mat-divider class="w-100 my-1" />
       <div fxLayout="row">
         <div fxFlex="100">
           <h4 fxLayoutAlign="start" class="font-bold-500">Last Timestamp</h4>
           <span class="overflow-wrap foreground-secondary-text">{{(node.last_timestamp * 1000) | date:'dd/MMM/y HH:mm'}}</span>
         </div>
       </div>
-      <mat-divider class="w-100 my-1"></mat-divider>
+      <mat-divider class="w-100 my-1" />
       <div fxLayout="column" fxLayoutAlign="start stretch">
         <h4 fxFlex="100" class="font-bold-500 mb-1">Addresses</h4>
         <div class="table-container">

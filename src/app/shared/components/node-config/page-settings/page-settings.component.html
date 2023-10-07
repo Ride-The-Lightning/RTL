@@ -1,10 +1,10 @@
 <div fxLayout="column" fxFlex="100" [perfectScrollbar]>
   <form #form="ngForm" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
     <div fxLayout="row">
-      <fa-icon class="page-title-img mr-1" [icon]="faPenRuler"></fa-icon>
+      <fa-icon class="page-title-img mr-1" [icon]="faPenRuler" />
       <span class="page-title">Grid Settings</span>
     </div>
-    <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
+    <ng-container *ngIf="errorMessage && errorMessage.page === 'unknown'" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}" />
     <mat-accordion displayMode="flat" multi="false">
       <mat-expansion-panel *ngFor="let page of pageSettings" fxLayout="column" class="flat-expansion-panel mt-1" expanded="false" [ngClass]="{'error-border': errorMessage?.page === page.pageId}">
         <mat-expansion-panel-header>
@@ -56,7 +56,7 @@
             <button mat-icon-button class="mb-2" color="primary" type="button" tabindex="7" matTooltip="Reset to Default" (click)="onTableReset(page.pageId, table)"><mat-icon color="primary" [ngClass]="{'ml-minus-1': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">restore</mat-icon></button>
           </div>
         </div>
-        <ng-container *ngIf="errorMessage && errorMessage?.page === page.pageId" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}"></ng-container>
+        <ng-container *ngIf="errorMessage && errorMessage?.page === page.pageId" [ngTemplateOutlet]="errorObjectBlock" [ngTemplateOutletContext]="{error: errorMessage}" />
       </mat-expansion-panel>
     </mat-accordion>
   </form>

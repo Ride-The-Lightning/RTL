@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-    <fa-icon class="page-title-img mr-1" [icon]="faMapSigns"></fa-icon>
+    <fa-icon class="page-title-img mr-1" [icon]="faMapSigns" />
     <span class="page-title">Routing</span>
   </div>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
@@ -12,16 +12,16 @@
               <mat-label>Start Date</mat-label>
               <input #strtDate="ngModel" matInput name="startDate"
                 tabindex="1" [matDatepicker]="startDatepicker" [max]="today" [(ngModel)]="startDate">
-              <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
-              <mat-datepicker #startDatepicker [startAt]="startDate"></mat-datepicker>
+              <mat-datepicker-toggle matSuffix [for]="startDatepicker" />
+              <mat-datepicker #startDatepicker [startAt]="startDate" />
               <mat-error *ngIf="strtDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start">
               <mat-label>End Date</mat-label>
               <input #enDate="ngModel" matInput name="endDate" tabindex="2" [matDatepicker]="endDatepicker"
                 [min]="startDate" [max]="today" [(ngModel)]="endDate">
-              <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
-              <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
+              <mat-datepicker-toggle matSuffix [for]="endDatepicker" />
+              <mat-datepicker #endDatepicker [startAt]="endDate" />
               <mat-error *ngIf="enDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
           </div>
@@ -32,12 +32,12 @@
         </form>
         <div fxLayout="row" fxFlex="100">
           <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" fxFlex="100" [tabPanel]="tabPanel">
-            <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
+            <div *ngFor="let link of links" tabindex="5" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
           </nav>
-          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>    
+          <mat-tab-nav-panel #tabPanel />    
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-          <router-outlet></router-outlet>
+          <router-outlet />
         </div>
       </mat-card-content>
     </mat-card>

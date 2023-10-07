@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": [
-    "src/**/*.js"
+    "backend/**/*.js"
   ],
   "overrides": [
     {
@@ -20,17 +20,18 @@
       "extends": [
         "plugin:@angular-eslint/all",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/recommended--extra"
+        "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
         "deprecation/deprecation": "error",
         "@angular-eslint/prefer-on-push-component-change-detection": "off",
+        "@angular-eslint/prefer-standalone-component": "off",
         "@angular-eslint/sort-ngmodule-metadata-arrays": "off",
         "@angular-eslint/use-component-view-encapsulation": "off",
         "@angular-eslint/use-injectable-provided-in": "off",
-        "@typescript-eslint/member-delimiter-style": ["error", { "multiline": { "delimiter": "semi", "requireLast": true}, "singleline": { "delimiter": "comma", "requireLast": false }}],
+        "@typescript-eslint/member-delimiter-style": "off",
         "@typescript-eslint/no-non-null-assertion": "off",        
-        "@typescript-eslint/type-annotation-spacing": "error",
+        "@typescript-eslint/type-annotation-spacing": 0,
         "quotes": ["error", "single"],
         "comma-dangle": ["error", "never"],
         "comma-spacing": ["error", { "before": false, "after": true }],
@@ -124,7 +125,7 @@
         "indent": ["error", 2, { "SwitchCase": 1, "MemberExpression": 1, "ArrayExpression": "off" }],
         "keyword-spacing": ["error", { "before": true, "after": true, "overrides": { "this": { "before": false }}}],
         "lines-around-comment": "error",
-        "max-depth": ["error", { "max": 6 }],
+        "max-depth": ["error", { "max": 7 }],
         "max-nested-callbacks": "error",
         "max-statements-per-line": ["error", { "max": 3 }],
         "no-array-constructor": "error",
@@ -196,12 +197,14 @@
         "@angular-eslint/template/click-events-have-key-events": "off",
         "@angular-eslint/template/conditional-complexity": "off",
         "@angular-eslint/template/cyclomatic-complexity": "off",
+        "@angular-eslint/template/elements-content": "off",
         "@angular-eslint/template/i18n": "off",
         "@angular-eslint/template/no-autofocus": "off",
         "@angular-eslint/template/no-call-expression": "off",
         "@angular-eslint/template/no-inline-styles": "off",
         "@angular-eslint/template/no-interpolation-in-attributes": "off",
         "@angular-eslint/template/no-positive-tabindex": "off",
+        "@angular-eslint/template/prefer-ngsrc": "off",
         "@angular-eslint/template/use-track-by-function": "off"
       }
     }

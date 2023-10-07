@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
-  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)" />
   <div fxLayout="column" fxLayoutAlign="center center" class="padding-gap-x">
     <mat-radio-group class="my-1" color="primary" name="selReportBy" fxFlex="100" fxLayoutAlign="start center" [(ngModel)]="selReportBy" (change)="onSelReportByChange()">
       <span class="mr-2">Report By: </span>
@@ -9,7 +9,7 @@
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" />
       <p>Getting Forwarding History...</p>
     </div>
     <div *ngIf="apiCallStatus?.status === apiCallStatusEnum.ERROR" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1 error-border">{{errorMessage}}</div>
@@ -42,7 +42,7 @@
       </ngx-charts-bar-vertical>
     </div>
     <div class="mt-1">
-      <rtl-cln-forwarding-history *ngIf="filteredEventsBySelectedPeriod && filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="filteredEventsBySelectedPeriod" [selFilter]="eventFilterValue"></rtl-cln-forwarding-history>
+      <rtl-cln-forwarding-history *ngIf="filteredEventsBySelectedPeriod && filteredEventsBySelectedPeriod.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="filteredEventsBySelectedPeriod" [selFilter]="eventFilterValue" />
     </div>
   </div>
 </div>

@@ -25,7 +25,7 @@
           </mat-form-field>
           </div>
         <div *ngIf="offerError !== ''" fxFlex="100" class="alert alert-danger mt-1">
-          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle"></fa-icon>
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="offerError !== ''">{{offerError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="end center">

@@ -2,9 +2,9 @@
   <div fxLayout="column" fxFlex="8" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number:'1.0-0'}} Sats</mat-hint>
-    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100"></mat-progress-bar>
+    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="100" />
   </div>
-  <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
+  <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider" /></div>
   <div fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start" [perfectScrollbar]>
     <div *ngIf="activeChannels && activeChannels.length > 0;  else noChannelBlock" fxLayout="column" fxFlex="100"class="w-100">
       <div *ngFor="let channel of activeChannels" class="mt-2">
@@ -15,8 +15,8 @@
           <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.to_them_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
           <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.to_us_msat/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
         </div>
-        <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_them_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
-        <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_us_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_them_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}" />
+        <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((channel.to_us_msat/1000 || 0)/(totalLiquidity) * 100) : 0}}" />
       </div>
     </div>
   </div>

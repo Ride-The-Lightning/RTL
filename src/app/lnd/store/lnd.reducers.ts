@@ -191,14 +191,6 @@ export const LNDReducer = createReducer(initLNDState,
       utxos: payload
     };
   }),
-  // on(setPayments, (state, { payload }) => ({
-  //   ...state,
-  //   listPayments: payload
-  // })),
-  // on(setAllLightningTransactions, (state, { payload }) => ({
-  //   ...state,
-  //   allLightningTransactions: payload
-  // })),
   on(setPayments, (state, { payload }) => {
     const allLtTrans: SetAllLightningTransactions = { listInvoicesAll: state.allLightningTransactions.listInvoicesAll, listPaymentsAll: payload };
     return {

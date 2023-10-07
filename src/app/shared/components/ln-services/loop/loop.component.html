@@ -1,18 +1,18 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
-  <fa-icon class="page-title-img mr-1" [icon]="faInfinity"></fa-icon>
-  <span class="page-title">Loop</span>
+  <fa-icon class="page-title-img mr-1" [icon]="faInfinity" />
+  <span class="page-title">Loop (v{{loopInfo?.version || ' Unknown'}})</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngFor="let link of links" mat-tab-link class="mat-tab-label" [active]="activeTab.link === link.link" [routerLink]="['../', link.link]" (click)="onSelectedIndexChange(link)">{{link.name}}</div>
+        <div *ngFor="let link of links" tabindex="1" mat-tab-link class="mat-tab-label" [active]="activeTab.link === link.link" [routerLink]="['../', link.link]" (click)="onSelectedIndexChange(link)">{{link.name}}</div>
       </nav>
-      <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      <mat-tab-nav-panel #tabPanel />
       <div fxLayout="row" fxLayoutAlign="start start" class="padding-gap-x-large mt-1">
-        <button mat-flat-button color="primary" type="button" tabindex="1" (click)="onLoop(selectedSwapType)">Start {{activeTab.name}}</button>
+        <button mat-flat-button color="primary" type="button" tabindex="2" (click)="onLoop(selectedSwapType)">Start {{activeTab.name}}</button>
       </div>
-      <rtl-swaps fxLayout="row" fxFlex="100" [selectedSwapType]="selectedSwapType" [swapsData]="filteredSwaps" [flgLoading]="flgLoading" [emptyTableMessage]="emptyTableMessage"></rtl-swaps>
+      <rtl-swaps fxLayout="row" fxFlex="100" [selectedSwapType]="selectedSwapType" [swapsData]="filteredSwaps" [flgLoading]="flgLoading" [emptyTableMessage]="emptyTableMessage" />
     </mat-card-content>
   </mat-card>
 </div>

@@ -10,6 +10,12 @@
       <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
       <div class="overflow-wrap dashboard-info-value">{{fees?.totalTxCount | number}}</div>
     </div>
+    <div *ngIf="!fees?.totalTxCount">
+      <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
+      <a class="overflow-wrap dashboard-info-value" [routerLink]="['../routing']">
+        Go to Routing
+      </a>
+    </div>
   </div>
 </div>
 <ng-template #errorBlock>

@@ -59,6 +59,17 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
     this.screenSize = this.commonService.getScreenSize();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
+      this.eventsData = changes.eventsData.currentValue;
+      this.successfulEvents = this.eventsData;
+      if (!changes.eventsData.firstChange) {
+        this.loadRoutingPeersTable(this.successfulEvents);
+      }
+    }
+  }
+
   ngOnInit() {
     this.store.pipe(take(1)).subscribe((state) => {
       if (state.cln.apisCallStatus.FetchForwardingHistoryS.status === APICallStatusEnum.UN_INITIATED && !state.cln.forwardingHistory.listForwards?.length) {
@@ -102,17 +113,6 @@ export class CLNRoutingPeersComponent implements OnInit, OnChanges, AfterViewIni
   ngAfterViewInit() {
     if (this.successfulEvents.length > 0) {
       this.loadRoutingPeersTable(this.successfulEvents);
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
-      this.apiCallStatus = { status: APICallStatusEnum.COMPLETED, action: 'FetchForwardingHistory' };
-      this.eventsData = changes.eventsData.currentValue;
-      this.successfulEvents = this.eventsData;
-      if (!changes.eventsData.firstChange) {
-        this.loadRoutingPeersTable(this.successfulEvents);
-      }
     }
   }
 

@@ -8,12 +8,11 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
-import { UserIdleModule } from 'angular-user-idle';
+import { provideUserIdleConfig } from 'angular-user-idle';
 import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './app.component';
 
-import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { SessionService } from './shared/services/session.service';
 import { LoopService } from './shared/services/loop.service';
@@ -42,7 +41,6 @@ if (isDevMode()) { isDevEnvironemt = true; }
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({ idle: (HOUR_SECONDS - 10), timeout: 10, ping: 12000 }),
     StoreModule.forRoot(
       { root: RootReducer, lnd: LNDReducer, cln: CLNReducer, ecl: ECLReducer },
       {
@@ -56,6 +54,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
   ],
   declarations: [AppComponent],
   providers: [
+    provideUserIdleConfig({ idle: (HOUR_SECONDS - 10), timeout: 10, ping: 12000 }),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
   ],
