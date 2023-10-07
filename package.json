@@ -23,7 +23,7 @@
   "dependencies": {
     "@ngrx/effects": "^15.0.0",
     "@ngrx/store": "^15.0.0",
-    "@swimlane/ngx-charts": "^20.1.2",
+    "@swimlane/ngx-charts": "^20.4.1",
     "angular-user-idle": "^3.0.0",
     "atob": "^2.1.2",
     "cookie-parser": "^1.4.6",
