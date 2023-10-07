@@ -52,9 +52,13 @@
           </div>
         </td>
       </ng-container>
-      <ng-container matColumnDef="isInitiator">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header>Initiator</th>
-        <td *matCellDef="let channel" mat-cell>{{channel?.isInitiator ? 'Yes' : 'No'}}</td>
+      <ng-container matColumnDef="isFunder">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Funder</th>
+        <td *matCellDef="let channel" mat-cell>{{channel?.isFunder ? 'Yes' : 'No'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="buried">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Buried</th>
+        <td *matCellDef="let channel" mat-cell>{{channel?.buried ? 'Yes' : 'No'}}</td>
       </ng-container>
       <ng-container matColumnDef="feeBaseMsat">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Base Fee (mSats)</th>
@@ -75,6 +79,11 @@
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Remote Balance (Sats)</th>
         <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
             {{channel?.toRemote | number:'1.0-0'}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="feeRatePerKw">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee/KW</th>
+        <td *matCellDef="let channel" mat-cell><span fxLayoutAlign="end center">
+            {{channel?.feeRatePerKw | number:'1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="balancedness">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Balance Score</th>

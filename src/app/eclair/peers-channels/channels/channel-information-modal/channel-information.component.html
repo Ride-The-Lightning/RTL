@@ -39,20 +39,24 @@
         </div>
         <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
-          <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.state | titlecase}}</span>
-          </div>
-        </div>
-        <mat-divider class="my-1" [inset]="true" />
-        <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
             <span class="overflow-wrap foreground-secondary-text">{{!channel.announceChannel ? 'Yes' : 'No'}}</span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Initiator</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.isInitiator ? 'Yes' : 'No'}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Funder</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.isFunder ? 'Yes' : 'No'}}</span>
+          </div>
+        </div>
+        <mat-divider class="my-1" [inset]="true" />
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.state | titlecase}}</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Buried</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
           </div>
         </div>
         <mat-divider class="my-1" [inset]="true" />
