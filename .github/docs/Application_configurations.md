@@ -21,7 +21,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "lnNode": "<Node name to uniquely identify the node in the UI, Required>",
       "lnImplementation": "<LNP implementation, Allowed values LND/CLN/ECL, Required>",
       "Authentication": {
-        "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLN) file, Required for LND & CLN>",
+        "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'.commando' (CLN, contains rune) file, Required for LND & CLN>",
         "swapMacaroonPath": "<Path for the folder containing 'loop.macaroon' (LND), Required for LND Loop>",
         "boltzMacaroonPath": "<Path for the folder containing 'admin.macaroon' (Boltz), Required for Boltz Swaps>",
         "configPath": "<Full path of the lnd.conf/core lightning config/eclair.conf file including the file name, if present locally, Optional, only mandatory for ECL if the lnApiPassword is missing>",
@@ -59,7 +59,7 @@ LN_SERVER_URL (LN server URL for LNP REST APIs, default https://127.0.0.1:8080) 
 SWAP_SERVER_URL (Swap server URL for REST APIs, default http://127.0.0.1:8081) (Optional)<br />
 BOLTZ_SERVER_URL (Boltz server URL for REST APIs, default http://127.0.0.1:9003) (Optional)<br />
 CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional for LND & CLN, Mandatory for ECL if LN_API_PASSWORD is undefined)<br />
-MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLN) file, Required for LND & CLN)<br />
+MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)//'.commando' (CLN, contains rune) (CLN) file, Required for LND & CLN)<br />
 SWAP_MACAROON_PATH (Path for the folder containing Loop's 'loop.macaroon', optional)<br />
 BOLTZ_MACAROON_PATH (Path for the folder containing Boltz's 'admin.macaroon', optional)<br />
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Required)<br />

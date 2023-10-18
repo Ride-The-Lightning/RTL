@@ -10,7 +10,7 @@ export const getPeers = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/peer/listPeers';
-  request(options).then((body) => {
+  request.post(options).then((body) => {
     body.forEach((peer) => {
       if (!peer.alias || peer.alias === '') {
         peer.alias = peer.id.substring(0, 20);
@@ -33,7 +33,7 @@ export const postPeer = (req, res, next) => {
   request.post(options).then((connectRes) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: connectRes });
     options.url = req.session.selectedNode.ln_server_url + '/v1/peer/listPeers';
-    request(options).then((listPeersRes) => {
+    request.post(options).then((listPeersRes) => {
       const peers = listPeersRes ? common.newestOnTop(listPeersRes, 'id', req.body.id) : [];
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
       res.status(201).json(peers);

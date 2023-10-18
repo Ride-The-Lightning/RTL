@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { join } from 'path';
 import WebSocket from 'ws';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
@@ -48,9 +47,11 @@ export class CLWebSocketClient {
         };
         this.connectWithClient = (clWsClt) => {
             this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the Core Lightning\'s Websocket Server..' });
-            const WS_LINK = (clWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws') + '/v1/ws';
-            const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(clWsClt.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
-            clWsClt.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
+            const mcrnHexEncoded = Buffer.from(fs.readFileSync(clWsClt.selectedNode.macaroon_path)).toString().replace('\n', '');
+            clWsClt.webSocketClient = new WebSocket(clWsClt.selectedNode.ln_server_url, {
+                headers: { rune: mcrnHexEncoded },
+                rejectUnauthorized: false
+            });
             clWsClt.webSocketClient.onopen = () => {
                 this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the Core Lightning\'s Websocket Server..' });
                 this.waitTime = 0.5;

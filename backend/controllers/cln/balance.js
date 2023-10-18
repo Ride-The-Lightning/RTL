@@ -11,7 +11,7 @@ export const getBalance = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/getBalance';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         if (!body.totalBalance) {
             body.totalBalance = 0;
         }

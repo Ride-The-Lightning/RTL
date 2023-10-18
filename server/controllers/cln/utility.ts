@@ -9,7 +9,7 @@ const common: CommonService = Common;
 
 export const decodePaymentFromPaymentRequest = (selNode: CommonSelectedNode, payment) => {
   options.url = selNode.ln_server_url + '/v1/utility/decode/' + payment;
-  return request(options).then((res) => {
+  return request.post(options).then((res) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
     return res;
   }).catch((err) => { });
@@ -41,7 +41,7 @@ export const decodePayment = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/utility/decode/' + req.params.payReq;
-  request(options).then((body) => {
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -84,7 +84,7 @@ export const listConfigs = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/utility/listConfigs';
-  request(options).then((body) => {
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Utility', msg: 'List Configs Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {

@@ -70,7 +70,7 @@ export const listPayments = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         res.status(200).json(groupBy(body.payments));
     }).catch((errRes) => {

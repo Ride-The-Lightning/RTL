@@ -27,7 +27,7 @@ export const listInvoices = (req, res, next) => {
   const labelQuery = req.query.label ? '?label=' + req.query.label : '';
   options.url = req.session.selectedNode.ln_server_url + '/v1/invoice/listInvoices' + labelQuery;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
-  request(options).then((body) => {
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {

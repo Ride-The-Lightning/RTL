@@ -11,7 +11,7 @@ export const getFees = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/getFees';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         if (!body.feeCollected) {
             body.feeCollected = 0;
         }

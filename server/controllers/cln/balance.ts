@@ -10,7 +10,7 @@ export const getBalance = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/getBalance';
-  request(options).then((body) => {
+  request.post(options).then((body) => {
     if (!body.totalBalance) { body.totalBalance = 0; }
     if (!body.confBalance) { body.confBalance = 0; }
     if (!body.unconfBalance) { body.unconfBalance = 0; }

@@ -41,7 +41,7 @@ export const listOffers = (req, res, next) => {
         options.url = options.url + '?active_only=' + req.query.active_only;
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {

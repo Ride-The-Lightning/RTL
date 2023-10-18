@@ -11,7 +11,7 @@ export const listPeerChannels = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         body?.map((channel) => {
             if (!channel.alias || channel.alias === '') {
                 channel.alias = channel.peer_id.substring(0, 20);
@@ -37,7 +37,7 @@ export const listChannels = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/listPeerChannels';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         body?.map((channel) => {
             if (!channel.alias || channel.alias === '') {
                 channel.alias = channel.channel_id.substring(0, 20);
@@ -115,7 +115,7 @@ export const getLocalRemoteBalance = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/channel/localremotebal';
-    request(options).then((body) => {
+    request.post(options).then((body) => {
         if (!body.localBalance) {
             body.localBalance = 0;
         }

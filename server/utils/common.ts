@@ -95,7 +95,7 @@ export class CommonService {
       if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
         switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
           case 'CLN':
-            req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+            req.session.selectedNode.options.headers = { rune: Buffer.from(fs.readFileSync(req.session.selectedNode.macaroon_path)).toString().replace('\n', '') };
             break;
 
           case 'ECL':
@@ -137,7 +137,7 @@ export class CommonService {
           if (node.ln_implementation) {
             switch (node.ln_implementation.toUpperCase()) {
               case 'CLN':
-                node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
+                node.options.headers = { rune: Buffer.from(fs.readFileSync(node.macaroon_path)).toString().replace('\n', '') };
                 break;
 
               case 'ECL':

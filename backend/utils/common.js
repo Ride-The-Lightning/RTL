@@ -89,7 +89,7 @@ export class CommonService {
                 if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
                     switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
                         case 'CLN':
-                            req.session.selectedNode.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(req.session.selectedNode.macaroon_path, 'access.macaroon'))).toString('base64') };
+                            req.session.selectedNode.options.headers = { rune: Buffer.from(fs.readFileSync(req.session.selectedNode.macaroon_path)).toString().replace('\n', '') };
                             break;
                         case 'ECL':
                             req.session.selectedNode.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.ln_api_password).toString('base64') };
@@ -131,7 +131,7 @@ export class CommonService {
                         if (node.ln_implementation) {
                             switch (node.ln_implementation.toUpperCase()) {
                                 case 'CLN':
-                                    node.options.headers = { macaroon: Buffer.from(fs.readFileSync(join(node.macaroon_path, 'access.macaroon'))).toString('base64') };
+                                    node.options.headers = { rune: Buffer.from(fs.readFileSync(node.macaroon_path)).toString().replace('\n', '') };
                                     break;
                                 case 'ECL':
                                     node.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.ln_api_password).toString('base64') };
