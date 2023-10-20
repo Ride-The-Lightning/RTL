@@ -22,6 +22,7 @@ export class CommonService {
   public rtl_cookie_path = '';
   public logout_redirect_link = '';
   public cookie_value = '';
+  public ln_version = '';
   public api_version = '';
   public secret_key = crypto.randomBytes(64).toString('hex');
   public read_dummy_data = false;
@@ -432,13 +433,29 @@ export class CommonService {
     });
   };
 
-  public isVersionCompatible = (currentVersion, checkVersion) => {
-    if (currentVersion) {
-      const versionsArr = currentVersion.trim()?.replace('v', '').split('-')[0].split('.') || [];
-      const checkVersionsArr = checkVersion.split('.');
-      return (+versionsArr[0] > +checkVersionsArr[0]) ||
-        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1]) ||
-        (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
+  public setVersion = (version) => {
+    this.ln_version = version;
+  };
+
+  public isVersionCompatible = (checkVersion) => {
+    if (this.ln_version && this.ln_version !== '') {
+      // eslint-disable-next-line prefer-named-capture-group
+      const pattern = /v?(\d+(\.\d+)*)/;
+      const match = this.ln_version.match(pattern);
+      if (match && match.length && match.length > 1) {
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Global Version ' + match[1] });
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Checking Compatiblility with Version ' + checkVersion });
+        const currentVersionArr = match[1].split('.') || [];
+        currentVersionArr[1] = currentVersionArr[1].substring(0, 2);
+        const checkVersionsArr = checkVersion.split('.');
+        checkVersionsArr[1] = checkVersionsArr[1].substring(0, 2);
+        return (+currentVersionArr[0] > +checkVersionsArr[0]) ||
+        (+currentVersionArr[0] === +checkVersionsArr[0] && +currentVersionArr[1] > +checkVersionsArr[1]) ||
+        (+currentVersionArr[0] === +checkVersionsArr[0] && +currentVersionArr[1] === +checkVersionsArr[1] && +currentVersionArr[2] >= +checkVersionsArr[2]);
+      } else {
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Invalid Version String ' + this.ln_version });
+        return false;
+      }
     }
     return false;
   };

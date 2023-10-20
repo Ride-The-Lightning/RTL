@@ -70,7 +70,7 @@ export const verifyMessage = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/utility/checkMessage/' + req.body.message + '/' + req.body.signature;
-  request.get(options, (error, response, body) => {
+  request.post(options, (error, response, body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {

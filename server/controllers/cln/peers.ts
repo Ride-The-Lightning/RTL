@@ -52,7 +52,7 @@ export const deletePeer = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
-  request.delete(options).then((body) => {
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected', data: body });
     res.status(204).json({});
   }).catch((errRes) => {

@@ -10,13 +10,12 @@ export const getFees = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/getFees';
+    options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
     request.post(options).then((body) => {
-        if (!body.feeCollected) {
-            body.feeCollected = 0;
-        }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: body });
-        res.status(200).json(body);
+        const versionCompatible = common.isVersionCompatible('23.02');
+        const feeData = { feeCollected: ((versionCompatible ? body.fees_collected_msat : body.msatoshi_fees_collected) || 0) };
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: feeData });
+        res.status(200).json(feeData);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Fees', 'Get Fees Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

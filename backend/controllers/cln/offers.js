@@ -89,7 +89,7 @@ export const disableOffer = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/offers/disableOffer/' + req.params.offerID;
-    request.delete(options).then((body) => {
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled', data: body });
         res.status(202).json(body);
     }).catch((errRes) => {

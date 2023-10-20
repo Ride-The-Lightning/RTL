@@ -12,7 +12,7 @@ export const deleteExpiredInvoice = (req, res, next) => {
     }
     const queryStr = req.query.maxExpiry ? '?maxexpiry=' + req.query.maxExpiry : '';
     options.url = req.session.selectedNode.ln_server_url + '/v1/invoice/delExpiredInvoice' + queryStr;
-    request.delete(options).then((body) => {
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoices Deleted', data: body });
         res.status(204).json({ status: 'Invoice Deleted Successfully' });
     }).catch((errRes) => {
