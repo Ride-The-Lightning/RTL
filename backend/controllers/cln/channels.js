@@ -112,7 +112,7 @@ export const getLocalRemoteBalance = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listfunds';
     request.post(options).then((body) => {
-        const versionCompatible = common.isVersionCompatible('23.02');
+        const versionCompatible = common.isVersionCompatible(req.session.selectedNode.ln_version, '23.02');
         let localBalance = 0;
         let remoteBalance = 0;
         let pendingBalance = 0;

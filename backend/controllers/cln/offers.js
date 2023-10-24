@@ -33,13 +33,8 @@ export const listOffers = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/offers/listoffers';
-    if (req.query.offer_id) {
-        options.url = options.url + '?offer_id=' + req.query.offer_id;
-    }
-    if (req.query.active_only) {
-        options.url = options.url + '?active_only=' + req.query.active_only;
-    }
+    options.url = req.session.selectedNode.ln_server_url + '/v1/listoffers';
+    options.body = { offer_id: (req.query.offer_id) ? req.query.offer_id : null, active_only: !(req.query.active_only === '0' || req.query.active_only === 'false' || !req.query.active_only) };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });
@@ -55,7 +50,17 @@ export const createOffer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/offers/offer';
+    options.url = req.session.selectedNode.ln_server_url + '/v1/offer';
+    req.body.issuer = req.body.issuer ? req.body.issuer : req.body.vendor ? req.body.vendor : null;
+    req.body.label = (req.body.label) ? req.body.label : null;
+    req.body.quantity_max = (req.body.quantity_max) ? req.body.quantity_max : null;
+    req.body.absolute_expiry = (req.body.absolute_expiry) ? req.body.absolute_expiry : null;
+    req.body.recurrence = (req.body.recurrence) ? req.body.recurrence : null;
+    req.body.recurrence_base = (req.body.recurrence_base) ? req.body.recurrence_base : null;
+    req.body.recurrence_paywindow = (req.body.recurrence_paywindow) ? req.body.recurrence_paywindow : null;
+    req.body.recurrence_limit = (req.body.recurrence_limit) ? req.body.recurrence_limit : null;
+    req.body.single_use = !(req.body.single_use === '0' || req.body.single_use === 'false' || !req.body.single_use);
+    req.body.quantity_min = (req.body.quantity_min) ? req.body.quantity_min : null;
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Created', data: body });
@@ -71,7 +76,13 @@ export const fetchOfferInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/offers/fetchInvoice';
+    options.url = req.session.selectedNode.ln_server_url + '/v1/fetchinvoice';
+    req.body.msatoshi = (req.body.msatoshi) ? req.body.msatoshi : null;
+    req.body.quantity = (req.body.quantity) ? req.body.quantity : null;
+    req.body.recurrence_counter = (req.body.recurrence_counter) ? req.body.recurrence_counter : null;
+    req.body.recurrence_start = (req.body.recurrence_start) ? req.body.recurrence_start : null;
+    req.body.recurrence_label = (req.body.recurrence_label) ? req.body.recurrence_label : null;
+    req.body.timeout = (req.body.timeout) ? req.body.timeout : null;
     options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Invoice Body', data: options.body });
     request.post(options).then((body) => {
@@ -88,7 +99,8 @@ export const disableOffer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/offers/disableOffer/' + req.params.offerID;
+    options.url = req.session.selectedNode.ln_server_url + '/v1/disableOffer';
+    options.body = { offer_id: req.params.offerID };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled', data: body });
         res.status(202).json(body);

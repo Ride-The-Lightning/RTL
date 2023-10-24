@@ -15,7 +15,7 @@ export const getBalance = (req, res, next) => {
         let confBalance = 0;
         let unconfBalance = 0;
         let totalBalance = 0;
-        const versionCompatible = common.isVersionCompatible('23.02');
+        const versionCompatible = common.isVersionCompatible(req.session.selectedNode.ln_version, '23.02');
         body.outputs.forEach((output) => {
             if (output.status === 'confirmed') {
                 confBalance = confBalance + (versionCompatible ? (output.amount_msat / 1000) : output.value);

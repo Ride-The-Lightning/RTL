@@ -433,15 +433,11 @@ export class CommonService {
     });
   };
 
-  public setVersion = (version) => {
-    this.ln_version = version;
-  };
-
-  public isVersionCompatible = (checkVersion) => {
-    if (this.ln_version && this.ln_version !== '') {
+  public isVersionCompatible = (currentVersion, checkVersion) => {
+    if (currentVersion && currentVersion !== '') {
       // eslint-disable-next-line prefer-named-capture-group
       const pattern = /v?(\d+(\.\d+)*)/;
-      const match = this.ln_version.match(pattern);
+      const match = currentVersion.match(pattern);
       if (match && match.length && match.length > 1) {
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Global Version ' + match[1] });
         this.logger.log({ selectedNode: this.initSelectedNode, level: 'INFO', fileName: 'Common', msg: 'Checking Compatiblility with Version ' + checkVersion });
@@ -453,7 +449,7 @@ export class CommonService {
         (+currentVersionArr[0] === +checkVersionsArr[0] && +currentVersionArr[1] > +checkVersionsArr[1]) ||
         (+currentVersionArr[0] === +checkVersionsArr[0] && +currentVersionArr[1] === +checkVersionsArr[1] && +currentVersionArr[2] >= +checkVersionsArr[2]);
       } else {
-        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Invalid Version String ' + this.ln_version });
+        this.logger.log({ selectedNode: this.initSelectedNode, level: 'ERROR', fileName: 'Common', msg: 'Invalid Version String ' + currentVersion });
         return false;
       }
     }

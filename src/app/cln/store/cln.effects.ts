@@ -603,7 +603,7 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: ChannelLookup }) => {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listChannel/' + action.payload.shortChannelID).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listChannels/' + action.payload.shortChannelID).
         pipe(
           map((resChannel) => {
             this.logger.info(resChannel);
@@ -616,7 +616,7 @@ export class CLNEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             if (action.payload.showError) {
-              this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listChannel/' + action.payload.shortChannelID, err);
+              this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listChannels/' + action.payload.shortChannelID, err);
             } else {
               this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
             }
