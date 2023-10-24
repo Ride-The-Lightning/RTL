@@ -29,7 +29,6 @@ import { CLNOfferInformationComponent } from '../transactions/offers/offer-infor
 export class CLNEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/cln';
-  API_VERION = '';
   CLN_VERISON = '';
   private flgInitialized = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -96,7 +95,6 @@ export class CLNEffects implements OnDestroy {
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
-            this.API_VERION = info.api_version || '';
             this.CLN_VERISON = info.version || '';
             if (info.chains && info.chains.length && info.chains[0] &&
               (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info?.chains[0].chain &&
@@ -330,11 +328,7 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.FETCH_CHANNELS_CLN),
     mergeMap(() => {
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
-      const listChannelsEndpoint =
-        this.commonService.isVersionCompatible(this.CLN_VERISON, '23.02') &&
-        this.commonService.isVersionCompatible(this.API_VERION, '0.10.3') ?
-          '/listPeerChannels' : '/listChannels';
-      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + listChannelsEndpoint);
+      return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listPeerChannels');
     }),
     map((channels: Channel[]) => {
       this.logger.info(channels);

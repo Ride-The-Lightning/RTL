@@ -16,6 +16,7 @@ export const getPeers = (req, res, next) => {
             peer.alias = peer.peer_id.substring(0, 20);
             return peer;
         });
+        res.status(200).json(body.peers || []);
         // Promise.all(body.peers.map((peer) => getAliasForPeer(peer))).then((peerList) => {
         //   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers with Alias Received', data: body });
         //   res.status(200).json(peerList || []);

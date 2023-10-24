@@ -12,12 +12,12 @@ export const listPeerChannels = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listpeerchannels';
     request.post(options).then((body) => {
-        body.channels.map((channel) => {
+        body.channels.forEach((channel) => {
             const local = channel.to_us_msat || 0;
             const remote = (channel.total_msat - local) || 0;
             const total = channel.total_msat || 0;
             // return getAliasForChannel(channel).then(channelAlias => {
-            return {
+            channel = {
                 peer_id: channel.peer_id,
                 peer_connected: channel.peer_connected,
                 opener: channel.opener,
@@ -44,9 +44,8 @@ export const listPeerChannels = (req, res, next) => {
                 balancedness: (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3)
             };
         });
-    }).then((listPeerChannels) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: listPeerChannels });
-        res.status(200).json(listPeerChannels);
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body.channels });
+        res.status(200).json(body.channels);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'List Peer Channels Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

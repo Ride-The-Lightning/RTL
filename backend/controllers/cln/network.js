@@ -59,7 +59,7 @@ export const listNodes = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     const queryStr = req.query.liquidity_ads ? '?liquidity_ads=' + req.query.liquidity_ads : '';
-    options.url = req.session.selectedNode.ln_server_url + '/v1/listNodes';
+    options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
     options.form = req.params.id ? { id: req.params.id } : null;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
     request.post(options).then((body) => {

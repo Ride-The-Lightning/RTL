@@ -61,13 +61,15 @@ export const listPayments = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
-  req.body.bolt11 = req.query.invoice || null;
-  req.body.payment_hash = req.query.payment_hash || null;
-  req.body.status = req.query.status || null;
-  options.form = req.body;
+  const { invoice, payment_hash, status } = req.query;
+  options.form = {
+    ...(invoice && { bolt11: invoice }),
+    ...(payment_hash && { payment_hash }),
+    ...(status && { status })
+  };
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
-    res.status(200).json(groupBy(body.payments));
+    res.status(200).json(body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : []);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
