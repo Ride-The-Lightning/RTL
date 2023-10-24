@@ -69,7 +69,7 @@ export class CommonService {
         };
         this.getOptions = (req) => {
             if (req.session.selectedNode && req.session.selectedNode.options) {
-                req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() !== 'ECL') ? 'GET' : 'POST';
+                req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() === 'LND') ? 'GET' : 'POST';
                 delete req.session.selectedNode.options.form;
                 req.session.selectedNode.options.qs = {};
                 return req.session.selectedNode.options;

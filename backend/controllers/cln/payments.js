@@ -70,9 +70,10 @@ export const listPayments = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
-    options.body.bolt11 = req.query.invoice || null;
-    options.body.payment_hash = req.query.payment_hash || null;
-    options.body.status = req.query.status || null;
+    req.body.bolt11 = req.query.invoice || null;
+    req.body.payment_hash = req.query.payment_hash || null;
+    req.body.status = req.query.status || null;
+    options.form = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         res.status(200).json(groupBy(body.payments));
@@ -96,7 +97,7 @@ export const postPayment = (req, res, next) => {
         req.body.retry_for = (req.body.retry_for) ? req.body.retry_for : null;
         req.body.maxdelay = (req.body.maxdelay) ? req.body.maxdelay : null;
         req.body.exemptfee = (req.body.exemptfee) ? req.body.exemptfee : null;
-        options.body = req.body;
+        options.form = req.body;
     }
     else {
         if (req.body.paymentType === 'OFFER') {
@@ -117,7 +118,7 @@ export const postPayment = (req, res, next) => {
         req.body.exclude = (req.body.exclude) ? req.body.exclude : null;
         req.body.maxfee = (req.body.maxfee) ? req.body.maxfee : null;
         req.body.description = (req.body.description) ? req.body.description : null;
-        options.body = req.body;
+        options.form = req.body;
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
     request.post(options).then((body) => {

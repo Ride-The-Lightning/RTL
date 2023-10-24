@@ -10,7 +10,7 @@ export const getRoute = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/getroute';
-  options.body = { id: req.params.destPubkey, amount_msat: req.params.amount, riskfactor: (req.query.riskFactor || 0) };
+  options.form = { id: req.params.destPubkey, amount_msat: req.params.amount, riskfactor: (req.query.riskFactor || 0) };
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
     res.status(200).json({ routes: body });
@@ -25,7 +25,7 @@ export const listChannels = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listchannels';
-  options.body = req.params.channelShortId ? { short_channel_id: req.params.channelShortId } : null;
+  options.form = req.params.channelShortId ? { short_channel_id: req.params.channelShortId } : null;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Channel Lookup Finished', data: body });
     res.status(200).json(body);
@@ -40,7 +40,7 @@ export const feeRates = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/feerates';
-  options.body = req.params.feeRateStyle ? { style : req.params.feeRateStyle } : null;
+  options.form = req.params.feeRateStyle ? { style : req.params.feeRateStyle } : null;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.params.feeRateStyle, data: body });
     res.status(200).json(body);
@@ -56,7 +56,7 @@ export const listNodes = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   const queryStr = req.query.liquidity_ads ? '?liquidity_ads=' + req.query.liquidity_ads : '';
   options.url = req.session.selectedNode.ln_server_url + '/v1/listNodes';
-  options.body = req.params.id ? { id: req.params.id } : null;
+  options.form = req.params.id ? { id: req.params.id } : null;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });

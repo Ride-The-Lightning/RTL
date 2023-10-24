@@ -11,7 +11,7 @@ export const getNewAddress = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/newaddr';
-    options.body = { addresstype: req.query.type };
+    options.form = { addresstype: req.query.type };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated', data: body });
         res.status(200).json(body);
@@ -31,8 +31,8 @@ export const onChainWithdraw = (req, res, next) => {
     req.body.feeRate = (req.body.feeRate) ? req.body.feeRate : null;
     req.body.minConf = (req.body.minConf) ? req.body.minConf : null;
     req.body.utxos = (req.body.utxos) ? req.body.utxos : null;
-    options.body = req.body;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body });
+    options.form = req.body;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.form });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Withdraw Finished', data: body });
         res.status(201).json(body);
