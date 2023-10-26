@@ -111,7 +111,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
         if (this.eventsData.length <= 0 && fhSeletor.forwardingHistory.listForwards) {
           this.totalForwardedTransactions = fhSeletor.forwardingHistory.totalForwards || 0;
           this.successfulEvents = fhSeletor.forwardingHistory.listForwards || [];
-          if (this.successfulEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+          if (this.successfulEvents && this.sort && this.paginator && this.displayedColumns.length > 0) {
             this.loadForwardingEventsTable(this.successfulEvents);
           }
           this.logger.info(fhSeletor);

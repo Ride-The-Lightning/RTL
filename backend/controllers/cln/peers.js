@@ -13,7 +13,7 @@ export const getPeers = (req, res, next) => {
     options.url = req.session.selectedNode.ln_server_url + '/v1/listpeers';
     request.post(options).then((body) => {
         body.peers.forEach((peer) => {
-            peer.alias = peer.peer_id.substring(0, 20);
+            peer.alias = peer.id.substring(0, 20);
             return peer;
         });
         res.status(200).json(body.peers || []);
@@ -36,12 +36,13 @@ export const postPeer = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/connect';
-    options.form = req.body;
+    options.body = req.body;
     request.post(options).then((connectRes) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: connectRes });
-        options.url = req.session.selectedNode.ln_server_url + '/v1/listpeers';
-        request.post(options).then((listPeersRes) => {
-            const peers = listPeersRes ? common.newestOnTop(listPeersRes, 'id', req.body.id) : [];
+        const listOptions = common.getOptions(req);
+        listOptions.url = req.session.selectedNode.ln_server_url + '/v1/listpeers';
+        request.post(listOptions).then((listPeersRes) => {
+            const peers = listPeersRes && listPeersRes.peers ? common.newestOnTop(listPeersRes.peers, 'id', connectRes.id) : [];
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
             res.status(201).json(peers);
         }).catch((errRes) => {
@@ -60,7 +61,12 @@ export const deletePeer = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/disconnect';
-    options.form = { id: req.params.peerId, force: !!req.query.force };
+    const id = req.params.peerId;
+    const force = !!req.query.force;
+    options.body = {
+        ...(id && { id }),
+        ...(force && { force })
+    };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected', data: body });
         res.status(204).json({});

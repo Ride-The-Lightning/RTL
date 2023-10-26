@@ -90,12 +90,12 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
           this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_msat || 0) / 1000 < this.dustAmount);
           this.utxos = utxosSelector.utxos;
           if (this.isDustUTXO) {
-            if (this.dustUtxos && this.dustUtxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+            if (this.dustUtxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
               this.loadUTXOsTable(this.dustUtxos);
             }
           } else {
             this.displayedColumns.unshift('is_dust');
-            if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+            if (this.utxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
               this.loadUTXOsTable(this.utxos);
             }
           }
@@ -107,11 +107,11 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   ngAfterViewInit() {
     setTimeout(() => {
       if (this.isDustUTXO) {
-        if (this.dustUtxos && this.dustUtxos.length > 0) {
+        if (this.dustUtxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadUTXOsTable(this.dustUtxos);
         }
       } else {
-        if (this.utxos && this.utxos.length > 0) {
+        if (this.utxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadUTXOsTable(this.utxos);
         }
       }

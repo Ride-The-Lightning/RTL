@@ -62,7 +62,7 @@ export const listPayments = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
   const { invoice, payment_hash, status } = req.query;
-  options.form = {
+  options.body = {
     ...(invoice && { bolt11: invoice }),
     ...(payment_hash && { payment_hash }),
     ...(status && { status })
@@ -89,7 +89,7 @@ export const postPayment = (req, res, next) => {
     req.body.retry_for = (req.body.retry_for) ? req.body.retry_for : null;
     req.body.maxdelay = (req.body.maxdelay) ? req.body.maxdelay : null;
     req.body.exemptfee = (req.body.exemptfee) ? req.body.exemptfee : null;
-    options.form = req.body;
+    options.body = req.body;
   } else {
     if (req.body.paymentType === 'OFFER') {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
@@ -108,7 +108,7 @@ export const postPayment = (req, res, next) => {
     req.body.exclude = (req.body.exclude) ? req.body.exclude : null;
     req.body.maxfee = (req.body.maxfee) ? req.body.maxfee : null;
     req.body.description = (req.body.description) ? req.body.description : null;
-    options.form = req.body;
+    options.body = req.body;
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
   }
   request.post(options).then((body) => {

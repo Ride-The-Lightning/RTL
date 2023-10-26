@@ -110,7 +110,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.invoiceJSONArr = invoicesSeletor.listInvoices.invoices || [];
-        if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.invoiceJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
         this.logger.info(invoicesSeletor);
@@ -118,7 +118,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === CLNActions.SET_LOOKUP_CLN || action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN))).
       subscribe((resLookup: any) => {
         if (resLookup.type === CLNActions.SET_LOOKUP_CLN) {
-          if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && resLookup.payload) {
+          if (this.invoiceJSONArr && this.sort && this.paginator && resLookup.payload) {
             this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
             this.loadInvoicesTable(this.invoiceJSONArr);
           }
@@ -127,7 +127,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   ngAfterViewInit() {
-    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+    if (this.invoiceJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadInvoicesTable(this.invoiceJSONArr);
     }
   }

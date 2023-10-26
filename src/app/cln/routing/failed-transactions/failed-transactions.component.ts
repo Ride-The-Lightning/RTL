@@ -88,7 +88,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
         }
         this.totalFailedTransactions = ffhSeletor.failedForwardingHistory.totalForwards || 0;
         this.failedEvents = ffhSeletor.failedForwardingHistory.listForwards || [];
-        if (this.failedEvents.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.failedEvents && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadFailedEventsTable(this.failedEvents);
         }
         this.logger.info(ffhSeletor);

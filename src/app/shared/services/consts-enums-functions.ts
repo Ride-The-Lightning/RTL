@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.14.1-beta';
+export const VERSION = '0.15.0-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 

@@ -103,7 +103,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         }
         this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
         this.channelsData = this.channelsData.sort((a, b) => ((this.CLNChannelPendingState[a.state || ''] >= this.CLNChannelPendingState[b.state || '']) ? 1 : -1));
-        if (this.channelsData && this.channelsData.length > 0) {
+        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
         this.logger.info(channelsSeletor);

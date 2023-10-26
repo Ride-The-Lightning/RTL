@@ -106,7 +106,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = channelsSeletor.activeChannels;
-        if (this.channelsData.length > 0) {
+        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
         this.logger.info(channelsSeletor);

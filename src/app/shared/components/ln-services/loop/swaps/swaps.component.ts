@@ -76,7 +76,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         }
         this.displayedColumns.push('actions');
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
-        if (this.swapsData && this.swapsData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.swapsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadSwapsTable(this.swapsData);
         }
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';

@@ -112,7 +112,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.offerJSONArr = offersSeletor.offers || [];
-        if (this.offerJSONArr && this.offerJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.offerJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadOffersTable(this.offerJSONArr);
         }
         this.logger.info(offersSeletor);
@@ -120,7 +120,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit() {
-    if (this.offerJSONArr && this.offerJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+    if (this.offerJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadOffersTable(this.offerJSONArr);
     }
   }
