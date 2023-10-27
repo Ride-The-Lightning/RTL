@@ -96,7 +96,14 @@ export class CommonService {
       if (req.session.selectedNode && req.session.selectedNode.ln_implementation) {
         switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
           case 'CLN':
-            req.session.selectedNode.options.headers = { rune: Buffer.from(fs.readFileSync(req.session.selectedNode.macaroon_path)).toString().replace('\n', '') };
+            try {
+              if (!req.session.selectedNode.macaroon_value) {
+                req.session.selectedNode.macaroon_value = this.getMacaroonValue(req.session.selectedNode.macaroon_path);
+              }
+              req.session.selectedNode.options.headers = { rune: req.session.selectedNode.macaroon_value };
+            } catch (err) {
+              throw new Error(err);
+            }
             break;
 
           case 'ECL':
@@ -124,6 +131,17 @@ export class CommonService {
     }
   };
 
+  public getMacaroonValue = (macaroon_path) => {
+    const data = fs.readFileSync(macaroon_path, 'utf8');
+    const pattern = /LIGHTNING_RUNE="(?<runeValue>[^"]+)"/;
+    const match = data.match(pattern);
+    if (match.groups.runeValue) {
+      return match.groups.runeValue;
+    } else {
+      throw new Error('Rune not found in the file.');
+    }
+  };
+
   public setOptions = (req) => {
     if (this.nodes[0].options && this.nodes[0].options.headers) { return; }
     if (this.nodes && this.nodes.length > 0) {
@@ -138,7 +156,14 @@ export class CommonService {
           if (node.ln_implementation) {
             switch (node.ln_implementation.toUpperCase()) {
               case 'CLN':
-                node.options.headers = { rune: Buffer.from(fs.readFileSync(node.macaroon_path)).toString().replace('\n', '') };
+                try {
+                  if (!node.macaroon_value) {
+                    node.macaroon_value = this.getMacaroonValue(node.macaroon_path);
+                  }
+                  node.options.headers = { rune: node.macaroon_value };
+                } catch (err) {
+                  throw new Error(err);
+                }
                 break;
 
               case 'ECL':
