@@ -1,6 +1,8 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { CommonSelectedNode } from '../../models/config.model.js';
+
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -54,7 +56,6 @@ export const listNodes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  const queryStr = req.query.liquidity_ads ? '?liquidity_ads=' + req.query.liquidity_ads : '';
   options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
   options.body = req.params.id ? { id: req.params.id } : null;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
@@ -76,5 +77,21 @@ export const listNodes = (req, res, next) => {
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Node Lookup Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
+export const getAlias = (selNode: CommonSelectedNode, id: string) => {
+  options.url = selNode.ln_server_url + '/v1/listnodes';
+  if (!id) {
+    logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Network', msg: 'Empty Peer ID' });
+    return Promise.resolve('');
+  }
+  options.body = { id };
+  return request.post(options).then((body) => {
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
+    return body.nodes[0] ? body.nodes[0].alias : id.substring(0, 20);
+  }).catch((errRes) => {
+    common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
+    return id.substring(0, 20);
   });
 };

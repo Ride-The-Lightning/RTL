@@ -1,6 +1,8 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { getAlias } from './network.js';
+
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -38,7 +40,7 @@ export const listPeerChannels = (req, res, next) => {
         dust_limit_msat: channel.dust_limit_msat,
         htlcs: channel.htlcs,
         features: channel.features,
-        alias: channel.peer_id.substring(0, 20),
+        alias: new Promise(getAlias(req.session.selectedNode, channel.peer_id)),
         to_them_msat: remote,
         balancedness: (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3)
       };

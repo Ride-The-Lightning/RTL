@@ -33,7 +33,6 @@ export const initCLNState: CLNState = {
     FetchPageSettings: { status: APICallStatusEnum.UN_INITIATED },
     FetchInfo: { status: APICallStatusEnum.UN_INITIATED },
     FetchInvoices: { status: APICallStatusEnum.UN_INITIATED },
-    FetchFees: { status: APICallStatusEnum.UN_INITIATED },
     FetchChannels: { status: APICallStatusEnum.UN_INITIATED },
     FetchBalance: { status: APICallStatusEnum.UN_INITIATED },
     FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED },

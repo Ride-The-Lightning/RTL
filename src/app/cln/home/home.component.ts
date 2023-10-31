@@ -14,7 +14,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { balance, channels, fees, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
+import { balance, channels, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
 
 export interface Tile {
   id: string;
@@ -61,9 +61,8 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   public operatorCardHeight = '390px';
   public merchantCardHeight = '62px';
   public sortField = 'Balance Score';
-  public errorMessages = ['', '', '', '', '', ''];
+  public errorMessages = ['', '', '', '', ''];
   public apiCallStatusNodeInfo: ApiCallStatusPayload | null = null;
-  public apiCallStatusFees: ApiCallStatusPayload | null = null;
   public apiCallStatusBalance: ApiCallStatusPayload | null = null;
   public apiCallStatusLRBal: ApiCallStatusPayload | null = null;
   public apiCallStatusChannels: ApiCallStatusPayload | null = null;
@@ -120,36 +119,27 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apisCallStatus: ApiCallStatusPayload[] }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
-        this.errorMessages[5] = '';
+        this.errorMessages[4] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
         this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[1];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = !this.apiCallStatusNodeInfo.message ? '' : (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
         if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[5] = !this.apiCallStatusFHistory.message ? '' : (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
+          this.errorMessages[4] = !this.apiCallStatusFHistory.message ? '' : (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
         this.selNode = infoSettingsStatusSelector.nodeSettings;
         this.information = infoSettingsStatusSelector.information;
-      });
-    this.store.select(fees).pipe(takeUntil(this.unSubs[1])).
-      subscribe((feesSeletor: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[1] = '';
-        this.apiCallStatusFees = feesSeletor.apiCallStatus;
-        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = !this.apiCallStatusFees.message ? '' : (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message;
-        }
-        this.fees = feesSeletor.fees;
-        this.logger.info(feesSeletor);
+        this.fees = infoSettingsStatusSelector.fees;
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[4] = '';
+        this.errorMessages[3] = '';
         this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
         if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[4] = !this.apiCallStatusChannels.message ? '' : (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
+          this.errorMessages[3] = !this.apiCallStatusChannels.message ? '' : (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
         }
         this.totalInboundLiquidity = 0;
         this.totalOutboundLiquidity = 0;
@@ -169,15 +159,15 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
     this.store.select(balance).pipe(takeUntil(this.unSubs[3]),
       withLatestFrom(this.store.select(localRemoteBalance))).
       subscribe(([balanceSeletor, lrBalanceSeletor]: [{ balance: Balance, apiCallStatus: ApiCallStatusPayload }, { localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
-        this.errorMessages[2] = '';
+        this.errorMessages[1] = '';
         this.apiCallStatusBalance = balanceSeletor.apiCallStatus;
         if (this.apiCallStatusBalance.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = !this.apiCallStatusBalance.message ? '' : (typeof (this.apiCallStatusBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBalance.message) : this.apiCallStatusBalance.message;
+          this.errorMessages[1] = !this.apiCallStatusBalance.message ? '' : (typeof (this.apiCallStatusBalance.message) === 'object') ? JSON.stringify(this.apiCallStatusBalance.message) : this.apiCallStatusBalance.message;
         }
-        this.errorMessages[3] = '';
+        this.errorMessages[2] = '';
         this.apiCallStatusLRBal = lrBalanceSeletor.apiCallStatus;
         if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = !this.apiCallStatusLRBal.message ? '' : (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
+          this.errorMessages[2] = !this.apiCallStatusLRBal.message ? '' : (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message;
         }
         this.totalBalance = balanceSeletor.balance;
         this.balances.onchain = balanceSeletor.balance.totalBalance || 0;

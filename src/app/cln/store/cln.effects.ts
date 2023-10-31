@@ -18,7 +18,7 @@ import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES,
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchFees, fetchInvoices, fetchLocalRemoteBalance,
+import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchInvoices, fetchLocalRemoteBalance,
   fetchPayments, fetchPeers, fetchUTXOs, setLookup, setPeers, setQueryRoutes, updateCLNAPICallStatus, updateInvoice, setOfferInvoice,
   sendPaymentStatus, setForwardingHistory } from './cln.actions';
 import { allAPIsCallStatus } from './cln.selector';
@@ -47,7 +47,6 @@ export class CLNEffects implements OnDestroy {
     this.store.select(allAPIsCallStatus).pipe(takeUntil(this.unSubs[0])).subscribe((allApisCallStatus: ApiCallsListCL) => {
       if (
         ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
-          (allApisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
           (allApisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
           (allApisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
           (allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
@@ -136,26 +135,6 @@ export class CLNEffects implements OnDestroy {
             return of({ type: RTLActions.VOID });
           })
         );
-    })
-  ));
-
-  fetchFeesCL = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.FETCH_FEES_CLN),
-    mergeMap(() => {
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchFees', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Fees>(this.CHILD_API_URL + API_END_POINTS.FEES_API);
-    }),
-    map((fees) => {
-      this.logger.info(fees);
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchFees', status: APICallStatusEnum.COMPLETED } }));
-      return {
-        type: CLNActions.SET_FEES_CLN,
-        payload: fees ? fees : {}
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchFees', UI_MESSAGES.NO_SPINNER, 'Fetching Fees Failed.', err);
-      return of({ type: RTLActions.VOID });
     })
   ));
 
@@ -1016,7 +995,6 @@ export class CLNEffects implements OnDestroy {
     }
     this.router.navigate([newRoute]);
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 1000000, index_offset: 0, reversed: true } }));
-    this.store.dispatch(fetchFees());
     this.store.dispatch(fetchChannels());
     this.store.dispatch(fetchBalance());
     this.store.dispatch(fetchLocalRemoteBalance());

@@ -10,7 +10,6 @@ export const apiCallStatusNodeInfo = createSelector(clnState, (state: CLNState) 
 export const allAPIsCallStatus = createSelector(clnState, (state: CLNState) => state.apisCallStatus);
 export const payments = createSelector(clnState, (state: CLNState) => ({ payments: state.payments, apiCallStatus: state.apisCallStatus.FetchPayments }));
 export const peers = createSelector(clnState, (state: CLNState) => ({ peers: state.peers, apiCallStatus: state.apisCallStatus.FetchPeers }));
-export const fees = createSelector(clnState, (state: CLNState) => ({ fees: state.fees, apiCallStatus: state.apisCallStatus.FetchFees }));
 export const feeRatesPerKB = createSelector(clnState, (state: CLNState) => ({ feeRatesPerKB: state.feeRatesPerKB, apiCallStatus: state.apisCallStatus.FetchFeeRatesperkb }));
 export const feeRatesPerKW = createSelector(clnState, (state: CLNState) => ({ feeRatesPerKW: state.feeRatesPerKW, apiCallStatus: state.apisCallStatus.FetchFeeRatesperkw }));
 export const listInvoices = createSelector(clnState, (state: CLNState) => ({ listInvoices: state.invoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));
@@ -24,7 +23,7 @@ export const localFailedForwardingHistory = createSelector(clnState, (state: CLN
 export const nodeInfoAndNodeSettingsAndBalance = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, balance: state.balance }));
 export const nodeInfoAndBalanceAndNumPeers = createSelector(clnState, (state: CLNState) => ({ information: state.information, balance: state.balance, numPeers: state.peers.length }));
 export const nodeInfoAndBalance = createSelector(clnState, (state: CLNState) => ({ information: state.information, balance: state.balance }));
-export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistoryS] }));
+export const nodeInfoAndNodeSettingsAndAPIsStatus = createSelector(clnState, (state: CLNState) => ({ information: state.information, nodeSettings: state.nodeSettings, fees: state.fees, apisCallStatus: [state.apisCallStatus.FetchInfo, state.apisCallStatus.FetchForwardingHistoryS] }));
 export const offers = createSelector(clnState, (state: CLNState) => ({ offers: state.offers, apiCallStatus: state.apisCallStatus.FetchOffers }));
 export const offerBookmarks = createSelector(clnState, (state: CLNState) => ({ offersBookmarks: state.offersBookmarks, apiCallStatus: state.apisCallStatus.FetchOfferBookmarks }));
 export const getoffer = (bolt12Str) => createSelector(clnState, (state: CLNState) => (state.offers.find((offer: Offer) => offer.bolt12 === bolt12Str)));

@@ -23,10 +23,6 @@ export const fetchInfoCLN = createAction(CLNActions.FETCH_INFO_CLN, props<{ payl
 
 export const setInfo = createAction(CLNActions.SET_INFO_CLN, props<{ payload: GetInfo }>());
 
-export const fetchFees = createAction(CLNActions.FETCH_FEES_CLN);
-
-export const setFees = createAction(CLNActions.SET_FEES_CLN, props<{ payload: Fees }>());
-
 export const fetchFeeRates = createAction(CLNActions.FETCH_FEE_RATES_CLN, props<{ payload: string }>());
 
 export const setFeeRates = createAction(CLNActions.SET_FEE_RATES_CLN, props<{ payload: FeeRates }>());

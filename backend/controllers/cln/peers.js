@@ -1,6 +1,7 @@
 import request from 'request-promise';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
+import { getAlias } from './network.js';
 let options = null;
 const logger = Logger;
 const common = Common;
@@ -12,18 +13,13 @@ export const getPeers = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listpeers';
     request.post(options).then((body) => {
-        body.peers.forEach((peer) => {
-            peer.alias = peer.id.substring(0, 20);
-            return peer;
+        Promise.all(body.peers.map((peer) => getAlias(req.session.selectedNode, peer.id))).then((peerList) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers with Alias Received', data: body });
+            res.status(200).json(peerList || []);
+        }).catch((errRes) => {
+            const err = common.handleError(errRes, 'Peers', 'List Peers Alias Error', req.session.selectedNode);
+            return res.status(err.statusCode).json({ message: err.message, error: err.error });
         });
-        res.status(200).json(body.peers || []);
-        // Promise.all(body.peers.map((peer) => getAliasForPeer(peer))).then((peerList) => {
-        //   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers with Alias Received', data: body });
-        //   res.status(200).json(peerList || []);
-        // }).catch((errRes) => {
-        //   const err = common.handleError(errRes, 'Peers', 'List Peers Alias Error', req.session.selectedNode);
-        //   return res.status(err.statusCode).json({ message: err.message, error: err.error });
-        // });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Peers', 'List Peers Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

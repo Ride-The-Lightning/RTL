@@ -28,21 +28,21 @@
           'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'balance' && (apiCallStatusBalance.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
                           (card.id === 'capacity' && (apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
-                          (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
+                          (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
                           (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR))}">
           <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
             (card.id === 'balance' && (apiCallStatusBalance.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
             (card.id === 'capacity' && (apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
-            (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
+            (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
             (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED))"
             mode="indeterminate"
           />
           <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
             <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
-            <rtl-cln-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]" />
-            <rtl-cln-channel-capacity-info *ngSwitchCase="'capacity'" fxFlex="100" [sortBy]="sortField" [channelBalances]="channelBalances" [activeChannels]="activeChannelsCapacity" [errorMessage]="errorMessages[4] + ' ' + errorMessages[3]" />
-            <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[4] + ' ' + errorMessages[5]" />
-            <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
+            <rtl-cln-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[1] + ' ' + errorMessages[2]" />
+            <rtl-cln-channel-capacity-info *ngSwitchCase="'capacity'" fxFlex="100" [sortBy]="sortField" [channelBalances]="channelBalances" [activeChannels]="activeChannelsCapacity" [errorMessage]="errorMessages[3] + ' ' + errorMessages[2]" />
+            <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[0] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
+            <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2] + ' ' + errorMessages[3]" />
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>
@@ -86,9 +86,9 @@
           />
           <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
             <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" />
-            <rtl-cln-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]" />
-            <rtl-cln-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [activeChannels]="allInboundChannels" [errorMessage]="errorMessages[4]" />
-            <rtl-cln-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[4]" />
+            <rtl-cln-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[1] + ' ' + errorMessages[2]" />
+            <rtl-cln-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [activeChannels]="allInboundChannels" [errorMessage]="errorMessages[3]" />
+            <rtl-cln-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[3]" />
             <span *ngSwitchCase="'transactions'" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="dashboard-tabs-group">
                 <mat-tab label="Receive"><rtl-cln-lightning-invoices-table class="h-100" [calledFrom]="'home'" /></mat-tab>

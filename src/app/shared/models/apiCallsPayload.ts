@@ -44,7 +44,6 @@ export interface ApiCallsListLND {
 
 export interface ApiCallsListCL {
   FetchInfo: ApiCallStatusPayload;
-  FetchFees: ApiCallStatusPayload;
   FetchChannels: ApiCallStatusPayload;
   FetchBalance: ApiCallStatusPayload;
   FetchLocalRemoteBalance: ApiCallStatusPayload;

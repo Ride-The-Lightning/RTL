@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { initCLNState } from './cln.state';
 import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLNStore, setBalance, setChannels,
-  setChildNodeSettingsCLN, setFeeRates, setFees, setForwardingHistory,
+  setChildNodeSettingsCLN, setFeeRates, setForwardingHistory,
   setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
   updateCLNAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings
 } from './cln.actions';
@@ -37,11 +37,8 @@ export const CLNReducer = createReducer(initCLNState,
   })),
   on(setInfo, (state, { payload }) => ({
     ...state,
-    information: payload
-  })),
-  on(setFees, (state, { payload }) => ({
-    ...state,
-    fees: payload
+    information: payload,
+    fees: { feeCollected: payload.fees_collected_msat }
   })),
   on(setFeeRates, (state, { payload }) => {
     if (payload.perkb) {
