@@ -77,7 +77,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
     }
     this.store.dispatch(saveNewInvoice({
       payload: {
-        label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+        label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount_msat: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, exposeprivatechannels: this.private
       }
     }));
   }

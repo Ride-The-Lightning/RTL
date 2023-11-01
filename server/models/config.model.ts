@@ -5,6 +5,8 @@ export class CommonSelectedNode {
     public ln_server_url?: string,
     public macaroon_path?: string,
     public macaroon_value?: string,
+    public rune_path?: string,
+    public rune_value?: string,
     public ln_api_password?: string,
     public swap_server_url?: string,
     public boltz_server_url?: string,

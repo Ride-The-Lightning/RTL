@@ -85,7 +85,7 @@ export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN, props<{
 
 export const setInvoices = createAction(CLNActions.SET_INVOICES_CLN, props<{ payload: ListInvoices }>());
 
-export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }>());
+export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount_msat: number, label: string, description: string, expiry: number, exposeprivatechannels: boolean } }>());
 
 export const addInvoice = createAction(CLNActions.ADD_INVOICE_CLN, props<{ payload: Invoice }>());
 

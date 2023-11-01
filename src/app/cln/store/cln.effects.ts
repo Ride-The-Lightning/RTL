@@ -58,23 +58,9 @@ export class CLNEffects implements OnDestroy {
       takeUntil(this.unSubs[1])).
       subscribe((newMessage) => {
         this.logger.info('Received new message from the service: ' + JSON.stringify(newMessage));
-        if (newMessage) {
-          switch (newMessage.event) {
-            case CLNWSEventTypeEnum.INVOICE:
-              this.logger.info(newMessage);
-              if (newMessage && newMessage.data && newMessage.data.label) {
-                this.store.dispatch(updateInvoice({ payload: newMessage.data }));
-              }
-              break;
-            case CLNWSEventTypeEnum.SEND_PAYMENT:
-              this.logger.info(newMessage);
-              break;
-            case CLNWSEventTypeEnum.BLOCK_HEIGHT:
-              this.logger.info(newMessage);
-              break;
-            default:
-              this.logger.info('Received Event from WS: ' + JSON.stringify(newMessage));
-              break;
+        if (newMessage && newMessage.data) {
+          if (newMessage.data[CLNWSEventTypeEnum.INVOICE_PAYMENT] && newMessage.data.label) {
+            this.store.dispatch(updateInvoice({ payload: newMessage.data }));
           }
         }
       });
@@ -692,18 +678,16 @@ export class CLNEffects implements OnDestroy {
 
   saveNewInvoiceCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.SAVE_NEW_INVOICE_CLN),
-    mergeMap((action: { type: string, payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }) => {
+    mergeMap((action: { type: string, payload: { amount_msat: number, label: string, description: string, expiry: number, exposeprivatechannels: boolean } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.ADD_INVOICE }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewInvoice', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API, {
-        label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
-      }).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API, action.payload).
         pipe(
           map((postRes: Invoice) => {
             this.logger.info(postRes);
             this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewInvoice', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.ADD_INVOICE }));
-            postRes.amount_msat = action.payload.amount;
+            postRes.amount_msat = action.payload.amount_msat;
             postRes.label = action.payload.label;
             postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);
             postRes.description = action.payload.description;

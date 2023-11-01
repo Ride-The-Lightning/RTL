@@ -56,7 +56,7 @@ RTL requires its own config file `RTL-Config.json`, to start the server and prov
 
 Ensure that the follow values are correct per your config:
 * `lnImplementation` - This should be `CLN`, indicating that RTL is connecting to a core lightning node.
-* `macaroonPath` - Path of the folder containing `.commando` file including the file name.
+* `runePath` - Path of the folder including filename which contains `rune` for the node. This rune in the file should be saved in  `LIGHTNING_RUNE="your-rune"` format.
 * `lnServerUrl` - complete url with ip address and port of the cl-rest server.
 * `multiPass` - Specify the password (in plain text) to access RTL. This password will be hashed and not stored as plain text.
 * `configPath` (optional) - File path of the core lightning config file, if RTL server is local to the core lightning server.
@@ -78,7 +78,7 @@ Ensure that the follow values are correct per your config:
       "lnNode": "Core Lightning Testnet # 1",
       "lnImplementation": "CLN",
       "Authentication": {
-        "macaroonPath": "<Modify to include the path of the folder with .commando including filename>",
+        "runePath": "<Modify to include the path of the folder including filename which contains `rune`>",
         "configPath": "<Optional - Config file path for core lightning>"
       },
       "Settings": {

@@ -30,7 +30,8 @@ This step is only required to configure the nodes, which will be remotely connec
 12. `swapServerUrl` must be set to the swap service url. e.g. https://127.0.0.1:8081.
 13. `boltzServerUrl` must be set to the boltz service url. e.g. https://127.0.0.1:9003.
 14. `configPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
-15. `lnApiPassword` is mandatory in the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
+15. `lnApiPassword` is mandatory if the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
+16. `runePath` is mandatory for CLN implementation. It should be set to the local path of the folder including filename containing rune value. This rune value in the file should be saved in  `LIGHTNING_RUNE="your-rune"` format.
 
 #### 3. Restart RTL
 

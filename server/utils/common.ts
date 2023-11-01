@@ -97,10 +97,10 @@ export class CommonService {
         switch (req.session.selectedNode.ln_implementation.toUpperCase()) {
           case 'CLN':
             try {
-              if (!req.session.selectedNode.macaroon_value) {
-                req.session.selectedNode.macaroon_value = this.getMacaroonValue(req.session.selectedNode.macaroon_path);
+              if (!req.session.selectedNode.rune_value) {
+                req.session.selectedNode.rune_value = this.getRuneValue(req.session.selectedNode.rune_path);
               }
-              req.session.selectedNode.options.headers = { rune: req.session.selectedNode.macaroon_value };
+              req.session.selectedNode.options.headers = { rune: req.session.selectedNode.rune_value };
             } catch (err) {
               throw new Error(err);
             }
@@ -131,8 +131,8 @@ export class CommonService {
     }
   };
 
-  public getMacaroonValue = (macaroon_path) => {
-    const data = fs.readFileSync(macaroon_path, 'utf8');
+  public getRuneValue = (rune_path) => {
+    const data = fs.readFileSync(rune_path, 'utf8');
     const pattern = /LIGHTNING_RUNE="(?<runeValue>[^"]+)"/;
     const match = data.match(pattern);
     if (match.groups.runeValue) {
@@ -157,10 +157,10 @@ export class CommonService {
             switch (node.ln_implementation.toUpperCase()) {
               case 'CLN':
                 try {
-                  if (!node.macaroon_value) {
-                    node.macaroon_value = this.getMacaroonValue(node.macaroon_path);
+                  if (!node.rune_value) {
+                    node.rune_value = this.getRuneValue(node.rune_path);
                   }
-                  node.options.headers = { rune: node.macaroon_value };
+                  node.options.headers = { rune: node.rune_value };
                 } catch (err) {
                   throw new Error(err);
                 }

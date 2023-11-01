@@ -152,7 +152,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(saveNewInvoice({
       payload: {
-        label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, private: this.private
+        label: this.newlyAddedInvoiceMemo, amount_msat: this.invoiceValue * 1000, description: this.description, expiry: expiryInSecs, exposeprivatechannels: this.private
       }
     }));
     this.resetData();

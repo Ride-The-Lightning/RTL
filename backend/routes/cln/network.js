@@ -6,5 +6,5 @@ const router = Router();
 router.get('/getRoute/:destPubkey/:amount', isAuthenticated, getRoute);
 router.get('/listChannels/:channelShortId', isAuthenticated, listChannels);
 router.get('/feeRates/:feeRateStyle', isAuthenticated, feeRates);
-router.get('/listNodes/:id', isAuthenticated, listNodes);
+router.get('/listNodes', isAuthenticated, listNodes);
 export default router;

@@ -11,9 +11,9 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { CLNInvoiceInformation } from '../../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
-import { GetInfo, Invoice, ListInvoices } from '../../../../shared/models/clnModels';
+import { Invoice, ListInvoices } from '../../../../shared/models/clnModels';
 import { RTLState } from '../../../../store/rtl.state';
-import { clnNodeInformation, listInvoices } from '../../../store/cln.selector';
+import { listInvoices } from '../../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
