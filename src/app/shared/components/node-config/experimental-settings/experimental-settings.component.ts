@@ -15,8 +15,8 @@ import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { DataService } from '../../../services/data.service';
 import { CommonService } from '../../../services/common.service';
 import { ServicesEnum, UI_MESSAGES, LADS_POLICY } from '../../../services/consts-enums-functions';
-import { balance } from '../../../../cln/store/cln.selector';
-import { Balance, FunderPolicy } from '../../../models/clnModels';
+import { utxoBalances } from '../../../../cln/store/cln.selector';
+import { Balance, FunderPolicy, LocalRemoteBalance, UTXO } from '../../../models/clnModels';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 
 @Component({
@@ -64,9 +64,9 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
         this.features[0].enabled = this.enableOffers;
         this.logger.info(this.selNode);
       });
-    this.store.select(balance).pipe(takeUntil(this.unSubs[2])).
-      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.policyTypes[2].max = balanceSeletor.balance.totalBalance || 1000;
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[2])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.policyTypes[2].max = utxoBalancesSeletor.balance.totalBalance || 1000;
       });
   }
 

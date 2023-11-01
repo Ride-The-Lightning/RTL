@@ -9,8 +9,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { balance, channels, peers } from '../store/cln.selector';
-import { Balance, Channel, Peer } from '../../shared/models/clnModels';
+import { utxoBalances, channels, peers } from '../store/cln.selector';
+import { Balance, Channel, LocalRemoteBalance, Peer, UTXO } from '../../shared/models/clnModels';
 
 @Component({
   selector: 'rtl-cln-connections',
@@ -47,9 +47,9 @@ export class CLNConnectionsComponent implements OnInit, OnDestroy {
         this.activePeers = (peersSeletor.peers && peersSeletor.peers.length) ? peersSeletor.peers.length : 0;
         this.logger.info(peersSeletor);
       });
-    this.store.select(balance).pipe(takeUntil(this.unSubs[3])).
-      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (balanceSeletor.balance.confBalance || 0) }, { title: 'Unconfirmed', dataValue: (balanceSeletor.balance.unconfBalance || 0) }];
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: utxoBalancesSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (utxoBalancesSeletor.balance.confBalance || 0) }, { title: 'Unconfirmed', dataValue: (utxoBalancesSeletor.balance.unconfBalance || 0) }];
       });
   }
 

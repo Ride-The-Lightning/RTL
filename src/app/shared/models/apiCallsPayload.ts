@@ -45,15 +45,13 @@ export interface ApiCallsListLND {
 export interface ApiCallsListCL {
   FetchInfo: ApiCallStatusPayload;
   FetchChannels: ApiCallStatusPayload;
-  FetchBalance: ApiCallStatusPayload;
-  FetchLocalRemoteBalance: ApiCallStatusPayload;
+  FetchUTXOBalances: ApiCallStatusPayload;
   // Non-initial calls
   FetchPageSettings: ApiCallStatusPayload;
   FetchInvoices: ApiCallStatusPayload;
   FetchFeeRatesperkb: ApiCallStatusPayload;
   FetchFeeRatesperkw: ApiCallStatusPayload;
   FetchPeers: ApiCallStatusPayload;
-  FetchUTXOs: ApiCallStatusPayload;
   FetchPayments: ApiCallStatusPayload;
   FetchForwardingHistoryS: ApiCallStatusPayload;
   FetchForwardingHistoryF: ApiCallStatusPayload;

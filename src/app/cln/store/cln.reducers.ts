@@ -1,9 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { initCLNState } from './cln.state';
 import {
-  addInvoice, addPeer, removeChannel, removePeer, resetCLNStore, setBalance, setChannels,
+  addInvoice, addPeer, removeChannel, removePeer, resetCLNStore, setChannels,
   setChildNodeSettingsCLN, setFeeRates, setForwardingHistory,
-  setInfo, setInvoices, setLocalRemoteBalance, setOffers, addOffer, setPayments, setPeers, setUTXOs,
+  setInfo, setInvoices, setOffers, addOffer, setPayments, setPeers, setUTXOBalances,
   updateCLNAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
@@ -57,13 +57,11 @@ export const CLNReducer = createReducer(initCLNState,
       };
     }
   }),
-  on(setBalance, (state, { payload }) => ({
+  on(setUTXOBalances, (state, { payload }) => ({
     ...state,
-    balance: payload
-  })),
-  on(setLocalRemoteBalance, (state, { payload }) => ({
-    ...state,
-    localRemoteBalance: payload
+    utxos: payload.utxos || [],
+    balance: payload.balance,
+    localRemoteBalance: payload.localRemoteBalance
   })),
   on(setPeers, (state, { payload }) => ({
     ...state,
@@ -154,10 +152,6 @@ export const CLNReducer = createReducer(initCLNState,
       invoices: modifiedInvoices
     };
   }),
-  on(setUTXOs, (state, { payload }) => ({
-    ...state,
-    utxos: payload
-  })),
   on(setOffers, (state, { payload }) => ({
     ...state,
     offers: payload

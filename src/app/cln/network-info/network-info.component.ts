@@ -5,14 +5,14 @@ import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, ChannelsStatus, FeeRates, LocalRemoteBalance, Channel, ListForwards } from '../../shared/models/clnModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates, LocalRemoteBalance, Channel, ListForwards, UTXO, Balance } from '../../shared/models/clnModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { channels, feeRatesPerKB, feeRatesPerKW, forwardingHistory, localRemoteBalance, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
+import { channels, feeRatesPerKB, feeRatesPerKW, forwardingHistory, utxoBalances, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
 
 @Component({
   selector: 'rtl-cln-network-info',
@@ -93,12 +93,12 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.logger.info(infoSettingsStatusSelector);
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
-      withLatestFrom(this.store.select(localRemoteBalance))).
-      subscribe(([channelsSeletor, lrBalanceSeletor]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }, { localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
+      withLatestFrom(this.store.select(utxoBalances))).
+      subscribe(([channelsSeletor, utxoBalancesSeletor]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }, { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }]) => {
         this.errorMessages[1] = '';
         this.errorMessages[2] = '';
-        this.apiCallStatusLRBal = channelsSeletor.apiCallStatus;
-        this.apiCallStatusChannels = lrBalanceSeletor.apiCallStatus;
+        this.apiCallStatusLRBal = utxoBalancesSeletor.apiCallStatus;
+        this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
         if (this.apiCallStatusLRBal.status === APICallStatusEnum.ERROR) {
           this.errorMessages[1] = (typeof (this.apiCallStatusLRBal.message) === 'object') ? JSON.stringify(this.apiCallStatusLRBal.message) : this.apiCallStatusLRBal.message ? this.apiCallStatusLRBal.message : '';
         }
@@ -108,9 +108,9 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
         this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
         this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
         this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
-        this.channelsStatus.active.capacity = lrBalanceSeletor.localRemoteBalance.localBalance || 0;
-        this.channelsStatus.pending.capacity = lrBalanceSeletor.localRemoteBalance.pendingBalance || 0;
-        this.channelsStatus.inactive.capacity = lrBalanceSeletor.localRemoteBalance.inactiveBalance || 0;
+        this.channelsStatus.active.capacity = utxoBalancesSeletor.localRemoteBalance.localBalance || 0;
+        this.channelsStatus.pending.capacity = utxoBalancesSeletor.localRemoteBalance.pendingBalance || 0;
+        this.channelsStatus.inactive.capacity = utxoBalancesSeletor.localRemoteBalance.inactiveBalance || 0;
       });
     this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[3])).
       subscribe((fhSeletor: { forwardingHistory: ListForwards, apiCallStatus: ApiCallStatusPayload }) => {

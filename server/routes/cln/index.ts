@@ -1,7 +1,6 @@
 import exprs from 'express';
 const { Router } = exprs;
 import infoCLRoutes from './getInfo.js';
-import balanceCLRoutes from './balance.js';
 import channelsCLRoutes from './channels.js';
 import invoicesCLRoutes from './invoices.js';
 import onChainCLRoutes from './onchain.js';
@@ -15,7 +14,6 @@ const router = Router();
 
 const clRoutes = [
   { path: '/getinfo', route: infoCLRoutes },
-  { path: '/balance', route: balanceCLRoutes },
   { path: '/channels', route: channelsCLRoutes },
   { path: '/invoices', route: invoicesCLRoutes },
   { path: '/onchain', route: onChainCLRoutes },

@@ -13,14 +13,13 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
+import { GetInfo, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
 import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
-import { addUpdateOfferBookmark, fetchBalance, fetchChannels, fetchFeeRates, fetchInvoices, fetchLocalRemoteBalance,
-  fetchPayments, fetchPeers, fetchUTXOs, setLookup, setPeers, setQueryRoutes, updateCLNAPICallStatus, updateInvoice, setOfferInvoice,
-  sendPaymentStatus, setForwardingHistory } from './cln.actions';
+import { addUpdateOfferBookmark, fetchUTXOBalances, fetchChannels, fetchFeeRates, fetchInvoices, fetchPayments, fetchPeers, setLookup, setPeers,
+  setQueryRoutes, updateCLNAPICallStatus, updateInvoice, setOfferInvoice, sendPaymentStatus, setForwardingHistory } from './cln.actions';
 import { allAPIsCallStatus } from './cln.selector';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { CLNOfferInformationComponent } from '../transactions/offers/offer-information-modal/offer-information.component';
@@ -48,8 +47,7 @@ export class CLNEffects implements OnDestroy {
       if (
         ((allApisCallStatus.FetchInfo.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) &&
           (allApisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
-          (allApisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
-          (allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)) &&
+          (allApisCallStatus.FetchUTXOBalances.status === APICallStatusEnum.COMPLETED || allApisCallStatus.FetchUTXOBalances.status === APICallStatusEnum.ERROR)) &&
         !this.flgInitialized
       ) {
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.INITALIZE_NODE_DATA }));
@@ -160,45 +158,45 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
-  fetchBalanceCL = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.FETCH_BALANCE_CLN),
-    mergeMap(() => {
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Balance>(this.CHILD_API_URL + API_END_POINTS.BALANCE_API);
-    }),
-    map((balance) => {
-      this.logger.info(balance);
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.COMPLETED } }));
-      return {
-        type: CLNActions.SET_BALANCE_CLN,
-        payload: balance ? balance : {}
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Balances Failed.', err);
-      return of({ type: RTLActions.VOID });
-    })
-  ));
+  // fetchBalanceCL = createEffect(() => this.actions.pipe(
+  //   ofType(CLNActions.FETCH_BALANCE_CLN),
+  //   mergeMap(() => {
+  //     this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.INITIATED } }));
+  //     return this.httpClient.get<Balance>(this.CHILD_API_URL + API_END_POINTS.BALANCE_API);
+  //   }),
+  //   map((balance) => {
+  //     this.logger.info(balance);
+  //     this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchBalance', status: APICallStatusEnum.COMPLETED } }));
+  //     return {
+  //       type: CLNActions.SET_BALANCE_CLN,
+  //       payload: balance ? balance : {}
+  //     };
+  //   }),
+  //   catchError((err: any) => {
+  //     this.handleErrorWithoutAlert('FetchBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Balances Failed.', err);
+  //     return of({ type: RTLActions.VOID });
+  //   })
+  // ));
 
-  fetchLocalRemoteBalanceCL = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.FETCH_LOCAL_REMOTE_BALANCE_CLN),
-    mergeMap(() => {
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<LocalRemoteBalance>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/localRemoteBalance');
-    }),
-    map((lrBalance) => {
-      this.logger.info(lrBalance);
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.COMPLETED } }));
-      return {
-        type: CLNActions.SET_LOCAL_REMOTE_BALANCE_CLN,
-        payload: lrBalance ? lrBalance : {}
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchLocalRemoteBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Balances Failed.', err);
-      return of({ type: RTLActions.VOID });
-    })
-  ));
+  // fetchLocalRemoteBalanceCL = createEffect(() => this.actions.pipe(
+  //   ofType(CLNActions.FETCH_LOCAL_REMOTE_BALANCE_CLN),
+  //   mergeMap(() => {
+  //     this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.INITIATED } }));
+  //     return this.httpClient.get<LocalRemoteBalance>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/localRemoteBalance');
+  //   }),
+  //   map((lrBalance) => {
+  //     this.logger.info(lrBalance);
+  //     this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.COMPLETED } }));
+  //     return {
+  //       type: CLNActions.SET_LOCAL_REMOTE_BALANCE_CLN,
+  //       payload: lrBalance ? lrBalance : {}
+  //     };
+  //   }),
+  //   catchError((err: any) => {
+  //     this.handleErrorWithoutAlert('FetchLocalRemoteBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Balances Failed.', err);
+  //     return of({ type: RTLActions.VOID });
+  //   })
+  // ));
 
   getNewAddressCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.GET_NEW_ADDRESS_CLN),
@@ -354,8 +352,8 @@ export class CLNEffects implements OnDestroy {
             this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
             this.store.dispatch(openSnackBar({ payload: 'Channel Added Successfully!' }));
-            this.store.dispatch(fetchBalance());
-            this.store.dispatch(fetchUTXOs());
+            // this.store.dispatch(fetchBalance());
+            this.store.dispatch(fetchUTXOBalances());
             return {
               type: CLNActions.FETCH_CHANNELS_CLN
             };
@@ -405,7 +403,8 @@ export class CLNEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: action.payload.force ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL }));
             this.store.dispatch(fetchChannels());
-            this.store.dispatch(fetchLocalRemoteBalance());
+            // this.store.dispatch(fetchLocalRemoteBalances());
+            this.store.dispatch(fetchUTXOBalances());
             this.store.dispatch(openSnackBar({ payload: 'Channel Closed Successfully!' }));
             return {
               type: CLNActions.REMOVE_CHANNEL_CLN,
@@ -495,7 +494,8 @@ export class CLNEffects implements OnDestroy {
             }
             setTimeout(() => {
               this.store.dispatch(fetchChannels());
-              this.store.dispatch(fetchBalance());
+              // this.store.dispatch(fetchBalance());
+              this.store.dispatch(fetchUTXOBalances());
               this.store.dispatch(fetchPayments());
               this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
               this.store.dispatch(openSnackBar({ payload: snackBarMessageStr }));
@@ -884,8 +884,8 @@ export class CLNEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEND_FUNDS }));
-            this.store.dispatch(fetchBalance());
-            this.store.dispatch(fetchUTXOs());
+            // this.store.dispatch(fetchBalance());
+            this.store.dispatch(fetchUTXOBalances());
             return {
               type: CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN,
               payload: postRes
@@ -899,27 +899,22 @@ export class CLNEffects implements OnDestroy {
     })
   ));
 
-  utxosFetch = createEffect(() => this.actions.pipe(
-    ofType(CLNActions.FETCH_UTXOS_CLN),
+  utxoBalancesFetch = createEffect(() => this.actions.pipe(
+    ofType(CLNActions.FETCH_UTXO_BALANCES_CLN),
     mergeMap(() => {
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.INITIATED } }));
+      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchUTXOBalances', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/utxos');
     }),
-    map((utxos: any) => {
-      this.logger.info(utxos);
-      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchUTXOs', status: APICallStatusEnum.COMPLETED } }));
-      utxos.outputs.forEach((output) => { // For backward compatibility
-        if (output.value) {
-          output.amount_msat = output.value;
-        }
-      });
+    map((utxoBalances: any) => {
+      this.logger.info(utxoBalances);
+      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchUTXOBalances', status: APICallStatusEnum.COMPLETED } }));
       return {
-        type: CLNActions.SET_UTXOS_CLN,
-        payload: utxos.outputs || []
+        type: CLNActions.SET_UTXO_BALANCES_CLN,
+        payload: utxoBalances
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchUTXOs', UI_MESSAGES.NO_SPINNER, 'Fetching UTXOs Failed.', err);
+      this.handleErrorWithoutAlert('FetchUTXOBalances', UI_MESSAGES.NO_SPINNER, 'Fetching UTXO and Balances Failed.', err);
       return of({ type: RTLActions.VOID });
     })
   ));
@@ -996,12 +991,13 @@ export class CLNEffects implements OnDestroy {
     this.router.navigate([newRoute]);
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 1000000, index_offset: 0, reversed: true } }));
     this.store.dispatch(fetchChannels());
-    this.store.dispatch(fetchBalance());
-    this.store.dispatch(fetchLocalRemoteBalance());
+    this.store.dispatch(fetchUTXOBalances());
+    // this.store.dispatch(fetchBalance());
+    // this.store.dispatch(fetchLocalRemoteBalance());
     this.store.dispatch(fetchFeeRates({ payload: 'perkw' }));
     this.store.dispatch(fetchFeeRates({ payload: 'perkb' }));
     this.store.dispatch(fetchPeers());
-    this.store.dispatch(fetchUTXOs());
+    // this.store.dispatch(fetchUTXOs());
     this.store.dispatch(fetchPayments());
   }
 

@@ -7,12 +7,12 @@ import { Store } from '@ngrx/store';
 import { CLNOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { Balance, Channel, GetInfo, Peer, UTXO } from '../../../../shared/models/clnModels';
+import { Balance, Channel, GetInfo, LocalRemoteBalance, Peer, UTXO } from '../../../../shared/models/clnModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { channels, nodeInfoAndNodeSettingsAndBalance, peers, utxos } from '../../../store/cln.selector';
+import { channels, nodeInfoAndNodeSettingsAndBalance, peers, utxoBalances } from '../../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -55,9 +55,9 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.peers = peersSelector.peers;
       });
-    this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
-      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxoBalancesSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[4])).
       subscribe((channelsSelector: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {

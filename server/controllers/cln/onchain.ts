@@ -47,7 +47,41 @@ export const getUTXOs = (req, res, next) => {
   options.url = req.session.selectedNode.ln_server_url + '/v1/listfunds';
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Funds List Received', data: body });
-    res.status(200).json(body);
+    // Local Remote Balance Calculation
+    let lrBalance = { localBalance: 0, remoteBalance: 0, inactiveBalance: 0, pendingBalance: 0 };
+    body.channels.forEach((channel) => {
+      if ((channel.state === 'CHANNELD_NORMAL') && channel.connected === true) {
+        lrBalance.localBalance = lrBalance.localBalance + channel.our_amount_msat;
+        lrBalance.remoteBalance = lrBalance.remoteBalance + (channel.amount_msat - channel.our_amount_msat);
+      } else if ((channel.state === 'CHANNELD_NORMAL') && channel.connected === false) {
+        lrBalance.inactiveBalance = lrBalance.inactiveBalance + channel.our_amount_msat;
+      } else if (channel.state === 'CHANNELD_AWAITING_LOCKIN' || channel.state === 'DUALOPEND_AWAITING_LOCKIN') {
+        lrBalance.pendingBalance = lrBalance.pendingBalance + channel.our_amount_msat;
+      }
+    });
+    lrBalance = {
+      localBalance: lrBalance.localBalance / 1000,
+      remoteBalance: lrBalance.remoteBalance / 1000,
+      inactiveBalance: lrBalance.inactiveBalance / 1000,
+      pendingBalance: lrBalance.pendingBalance / 1000
+    };
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Onchain', msg: 'Local Remote Balance', data: lrBalance });
+    // Onchain Balance Calculation
+    let onchainBalance = { totalBalance: 0, confBalance: 0, unconfBalance: 0 };
+    body.outputs.forEach((output) => {
+      if (output.status === 'confirmed') {
+        onchainBalance.confBalance = onchainBalance.confBalance + output.amount_msat;
+      } else if (output.status === 'unconfirmed') {
+        onchainBalance.unconfBalance = onchainBalance.unconfBalance + output.amount_msat;
+      }
+    });
+    onchainBalance = {
+      totalBalance: onchainBalance.totalBalance / 1000,
+      confBalance: onchainBalance.confBalance / 1000,
+      unconfBalance: onchainBalance.unconfBalance / 1000
+    };
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Onchain', msg: 'Onchain Balance Received', data: onchainBalance });
+    res.status(200).json({ utxos: body.outputs || [], balance: onchainBalance, localRemoteBalance: lrBalance });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'OnChain', 'List Funds Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

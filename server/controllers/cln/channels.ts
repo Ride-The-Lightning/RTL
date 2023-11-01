@@ -102,41 +102,6 @@ export const closeChannel = (req, res, next) => {
   });
 };
 
-export const getLocalRemoteBalance = (req, res, next) => {
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Local & Remote Balances..' });
-  options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/listfunds';
-  request.post(options).then((body) => {
-    const versionCompatible = common.isVersionCompatible(req.session.selectedNode.ln_version, '23.02');
-    let localBalance = 0;
-    let remoteBalance = 0;
-    let pendingBalance = 0;
-    let inactiveBalance = 0;
-    body.channels.forEach((channel) => {
-      if ((channel.state === 'CHANNELD_NORMAL') && channel.connected === true) {
-        localBalance = localBalance + (versionCompatible ? (channel.our_amount_msat) : channel.channel_sat);
-        remoteBalance = remoteBalance + (versionCompatible ? (channel.amount_msat - channel.our_amount_msat) : (channel.channel_total_sat - channel.channel_sat));
-      } else if ((channel.state === 'CHANNELD_NORMAL') && channel.connected === false) {
-        inactiveBalance = inactiveBalance + (versionCompatible ? (channel.our_amount_msat) : channel.channel_sat);
-      } else if (channel.state === 'CHANNELD_AWAITING_LOCKIN' || channel.state === 'DUALOPEND_AWAITING_LOCKIN') {
-        pendingBalance = pendingBalance + (versionCompatible ? (channel.our_amount_msat) : channel.channel_sat);
-      }
-    });
-    if (versionCompatible) {
-      localBalance = localBalance / 1000;
-      remoteBalance = remoteBalance / 1000;
-      inactiveBalance = inactiveBalance / 1000;
-      pendingBalance = pendingBalance / 1000;
-    }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Local Remote Balance Received', data: body });
-    res.status(200).json({ localBalance: localBalance || 0, remoteBalance: remoteBalance || 0, inactiveBalance: inactiveBalance || 0, pendingBalance: pendingBalance || 0 });
-  }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Channels', 'Local Remote Balance Error', req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
-};
-
 export const listForwards = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel List Forwards..' });
   options = common.getOptions(req);

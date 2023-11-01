@@ -13,7 +13,7 @@ import * as sha256 from 'sha256';
 
 import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLNOnChainSendFunds } from '../../../shared/models/alertData';
-import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clnModels';
+import { GetInfo, Balance, OnChain, UTXO, LocalRemoteBalance } from '../../../shared/models/clnModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLNActions, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -23,7 +23,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 import { setChannelTransaction } from '../../store/cln.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
-import { clnNodeInformation, utxos } from '../../store/cln.selector';
+import { clnNodeInformation, utxoBalances } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -140,10 +140,10 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
-    this.store.select(utxos).pipe(takeUntil(this.unSubs[3])).
-      subscribe((utxosSeletor: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.utxos = this.commonService.sortAscByKey(utxosSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
-        this.logger.info(utxosSeletor);
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxoBalancesSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
+        this.logger.info(utxoBalancesSeletor);
       });
     this.actions.pipe(
       takeUntil(this.unSubs[4]),

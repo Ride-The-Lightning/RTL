@@ -27,14 +27,6 @@ export const fetchFeeRates = createAction(CLNActions.FETCH_FEE_RATES_CLN, props<
 
 export const setFeeRates = createAction(CLNActions.SET_FEE_RATES_CLN, props<{ payload: FeeRates }>());
 
-export const fetchBalance = createAction(CLNActions.FETCH_BALANCE_CLN);
-
-export const setBalance = createAction(CLNActions.SET_BALANCE_CLN, props<{ payload: any }>());
-
-export const fetchLocalRemoteBalance = createAction(CLNActions.FETCH_LOCAL_REMOTE_BALANCE_CLN);
-
-export const setLocalRemoteBalance = createAction(CLNActions.SET_LOCAL_REMOTE_BALANCE_CLN, props<{ payload: { localBalance: number, remoteBalance: number } }>());
-
 export const getNewAddress = createAction(CLNActions.GET_NEW_ADDRESS_CLN, props<{ payload: GetNewAddress }>());
 
 export const setNewAddress = createAction(CLNActions.SET_NEW_ADDRESS_CLN, props<{ payload: string }>());
@@ -105,9 +97,9 @@ export const setChannelTransaction = createAction(CLNActions.SET_CHANNEL_TRANSAC
 
 export const setChannelTransactionRes = createAction(CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN, props<{ payload: any }>());
 
-export const fetchUTXOs = createAction(CLNActions.FETCH_UTXOS_CLN);
+export const fetchUTXOBalances = createAction(CLNActions.FETCH_UTXO_BALANCES_CLN);
 
-export const setUTXOs = createAction(CLNActions.SET_UTXOS_CLN, props<{ payload: UTXO[] }>());
+export const setUTXOBalances = createAction(CLNActions.SET_UTXO_BALANCES_CLN, props<{ payload: { utxos: UTXO[], localRemoteBalance: { localBalance: number, remoteBalance: number }, balance: any } }>());
 
 export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, amount_msat?: number } }>());
 

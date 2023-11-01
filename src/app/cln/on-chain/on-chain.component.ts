@@ -9,8 +9,8 @@ import { CLNOnChainSendModalComponent } from './on-chain-send-modal/on-chain-sen
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
 import { openAlert } from '../../store/rtl.actions';
-import { balance, clnNodeSettings } from '../store/cln.selector';
-import { Balance } from '../../shared/models/clnModels';
+import { utxoBalances, clnNodeSettings } from '../store/cln.selector';
+import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 @Component({
@@ -48,9 +48,9 @@ export class CLNOnChainComponent implements OnInit, OnDestroy {
       subscribe((nodeSettings: SelNodeChild | null) => {
         this.selNode = nodeSettings;
       });
-    this.store.select(balance).pipe(takeUntil(this.unSubs[2])).
-      subscribe((balanceSeletor: { balance: Balance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.balances = [{ title: 'Total Balance', dataValue: balanceSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (balanceSeletor.balance.confBalance || 0) }, { title: 'Unconfirmed', dataValue: (balanceSeletor.balance.unconfBalance || 0) }];
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[2])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.balances = [{ title: 'Total Balance', dataValue: utxoBalancesSeletor.balance.totalBalance || 0 }, { title: 'Confirmed', dataValue: (utxoBalancesSeletor.balance.confBalance || 0) }, { title: 'Unconfirmed', dataValue: (utxoBalancesSeletor.balance.unconfBalance || 0) }];
       });
   }
 

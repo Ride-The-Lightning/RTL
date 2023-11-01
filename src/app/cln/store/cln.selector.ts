@@ -13,10 +13,10 @@ export const peers = createSelector(clnState, (state: CLNState) => ({ peers: sta
 export const feeRatesPerKB = createSelector(clnState, (state: CLNState) => ({ feeRatesPerKB: state.feeRatesPerKB, apiCallStatus: state.apisCallStatus.FetchFeeRatesperkb }));
 export const feeRatesPerKW = createSelector(clnState, (state: CLNState) => ({ feeRatesPerKW: state.feeRatesPerKW, apiCallStatus: state.apisCallStatus.FetchFeeRatesperkw }));
 export const listInvoices = createSelector(clnState, (state: CLNState) => ({ listInvoices: state.invoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));
-export const utxos = createSelector(clnState, (state: CLNState) => ({ utxos: state.utxos, apiCallStatus: state.apisCallStatus.FetchUTXOs }));
+export const utxoBalances = createSelector(clnState, (state: CLNState) => ({ utxos: state.utxos, balance: state.balance, localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchUTXOBalances }));
 export const channels = createSelector(clnState, (state: CLNState) => ({ activeChannels: state.activeChannels, pendingChannels: state.pendingChannels, inactiveChannels: state.inactiveChannels, apiCallStatus: state.apisCallStatus.FetchChannels }));
-export const balance = createSelector(clnState, (state: CLNState) => ({ balance: state.balance, apiCallStatus: state.apisCallStatus.FetchBalance }));
-export const localRemoteBalance = createSelector(clnState, (state: CLNState) => ({ localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchLocalRemoteBalance }));
+// export const balance = createSelector(clnState, (state: CLNState) => ({ balance: state.balance, apiCallStatus: state.apisCallStatus.FetchBalance }));
+// export const localRemoteBalance = createSelector(clnState, (state: CLNState) => ({ localRemoteBalance: state.localRemoteBalance, apiCallStatus: state.apisCallStatus.FetchLocalRemoteBalance }));
 export const forwardingHistory = createSelector(clnState, (state: CLNState) => ({ forwardingHistory: state.forwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryS }));
 export const failedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ failedForwardingHistory: state.failedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryF }));
 export const localFailedForwardingHistory = createSelector(clnState, (state: CLNState) => ({ localFailedForwardingHistory: state.localFailedForwardingHistory, apiCallStatus: state.apisCallStatus.FetchForwardingHistoryL }));
