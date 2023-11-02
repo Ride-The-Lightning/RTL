@@ -42,7 +42,7 @@ export const decodePayment = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/decode';
-  options.body = { string: req.params.payReq };
+  options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
     res.status(200).json(body);

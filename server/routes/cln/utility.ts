@@ -6,7 +6,7 @@ import { decodePayments, decodePayment, signMessage, verifyMessage, listConfigs 
 const router = Router();
 
 router.get('/', isAuthenticated, decodePayments);
-router.get('/decode/:payReq', isAuthenticated, decodePayment);
+router.post('/decode', isAuthenticated, decodePayment);
 router.post('/sign', isAuthenticated, signMessage);
 router.post('/verify', isAuthenticated, verifyMessage);
 router.get('/listConfigs', isAuthenticated, listConfigs);

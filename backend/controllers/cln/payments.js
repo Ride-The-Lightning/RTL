@@ -92,13 +92,6 @@ export const postPayment = (req, res, next) => {
     if (req.body.paymentType === 'KEYSEND') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
         options.url = req.session.selectedNode.ln_server_url + '/v1/keysend';
-        req.body.destination = req.body.pubkey;
-        req.body.msatoshi = req.body.amount;
-        req.body.label = (req.body.label) ? req.body.label : null;
-        req.body.maxfeepercent = (req.body.maxfeepercent) ? req.body.maxfeepercent : null;
-        req.body.retry_for = (req.body.retry_for) ? req.body.retry_for : null;
-        req.body.maxdelay = (req.body.maxdelay) ? req.body.maxdelay : null;
-        req.body.exemptfee = (req.body.exemptfee) ? req.body.exemptfee : null;
         options.body = req.body;
     }
     else {
@@ -108,18 +101,6 @@ export const postPayment = (req, res, next) => {
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
         }
-        req.body.bolt11 = (req.body.invoice) ? req.body.invoice : null;
-        req.body.msatoshi = (req.body.amount) ? req.body.amount : null;
-        req.body.label = (req.body.label) ? req.body.label : null;
-        req.body.riskfactor = (req.body.riskfactor) ? req.body.riskfactor : null;
-        req.body.maxfeepercent = (req.body.maxfeepercent) ? req.body.maxfeepercent : null;
-        req.body.retry_for = (req.body.retry_for) ? req.body.retry_for : null;
-        req.body.maxdelay = (req.body.maxdelay) ? req.body.maxdelay : null;
-        req.body.exemptfee = (req.body.exemptfee) ? req.body.exemptfee : null;
-        req.body.localinvreqid = (req.body.localinvreqid) ? req.body.localinvreqid : null;
-        req.body.exclude = (req.body.exclude) ? req.body.exclude : null;
-        req.body.maxfee = (req.body.maxfee) ? req.body.maxfee : null;
-        req.body.description = (req.body.description) ? req.body.description : null;
         options.body = req.body;
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }

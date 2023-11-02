@@ -25,10 +25,6 @@ export const onChainWithdraw = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/withdraw';
-  req.body.destination = req.body.address;
-  req.body.feeRate = (req.body.feeRate) ? req.body.feeRate : null;
-  req.body.minConf = (req.body.minConf) ? req.body.minConf : null;
-  req.body.utxos = (req.body.utxos) ? req.body.utxos : null;
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body });
   request.post(options).then((body) => {

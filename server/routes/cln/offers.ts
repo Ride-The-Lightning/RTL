@@ -6,11 +6,11 @@ import { listOfferBookmarks, deleteOfferBookmark, listOffers, disableOffer, crea
 const router = Router();
 
 router.get('/offerbookmarks', isAuthenticated, listOfferBookmarks);
-router.delete('/offerbookmark/:offerStr', isAuthenticated, deleteOfferBookmark);
+router.post('/offerbookmark/delete', isAuthenticated, deleteOfferBookmark);
 
 router.get('/', isAuthenticated, listOffers);
 router.post('/', isAuthenticated, createOffer);
 router.post('/fetchOfferInvoice', isAuthenticated, fetchOfferInvoice);
-router.delete('/:offerID', isAuthenticated, disableOffer);
+router.post('/disableOffer', isAuthenticated, disableOffer);
 
 export default router;

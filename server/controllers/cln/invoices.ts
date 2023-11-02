@@ -10,7 +10,7 @@ export const deleteExpiredInvoice = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/delexpiredinvoice';
-  options.body = req.query.maxexpiry ? { maxexpiry: req.query.maxexpiry } : null;
+  options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoices Deleted', data: body });
     res.status(204).json({ status: 'Invoice Deleted Successfully' });
@@ -24,8 +24,8 @@ export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Getting Invoices..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.body = req.query.label ? { label: req.query.label } : null;
   options.url = req.session.selectedNode.ln_server_url + '/v1/listinvoices';
+  options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });

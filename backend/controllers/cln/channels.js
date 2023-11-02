@@ -94,7 +94,7 @@ export const closeChannel = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/close';
-    options.body = { channelId: req.params.channelId, unilaterlaltimeout: req.query.force ? 1 : null };
+    options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel', data: options.url });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed', data: body });
@@ -111,7 +111,7 @@ export const listForwards = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listforwards';
-    options.body = { status: req.query.status || 'settled' };
+    options.body = req.body;
     request.get(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + req.query.status, data: body });
         res.status(200).json(!body.forwards ? [] : (req.query.status === 'failed' || req.query.status === 'local_failed') ? body.forwards.slice(Math.max(0, body.forwards.length - 1000), Math.max(1000, body.forwards.length)).reverse() : body.forwards.reverse());

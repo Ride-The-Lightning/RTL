@@ -20,7 +20,7 @@ export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Core Lightning server url ' + options.url });
     if (!options.headers || !options.headers.rune) {
-        const errMsg = 'Core lightning get info failed due to blacklisted or missing rune!';
+        const errMsg = 'Core lightning get info failed due to missing rune!';
         const err = common.handleError({ statusCode: 502, message: 'Bad rune', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }

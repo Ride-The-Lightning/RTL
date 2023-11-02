@@ -206,7 +206,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   keysendPayment() {
     if (this.keysendAmount) {
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_KEYSEND, paymentType: PaymentTypes.KEYSEND, pubkey: this.pubkey, amount: this.keysendAmount * 1000, fromDialog: true } }));
+      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_KEYSEND, paymentType: PaymentTypes.KEYSEND, destination: this.pubkey, amount_msat: this.keysendAmount * 1000, fromDialog: true } }));
     }
   }
 
@@ -214,9 +214,9 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentError = '';
     if (this.paymentType === PaymentTypes.INVOICE) {
       if (this.zeroAmtInvoice && this.paymentAmount) {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: this.paymentAmount * 1000, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, bolt11: this.paymentRequest, amount_msat: this.paymentAmount * 1000, fromDialog: true } }));
       } else {
-        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, fromDialog: true } }));
+        this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, bolt11: this.paymentRequest, fromDialog: true } }));
       }
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
@@ -228,7 +228,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       } else {
         if (this.offerAmount) {
           this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER,
-            invoice: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount: this.offerAmount * 1000,
+            bolt11: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount_msat: this.offerAmount * 1000,
             zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, issuer: this.offerIssuer, description: this.offerDescription,
             fromDialog: true } }));
         }

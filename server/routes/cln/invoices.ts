@@ -5,8 +5,8 @@ import { listInvoices, addInvoice, deleteExpiredInvoice } from '../../controller
 
 const router = Router();
 
-router.get('/', isAuthenticated, listInvoices);
+router.post('/lookup/', isAuthenticated, listInvoices);
 router.post('/', isAuthenticated, addInvoice);
-router.delete('/', isAuthenticated, deleteExpiredInvoice);
+router.post('/delete/', isAuthenticated, deleteExpiredInvoice);
 
 export default router;

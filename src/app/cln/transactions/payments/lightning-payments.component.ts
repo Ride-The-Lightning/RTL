@@ -191,7 +191,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.amount_msat = confirmRes[0].inputValue;
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, amount: confirmRes[0].inputValue * 1000, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, bolt11: this.paymentRequest, amount_msat: confirmRes[0].inputValue * 1000, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -220,7 +220,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, invoice: this.paymentRequest, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.INVOICE, bolt11: this.paymentRequest, fromDialog: false } }));
             this.resetData();
           }
         });

@@ -11,7 +11,7 @@ export const getRoute = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/getroute';
-    options.body = { id: req.params.destPubkey, amount_msat: req.params.amount, riskfactor: (req.query.riskFactor || 0) };
+    options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
         res.status(200).json({ routes: body });
@@ -27,7 +27,7 @@ export const listChannels = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listchannels';
-    options.body = req.params.channelShortId ? { short_channel_id: req.params.channelShortId } : null;
+    options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Channel Lookup Finished', data: body });
         res.status(200).json(body);
@@ -43,9 +43,9 @@ export const feeRates = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/feerates';
-    options.body = req.params.feeRateStyle ? { style: req.params.feeRateStyle } : null;
+    options.body = req.body;
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.params.feeRateStyle, data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.body.style, data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Network', 'Fee Rates Error', req.session.selectedNode);

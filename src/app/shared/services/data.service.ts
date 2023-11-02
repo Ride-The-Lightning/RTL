@@ -46,11 +46,15 @@ export class DataService implements OnDestroy {
   decodePayment(payment: string, fromDialog: boolean) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
+      let method = 'GET';
+      let body = null;
       if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode/' + payment;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
+        body = { string: payment };
+        method = 'POST';
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
-      return this.httpClient.get(url).pipe(
+      return this.httpClient.request(method, url, body).pipe(
         takeUntil(this.unSubs[0]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
@@ -263,7 +267,7 @@ export class DataService implements OnDestroy {
         }));
     } else if (implementation === 'CLN') {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
-      return this.httpClient.get(this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + status).pipe(
+      return this.httpClient.post(this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards', { status: status || 'settled' }).pipe(
         takeUntil(this.unSubs[8]),
         withLatestFrom(this.store.select(channels)),
         mergeMap(([res, channelsSelector]: [any, { activeChannels: ChannelCLN[], pendingChannels: ChannelCLN[], inactiveChannels: ChannelCLN[], apiCallStatus: ApiCallStatusPayload }]) => {

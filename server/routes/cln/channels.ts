@@ -8,9 +8,9 @@ const router = Router();
 router.get('/listPeerChannels', isAuthenticated, listPeerChannels);
 router.post('/', isAuthenticated, openChannel);
 router.post('/setChannelFee', isAuthenticated, setChannelFee);
-router.delete('/:channelId', isAuthenticated, closeChannel);
+router.post('/close/', isAuthenticated, closeChannel);
 
-router.get('/listForwards', isAuthenticated, listForwards);
+router.post('/listForwards', isAuthenticated, listForwards);
 
 router.post('/funderUpdate', isAuthenticated, funderUpdatePolicy);
 

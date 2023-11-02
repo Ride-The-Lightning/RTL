@@ -114,9 +114,9 @@ export interface ListInvoices {
 }
 
 export interface OnChain {
-  address?: string;
-  satoshis?: string;
-  feeRate?: string;
+  destination?: string;
+  satoshi?: string;
+  feerate?: string;
   minconf?: number;
   utxos?: string[];
 }
@@ -454,15 +454,26 @@ export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
   paymentType: PaymentTypes;
+  destination?: string;
+  amount_msat?: number;
+  label?: string;
+  maxfeepercent?: number;
+  retry_for?: number;
+  maxdelay?: number;
+  exemptfee?: number;
+  extratlvs?: any;
   title?: string;
   issuer?: string;
-  invoice?: string;
+  bolt11?: string;
   description?: string;
-  saveToDB?: boolean;
   bolt12?: string;
-  amount?: number;
   zeroAmtOffer?: boolean;
   pubkey?: string;
+  riskfactor?: number;
+  localinvreqid?: string;
+  exclude?: string[];
+  maxfee?: number;
+  saveToDB?: boolean;
 }
 
 export interface GetQueryRoutes {
