@@ -87,11 +87,13 @@ export const getAlias = (selNode, id) => {
         return Promise.resolve('');
     }
     options.body = { id };
-    return request.post(options).then((body) => {
-        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
-        return body.nodes[0] ? body.nodes[0].alias : id.substring(0, 20);
-    }).catch((errRes) => {
-        common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
-        return id.substring(0, 20);
+    return new Promise((resolve, reject) => {
+        request.post(options).then((body) => {
+            logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
+            resolve(body.nodes[0] ? body.nodes[0].alias : id.substring(0, 20));
+        }).catch((errRes) => {
+            common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
+            resolve(id.substring(0, 20));
+        });
     });
 };

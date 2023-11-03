@@ -13,7 +13,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
-import { GetInfo, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, FetchInvoices, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
+import { GetInfo, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
 import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
@@ -618,10 +618,7 @@ export class CLNEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_INVOICE }));
             this.store.dispatch(openSnackBar({ payload: 'Invoices Deleted Successfully!' }));
-            return {
-              type: CLNActions.FETCH_INVOICES_CLN,
-              payload: { num_max_invoices: 1000000, reversed: true }
-            };
+            return { type: CLNActions.FETCH_INVOICES_CLN };
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('DeleteInvoices', UI_MESSAGES.DELETE_INVOICE, 'Delete Invoice Failed', this.CHILD_API_URL + API_END_POINTS.INVOICES_API, err);
@@ -705,26 +702,21 @@ export class CLNEffects implements OnDestroy {
 
   invoicesFetchCL = createEffect(() => this.actions.pipe(
     ofType(CLNActions.FETCH_INVOICES_CLN),
-    mergeMap((action: { type: string, payload: FetchInvoices }) => {
+    mergeMap(() => {
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.INITIATED } }));
-      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 1000000;
-      const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
-      const reversed = (action.payload.reversed) ? action.payload.reversed : true;
-      return this.httpClient.post<ListInvoices>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/lookup', { num_max_invoices: num_max_invoices, index_offset: index_offset, reversed: reversed }).
-        pipe(
-          map((res: ListInvoices) => {
-            this.logger.info(res);
-            this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.COMPLETED } }));
-            return {
-              type: CLNActions.SET_INVOICES_CLN,
-              payload: res
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchInvoices', UI_MESSAGES.NO_SPINNER, 'Fetching Invoices Failed.', err);
-            return of({ type: RTLActions.VOID });
-          })
-        );
+      return this.httpClient.post<ListInvoices>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/lookup', null);
+    }),
+    map((res: ListInvoices) => {
+      this.logger.info(res);
+      this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.COMPLETED } }));
+      return {
+        type: CLNActions.SET_INVOICES_CLN,
+        payload: res
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchInvoices', UI_MESSAGES.NO_SPINNER, 'Fetching Invoices Failed.', err);
+      return of({ type: RTLActions.VOID });
     })
   ));
 
@@ -925,7 +917,7 @@ export class CLNEffects implements OnDestroy {
       newRoute = '/cln/home';
     }
     this.router.navigate([newRoute]);
-    this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: 1000000, index_offset: 0, reversed: true } }));
+    this.store.dispatch(fetchInvoices());
     this.store.dispatch(fetchChannels());
     this.store.dispatch(fetchUTXOBalances());
     this.store.dispatch(fetchFeeRates({ payload: 'perkw' }));

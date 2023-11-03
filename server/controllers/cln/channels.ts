@@ -12,12 +12,11 @@ export const listPeerChannels = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listpeerchannels';
-  request.post(options).then((body) => {
+  return request.post(options).then((body) => {
     body.channels.forEach((channel) => {
       const local = channel.to_us_msat || 0;
       const remote = (channel.total_msat - local) || 0;
       const total = channel.total_msat || 0;
-      // return getAliasForChannel(channel).then(channelAlias => {
       channel = {
         peer_id: channel.peer_id,
         peer_connected: channel.peer_connected,
@@ -40,13 +39,13 @@ export const listPeerChannels = (req, res, next) => {
         dust_limit_msat: channel.dust_limit_msat,
         htlcs: channel.htlcs,
         features: channel.features,
-        alias: new Promise(getAlias(req.session.selectedNode, channel.peer_id)),
+        alias: getAlias(req.session.selectedNode, channel.peer_id).then((callRes: string) => callRes),
         to_them_msat: remote,
         balancedness: (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3)
       };
     });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body.channels });
-    res.status(200).json(body.channels);
+    return res.status(200).json(body.channels);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'List Peer Channels Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

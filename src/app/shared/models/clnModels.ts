@@ -487,12 +487,6 @@ export interface ChannelLookup {
   showError: boolean;
 }
 
-export interface FetchInvoices {
-  num_max_invoices?: number;
-  index_offset?: number;
-  reversed?: boolean;
-}
-
 export interface FunderPolicy {
   summary?: string;
   policy?: string;

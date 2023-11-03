@@ -81,7 +81,7 @@ export const getForwardingHistory = createAction(CLNActions.GET_FORWARDING_HISTO
 
 export const setForwardingHistory = createAction(CLNActions.SET_FORWARDING_HISTORY_CLN, props<{ payload: ListForwards }>());
 
-export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN, props<{ payload: { num_max_invoices?: number, index_offset?: number, reversed?: boolean } }>());
+export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN);
 
 export const setInvoices = createAction(CLNActions.SET_INVOICES_CLN, props<{ payload: ListInvoices }>());
 

@@ -76,18 +76,22 @@ export class DataService implements OnDestroy {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = '';
       let msg = '';
+      let body = null;
       if (updatedLnImplementation === 'ecl') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/getsentinfos';
+        body = { payments: payments };
         msg = UI_MESSAGES.GET_SENT_PAYMENTS;
       } else if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
+        body = { string: payments };
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       } else {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API;
+        body = { payments: payments };
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       }
       this.store.dispatch(openSpinner({ payload: msg }));
-      return this.httpClient.post(url, { payments: payments }).pipe(
+      return this.httpClient.post(url, body).pipe(
         takeUntil(this.unSubs[1]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: msg }));
