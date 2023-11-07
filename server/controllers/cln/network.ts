@@ -65,9 +65,9 @@ export const listNodes = (req, res, next) => {
       response = body.nodes.filter((node) => {
         if (node.option_will_fund) {
           node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' &&
-            node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat?.replace('msat', '') : node.option_will_fund.lease_fee_base_msat;
+            node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat?.replace('msat', '') : node.option_will_fund.lease_fee_base_msat ? node.option_will_fund.lease_fee_base_msat : 0;
           node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' &&
-            node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat?.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat;
+            node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat?.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat ? node.option_will_fund.channel_fee_max_base_msat : 0;
         }
         return node;
       });
@@ -79,20 +79,21 @@ export const listNodes = (req, res, next) => {
   });
 };
 
-export const getAlias = (selNode: CommonSelectedNode, id: string) => {
+export const getAlias = (selNode: CommonSelectedNode, peer: any, id: string) => {
   options.url = selNode.ln_server_url + '/v1/listnodes';
-  if (!id) {
+  if (!peer[id]) {
     logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Network', msg: 'Empty Peer ID' });
-    return Promise.resolve('');
+    peer.alias = '';
+    return peer;
   }
-  options.body = { id };
-  return new Promise((resolve, reject) => {
-    request.post(options).then((body) => {
-      logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
-      resolve(body.nodes[0] ? body.nodes[0].alias : id.substring(0, 20));
-    }).catch((errRes) => {
-      common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
-      resolve(id.substring(0, 20));
-    });
+  options.body = { id : peer[id] };
+  return request.post(options).then((body) => {
+    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
+    peer.alias = body.nodes[0] && body.nodes[0].alias ? body.nodes[0].alias : peer[id].substring(0, 20);
+    return peer;
+  }).catch((errRes) => {
+    common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
+    peer.alias = peer[id].substring(0, 20);
+    return peer;
   });
 };

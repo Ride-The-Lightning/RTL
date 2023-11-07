@@ -12,40 +12,19 @@ export const listPeerChannels = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listpeerchannels';
-  return request.post(options).then((body) => {
-    body.channels.forEach((channel) => {
-      const local = channel.to_us_msat || 0;
-      const remote = (channel.total_msat - local) || 0;
-      const total = channel.total_msat || 0;
-      channel = {
-        peer_id: channel.peer_id,
-        peer_connected: channel.peer_connected,
-        opener: channel.opener,
-        owner: channel.owner,
-        short_channel_id: channel.short_channel_id,
-        channel_id: channel.channel_id,
-        funding_txid: channel.funding_txid,
-        private: channel.private,
-        to_us_msat: channel.to_us_msat,
-        total_msat: channel.total_msat,
-        their_reserve_msat: channel.their_reserve_msat,
-        our_reserve_msat: channel.our_reserve_msat,
-        spendable_msat: channel.spendable_msat,
-        receivable_msat: channel.receivable_msat,
-        funding: channel.funding,
-        state: channel.state,
-        fee_base_msat: channel.fee_base_msat,
-        fee_proportional_millionths: channel.fee_proportional_millionths,
-        dust_limit_msat: channel.dust_limit_msat,
-        htlcs: channel.htlcs,
-        features: channel.features,
-        alias: getAlias(req.session.selectedNode, channel.peer_id).then((callRes: string) => callRes),
-        to_them_msat: remote,
-        balancedness: (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3)
-      };
-    });
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body.channels });
-    return res.status(200).json(body.channels);
+    return Promise.all(body.channels?.map((channel) => {
+      const local = (channel.to_us_msat && typeof channel.to_us_msat === 'string' && channel.to_us_msat.includes('msat')) ? +channel.to_us_msat.replace('msat', '') : channel.to_us_msat ? channel.to_us_msat : 0;
+      const total = (channel.total_msat && typeof channel.total_msat === 'string' && channel.total_msat.includes('msat')) ? +channel.total_msat.replace('msat', '') : channel.total_msat ? channel.total_msat : 0;
+      const remote = total - local;
+      channel.to_them_msat = remote;
+      channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
+      return getAlias(req.session.selectedNode, channel, 'peer_id');
+    })).then((values) => {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List With Aliases Received', data: body.channels });
+      return res.status(200).json(body.channels || []);
+    });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'List Peer Channels Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
@@ -125,8 +104,8 @@ export const funderUpdatePolicy = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Funder Update Body', data: options.body });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Funder Policy Received', data: body });
-    body.channel_fee_max_base_msat = (body.channel_fee_max_base_msat && typeof body.channel_fee_max_base_msat === 'string' && body.channel_fee_max_base_msat.includes('msat')) ? +body.channel_fee_max_base_msat?.replace('msat', '') : body.channel_fee_max_base_msat;
-    body.lease_fee_base_msat = (body.lease_fee_base_msat && typeof body.lease_fee_base_msat === 'string' && body.lease_fee_base_msat.includes('msat')) ? +body.lease_fee_base_msat?.replace('msat', '') : body.channel_fee_max_base_msat;
+    body.channel_fee_max_base_msat = (body.channel_fee_max_base_msat && typeof body.channel_fee_max_base_msat === 'string' && body.channel_fee_max_base_msat.includes('msat')) ? +body.channel_fee_max_base_msat?.replace('msat', '') : body.channel_fee_max_base_msat ? body.channel_fee_max_base_msat : 0;
+    body.lease_fee_base_msat = (body.lease_fee_base_msat && typeof body.lease_fee_base_msat === 'string' && body.lease_fee_base_msat.includes('msat')) ? +body.lease_fee_base_msat?.replace('msat', '') : body.channel_fee_max_base_msat ? body.channel_fee_max_base_msat : 0;
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Funder Policy Error', req.session.selectedNode);

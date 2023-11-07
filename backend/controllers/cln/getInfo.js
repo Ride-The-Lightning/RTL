@@ -48,7 +48,7 @@ export const getInfo = (req, res, next) => {
                     body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
                 });
             }
-            body.fees_collected_msat = (body.fees_collected_msat && body.fees_collected_msat.includes('msat')) ? body.fees_collected_msat.substring(0, body.fees_collected_msat.length - 4) : 0;
+            body.fees_collected_msat = (body.fees_collected_msat && typeof body.fees_collected_msat === 'string' && body.fees_collected_msat.includes('msat')) ? body.fees_collected_msat?.replace('msat', '') : body.fees_collected_msat ? body.fees_collected_msat : 0;
             req.session.selectedNode.ln_version = body.version || '';
             req.session.selectedNode.api_version = body.api_version || '';
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Core Lightning\'s Websocket Server.' });

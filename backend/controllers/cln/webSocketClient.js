@@ -10,7 +10,7 @@ export class CLWebSocketClient {
         this.webSocketClients = [];
         this.reconnectTimeOut = null;
         this.waitTime = 0.5;
-        this.reconnet = (clWsClt) => {
+        this.reconnect = (clWsClt) => {
             if (this.reconnectTimeOut) {
                 return;
             }
@@ -69,7 +69,7 @@ export class CLWebSocketClient {
                     this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...', data: reason });
                     clWsClt.webSocketClient.close();
                     if (clWsClt.reConnect) {
-                        this.reconnet(clWsClt);
+                        this.reconnect(clWsClt);
                     }
                 }
             });
@@ -83,7 +83,7 @@ export class CLWebSocketClient {
                 this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
                 clWsClt.webSocketClient.close();
                 if (clWsClt.reConnect) {
-                    this.reconnet(clWsClt);
+                    this.reconnect(clWsClt);
                 }
             });
         };
