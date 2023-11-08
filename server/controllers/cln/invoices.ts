@@ -29,6 +29,10 @@ export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
+    body.invoices.forEach((invoice) => {
+      invoice.amount_msat = common.removeMSat(invoice.amount_msat);
+      invoice.amount_received_msat = common.removeMSat(invoice.amount_received_msat);
+    });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Invoice', 'List Invoices Error', req.session.selectedNode);

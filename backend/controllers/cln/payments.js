@@ -7,6 +7,18 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const databaseService = Database;
+export const getMemo = (selNode, payment) => {
+    options.url = selNode.ln_server_url + '/v1/decode';
+    options.body = { string: payment.bolt11 };
+    return request.post(options).then((res) => {
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
+        payment.memo = res.description || '';
+        return payment;
+    }).catch((err) => {
+        payment.memo = '';
+        return payment;
+    });
+};
 function paymentReducer(accumulator, currentPayment) {
     const currPayHash = currentPayment.payment_hash;
     if (!currentPayment.partid) {
@@ -22,6 +34,8 @@ function paymentReducer(accumulator, currentPayment) {
 }
 function summaryReducer(accumulator, mpp) {
     if (mpp.status === 'complete') {
+        mpp.amount_msat = common.removeMSat(mpp.amount_msat);
+        mpp.amount_sent_msat = common.removeMSat(mpp.amount_sent_msat);
         accumulator.amount_msat = accumulator.amount_msat + mpp.amount_msat;
         accumulator.amount_sent_msat = accumulator.amount_sent_msat + mpp.amount_sent_msat;
         accumulator.status = mpp.status;
@@ -44,6 +58,8 @@ function groupBy(payments) {
             temp.is_group = false;
             temp.is_expanded = false;
             temp.total_parts = 1;
+            temp.amount_msat = common.removeMSat(temp.amount_msat);
+            temp.amount_sent_msat = common.removeMSat(temp.amount_sent_msat);
             delete temp.partid;
         }
         else {
@@ -78,7 +94,11 @@ export const listPayments = (req, res, next) => {
     };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
-        res.status(200).json(body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : []);
+        body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
+        return Promise.all(body.payments?.map((payment) => getMemo(req.session.selectedNode, payment))).then((values) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List with Memo Received', data: body.payments });
+            res.status(200).json(body.payments);
+        });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

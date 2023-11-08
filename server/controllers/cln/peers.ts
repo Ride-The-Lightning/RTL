@@ -15,7 +15,33 @@ export const getPeers = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
     const peers = !body.peers ? [] : body.peers;
-    return Promise.all(peers?.map((peer) => getAlias(req.session.selectedNode, peer, 'id'))).then((values) => {
+    return Promise.all(peers?.map((peer) => {
+      peer.channels.forEach((channel) => {
+        channel.to_us_msat = common.removeMSat(channel.to_us_msat);
+        channel.total_msat = common.removeMSat(channel.total_msat);
+        channel.last_tx_fee_msat = common.removeMSat(channel.last_tx_fee_msat);
+        channel.funding.local_funds_msat = common.removeMSat(channel.funding.local_funds_msat);
+        channel.funding.remote_funds_msat = common.removeMSat(channel.funding.remote_funds_msat);
+        channel.funding.pushed_msat = common.removeMSat(channel.funding.pushed_msat);
+        channel.min_to_us_msat = common.removeMSat(channel.min_to_us_msat);
+        channel.max_to_us_msat = common.removeMSat(channel.max);
+        channel.fee_base_msat = common.removeMSat(channel.fee_base_msat);
+        channel.dust_limit_msat = common.removeMSat(channel.dust_limit_msat);
+        channel.max_total_htlc_in_msat = common.removeMSat(channel.max_total_htlc_in_msat);
+        channel.their_reserve_msat = common.removeMSat(channel.their_reserve_msat);
+        channel.our_reserve_msat = common.removeMSat(channel.our_reserve_msat);
+        channel.spendable_msat = common.removeMSat(channel.spendable_msat);
+        channel.receivable_msat = common.removeMSat(channel.receivable_msat);
+        channel.minimum_htlc_in_msat = common.removeMSat(channel.minimum_htlc_in_msat);
+        channel.minimum_htlc_out_msat = common.removeMSat(channel.minimum_htlc_out_msat);
+        channel.maximum_htlc_out_msat = common.removeMSat(channel.maximum_htlc_out_msat);
+        channel.in_offered_msat = common.removeMSat(channel.in_offered_msat);
+        channel.in_fulfilled_msat = common.removeMSat(channel.in_fulfilled_msat);
+        channel.out_offered_msat = common.removeMSat(channel.out_offered_msat);
+        channel.out_fulfilled_msat = common.removeMSat(channel.out_fulfilled_msat);
+      });
+      return getAlias(req.session.selectedNode, peer, 'id');
+    })).then((values) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
       res.status(200).json(body.peers || []);
     });

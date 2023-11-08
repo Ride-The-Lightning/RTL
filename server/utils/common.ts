@@ -76,6 +76,7 @@ export class CommonService {
     if (req.session.selectedNode && req.session.selectedNode.options) {
       req.session.selectedNode.options.method = (req.session.selectedNode.ln_implementation && req.session.selectedNode.ln_implementation.toUpperCase() === 'LND') ? 'GET' : 'POST';
       delete req.session.selectedNode.options.form;
+      delete req.session.selectedNode.options.body;
       req.session.selectedNode.options.qs = {};
       return req.session.selectedNode.options;
     }
@@ -535,6 +536,8 @@ export class CommonService {
     const dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
     return JSON.parse(dataStr);
   };
+
+  public removeMSat = (value) => ((value && typeof value === 'string' && value.includes('msat')) ? +value.replace('msat', '') : value ? value : 0);
 
 }
 

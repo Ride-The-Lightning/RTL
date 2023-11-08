@@ -66,10 +66,8 @@ export const listNodes = (req, res, next) => {
         if (req.query.liquidity_ads && typeof req.query.liquidity_ads === 'string' && req.query.liquidity_ads.toLowerCase() === 'yes') {
             response = body.nodes.filter((node) => {
                 if (node.option_will_fund) {
-                    node.option_will_fund.lease_fee_base_msat = (node.option_will_fund.lease_fee_base_msat && typeof node.option_will_fund.lease_fee_base_msat === 'string' &&
-                        node.option_will_fund.lease_fee_base_msat.includes('msat')) ? node.option_will_fund.lease_fee_base_msat?.replace('msat', '') : node.option_will_fund.lease_fee_base_msat ? node.option_will_fund.lease_fee_base_msat : 0;
-                    node.option_will_fund.channel_fee_max_base_msat = (node.option_will_fund.channel_fee_max_base_msat && typeof node.option_will_fund.channel_fee_max_base_msat === 'string' &&
-                        node.option_will_fund.channel_fee_max_base_msat.includes('msat')) ? node.option_will_fund.channel_fee_max_base_msat?.replace('msat', '') : node.option_will_fund.channel_fee_max_base_msat ? node.option_will_fund.channel_fee_max_base_msat : 0;
+                    node.option_will_fund.lease_fee_base_msat = common.removeMSat(node.option_will_fund.lease_fee_base_msat);
+                    node.option_will_fund.channel_fee_max_base_msat = common.removeMSat(node.option_will_fund.channel_fee_max_base_msat);
                 }
                 return node;
             });

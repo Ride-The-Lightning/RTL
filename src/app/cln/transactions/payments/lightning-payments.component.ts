@@ -18,7 +18,6 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CLNLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
-import { CLNEffects } from '../../store/cln.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
