@@ -114,7 +114,7 @@ export interface ListInvoices {
 }
 
 export interface OnChain {
-  destination?: string;
+  destination: string;
   satoshi?: string;
   feerate?: string;
   minconf?: number;

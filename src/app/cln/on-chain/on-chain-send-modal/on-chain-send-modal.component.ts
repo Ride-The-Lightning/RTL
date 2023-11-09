@@ -181,7 +181,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   onSendFunds(): boolean | void {
     this.sendFundError = '';
     if (this.flgUseAllBalance) {
-      this.transaction.satoshis = 'all';
+      this.transaction.satoshi = 'all';
     }
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.transaction.utxos = [];
@@ -195,14 +195,14 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       ) {
         return true;
       }
-      this.transaction.satoshis = 'all';
-      this.transaction.address = this.sendFundFormGroup.controls.transactionAddress.value;
+      this.transaction.satoshi = 'all';
+      this.transaction.destination = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.flgMinConf.value) {
-        delete this.transaction.feeRate;
+        delete this.transaction.feerate;
         this.transaction.minconf = this.sendFundFormGroup.controls.flgMinConf.value ? this.sendFundFormGroup.controls.minConfValue.value : null;
       } else {
         delete this.transaction.minconf;
-        this.transaction.feeRate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' &&
+        this.transaction.feerate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' &&
         !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ?
           ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
       }
@@ -210,23 +210,23 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
       this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
-      this.transaction['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
-      if ((!this.transaction.address || this.transaction.address === '') ||
-        ((!this.transaction.satoshis || +this.transaction.satoshis <= 0)) ||
+      this.transaction['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
+      if ((!this.transaction.destination || this.transaction.destination === '') ||
+        ((!this.transaction.satoshi || +this.transaction.satoshi <= 0)) ||
         (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||
         (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)) {
         return true;
       }
-      if (this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-        this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
+      if (this.transaction.satoshi && this.transaction.satoshi !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+        this.commonService.convertCurrency(+this.transaction.satoshi, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
           pipe(takeUntil(this.unSubs[5])).
           subscribe({
             next: (data) => {
-              this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
+              this.transaction.satoshi = data[CurrencyUnitEnum.SATS];
               this.selAmountUnit = CurrencyUnitEnum.SATS;
               this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
             }, error: (err) => {
-              this.transaction.satoshis = null;
+              this.transaction.satoshi = null;
               this.selAmountUnit = CurrencyUnitEnum.SATS;
               this.amountError = 'Conversion Error: ' + err;
             }
@@ -287,17 +287,17 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       }
     } else {
       this.totalSelectedUTXOAmount = null;
-      this.transaction.satoshis = null;
+      this.transaction.satoshi = null;
       this.flgUseAllBalance = false;
     }
   }
 
   onUTXOAllBalanceChange() {
     if (this.flgUseAllBalance) {
-      this.transaction.satoshis = this.totalSelectedUTXOAmount;
+      this.transaction.satoshi = this.totalSelectedUTXOAmount;
       this.selAmountUnit = CURRENCY_UNITS[0];
     } else {
-      this.transaction.satoshis = null;
+      this.transaction.satoshi = null;
     }
   }
 
@@ -305,15 +305,15 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     const self = this;
     const prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if (this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
+    if (this.transaction.satoshi && this.selAmountUnit !== event.value) {
+      this.commonService.convertCurrency(+this.transaction.satoshi, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
         pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
-            self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
+            self.transaction.satoshi = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])?.replace(/,/g, '');
           }, error: (err) => {
-            self.transaction.satoshis = null;
+            self.transaction.satoshi = null;
             this.amountError = 'Conversion Error: ' + err;
             this.selAmountUnit = prevSelectedUnit;
             currSelectedUnit = prevSelectedUnit;

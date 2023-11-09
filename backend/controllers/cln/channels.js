@@ -17,6 +17,7 @@ export const listPeerChannels = (req, res, next) => {
         return Promise.all(body.channels?.map((channel) => {
             channel.to_us_msat = common.removeMSat(channel.to_us_msat);
             channel.total_msat = common.removeMSat(channel.total_msat);
+            channel.to_them_msat = channel.total_msat - channel.to_us_msat;
             channel.last_tx_fee_msat = common.removeMSat(channel.last_tx_fee_msat);
             channel.funding.local_funds_msat = common.removeMSat(channel.funding.local_funds_msat);
             channel.funding.remote_funds_msat = common.removeMSat(channel.funding.remote_funds_msat);
@@ -133,6 +134,11 @@ export const funderUpdatePolicy = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Funder Update Body', data: options.body });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Funder Policy Received', data: body });
+        body.min_their_funding_msat = common.removeMSat(body.min_their_funding_msat);
+        body.max_their_funding_msat = common.removeMSat(body.max_their_funding_msat);
+        body.per_channel_min_msat = common.removeMSat(body.per_channel_min_msat);
+        body.per_channel_max_msat = common.removeMSat(body.per_channel_max_msat);
+        body.reserve_tank_msat = common.removeMSat(body.reserve_tank_msat);
         body.channel_fee_max_base_msat = common.removeMSat(body.channel_fee_max_base_msat);
         body.lease_fee_base_msat = common.removeMSat(body.lease_fee_base_msat);
         res.status(200).json(body);

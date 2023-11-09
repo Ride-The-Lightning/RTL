@@ -258,8 +258,6 @@ export class CLNEffects implements OnDestroy {
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
       const sortedChannels = { activeChannels: <Channel[]>[], pendingChannels: <Channel[]>[], inactiveChannels: <Channel[]>[] };
       channels.forEach((channel) => {
-        if (channel.id) { channel.peer_id = channel.id; }
-        if (channel.connected) { channel.peer_connected = channel.connected; }
         if (channel.state === 'CHANNELD_NORMAL') {
           if (channel.peer_connected) {
             sortedChannels.activeChannels.push(channel);
