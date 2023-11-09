@@ -104,9 +104,15 @@ export const listForwards = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listforwards';
   options.body = req.body;
-  request.get(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + req.query.status, data: body });
-    res.status(200).json(!body.forwards ? [] : (req.query.status === 'failed' || req.query.status === 'local_failed') ? body.forwards.slice(Math.max(0, body.forwards.length - 1000), Math.max(1000, body.forwards.length)).reverse() : body.forwards.reverse());
+  request.post(options).then((body) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + req.body.status, data: body });
+    body.forwards = !body.forwards ? [] : (req.body.status === 'failed' || req.body.status === 'local_failed') ? body.forwards.slice(Math.max(0, body.forwards.length - 1000), Math.max(1000, body.forwards.length)).reverse() : body.forwards.reverse();
+    body.forwards.forEach((forward) => {
+      forward.in_msat = common.removeMSat(forward.in_msat);
+      forward.out_msat = common.removeMSat(forward.out_msat);
+      forward.fee_msat = common.removeMSat(forward.fee_msat);
+    });
+    res.status(200).json(body.forwards);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Forwarding History Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

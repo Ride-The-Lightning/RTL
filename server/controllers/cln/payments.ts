@@ -79,12 +79,6 @@ export const listPayments = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
-  const { invoice, payment_hash, status } = req.query;
-  options.body = {
-    ...(invoice && { bolt11: invoice }),
-    ...(payment_hash && { payment_hash }),
-    ...(status && { status })
-  };
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
     body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];

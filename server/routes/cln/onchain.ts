@@ -5,8 +5,8 @@ import { getNewAddress, onChainWithdraw, getUTXOs } from '../../controllers/cln/
 
 const router = Router();
 
-router.get('/', isAuthenticated, getNewAddress);
 router.post('/', isAuthenticated, onChainWithdraw);
+router.post('/newaddr', isAuthenticated, getNewAddress);
 router.get('/utxos/', isAuthenticated, getUTXOs);
 
 export default router;

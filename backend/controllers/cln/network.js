@@ -63,13 +63,14 @@ export const listNodes = (req, res, next) => {
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });
         let response = body.nodes;
-        if (req.query.liquidity_ads && typeof req.query.liquidity_ads === 'string' && req.query.liquidity_ads.toLowerCase() === 'yes') {
+        if (req.body.liquidity_ads) {
             response = body.nodes.filter((node) => {
                 if (node.option_will_fund) {
                     node.option_will_fund.lease_fee_base_msat = common.removeMSat(node.option_will_fund.lease_fee_base_msat);
                     node.option_will_fund.channel_fee_max_base_msat = common.removeMSat(node.option_will_fund.channel_fee_max_base_msat);
+                    return node;
                 }
-                return node;
+                return null;
             });
         }
         res.status(200).json(response);

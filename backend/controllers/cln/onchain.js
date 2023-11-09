@@ -11,7 +11,7 @@ export const getNewAddress = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/newaddr';
-    options.body = { addresstype: req.query.type };
+    options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated', data: body });
         res.status(200).json(body);

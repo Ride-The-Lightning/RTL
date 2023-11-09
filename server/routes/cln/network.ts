@@ -5,7 +5,7 @@ import { getRoute, listChannels, feeRates, listNodes } from '../../controllers/c
 
 const router = Router();
 
-router.get('/listNodes', isAuthenticated, listNodes);
+router.post('/listNodes', isAuthenticated, listNodes);
 router.post('/getRoute', isAuthenticated, getRoute);
 router.post('/feeRates', isAuthenticated, feeRates);
 router.post('/listChannels', isAuthenticated, listChannels);

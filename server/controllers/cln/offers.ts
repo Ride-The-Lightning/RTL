@@ -36,7 +36,6 @@ export const listOffers = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listoffers';
-  options.body = { offer_id: (req.query.offer_id) ? req.query.offer_id : null, active_only: !(req.query.active_only === '0' || req.query.active_only === 'false' || !req.query.active_only) };
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });

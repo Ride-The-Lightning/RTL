@@ -93,7 +93,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes('?liquidity_ads=yes')]).pipe(takeUntil(this.unSubs[1])).
+    combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes({ liquidity_ads: true })]).pipe(takeUntil(this.unSubs[1])).
       subscribe({
         next: ([infoSettingsBalSelector, nodeListRes]) => {
           this.information = infoSettingsBalSelector.information;

@@ -148,18 +148,18 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.GET_NEW_ADDRESS_CLN),
     mergeMap((action: { type: string, payload: GetNewAddress }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '?type=' + action.payload.addressCode).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/newaddr', { addresstype: action.payload.addressCode }).
         pipe(
           map((newAddress: any) => {
             this.logger.info(newAddress);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
             return {
               type: CLNActions.SET_NEW_ADDRESS_CLN,
-              payload: (newAddress && newAddress.address) ? newAddress.address : {}
+              payload: (newAddress && newAddress[action.payload.addressCode]) ? newAddress[action.payload.addressCode] : {}
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('GenerateNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, 'Generate New Address Failed', this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '?type=' + action.payload.addressId, err);
+            this.handleErrorWithAlert('GenerateNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, 'Generate New Address Failed', this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API, err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -586,7 +586,7 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { status: string } }) => {
       const statusInitial = action.payload.status.charAt(0).toUpperCase();
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchForwardingHistory' + statusInitial, status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + action.payload.status).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listForwards', action.payload).
         pipe(
           map((fhRes: any) => {
             this.logger.info(fhRes);
@@ -601,7 +601,7 @@ export class CLNEffects implements OnDestroy {
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + action.payload.status + ' Forwarding History Failed', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + action.payload.status, err);
+            this.handleErrorWithAlert('FetchForwardingHistory' + statusInitial, UI_MESSAGES.NO_SPINNER, 'Get ' + action.payload.status + ' Forwarding History Failed', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/listForwards', err);
             return of({ type: RTLActions.VOID });
           })
         );
