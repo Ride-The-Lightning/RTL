@@ -82,7 +82,7 @@ export const listPayments = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
     body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
-    return Promise.all(body.payments?.map((payment) => getMemo(req.session.selectedNode, payment))).then((values) => {
+    return Promise.all(body.payments?.map((payment) => ((payment.bolt11) ? getMemo(req.session.selectedNode, payment) : (payment.memo = '')))).then((values) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List with Memo Received', data: body.payments });
       res.status(200).json(body.payments);
     });
