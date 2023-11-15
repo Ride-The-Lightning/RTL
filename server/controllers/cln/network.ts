@@ -15,7 +15,10 @@ export const getRoute = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
-    res.status(200).json({ routes: body });
+    return Promise.all(body.route?.map((rt) => getAlias(req.session.selectedNode, rt, 'id'))).then((values) => {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Network Routes with Alias Received', data: body });
+      res.status(200).json(body || []);
+    });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Query Routes Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
@@ -57,19 +60,13 @@ export const listNodes = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
+  options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });
     let response = body.nodes;
     if (req.body.liquidity_ads) {
-      response = body.nodes.filter((node) => {
-        if (node.option_will_fund) {
-          node.option_will_fund.lease_fee_base_msat = common.removeMSat(node.option_will_fund.lease_fee_base_msat);
-          node.option_will_fund.channel_fee_max_base_msat = common.removeMSat(node.option_will_fund.channel_fee_max_base_msat);
-          return node;
-        }
-        return null;
-      });
+      response = body.nodes.filter((node) => ((node.option_will_fund) ? node : null));
     }
     res.status(200).json(response);
   }).catch((errRes) => {

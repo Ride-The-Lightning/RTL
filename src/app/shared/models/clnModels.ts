@@ -280,7 +280,7 @@ export interface Routes {
 }
 
 export interface QueryRoutes {
-  routes: Routes[];
+  route: Routes[];
 }
 
 export interface ChannelHTLC {

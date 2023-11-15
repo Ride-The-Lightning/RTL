@@ -34,8 +34,6 @@ function paymentReducer(accumulator, currentPayment) {
 }
 function summaryReducer(accumulator, mpp) {
     if (mpp.status === 'complete') {
-        mpp.amount_msat = common.removeMSat(mpp.amount_msat);
-        mpp.amount_sent_msat = common.removeMSat(mpp.amount_sent_msat);
         accumulator.amount_msat = accumulator.amount_msat + mpp.amount_msat;
         accumulator.amount_sent_msat = accumulator.amount_sent_msat + mpp.amount_sent_msat;
         accumulator.status = mpp.status;
@@ -58,8 +56,6 @@ function groupBy(payments) {
             temp.is_group = false;
             temp.is_expanded = false;
             temp.total_parts = 1;
-            temp.amount_msat = common.removeMSat(temp.amount_msat);
-            temp.amount_sent_msat = common.removeMSat(temp.amount_sent_msat);
             delete temp.partid;
         }
         else {

@@ -537,8 +537,6 @@ export class CommonService {
     return JSON.parse(dataStr);
   };
 
-  public removeMSat = (value) => ((value && typeof value === 'string' && value.includes('msat')) ? +value.replace('msat', '') : value ? value : 0);
-
 }
 
 export const Common = new CommonService();

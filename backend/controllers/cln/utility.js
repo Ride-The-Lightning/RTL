@@ -14,20 +14,6 @@ export const decodePayment = (req, res, next) => {
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
-        body.amount_msat = common.removeMSat(body.amount_msat);
-        body.invreq_amount_msat = common.removeMSat(body.invreq_amount_msat);
-        body.offer_amount_msat = common.removeMSat(body.offer_amount_msat);
-        body.invoice_amount_msat = common.removeMSat(body.invoice_amount_msat);
-        body.invoice_paths?.forEach((path) => {
-            if (path.payinfo && path.payinfo.fee_base_msat) {
-                path.payinfo.fee_base_msat = common.removeMSat(path.payinfo.fee_base_msat);
-            }
-        });
-        body.routes?.forEach((route) => {
-            route.hops.forEach((hop) => {
-                hop.fee_base_msat = common.removeMSat(hop.fee_base_msat);
-            });
-        });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Decode Payment Error', req.session.selectedNode);

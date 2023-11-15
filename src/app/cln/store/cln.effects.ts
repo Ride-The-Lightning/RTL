@@ -204,7 +204,7 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { id: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API, action.payload.id).
+      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API, { id: action.payload.id }).
         pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
@@ -460,7 +460,7 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.GET_QUERY_ROUTES_CLN),
     mergeMap((action: { type: string, payload: GetQueryRoutes }) => {
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'GetQueryRoutes', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/getRoute/', { id: action.payload.destPubkey, amount_msat: action.payload.amount, riskfactor: 0 }).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/getRoute', { id: action.payload.destPubkey, amount_msat: action.payload.amount, riskfactor: 0 }).
         pipe(
           map((qrRes: any) => {
             this.logger.info(qrRes);
@@ -471,8 +471,8 @@ export class CLNEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(setQueryRoutes({ payload: { routes: [] } }));
-            this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount, err);
+            this.store.dispatch(setQueryRoutes({ payload: { route: [] } }));
+            this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/getRoute', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -492,7 +492,7 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listNode/' + action.payload).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listNodes', { id: action.payload }).
         pipe(
           map((resPeer) => {
             this.logger.info(resPeer);
@@ -504,7 +504,7 @@ export class CLNEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listNode/' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/listNodes/' + action.payload, err);
             return of({ type: RTLActions.VOID });
           })
         );

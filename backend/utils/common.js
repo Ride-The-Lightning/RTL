@@ -570,7 +570,6 @@ export class CommonService {
             const dataStr = foundDataLine ? foundDataLine.substring((foundDataLine.indexOf(search_string)) + search_string.length) : '{}';
             return JSON.parse(dataStr);
         };
-        this.removeMSat = (value) => ((value && typeof value === 'string' && value.includes('msat')) ? +value.replace('msat', '') : value ? value : 0);
     }
 }
 export const Common = new CommonService();

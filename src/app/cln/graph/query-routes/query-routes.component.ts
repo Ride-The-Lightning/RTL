@@ -57,10 +57,9 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
       });
     this.clnEffects.setQueryRoutesCL.pipe(takeUntil(this.unSubs[1])).subscribe((queryRoute) => {
       this.qrHops.data = [];
-      if (queryRoute.routes && queryRoute.routes.length && queryRoute.routes.length > 0) {
+      if (queryRoute.route && queryRoute.route.length && queryRoute.route.length > 0) {
         this.flgLoading[0] = false;
-        this.qrHops = new MatTableDataSource<Routes>([...queryRoute.routes]);
-        this.qrHops.data = queryRoute.routes;
+        this.qrHops = new MatTableDataSource<Routes>([...queryRoute.route]);
       } else {
         this.flgLoading[0] = 'error';
       }

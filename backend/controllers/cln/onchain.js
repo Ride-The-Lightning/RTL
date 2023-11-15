@@ -49,8 +49,6 @@ export const getUTXOs = (req, res, next) => {
         // Local Remote Balance Calculation
         let lrBalance = { localBalance: 0, remoteBalance: 0, inactiveBalance: 0, pendingBalance: 0 };
         body.channels.forEach((channel) => {
-            channel.our_amount_msat = common.removeMSat(channel.our_amount_msat);
-            channel.amount_msat = common.removeMSat(channel.amount_msat);
             if ((channel.state === 'CHANNELD_NORMAL') && channel.connected === true) {
                 lrBalance.localBalance = lrBalance.localBalance + channel.our_amount_msat;
                 lrBalance.remoteBalance = lrBalance.remoteBalance + (channel.amount_msat - channel.our_amount_msat);
@@ -72,7 +70,6 @@ export const getUTXOs = (req, res, next) => {
         // Onchain Balance Calculation
         let onchainBalance = { totalBalance: 0, confBalance: 0, unconfBalance: 0 };
         body.outputs.forEach((output) => {
-            output.amount_msat = common.removeMSat(output.amount_msat);
             if (output.status === 'confirmed') {
                 onchainBalance.confBalance = onchainBalance.confBalance + output.amount_msat;
             }
