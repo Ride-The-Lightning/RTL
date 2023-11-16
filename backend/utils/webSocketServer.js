@@ -163,7 +163,7 @@ export class RTLWebSocketServer {
             try {
                 this.webSocketServer.clients.forEach((client) => {
                     if (+client.clientNodeIndex === +selectedNode.index) {
-                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId });
+                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId + ', Message: ' + newMessage });
                         client.send(newMessage);
                     }
                 });

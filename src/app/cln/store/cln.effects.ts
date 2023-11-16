@@ -59,8 +59,8 @@ export class CLNEffects implements OnDestroy {
       subscribe((newMessage) => {
         this.logger.info('Received new message from the service: ' + JSON.stringify(newMessage));
         if (newMessage && newMessage.data) {
-          if (newMessage.data[CLNWSEventTypeEnum.INVOICE_PAYMENT] && newMessage.data.label) {
-            this.store.dispatch(updateInvoice({ payload: newMessage.data }));
+          if (newMessage.data[CLNWSEventTypeEnum.INVOICE_PAYMENT] && newMessage.data[CLNWSEventTypeEnum.INVOICE_PAYMENT].label) {
+            this.store.dispatch(updateInvoice({ payload: newMessage.data[CLNWSEventTypeEnum.INVOICE_PAYMENT] }));
           }
         }
       });

@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLNActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel,
+import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, InvoicePaymentNotification, ListInvoices, OnChain, UTXO, SaveChannel,
   GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
@@ -85,11 +85,11 @@ export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN);
 
 export const setInvoices = createAction(CLNActions.SET_INVOICES_CLN, props<{ payload: ListInvoices }>());
 
-export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount_msat: number, label: string, description: string, expiry: number, exposeprivatechannels: boolean } }>());
+export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount_msat: number | 'any', label: string, description: string, expiry: number, exposeprivatechannels: boolean } }>());
 
 export const addInvoice = createAction(CLNActions.ADD_INVOICE_CLN, props<{ payload: Invoice }>());
 
-export const updateInvoice = createAction(CLNActions.UPDATE_INVOICE_CLN, props<{ payload: Invoice }>());
+export const updateInvoice = createAction(CLNActions.UPDATE_INVOICE_CLN, props<{ payload: InvoicePaymentNotification }>());
 
 export const deleteExpiredInvoice = createAction(CLNActions.DELETE_EXPIRED_INVOICE_CLN, props<{ payload?: number | null }>());
 

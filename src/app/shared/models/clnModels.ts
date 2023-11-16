@@ -107,6 +107,12 @@ export interface OfferBookmark {
   description?: string;
 }
 
+export interface InvoicePaymentNotification {
+  msat?: string;
+  preimage?: string;
+  label?: string;
+}
+
 export interface ListInvoices {
   invoices?: Invoice[];
   last_index_offset?: string;

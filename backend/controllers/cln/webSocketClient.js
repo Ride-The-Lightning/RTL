@@ -51,7 +51,7 @@ export class CLWebSocketClient {
                     clWsClt.selectedNode.rune_value = this.common.getRuneValue(clWsClt.selectedNode.rune_path);
                 }
                 clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.ln_server_url, {
-                    extraHeaders: { rune: '9ISqFS53IFIfBS0yhwgM_XaNHFAUoFU_Bzfyhe-s8u49MA==' },
+                    extraHeaders: { rune: clWsClt.selectedNode.rune_value },
                     transports: ['websocket'],
                     secure: true,
                     rejectUnauthorized: false

@@ -91,17 +91,44 @@ export const listPayments = (req, res, next) => {
 export const postPayment = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  const options_body = JSON.parse(JSON.stringify(req.body));
   if (req.body.paymentType === 'KEYSEND') {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
     options.url = req.session.selectedNode.ln_server_url + '/v1/keysend';
-    options.body = req.body;
+    delete options_body.uiMessage;
+    delete options_body.fromDialog;
+    delete options_body.paymentType;
+    delete options_body.title;
+    delete options_body.issuer;
+    delete options_body.bolt11;
+    delete options_body.description;
+    delete options_body.bolt12;
+    delete options_body.zeroAmtOffer;
+    delete options_body.pubkey;
+    delete options_body.riskfactor;
+    delete options_body.localinvreqid;
+    delete options_body.exclude;
+    delete options_body.maxfee;
+    delete options_body.saveToDB;
+    options.body = options_body;
   } else {
     if (req.body.paymentType === 'OFFER') {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
     } else {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
     }
-    options.body = req.body;
+    delete options_body.uiMessage;
+    delete options_body.fromDialog;
+    delete options_body.paymentType;
+    delete options_body.destination;
+    delete options_body.extratlvs;
+    delete options_body.title;
+    delete options_body.issuer;
+    delete options_body.bolt12;
+    delete options_body.zeroAmtOffer;
+    delete options_body.pubkey;
+    delete options_body.saveToDB;
+    options.body = options_body;
     options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
   }
   request.post(options).then((body) => {

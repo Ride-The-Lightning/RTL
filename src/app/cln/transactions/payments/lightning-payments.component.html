@@ -6,7 +6,7 @@
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
-    <div fxLayout="row" class="mt-1">
+    <div fxLayout="row" class="mt-3">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
       <button mat-flat-button color="primary" tabindex="3" (click)="onSendPayment()">Send Payment</button>
     </div>

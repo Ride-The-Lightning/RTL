@@ -28,6 +28,7 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
   public showAdvanced = false;
   public newlyAdded = false;
   public invoice: Invoice;
+  public invoiceStatus = '';
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -38,6 +39,7 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.invoice = this.data.invoice;
+    this.invoiceStatus = this.invoice.status;
     this.newlyAdded = !!this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if (this.screenSize === ScreenSizeEnum.XS) {
@@ -45,14 +47,16 @@ export class CLNInvoiceInformationComponent implements OnInit, OnDestroy {
     }
     this.store.select(listInvoices).pipe(takeUntil(this.unSubs[1])).
       subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
-        const invoiceStatus = this.invoice.status;
         const invoices = invoicesSelector.listInvoices.invoices || [];
         const foundInvoice = invoices?.find((invoice) => invoice.payment_hash === this.invoice.payment_hash) || null;
         if (foundInvoice) { this.invoice = foundInvoice; }
-        if (invoiceStatus !== this.invoice.status && this.invoice.status === 'paid') {
+        if (this.invoiceStatus !== this.invoice.status && this.invoice.status === 'paid') {
           this.flgInvoicePaid = true;
           setTimeout(() => { this.flgInvoicePaid = false; }, 4000);
         }
+        this.logger.info(this.invoice);
+        this.logger.info(this.invoiceStatus);
+        this.logger.info(foundInvoice);
         this.logger.info(invoicesSelector);
       });
   }
