@@ -9,7 +9,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Peer, GetInfo, Balance } from '../../../shared/models/clnModels';
+import { Peer, GetInfo, Balance, UTXO, LocalRemoteBalance } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -21,7 +21,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { detachPeer } from '../../store/cln.actions';
-import { clnPageSettings, nodeInfoAndBalance, peers } from '../../store/cln.selector';
+import { clnPageSettings, nodeInfoAndBalance, peers, utxoBalances } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
@@ -50,6 +50,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public peerAddress: string | null = '';
   public peersData: Peer[] = [];
   public peers: any = new MatTableDataSource([]);
+  public utxos: UTXO[] = [];
   public information: GetInfo = {};
   public availableBalance = 0;
   public pageSize = PAGE_SIZE;
@@ -104,9 +105,13 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.logger.info(peersSeletor);
       });
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+        this.utxos = this.commonService.sortAscByKey(utxoBalancesSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
+      });
     this.actions.
       pipe(
-        takeUntil(this.unSubs[3]),
+        takeUntil(this.unSubs[4]),
         filter((action) => action.type === CLNActions.SET_PEERS_CLN)
       ).subscribe((setPeers: any) => {
         this.peerAddress = null;
@@ -157,7 +162,8 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     const peerToAddChannelMessage = {
       peer: peerToAddChannel,
       information: this.information,
-      balance: this.availableBalance
+      balance: this.availableBalance,
+      utxos: this.utxos
     };
     this.store.dispatch(openAlert({
       payload: {
@@ -185,7 +191,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[4])).
+      pipe(takeUntil(this.unSubs[5])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(detachPeer({ payload: { id: peerToDetach.id!, force: false } }));

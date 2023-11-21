@@ -30,8 +30,8 @@
               <mat-error *ngIf="amount.errors?.required || !fundingAmount">Amount is required.</mat-error>
               <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
-            <div fxFlex="25" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="2" color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
+            <div fxLayout="column" fxFlex="25" fxLayoutAlign="center start">
+              <mat-slide-toggle fxLayout="column" fxLayoutAlign="center start" tabindex="2" color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
             </div>
           </div>
           <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">

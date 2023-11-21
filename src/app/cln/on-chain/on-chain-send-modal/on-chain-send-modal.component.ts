@@ -210,7 +210,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
       this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
-      this.transaction['feeRate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
+      this.transaction['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
       if ((!this.transaction.destination || this.transaction.destination === '') ||
         ((!this.transaction.satoshi || +this.transaction.satoshi <= 0)) ||
         (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||

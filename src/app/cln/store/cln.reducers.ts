@@ -148,7 +148,7 @@ export const CLNReducer = createReducer(initCLNState,
     const modifiedInvoices = state.invoices;
     modifiedInvoices.invoices = modifiedInvoices.invoices?.map((invoice) => {
       if (invoice.label === payload.label) {
-        invoice.amount_received_msat = +payload.msat.substring(0, payload.msat.length - 4);
+        invoice.amount_received_msat = payload.msat;
         invoice.payment_preimage = payload.preimage;
         invoice.status = 'paid';
       }

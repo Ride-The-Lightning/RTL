@@ -284,7 +284,7 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SaveChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED } }));
-      const newPayload = { id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce };
+      const newPayload = { id: action.payload.peerId, amount: action.payload.amount, feerate: action.payload.feeRate, announce: action.payload.announce };
       if (action.payload.minconf) { newPayload['minconf'] = action.payload.minconf; }
       if (action.payload.utxos) { newPayload['utxos'] = action.payload.utxos; }
       if (action.payload.requestAmount) { newPayload['request_amt'] = action.payload.requestAmount; }
@@ -313,13 +313,10 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.UPDATE_CHANNEL_CLN),
     mergeMap((action: { type: string, payload: UpdateChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
-      return this.httpClient.post(
-        this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/setChannelFee',
-        { id: action.payload.channelId, base: action.payload.baseFeeMsat, ppm: action.payload.feeRate }
-      ).pipe(map((postRes: any) => {
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/setChannelFee', action.payload).pipe(map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
-        if (action.payload.channelId === 'all') {
+        if (action.payload.id === 'all') {
           this.store.dispatch(openSnackBar({ payload: { message: 'All Channels Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
         } else {
           this.store.dispatch(openSnackBar({ payload: { message: 'Channel Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000 } }));
@@ -339,7 +336,7 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.CLOSE_CHANNEL_CLN),
     mergeMap((action: { type: string, payload: CloseChannel }) => {
       this.store.dispatch(openSpinner({ payload: (action.payload.force ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/close', { id: action.payload.channelId, unilaterlaltimeout: action.payload.force ? 1 : null }).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/close', { id: action.payload.channelId, unilateraltimeout: action.payload.force ? 1 : null }).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);

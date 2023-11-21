@@ -108,7 +108,7 @@ export interface OfferBookmark {
 }
 
 export interface InvoicePaymentNotification {
-  msat?: string;
+  msat?: number;
   preimage?: string;
   label?: string;
 }
@@ -325,7 +325,7 @@ export interface Channel {
   balancedness?: number; // Between 0-1-0
 }
 
-export interface ChannelEdge {
+export interface LookupChannelEdge {
   active?: boolean;
   amount_msat?: string;
   base_fee_millisatoshi?: number;
@@ -341,6 +341,10 @@ export interface ChannelEdge {
   satoshis?: number;
   short_channel_id?: string;
   source?: string;
+}
+
+export interface ChannelEdge {
+  channels?: LookupChannelEdge[];
 }
 
 export interface LookupNode {
@@ -418,7 +422,7 @@ export interface RoutingPeer {
 
 export interface SaveChannel {
   peerId: string;
-  satoshis: string;
+  amount: string;
   announce?: boolean;
   feeRate?: string;
   minconf?: number | null;
@@ -440,9 +444,9 @@ export interface DetachPeer {
 }
 
 export interface UpdateChannel {
-  channelId: string;
-  baseFeeMsat: number;
-  feeRate: number;
+  id: string;
+  feebase: number;
+  feeppm: number;
 }
 
 export interface CloseChannel {
