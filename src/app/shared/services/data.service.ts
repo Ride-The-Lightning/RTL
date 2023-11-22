@@ -139,12 +139,17 @@ export class DataService implements OnDestroy {
 
   verifyMessage(msg: string, sign: string) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
+      let url = '';
+      let verifyPayload = null;
       if (updatedLnImplementation === 'cln') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/verify';
+        verifyPayload = { message: msg, zbase: sign };
+      } else {
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
+        verifyPayload = { message: msg, signature: sign };
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_MESSAGE }));
-      return this.httpClient.post(url, { message: msg, signature: sign }).pipe(
+      return this.httpClient.post(url, verifyPayload).pipe(
         takeUntil(this.unSubs[3]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.VERIFY_MESSAGE }));

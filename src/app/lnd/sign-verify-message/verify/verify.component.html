@@ -10,7 +10,7 @@
       <input #sign="ngModel" matInput name="signature" tabindex="2" required [(ngModel)]="signature" (keyup)="onChange()">
       <mat-error *ngIf="!signature">Signature is required.</mat-error>
     </mat-form-field>
-    <p *ngIf="showVerifyStatus && !verifyRes.valid" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Verification failed, please double check message and signature</p>
+    <p *ngIf="showVerifyStatus && !verifyRes.valid" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Verification failed, please check message and signature</p>
     <div fxLayout="row" class="my-1">
       <button mat-stroked-button class="mr-1" color="primary" tabindex="3" type="reset" (click)="resetData()">Clear Fields</button>
       <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onVerify()">Verify</button>

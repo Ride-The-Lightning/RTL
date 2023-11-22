@@ -62,12 +62,14 @@ export const listNodes = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
+    const filter_liquidity_ads = !!req.body.liquidity_ads;
+    delete req.body.liquidity_ads;
     options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes Finished', data: body });
         let response = body.nodes;
-        if (req.body.liquidity_ads) {
+        if (filter_liquidity_ads) {
             response = body.nodes.filter((node) => ((node.option_will_fund) ? node : null));
         }
         res.status(200).json(response);

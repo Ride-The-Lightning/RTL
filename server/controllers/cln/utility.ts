@@ -26,7 +26,7 @@ export const signMessage = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/signmessage';
-  options.body = { message: req.body.message };
+  options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed', data: body });
     res.status(201).json(body);
@@ -41,7 +41,7 @@ export const verifyMessage = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/checkmessage';
-  options.body = { message: req.body.message, zbase: req.body.signature };
+  options.body = req.body;
   request.post(options, (error, response, body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
     res.status(201).json(body);
