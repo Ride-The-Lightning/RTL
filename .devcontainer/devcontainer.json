@@ -1,0 +1,5 @@
+http://192.168.0.1/OSS.html#component-license-OpenSSL/SSLeay%20License{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+  }
+}
