@@ -127,6 +127,10 @@ export const postPayment = (req, res, next) => {
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
         }
+        if (req.body.paymentType === 'OFFER') {
+            // delete amount for zero amt offer also as fetchinvoice already has amount information
+            delete options_body.amount_msat;
+        }
         delete options_body.uiMessage;
         delete options_body.fromDialog;
         delete options_body.paymentType;
@@ -145,7 +149,7 @@ export const postPayment = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB && req.body.bolt12) {
-                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount_msat), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
                 if (req.body.issuer) {
                     offerToUpdate['issuer'] = req.body.issuer;
                 }
