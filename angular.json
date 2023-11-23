@@ -77,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "RTLApp:build:production"
+              "buildTarget": "RTLApp:build:production"
             },
             "development": {
-              "browserTarget": "RTLApp:build:development"
+              "buildTarget": "RTLApp:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -88,7 +88,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "RTLApp:build"
+            "buildTarget": "RTLApp:build"
           }
         },
         "test": {

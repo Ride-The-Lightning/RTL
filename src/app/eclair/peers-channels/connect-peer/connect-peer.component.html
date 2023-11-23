@@ -13,7 +13,7 @@
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
               <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
               <mat-form-field fxLayout="column" fxFlex="100">
-                <mat-label>Lightning Address (pubkey OR pubkey@ip:port)</mat-label>
+                <mat-label>Lightning Address (pubkey OR pubkey&#64;ip:port)</mat-label>
                 <input autoFocus matInput formControlName="peerAddress" tabindex="1" required>
                 <mat-error *ngIf="peerFormGroup.controls.peerAddress.errors?.required">Address is required.</mat-error>
               </mat-form-field>
