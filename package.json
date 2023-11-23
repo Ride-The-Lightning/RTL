@@ -27,6 +27,7 @@
     "angular-user-idle": "^4.0.0",
     "atob": "^2.1.2",
     "cookie-parser": "^1.4.6",
+    "crypto-browserify": "^3.12.0",
     "csurf": "^1.11.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",

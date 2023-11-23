@@ -113,8 +113,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
 @Injectable() class DefaultDateAdapter extends NativeDateAdapter {
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
-    super(matDateLocale, platform);
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string) {
+    super(matDateLocale);
   }
 
   format(date: Date, displayFormat: Object): string {
