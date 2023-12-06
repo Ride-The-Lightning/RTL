@@ -1,6 +1,4 @@
-import * as fs from 'fs';
-import { join } from 'path';
-import WebSocket from 'ws';
+import socketIOClient from 'socket.io-client';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
@@ -12,7 +10,7 @@ export class CLWebSocketClient {
         this.webSocketClients = [];
         this.reconnectTimeOut = null;
         this.waitTime = 0.5;
-        this.reconnet = (clWsClt) => {
+        this.reconnect = (clWsClt) => {
             if (this.reconnectTimeOut) {
                 return;
             }
@@ -36,7 +34,7 @@ export class CLWebSocketClient {
                     }
                 }
                 else {
-                    if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.ln_server_url) {
+                    if ((!clientExists.webSocketClient || !clientExists.webSocketClient.connected) && selectedNode.ln_server_url) {
                         clientExists.reConnect = true;
                         this.connectWithClient(clientExists);
                     }
@@ -48,42 +46,50 @@ export class CLWebSocketClient {
         };
         this.connectWithClient = (clWsClt) => {
             this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the Core Lightning\'s Websocket Server..' });
-            const WS_LINK = (clWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws') + '/v1/ws';
-            const mcrnHexEncoded = Buffer.from(fs.readFileSync(join(clWsClt.selectedNode.macaroon_path, 'access.macaroon'))).toString('hex');
-            clWsClt.webSocketClient = new WebSocket(WS_LINK, [mcrnHexEncoded, 'hex'], { rejectUnauthorized: false });
-            clWsClt.webSocketClient.onopen = () => {
+            try {
+                if (!clWsClt.selectedNode.rune_value) {
+                    clWsClt.selectedNode.rune_value = this.common.getRuneValue(clWsClt.selectedNode.rune_path);
+                }
+                clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.ln_server_url, {
+                    extraHeaders: { rune: clWsClt.selectedNode.rune_value },
+                    transports: ['websocket'],
+                    secure: true,
+                    rejectUnauthorized: false
+                });
+            }
+            catch (err) {
+                throw new Error(err);
+            }
+            clWsClt.webSocketClient.on('connect', () => {
                 this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connected to the Core Lightning\'s Websocket Server..' });
                 this.waitTime = 0.5;
-            };
-            clWsClt.webSocketClient.onclose = (e) => {
+            });
+            clWsClt.webSocketClient.on('disconnect', (reason) => {
                 if (clWsClt && clWsClt.selectedNode && clWsClt.selectedNode.ln_implementation === 'CLN') {
-                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
+                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...', data: reason });
                     clWsClt.webSocketClient.close();
                     if (clWsClt.reConnect) {
-                        this.reconnet(clWsClt);
+                        this.reconnect(clWsClt);
                     }
                 }
-            };
-            clWsClt.webSocketClient.onmessage = (msg) => {
+            });
+            clWsClt.webSocketClient.on('message', (msg) => {
                 this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'DEBUG', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
-                msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
-                msg['source'] = 'CLN';
-                const msgStr = JSON.stringify(msg);
-                this.wsServer.sendEventsToAllLNClients(msgStr, clWsClt.selectedNode);
-            };
-            clWsClt.webSocketClient.onerror = (err) => {
+                this.wsServer.sendEventsToAllLNClients(JSON.stringify({ source: 'CLN', data: msg }), clWsClt.selectedNode);
+            });
+            clWsClt.webSocketClient.on('error', (err) => {
                 this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });
                 const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
                 this.wsServer.sendErrorToAllLNClients(errStr, clWsClt.selectedNode);
                 clWsClt.webSocketClient.close();
                 if (clWsClt.reConnect) {
-                    this.reconnet(clWsClt);
+                    this.reconnect(clWsClt);
                 }
-            };
+            });
         };
         this.disconnect = (selectedNode) => {
             const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
-            if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.readyState === WebSocket.OPEN) {
+            if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.connected) {
                 this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the Core Lightning\'s Websocket Server..' });
                 clientExists.reConnect = false;
                 clientExists.webSocketClient.close();

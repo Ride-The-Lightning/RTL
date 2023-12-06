@@ -9,8 +9,8 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { clnNodeSettings, localRemoteBalance } from '../store/cln.selector';
-import { LocalRemoteBalance } from '../../shared/models/clnModels';
+import { clnNodeSettings, utxoBalances } from '../store/cln.selector';
+import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { fetchOffers, fetchOfferBookmarks } from '../store/cln.actions';
@@ -56,16 +56,16 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
         this.activeLink = linkFound ? linkFound.link : this.links[0].link;
       }
     });
-    this.store.select(localRemoteBalance).pipe(takeUntil(this.unSubs[2]),
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[2]),
       withLatestFrom(this.store.select(clnNodeSettings))).
-      subscribe(([lrBalSeletor, nodeSettings]: [{ localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+      subscribe(([utxoBalancesSeletor, nodeSettings]: [{ utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
         this.currencyUnits = nodeSettings?.currencyUnits || [];
         if (nodeSettings && nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
-          this.balances = [{ title: 'Local Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
+          this.balances = [{ title: 'Local Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
-          this.balances = [{ title: 'Outbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: lrBalSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
+          this.balances = [{ title: 'Outbound Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         }
-        this.logger.info(lrBalSeletor);
+        this.logger.info(utxoBalancesSeletor);
       });
   }
 

@@ -14,13 +14,13 @@
             [ngClass]="{'dashboard-card-content': true, 
             'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
             (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
-            (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
+            (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
             (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.ERROR) ||
             (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR) ||
             (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR)}">
               <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
                 (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
@@ -28,11 +28,11 @@
               />
               <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
                 <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
-                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]" />
-                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[6]" />
-                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[1]" />
+                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2] + ' ' + errorMessages[3]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[4]" />
               </div>
             </mat-card-content>
           </mat-card>
@@ -55,13 +55,13 @@
             [ngClass]="{'dashboard-card-content': true, 
               'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
               (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusLRBal.status === apiCallStatusEnum.ERROR)) ||
-              (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
+              (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR || apiCallStatusChannels.status === apiCallStatusEnum.ERROR || apiCallStatusFHistory.status === apiCallStatusEnum.ERROR)) ||
               (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.ERROR) ||
               (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR) ||
               (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.ERROR)}">
               <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'status' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusLRBal.status === apiCallStatusEnum.INITIATED)) ||
-                (card.id === 'fee' && (apiCallStatusFees.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
+                (card.id === 'fee' && (apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED || apiCallStatusChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusFHistory.status === apiCallStatusEnum.INITIATED)) ||
                 (card.id === 'feeRatesKB' && apiCallStatusPerKB.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'feeRatesKW' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED) ||
                 (card.id === 'onChainFeeEstimates' && apiCallStatusPerKW.status === apiCallStatusEnum.INITIATED)"
@@ -69,11 +69,11 @@
               />
               <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
                 <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
-                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]" />
-                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[5]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[5]" />
-                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[1]" />
+                <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2] + ' ' + errorMessages[3]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[4]" />
               </div>
             </mat-card-content>
           </mat-card>

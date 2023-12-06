@@ -84,7 +84,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.closedChannelsData = closedChannelsSelector.closedChannels;
-        if (this.closedChannelsData.length > 0) {
+        if (this.closedChannelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadClosedChannelsTable(this.closedChannelsData);
         }
         this.logger.info(closedChannelsSelector);

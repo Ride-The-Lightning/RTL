@@ -10,15 +10,15 @@
       <form *ngIf="!sweepAll;  else sweepAllBlock;" #form="ngForm" fxLayout="row wrap"fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
         <mat-form-field fxLayout="column" fxFlex="55">
           <mat-label>Bitcoin Address</mat-label>
-          <input #address="ngModel" matInput autoFocus tabindex="1" name="address" required [(ngModel)]="transaction.address">
-          <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
+          <input #address="ngModel" matInput autoFocus tabindex="1" name="address" required [(ngModel)]="transaction.destination">
+          <mat-error *ngIf="!transaction.destination">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="30">
           <mat-label>Amount</mat-label>
-          <input #amount="ngModel" matInput name="amount" tabindex="2" required [type]="flgUseAllBalance ? 'text' : 'number'" [step]="100" [min]="0" [disabled]="flgUseAllBalance" [(ngModel)]="transaction.satoshis">
+          <input #amount="ngModel" matInput name="amount" tabindex="2" required [type]="flgUseAllBalance ? 'text' : 'number'" [step]="100" [min]="0" [disabled]="flgUseAllBalance" [(ngModel)]="transaction.satoshi">
           <mat-hint *ngIf="flgUseAllBalance">Amount replaced by UTXO balance</mat-hint>
           <span matSuffix>{{selAmountUnit}} </span>
-          <mat-error *ngIf="!transaction.satoshis">{{amountError}}</mat-error>
+          <mat-error *ngIf="!transaction.satoshi">{{amountError}}</mat-error>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="10" fxLayoutAlign="start end">
           <mat-select tabindex="3" required name="amountUnit" [value]="selAmountUnit" [disabled]="flgUseAllBalance" (selectionChange)="onAmountUnitChange($event)">
@@ -27,7 +27,7 @@
         </mat-form-field>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
           <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
-            <div fxFlex="48" fxLayoutAlign="space-between end">
+            <div fxFlex="48" fxLayoutAlign="space-between start">
               <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'">
                 <mat-label>Fee Rate</mat-label>
                 <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null">
@@ -118,7 +118,7 @@
               <mat-error *ngIf="sendFundFormGroup.controls.transactionAddress.errors?.required">Bitcoin address is required.</mat-error>
             </mat-form-field>
             <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
-              <div fxFlex="48" fxLayoutAlign="space-between end">
+              <div fxFlex="48" fxLayoutAlign="space-between start">
                 <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value ? '48' : '100'">
                   <mat-label>Fee Rate</mat-label>
                   <mat-select tabindex="4" formControlName="selFeeRate">

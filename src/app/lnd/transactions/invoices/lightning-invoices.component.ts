@@ -117,7 +117,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
         this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
         this.invoicesData = invoicesSelector.listInvoices.invoices || [];
-        if (this.invoicesData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.invoicesData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadInvoicesTable(this.invoicesData);
         }
         this.logger.info(invoicesSelector);
@@ -125,7 +125,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
       subscribe((resLookup: any) => {
         if (resLookup.type === LNDActions.SET_LOOKUP_LND) {
-          if (this.invoicesData.length > 0 && this.sort && this.paginator && resLookup.payload) {
+          if (this.invoicesData && this.sort && this.paginator && resLookup.payload) {
             this.updateInvoicesData(JSON.parse(JSON.stringify(resLookup.payload)));
             this.loadInvoicesTable(this.invoicesData);
           }

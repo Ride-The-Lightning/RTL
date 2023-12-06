@@ -83,7 +83,7 @@ export class CLNChannelActiveHTLCsTableComponent implements OnInit, AfterViewIni
         }
         const allChannels = [...channelsSelector.activeChannels, ...channelsSelector.pendingChannels, ...channelsSelector.inactiveChannels];
         this.channelsJSONArr = allChannels?.filter((channel) => channel.htlcs && channel.htlcs.length > 0) || [];
-        if (this.channelsJSONArr.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.channelsJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadHTLCsTable(this.channelsJSONArr);
         }
         this.logger.info(channelsSelector);

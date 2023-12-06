@@ -94,7 +94,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.peersData = peersSelector.peers;
-        if (this.peersData.length > 0) {
+        if (this.peersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadPeersTable(this.peersData);
         }
         this.logger.info(peersSelector);

@@ -7,7 +7,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo, ChannelEdge, Balance } from '../../../../../shared/models/clnModels';
+import { Channel, GetInfo, ChannelEdge, Balance, LookupChannelEdge } from '../../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -106,7 +106,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = channelsSeletor.activeChannels;
-        if (this.channelsData.length > 0) {
+        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadChannelsTable(this.channelsData);
         }
         this.logger.info(channelsSeletor);
@@ -121,15 +121,15 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id || '', showError: true } }));
-    this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge[]): boolean | void => {
-      if (resLookup.length === 0) {
+    this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge): boolean | void => {
+      if (resLookup.channels && resLookup.channels.length === 0) {
         return false;
       }
-      let remoteNode: ChannelEdge = {};
-      if (resLookup[0].source !== this.information.id) {
-        remoteNode = resLookup[0];
+      let remoteNode: LookupChannelEdge = {};
+      if (resLookup.channels[0].source !== this.information.id) {
+        remoteNode = resLookup.channels[0];
       } else {
-        remoteNode = resLookup[1];
+        remoteNode = resLookup.channels[1];
       }
       const reorderedChannelPolicy = [
         [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
@@ -178,17 +178,17 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all' } }));
+          this.store.dispatch(updateChannel({ payload: { feebase: base_fee, feeppm: fee_rate, id: 'all' } }));
         }
       });
     } else {
       this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
       this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false } }));
-      this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge[]) => {
-        if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth };
-        } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth };
+      this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge) => {
+        if (resLookup.channels && resLookup.channels.length > 0 && resLookup.channels[0].source === this.information.id) {
+          this.myChanPolicy = { fee_base_msat: resLookup.channels[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[0].fee_per_millionth };
+        } else if (resLookup.channels.length > 1 && resLookup.channels[1].source === this.information.id) {
+          this.myChanPolicy = { fee_base_msat: resLookup.channels[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[1].fee_per_millionth };
         } else {
           this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
         }
@@ -223,7 +223,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
             const fee_rate = confirmRes[1].inputValue;
-            this.store.dispatch(updateChannel({ payload: { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id } }));
+            this.store.dispatch(updateChannel({ payload: { feebase: base_fee, feeppm: fee_rate, id: channelToUpdate.channel_id } }));
           }
         });
     }

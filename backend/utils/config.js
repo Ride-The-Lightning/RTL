@@ -148,25 +148,40 @@ export class ConfigService {
                     if (this.common.nodes[idx].ln_implementation === 'CLT') {
                         this.common.nodes[idx].ln_implementation = 'CLN';
                     }
-                    if (this.common.nodes[idx].ln_implementation !== 'ECL' && process?.env?.MACAROON_PATH && process?.env?.MACAROON_PATH.trim() !== '') {
-                        this.common.nodes[idx].macaroon_path = process?.env?.MACAROON_PATH;
-                    }
-                    else if (this.common.nodes[idx].ln_implementation !== 'ECL' && node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
-                        this.common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
-                    }
-                    else if (this.common.nodes[idx].ln_implementation !== 'ECL') {
-                        this.errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
-                    }
-                    if (this.common.nodes[idx].ln_implementation === 'ECL') {
-                        if (process?.env?.LN_API_PASSWORD) {
-                            this.common.nodes[idx].ln_api_password = process?.env?.LN_API_PASSWORD;
-                        }
-                        else if (node.Authentication && node.Authentication.lnApiPassword) {
-                            this.common.nodes[idx].ln_api_password = node.Authentication.lnApiPassword;
-                        }
-                        else {
-                            this.common.nodes[idx].ln_api_password = '';
-                        }
+                    switch (this.common.nodes[idx].ln_implementation) {
+                        case 'CLN':
+                            if (process?.env?.RUNE_PATH && process?.env?.RUNE_PATH.trim() !== '') {
+                                this.common.nodes[idx].rune_path = process?.env?.RUNE_PATH;
+                            }
+                            else if (node.Authentication && node.Authentication.runePath && node.Authentication.runePath.trim() !== '') {
+                                this.common.nodes[idx].rune_path = node.Authentication.runePath;
+                            }
+                            else {
+                                this.errMsg = 'Please set rune path for node index ' + node.index + ' in RTL-Config.json!';
+                            }
+                            break;
+                        case 'ECL':
+                            if (process?.env?.LN_API_PASSWORD) {
+                                this.common.nodes[idx].ln_api_password = process?.env?.LN_API_PASSWORD;
+                            }
+                            else if (node.Authentication && node.Authentication.lnApiPassword) {
+                                this.common.nodes[idx].ln_api_password = node.Authentication.lnApiPassword;
+                            }
+                            else {
+                                this.common.nodes[idx].ln_api_password = '';
+                            }
+                            break;
+                        default:
+                            if (process?.env?.MACAROON_PATH && process?.env?.MACAROON_PATH.trim() !== '') {
+                                this.common.nodes[idx].macaroon_path = process?.env?.MACAROON_PATH;
+                            }
+                            else if (node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
+                                this.common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
+                            }
+                            else {
+                                this.errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
+                            }
+                            break;
                     }
                     if (process?.env?.CONFIG_PATH) {
                         this.common.nodes[idx].config_path = process?.env?.CONFIG_PATH;

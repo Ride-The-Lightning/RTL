@@ -26,7 +26,7 @@ export class ExpressApplication {
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public eclWsClient: ECLWebSocketClient = ECLWSClient;
-  public clWsClient: CLWebSocketClient = CLWSClient;
+  // public clWsClient: CLWebSocketClient = CLWSClient;
   public lndWsClient: LNDWebSocketClient = LNDWSClient;
   public databaseService: DatabaseService = Database;
   public directoryName = dirname(fileURLToPath(import.meta.url));

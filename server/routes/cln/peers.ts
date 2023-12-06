@@ -7,6 +7,6 @@ const router = Router();
 
 router.get('/', isAuthenticated, getPeers);
 router.post('/', isAuthenticated, postPeer);
-router.delete('/:peerId', isAuthenticated, deletePeer);
+router.post('/disconnect/', isAuthenticated, deletePeer);
 
 export default router;

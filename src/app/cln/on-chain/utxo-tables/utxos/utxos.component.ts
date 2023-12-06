@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { UTXO } from '../../../../shared/models/clnModels';
+import { Balance, LocalRemoteBalance, UTXO } from '../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -14,7 +14,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { clnPageSettings, utxos } from '../../../store/cln.selector';
+import { clnPageSettings, utxoBalances } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
@@ -79,39 +79,39 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
-      subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[1])).
+      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
-        this.apiCallStatus = utxosSelector.apiCallStatus;
+        this.apiCallStatus = utxoBalancesSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-        if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_msat || 0) / 1000 < this.dustAmount);
-          this.utxos = utxosSelector.utxos;
+        if (utxoBalancesSeletor.utxos && utxoBalancesSeletor.utxos.length > 0) {
+          this.dustUtxos = utxoBalancesSeletor.utxos?.filter((utxo) => +(utxo.amount_msat || 0) / 1000 < this.dustAmount);
+          this.utxos = utxoBalancesSeletor.utxos;
           if (this.isDustUTXO) {
-            if (this.dustUtxos && this.dustUtxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+            if (this.dustUtxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
               this.loadUTXOsTable(this.dustUtxos);
             }
           } else {
             this.displayedColumns.unshift('is_dust');
-            if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+            if (this.utxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
               this.loadUTXOsTable(this.utxos);
             }
           }
         }
-        this.logger.info(utxosSelector);
+        this.logger.info(utxoBalancesSeletor);
       });
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
       if (this.isDustUTXO) {
-        if (this.dustUtxos && this.dustUtxos.length > 0) {
+        if (this.dustUtxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadUTXOsTable(this.dustUtxos);
         }
       } else {
-        if (this.utxos && this.utxos.length > 0) {
+        if (this.utxos && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadUTXOsTable(this.utxos);
         }
       }

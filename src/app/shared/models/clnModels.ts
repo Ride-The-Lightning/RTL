@@ -107,6 +107,12 @@ export interface OfferBookmark {
   description?: string;
 }
 
+export interface InvoicePaymentNotification {
+  msat?: number;
+  preimage?: string;
+  label?: string;
+}
+
 export interface ListInvoices {
   invoices?: Invoice[];
   last_index_offset?: string;
@@ -114,9 +120,9 @@ export interface ListInvoices {
 }
 
 export interface OnChain {
-  address?: string;
-  satoshis?: string;
-  feeRate?: string;
+  destination: string;
+  satoshi?: string;
+  feerate?: string;
   minconf?: number;
   utxos?: string[];
 }
@@ -280,7 +286,7 @@ export interface Routes {
 }
 
 export interface QueryRoutes {
-  routes: Routes[];
+  route: Routes[];
 }
 
 export interface ChannelHTLC {
@@ -319,7 +325,7 @@ export interface Channel {
   balancedness?: number; // Between 0-1-0
 }
 
-export interface ChannelEdge {
+export interface LookupChannelEdge {
   active?: boolean;
   amount_msat?: string;
   base_fee_millisatoshi?: number;
@@ -335,6 +341,10 @@ export interface ChannelEdge {
   satoshis?: number;
   short_channel_id?: string;
   source?: string;
+}
+
+export interface ChannelEdge {
+  channels?: LookupChannelEdge[];
 }
 
 export interface LookupNode {
@@ -412,7 +422,7 @@ export interface RoutingPeer {
 
 export interface SaveChannel {
   peerId: string;
-  satoshis: string;
+  amount: string;
   announce?: boolean;
   feeRate?: string;
   minconf?: number | null;
@@ -434,9 +444,9 @@ export interface DetachPeer {
 }
 
 export interface UpdateChannel {
-  channelId: string;
-  baseFeeMsat: number;
-  feeRate: number;
+  id: string;
+  feebase: number;
+  feeppm: number;
 }
 
 export interface CloseChannel {
@@ -454,15 +464,26 @@ export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
   paymentType: PaymentTypes;
+  destination?: string;
+  amount_msat?: number;
+  label?: string;
+  maxfeepercent?: number;
+  retry_for?: number;
+  maxdelay?: number;
+  exemptfee?: number;
+  extratlvs?: any;
   title?: string;
   issuer?: string;
-  invoice?: string;
+  bolt11?: string;
   description?: string;
-  saveToDB?: boolean;
   bolt12?: string;
-  amount?: number;
   zeroAmtOffer?: boolean;
   pubkey?: string;
+  riskfactor?: number;
+  localinvreqid?: string;
+  exclude?: string[];
+  maxfee?: number;
+  saveToDB?: boolean;
 }
 
 export interface GetQueryRoutes {
@@ -474,12 +495,6 @@ export interface ChannelLookup {
   uiMessage: string;
   shortChannelID: string;
   showError: boolean;
-}
-
-export interface FetchInvoices {
-  num_max_invoices?: number;
-  index_offset?: number;
-  reversed?: boolean;
 }
 
 export interface FunderPolicy {

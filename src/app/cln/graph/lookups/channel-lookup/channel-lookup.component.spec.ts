@@ -26,6 +26,7 @@ describe('CLNChannelLookupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CLNChannelLookupComponent);
     component = fixture.componentInstance;
+    component.lookupResult = { channels: [] };
     fixture.detectChanges();
   });
 

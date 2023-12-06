@@ -67,7 +67,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.channelsData = channelsSeletor.channels;
-        if (this.channelsData.length > 0) {
+        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadBackupTable(this.channelsData);
         }
         this.logger.info(channelsSeletor);

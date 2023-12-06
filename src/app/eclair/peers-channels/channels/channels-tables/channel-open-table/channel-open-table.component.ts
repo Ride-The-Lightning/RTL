@@ -99,7 +99,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.activeChannels = allChannelsSelector.activeChannels;
-        if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.activeChannels && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadChannelsTable();
         }
         this.logger.info(allChannelsSelector);
@@ -119,7 +119,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.activeChannels.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+    if (this.activeChannels && this.sort && this.paginator && this.displayedColumns.length > 0) {
       this.loadChannelsTable();
     }
   }

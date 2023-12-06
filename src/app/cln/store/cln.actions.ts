@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { CLNActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, ListInvoices, OnChain, UTXO, SaveChannel,
+import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, InvoicePaymentNotification, ListInvoices, OnChain, UTXO, SaveChannel,
   GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
@@ -23,21 +23,9 @@ export const fetchInfoCLN = createAction(CLNActions.FETCH_INFO_CLN, props<{ payl
 
 export const setInfo = createAction(CLNActions.SET_INFO_CLN, props<{ payload: GetInfo }>());
 
-export const fetchFees = createAction(CLNActions.FETCH_FEES_CLN);
-
-export const setFees = createAction(CLNActions.SET_FEES_CLN, props<{ payload: Fees }>());
-
 export const fetchFeeRates = createAction(CLNActions.FETCH_FEE_RATES_CLN, props<{ payload: string }>());
 
 export const setFeeRates = createAction(CLNActions.SET_FEE_RATES_CLN, props<{ payload: FeeRates }>());
-
-export const fetchBalance = createAction(CLNActions.FETCH_BALANCE_CLN);
-
-export const setBalance = createAction(CLNActions.SET_BALANCE_CLN, props<{ payload: any }>());
-
-export const fetchLocalRemoteBalance = createAction(CLNActions.FETCH_LOCAL_REMOTE_BALANCE_CLN);
-
-export const setLocalRemoteBalance = createAction(CLNActions.SET_LOCAL_REMOTE_BALANCE_CLN, props<{ payload: { localBalance: number, remoteBalance: number } }>());
 
 export const getNewAddress = createAction(CLNActions.GET_NEW_ADDRESS_CLN, props<{ payload: GetNewAddress }>());
 
@@ -93,15 +81,15 @@ export const getForwardingHistory = createAction(CLNActions.GET_FORWARDING_HISTO
 
 export const setForwardingHistory = createAction(CLNActions.SET_FORWARDING_HISTORY_CLN, props<{ payload: ListForwards }>());
 
-export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN, props<{ payload: { num_max_invoices?: number, index_offset?: number, reversed?: boolean } }>());
+export const fetchInvoices = createAction(CLNActions.FETCH_INVOICES_CLN);
 
 export const setInvoices = createAction(CLNActions.SET_INVOICES_CLN, props<{ payload: ListInvoices }>());
 
-export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount: number, label: string, description: string, expiry: number, private: boolean } }>());
+export const saveNewInvoice = createAction(CLNActions.SAVE_NEW_INVOICE_CLN, props<{ payload: { amount_msat: number | 'any', label: string, description: string, expiry: number, exposeprivatechannels: boolean } }>());
 
 export const addInvoice = createAction(CLNActions.ADD_INVOICE_CLN, props<{ payload: Invoice }>());
 
-export const updateInvoice = createAction(CLNActions.UPDATE_INVOICE_CLN, props<{ payload: Invoice }>());
+export const updateInvoice = createAction(CLNActions.UPDATE_INVOICE_CLN, props<{ payload: InvoicePaymentNotification }>());
 
 export const deleteExpiredInvoice = createAction(CLNActions.DELETE_EXPIRED_INVOICE_CLN, props<{ payload?: number | null }>());
 
@@ -109,9 +97,9 @@ export const setChannelTransaction = createAction(CLNActions.SET_CHANNEL_TRANSAC
 
 export const setChannelTransactionRes = createAction(CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN, props<{ payload: any }>());
 
-export const fetchUTXOs = createAction(CLNActions.FETCH_UTXOS_CLN);
+export const fetchUTXOBalances = createAction(CLNActions.FETCH_UTXO_BALANCES_CLN);
 
-export const setUTXOs = createAction(CLNActions.SET_UTXOS_CLN, props<{ payload: UTXO[] }>());
+export const setUTXOBalances = createAction(CLNActions.SET_UTXO_BALANCES_CLN, props<{ payload: { utxos: UTXO[], localRemoteBalance: { localBalance: number, remoteBalance: number }, balance: any } }>());
 
 export const fetchOfferInvoice = createAction(CLNActions.FETCH_OFFER_INVOICE_CLN, props<{ payload: { offer: string, amount_msat?: number } }>());
 

@@ -12,7 +12,7 @@ export const HOUR_SECONDS = 3600;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.14.1-beta';
+export const VERSION = '0.15.0-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -109,9 +109,20 @@ export enum ECLWSEventTypeEnum {
 }
 
 export enum CLNWSEventTypeEnum {
-  INVOICE = 'invoice',
-  BLOCK_HEIGHT = 'block-height',
-  SEND_PAYMENT = 'send-payment'
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+  WARNING = 'warning',
+  INVOICE_PAYMENT = 'invoice_payment',
+  INVOICE_CREATION = 'invoice_creation',
+  CHANNEL_OPENED = 'channel_opened',
+  CHANNEL_STATE_CHANGED = 'channel_state_changed',
+  SENDPAY_SUCCESS = 'sendpay_success',
+  SENDPAY_FAILURE = 'sendpay_failure',
+  COIN_MOVEMENT = 'coin_movement',
+  BALANCE_SNAPSHOT = 'balance_snapshot',
+  BLOCK_ADDED = 'block_added',
+  OPENCHANNEL_PEER_SIGS = 'openchannel_peer_sigs',
+  CHANNEL_OPEN_FAILED = 'channel_open_failed'
 }
 
 export enum LNDWSEventTypeEnum {
@@ -518,14 +529,10 @@ export enum CLNActions {
   SET_FEES_CLN = 'SET_FEES_CLN',
   FETCH_FEE_RATES_CLN = 'FETCH_FEE_RATES_CLN',
   SET_FEE_RATES_CLN = 'SET_FEE_RATES_CLN',
-  FETCH_BALANCE_CLN = 'FETCH_BALANCE_CLN',
-  SET_BALANCE_CLN = 'SET_BALANCE_CLN',
-  FETCH_LOCAL_REMOTE_BALANCE_CLN = 'FETCH_LOCAL_REMOTE_BALANCE_CLN',
-  SET_LOCAL_REMOTE_BALANCE_CLN = 'SET_LOCAL_REMOTE_BALANCE_CLN',
   GET_NEW_ADDRESS_CLN = 'GET_NEW_ADDRESS_CLN',
   SET_NEW_ADDRESS_CLN = 'SET_NEW_ADDRESS_CLN',
-  FETCH_UTXOS_CLN = 'FETCH_UTXOS_CLN',
-  SET_UTXOS_CLN = 'SET_UTXOS_CLN',
+  FETCH_UTXO_BALANCES_CLN = 'FETCH_UTXO_BALANCES_CLN',
+  SET_UTXO_BALANCES_CLN = 'SET_UTXO_BALANCES_CLN',
   FETCH_PEERS_CLN = 'FETCH_PEERS_CLN',
   SET_PEERS_CLN = 'SET_PEERS_CLN',
   SAVE_NEW_PEER_CLN = 'SAVE_NEW_PEER_CLN',

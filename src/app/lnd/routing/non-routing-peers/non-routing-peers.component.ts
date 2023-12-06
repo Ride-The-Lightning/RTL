@@ -85,7 +85,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         } else {
           this.routingPeersData = [];
         }
-        if (this.routingPeersData.length > 0 && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.routingPeersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadNonRoutingPeersTable(this.routingPeersData);
         }
         this.logger.info(fhSelector.apiCallStatus);

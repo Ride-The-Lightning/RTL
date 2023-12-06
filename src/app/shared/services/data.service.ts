@@ -46,11 +46,15 @@ export class DataService implements OnDestroy {
   decodePayment(payment: string, fromDialog: boolean) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
+      let method = 'GET';
+      let body = null;
       if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode/' + payment;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
+        body = { string: payment };
+        method = 'POST';
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
-      return this.httpClient.get(url).pipe(
+      return this.httpClient.request(method, url, { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }).pipe(
         takeUntil(this.unSubs[0]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
@@ -72,18 +76,22 @@ export class DataService implements OnDestroy {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       let url = '';
       let msg = '';
+      let body = null;
       if (updatedLnImplementation === 'ecl') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/getsentinfos';
+        body = { payments: payments };
         msg = UI_MESSAGES.GET_SENT_PAYMENTS;
       } else if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API;
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
+        body = { string: payments };
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       } else {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API;
+        body = { payments: payments };
         msg = UI_MESSAGES.DECODE_PAYMENTS;
       }
       this.store.dispatch(openSpinner({ payload: msg }));
-      return this.httpClient.post(url, { payments: payments }).pipe(
+      return this.httpClient.post(url, body).pipe(
         takeUntil(this.unSubs[1]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: msg }));
@@ -131,12 +139,17 @@ export class DataService implements OnDestroy {
 
   verifyMessage(msg: string, sign: string) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
+      let url = '';
+      let verifyPayload = null;
       if (updatedLnImplementation === 'cln') {
         url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/verify';
+        verifyPayload = { message: msg, zbase: sign };
+      } else {
+        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.MESSAGE_API + '/verify';
+        verifyPayload = { message: msg, signature: sign };
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_MESSAGE }));
-      return this.httpClient.post(url, { message: msg, signature: sign }).pipe(
+      return this.httpClient.post(url, verifyPayload).pipe(
         takeUntil(this.unSubs[3]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.VERIFY_MESSAGE }));
@@ -263,7 +276,7 @@ export class DataService implements OnDestroy {
         }));
     } else if (implementation === 'CLN') {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_FORWARDING_HISTORY }));
-      return this.httpClient.get(this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + status).pipe(
+      return this.httpClient.post(this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards', { status: status || 'settled' }).pipe(
         takeUntil(this.unSubs[8]),
         withLatestFrom(this.store.select(channels)),
         mergeMap(([res, channelsSelector]: [any, { activeChannels: ChannelCLN[], pendingChannels: ChannelCLN[], inactiveChannels: ChannelCLN[], apiCallStatus: ApiCallStatusPayload }]) => {
@@ -272,7 +285,7 @@ export class DataService implements OnDestroy {
           return of(forwardsWithAlias);
         }),
         catchError((err) => {
-          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards?status=' + status + '&start=' + start + '&end=' + end, err);
+          this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FORWARDING_HISTORY, 'Forwarding History Failed', this.APIUrl + '/cln' + API_END_POINTS.CHANNELS_API + '/listForwards', err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         }));
     } else {
@@ -280,10 +293,10 @@ export class DataService implements OnDestroy {
     }
   }
 
-  listNetworkNodes(queryParams: string = '') {
+  listNetworkNodes(payload) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));
-      return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/listNodes' + queryParams).pipe(
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/listNodes', payload).pipe(
         takeUntil(this.unSubs[9]),
         mergeMap((res) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LIST_NETWORK_NODES }));

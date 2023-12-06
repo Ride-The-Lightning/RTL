@@ -7,6 +7,18 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const databaseService = Database;
+export const getMemo = (selNode, payment) => {
+    options.url = selNode.ln_server_url + '/v1/decode';
+    options.body = { string: payment.bolt11 };
+    return request.post(options).then((res) => {
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
+        payment.memo = res.description || '';
+        return payment;
+    }).catch((err) => {
+        payment.memo = '';
+        return payment;
+    });
+};
 function paymentReducer(accumulator, currentPayment) {
     const currPayHash = currentPayment.payment_hash;
     if (!currentPayment.partid) {
@@ -69,10 +81,14 @@ export const listPayments = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/pay/listPayments';
-    request(options).then((body) => {
+    options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
+    request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
-        res.status(200).json(groupBy(body.payments));
+        body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
+        return Promise.all(body.payments?.map((payment) => ((payment.bolt11) ? getMemo(req.session.selectedNode, payment) : (payment.memo = '')))).then((values) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List with Memo Received', data: body.payments });
+            res.status(200).json(body.payments);
+        });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
@@ -83,27 +99,57 @@ export const postPayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
+    const options_body = JSON.parse(JSON.stringify(req.body));
     if (req.body.paymentType === 'KEYSEND') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
-        options.url = req.session.selectedNode.ln_server_url + '/v1/pay/keysend';
-        options.body = req.body;
+        options.url = req.session.selectedNode.ln_server_url + '/v1/keysend';
+        delete options_body.uiMessage;
+        delete options_body.fromDialog;
+        delete options_body.paymentType;
+        delete options_body.title;
+        delete options_body.issuer;
+        delete options_body.bolt11;
+        delete options_body.description;
+        delete options_body.bolt12;
+        delete options_body.zeroAmtOffer;
+        delete options_body.pubkey;
+        delete options_body.riskfactor;
+        delete options_body.localinvreqid;
+        delete options_body.exclude;
+        delete options_body.maxfee;
+        delete options_body.saveToDB;
+        options.body = options_body;
     }
     else {
         if (req.body.paymentType === 'OFFER') {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
-            options.body = { invoice: req.body.invoice };
         }
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
-            options.body = req.body;
         }
+        if (req.body.paymentType === 'OFFER') {
+            // delete amount for zero amt offer also as fetchinvoice already has amount information
+            delete options_body.amount_msat;
+        }
+        delete options_body.uiMessage;
+        delete options_body.fromDialog;
+        delete options_body.paymentType;
+        delete options_body.destination;
+        delete options_body.extratlvs;
+        delete options_body.title;
+        delete options_body.issuer;
+        delete options_body.bolt12;
+        delete options_body.zeroAmtOffer;
+        delete options_body.pubkey;
+        delete options_body.saveToDB;
+        options.body = options_body;
         options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
     }
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
         if (req.body.paymentType === 'OFFER') {
             if (req.body.saveToDB && req.body.bolt12) {
-                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
+                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount_msat), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
                 if (req.body.issuer) {
                     offerToUpdate['issuer'] = req.body.issuer;
                 }
