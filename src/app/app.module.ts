@@ -50,7 +50,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
         }
       }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLNEffects, ECLEffects]),
-    isDevEnvironemt ? StoreDevtoolsModule.instrument({connectInZone: true}) : []
+    isDevEnvironemt ? StoreDevtoolsModule.instrument({ connectInZone: true }) : []
   ],
   declarations: [AppComponent],
   providers: [

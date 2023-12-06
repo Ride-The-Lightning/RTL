@@ -89,7 +89,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
         }
         this.totalLocalFailedTransactions = lffhSeletor.localFailedForwardingHistory.totalForwards || 0;
         this.failedLocalEvents = lffhSeletor.localFailedForwardingHistory.listForwards || [];
-        if (this.failedLocalEvents&& this.sort && this.paginator && this.displayedColumns.length > 0) {
+        if (this.failedLocalEvents && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadLocalfailedLocalEventsTable(this.failedLocalEvents);
         }
         this.logger.info(lffhSeletor);

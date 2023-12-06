@@ -29,7 +29,7 @@
         "@angular-eslint/sort-ngmodule-metadata-arrays": "off",
         "@angular-eslint/use-component-view-encapsulation": "off",
         "@angular-eslint/use-injectable-provided-in": "off",
-        "@typescript-eslint/member-delimiter-style": "off",
+                "@typescript-eslint/member-delimiter-style": "off",
         "@typescript-eslint/no-non-null-assertion": "off",        
         "@typescript-eslint/type-annotation-spacing": 0,
         "quotes": ["error", "single"],
@@ -181,7 +181,7 @@
       "files": [
         "*.html"
       ],
-      "parser": "@angular-eslint/template-parser",
+"parser": "@angular-eslint/template-parser",
       "extends": [
         "plugin:@angular-eslint/template/all",
         "plugin:@angular-eslint/template/recommended",
@@ -205,6 +205,7 @@
         "@angular-eslint/template/no-interpolation-in-attributes": "off",
         "@angular-eslint/template/no-positive-tabindex": "off",
         "@angular-eslint/template/prefer-ngsrc": "off",
+        "@angular-eslint/template/prefer-control-flow": "off",
         "@angular-eslint/template/use-track-by-function": "off"
       }
     }
