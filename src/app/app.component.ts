@@ -159,7 +159,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.smallScreen || !this.flgLoggedIn) { this.sideNavigation.close(); }
+    if (this.smallScreen || !this.flgLoggedIn) {
+      this.flgSideNavOpened = !this.flgSideNavOpened;
+      this.sideNavigation.close();
+    }
     this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
   }
 
@@ -170,6 +173,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onNavigationClicked(event: any) {
     if (this.smallScreen) {
+      this.flgSideNavOpened = !this.flgSideNavOpened;
+      this.sideNavigation.close();
+    }
+  }
+
+  backdropClicked() {
+    if (!this.flgSidenavPinned || this.smallScreen) {
+      this.flgSideNavOpened = !this.flgSideNavOpened;
       this.sideNavigation.close();
     }
   }
