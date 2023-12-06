@@ -19,7 +19,7 @@
       <rtl-top-menu />
     </div>
   </mat-toolbar>
-  <mat-sidenav-container>
+  <mat-sidenav-container (backdropClick)="backdropClicked()">
     <mat-sidenav #sideNavigation class="sidenav mat-elevation-z6" [perfectScrollbar] [opened]="flgSideNavOpened && flgLoggedIn" [mode]="(flgSidenavPinned && !smallScreen) ? 'side' : 'over'">
       <rtl-side-navigation fxFlex="100" (ChildNavClicked)="onNavigationClicked($event)" />
     </mat-sidenav>
@@ -27,7 +27,7 @@
       <div class="inner-sidenav-content" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
         <router-outlet #outlet="outlet" />
       </div>
-    </mat-sidenav-content>>
+    </mat-sidenav-content>
   </mat-sidenav-container>
   <div *ngIf="!settings.themeColor" class="rtl-spinner">
     <mat-spinner color="accent" />
