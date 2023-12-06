@@ -8,6 +8,7 @@
     "start": "ng serve --open",
     "prebuildfrontendtest": "node src/prebuild.cjs",
     "prebuildfrontend": "node src/prebuild.cjs",
+    "watchfrontenddev": "ng build --configuration development --optimization false --watch",
     "buildfrontendtest": "ng test --watch=false && ng build",
     "buildfrontend": "ng build --configuration production",
     "buildbackend": "tsc --project ./server/tsconfig.server.json",
