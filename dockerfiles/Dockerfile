@@ -1,14 +1,14 @@
 # ---------------
 # Install Dependencies
 # ---------------
-FROM node:16-alpine as builder
+FROM node:18-alpine as builder
 
 WORKDIR /RTL
 
 COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # ---------------
 # Build App
@@ -22,12 +22,12 @@ RUN npm run buildfrontend
 RUN npm run buildbackend
 
 # Remove non production necessary modules
-RUN npm prune --production --legacy-peer-deps
+RUN npm prune --production
 
 # ---------------
 # Release App
 # ---------------
-FROM node:16-alpine as runner
+FROM node:18-alpine as runner
 
 WORKDIR /RTL
 

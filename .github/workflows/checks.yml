@@ -33,7 +33,7 @@ jobs:
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
   lint:
     name: Lint
@@ -57,7 +57,7 @@ jobs:
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Lint Scripts
         run: npm run lint
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Run tests
         run: npm run test
