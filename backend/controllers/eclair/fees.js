@@ -11,23 +11,24 @@ export const arrangeFees = (selNode, body, current_time) => {
     let fee = 0;
     body.relayed.forEach((relayedEle) => {
         fee = Math.round((relayedEle.amountIn - relayedEle.amountOut) / 1000);
-        if (relayedEle.timestamp) {
-            if (relayedEle.timestamp.unix) {
-                if ((relayedEle.timestamp.unix * 1000) >= day_start_time) {
+        const relayedEleTimestamp = relayedEle.settledAt ? relayedEle.settledAt : relayedEle.timestamp;
+        if (relayedEleTimestamp) {
+            if (relayedEleTimestamp.unix) {
+                if ((relayedEleTimestamp.unix * 1000) >= day_start_time) {
                     fees.daily_fee = fees.daily_fee + fee;
                     fees.daily_txs = fees.daily_txs + 1;
                 }
-                if ((relayedEle.timestamp.unix * 1000) >= week_start_time) {
+                if ((relayedEleTimestamp.unix * 1000) >= week_start_time) {
                     fees.weekly_fee = fees.weekly_fee + fee;
                     fees.weekly_txs = fees.weekly_txs + 1;
                 }
             }
             else {
-                if (relayedEle.timestamp >= day_start_time) {
+                if (relayedEleTimestamp >= day_start_time) {
                     fees.daily_fee = fees.daily_fee + fee;
                     fees.daily_txs = fees.daily_txs + 1;
                 }
-                if (relayedEle.timestamp >= week_start_time) {
+                if (relayedEleTimestamp >= week_start_time) {
                     fees.weekly_fee = fees.weekly_fee + fee;
                     fees.weekly_txs = fees.weekly_txs + 1;
                 }
@@ -78,9 +79,10 @@ export const arrangePayments = (selNode, body) => {
         }
     });
     payments.relayed.forEach((relayedEle) => {
-        if (relayedEle.timestamp.unix) {
-            relayedEle.timestamp = relayedEle.timestamp.unix * 1000;
-        }
+        // Changing the timestamp value to keep the response backward compatible.
+        // ECL < 0.7.0 sent timestamp in unix milliseconds, then in {"iso", "unix"} object.
+        // From v0.10.0, it sends settledAt in {"iso", "unix"} object too.
+        relayedEle.timestamp = relayedEle.settledAt && relayedEle.settledAt.unix ? relayedEle.settledAt.unix * 1000 : relayedEle.timestamp && relayedEle.timestamp.unix ? relayedEle.timestamp.unix * 1000 : relayedEle.timestamp;
         if (relayedEle.amountIn) {
             relayedEle.amountIn = Math.round(relayedEle.amountIn / 1000);
         }
