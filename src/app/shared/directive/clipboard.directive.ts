@@ -13,14 +13,37 @@ export class ClipboardDirective {
   @HostListener('click', ['$event'])
   public onClick(event: MouseEvent): void {
     event.preventDefault();
-    if (!this.payload || !navigator.clipboard) {
-      return;
+
+    if (!this.payload) return;
+
+    if (navigator.clipboard) {
+      this.copyUsingClipboardAPI();
+    } else {
+      this.copyUsingFallbackMethod();
     }
-    navigator.clipboard.writeText(this.payload.toString()).then(() => {
-      this.copied.emit(this.payload.toString());
-    }, (err) => {
-      this.copied.emit('Error could not copy text: ' + JSON.stringify(err));
-    });
   }
 
+  private copyUsingFallbackMethod(): void {
+    const input = document.createElement('textarea');
+    input.innerText = this.payload;
+    document.body.appendChild(input);
+    input.select();
+
+    try {
+      const result = document.execCommand('copy');
+      if (result) {
+        this.copied.emit(this.payload.toString());
+      } else {
+        this.copied.emit('Error could not copy text.');
+      }
+    } finally {
+      document.body.removeChild(input);
+    }
+  }
+
+  private copyUsingClipboardAPI(): void {
+    navigator.clipboard.writeText(this.payload.toString())
+      .then(() => this.copied.emit(this.payload.toString()))
+      .catch((error) => this.copied.emit('Error could not copy text: ' + JSON.stringify(error)));
+  }
 }
