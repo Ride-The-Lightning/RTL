@@ -14,7 +14,7 @@ export class ClipboardDirective {
   public onClick(event: MouseEvent): void {
     event.preventDefault();
 
-    if (!this.payload) return;
+    if (!this.payload) { return; }
 
     if (navigator.clipboard) {
       this.copyUsingClipboardAPI();
@@ -30,6 +30,9 @@ export class ClipboardDirective {
     input.select();
 
     try {
+      // Allowing deprecated command for older browsers where navigator is not available.
+      // For newer browsers where execCommand is deprecated, navigator should be available and this fallback will not be called.
+      // eslint-disable-next-line deprecation/deprecation
       const result = document.execCommand('copy');
       if (result) {
         this.copied.emit(this.payload.toString());
@@ -42,8 +45,11 @@ export class ClipboardDirective {
   }
 
   private copyUsingClipboardAPI(): void {
-    navigator.clipboard.writeText(this.payload.toString())
-      .then(() => this.copied.emit(this.payload.toString()))
-      .catch((error) => this.copied.emit('Error could not copy text: ' + JSON.stringify(error)));
+    navigator.clipboard.writeText(this.payload.toString()).then(() => {
+      this.copied.emit(this.payload.toString());
+    }).catch((err) => {
+      this.copied.emit('Error could not copy text: ' + JSON.stringify(err));
+    });
   }
+
 }
