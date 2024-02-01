@@ -59,8 +59,8 @@ export class BoltzService implements OnDestroy {
     );
   }
 
-  swapOut(amount: number, address: string) {
-    const requestBody = { amount: amount, address: address };
+  swapOut(amount: number, address: string, acceptZeroConf: boolean) {
+    const requestBody = { amount: amount, address: address, acceptZeroConf: acceptZeroConf };
     this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createreverseswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }

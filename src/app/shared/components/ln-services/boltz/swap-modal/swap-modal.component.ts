@@ -1,12 +1,10 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
-import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../../animation/opacity-animation';
@@ -16,8 +14,6 @@ import { SwapAlert } from '../../../../models/alertData';
 import { BoltzService } from '../../../../services/boltz.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
-
-import { RTLState } from '../../../../../store/rtl.state';
 
 @Component({
   selector: 'rtl-boltz-swap-modal',
@@ -56,7 +52,8 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.swapDirectionCaption = this.direction === SwapTypeEnum.SWAP_OUT ? 'Swap Out' : 'Swap in';
     this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
-      amount: [this.serviceInfo.limits?.minimal, [Validators.required, Validators.min(this.serviceInfo.limits?.minimal || 0), Validators.max(this.serviceInfo.limits?.maximal || 0)]]
+      amount: [this.serviceInfo.limits?.minimal, [Validators.required, Validators.min(this.serviceInfo.limits?.minimal || 0), Validators.max(this.serviceInfo.limits?.maximal || 0)]],
+      acceptZeroConf: [false]
     });
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
@@ -119,7 +116,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     } else {
       const destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
-      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress).pipe(takeUntil(this.unSubs[4])).
+      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress, this.inputFormGroup.controls.acceptZeroConf.value).pipe(takeUntil(this.unSubs[4])).
         subscribe({
           next: (swapStatus: CreateReverseSwapResponse) => {
             this.swapStatus = swapStatus;
@@ -147,7 +144,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.direction === SwapTypeEnum.SWAP_IN) {
             this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats';
           } else {
-            this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats';
+            this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Zero Conf: ' + (this.inputFormGroup.controls.acceptZeroConf.value ? 'Yes' : 'No');
           }
         } else {
           this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
@@ -190,10 +187,11 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onRestart() {
     this.stepper.reset();
     this.flgEditable = true;
-    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal });
+    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal, acceptZeroConf: false });
     this.statusFormGroup.reset();
     this.addressFormGroup.reset({ addressType: 'local', address: '' });
     this.addressFormGroup.controls.address.disable();
+    this.swapStatus = null;
   }
 
   ngOnDestroy() {

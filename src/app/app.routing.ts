@@ -21,6 +21,7 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 import { ErrorComponent } from './shared/components/error/error.component';
 import { AuthGuard } from './shared/services/auth.guard';
 import { ExperimentalSettingsComponent } from './shared/components/node-config/experimental-settings/experimental-settings.component';
+import { NoServiceFoundComponent } from './shared/components/node-config/services-settings/no-service-found/no-service-found.component';
 
 type PathMatch = 'full' | 'prefix' | undefined;
 
@@ -46,7 +47,8 @@ export const routes: Routes = [
         path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard()], children: [
           { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
           { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard()] },
-          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard()] }
+          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard()] },
+          { path: 'noservice', component: NoServiceFoundComponent }
         ]
       },
       { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard()] },

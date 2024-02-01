@@ -109,7 +109,7 @@ export const createReverseSwap = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
   options.url = options.url + '/v1/createreverseswap';
-  options.body = { amount: req.body.amount };
+  options.body = { amount: req.body.amount, accept_zero_conf: req.body.acceptZeroConf || false };
   if (req.body.address !== '') { options.body.address = req.body.address; }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Body', data: options.body });
   request.post(options).then((createReverseSwapRes) => {
