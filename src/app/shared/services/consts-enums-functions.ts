@@ -276,6 +276,7 @@ export enum SwapStateEnum {
   'transaction.claimed' = 'Transaction Claimed',
   'transaction.refunded' = 'Transaction Refunded',
   'transaction.confirmed' = 'Transaction Confirmed',
+  'transaction.lockupFailed' = 'Lockup Transaction Failed',
   'swap.refunded' = 'Swap Refunded',
   'swap.abandoned' = 'Swap Abandoned'
 }
