@@ -5,10 +5,15 @@ import { Config } from './backend/utils/config.js'; // Follow sequence to set se
 import { WSServer } from './backend/utils/webSocketServer.js';
 import App from './backend/utils/app.js';
 
+
 const logger = Logger;
 const common = Common;
 const wsServer = WSServer;
 const app = new App();
+
+process.on('SIGINT', () => {
+  process.exit();
+});
 
 const onError = (error) => {
   if (error.syscall !== 'listen') { throw error; }
