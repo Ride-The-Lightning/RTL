@@ -2,7 +2,7 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{swapDirectionCaption}}</span></div>
-      <div fxLayoutAlign="space-between end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+      <div fxLayoutAlign="end end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
         <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>
@@ -26,6 +26,12 @@
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.min">Amount must be greater than or equal to {{serviceInfo?.limits?.minimal | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.max">Amount must be less than or equal to {{serviceInfo?.limits?.maximal | number}}.</mat-error>
                 </mat-form-field>
+                <div *ngIf="direction === swapTypeEnum.SWAP_OUT" fxLayout="column" fxFlex="48" fxLayoutAlign="start stretch">
+                  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-slide-toggle fxLayoutAlign="start center" tabindex="2" color="primary" formControlName="acceptZeroConf" name="acceptZeroConf">Accept Zero Conf</mat-slide-toggle>
+                    <mat-icon matTooltip="Only recommended for smaller payments, involves trust in Boltz" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
+                  </div>
+                </div>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="direction === swapTypeEnum.SWAP_OUT" mat-button color="primary" tabindex="2" type="button" matStepperNext>Next</button>
