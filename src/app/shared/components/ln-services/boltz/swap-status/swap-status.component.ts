@@ -11,6 +11,7 @@ export class SwapStatusComponent {
 
   @Input() swapStatus: any = null;
   @Input() direction = SwapTypeEnum.SWAP_OUT;
+  @Input() acceptZeroConf = false;
   public swapTypeEnum = SwapTypeEnum;
 
   constructor() {}

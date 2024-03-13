@@ -7,22 +7,22 @@
 <ng-template #swapOutBlock>
   <div fxLayout="column">
     <div fxLayout="row">
-      <div fxFlex="50">
+      <div fxFlex="33">
         <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
         <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
       </div>
-      <div fxFlex="50">
+      <div *ngIf="acceptZeroConf" fxFlex="33">
         <h4 fxLayoutAlign="start" class="font-bold-500">Routing Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{swapStatus?.routingFeeMilliSat | number}}</span>
+      </div>
+      <div *ngIf="acceptZeroConf" fxFlex="33">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.claimTransactionId}}</span>
       </div>
     </div>
     <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
-      <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.claimTransactionId}}</span>
-      </div>
-      <div fxFlex="50">
+      <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Lockup Address</h4>
         <span class="foreground-secondary-text">{{swapStatus?.lockupAddress}}</span>
       </div>

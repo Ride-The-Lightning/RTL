@@ -87,7 +87,7 @@
   </div>
 </div>
 <ng-template #swapStatusBlock>
-  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [direction]="direction" />
+  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [acceptZeroConf]="inputFormGroup?.controls?.acceptZeroConf.value" [direction]="direction" />
 </ng-template>
 <div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
