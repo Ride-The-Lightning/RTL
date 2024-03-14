@@ -9,7 +9,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../../animation/opacity-animation';
 import { ScreenSizeEnum, SwapTypeEnum } from '../../../../services/consts-enums-functions';
-import { ServiceInfo, CreateSwapResponse, CreateReverseSwapResponse } from '../../../../models/boltzModels';
+import { ServiceInfo, CreateSwapResponse, CreateReverseSwapResponse, BoltzInfo } from '../../../../models/boltzModels';
 import { SwapAlert } from '../../../../models/alertData';
 import { BoltzService } from '../../../../services/boltz.service';
 import { LoggerService } from '../../../../services/logger.service';
@@ -25,6 +25,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
+  public boltzInfo: BoltzInfo = null;
   public serviceInfo: ServiceInfo = { fees: { percentage: null, miner: { normal: null, reverse: null } }, limits: { minimal: 10000, maximal: 50000000 } };
   public swapTypeEnum = SwapTypeEnum;
   public direction = SwapTypeEnum.SWAP_OUT;
@@ -38,6 +39,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
   public flgEditable = true;
+  public isSendFromInternalCompatible = true;
   inputFormGroup: UntypedFormGroup;
   addressFormGroup: UntypedFormGroup;
   statusFormGroup: UntypedFormGroup;
@@ -53,7 +55,8 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormLabel = 'Amount to ' + this.swapDirectionCaption;
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.serviceInfo.limits?.minimal, [Validators.required, Validators.min(this.serviceInfo.limits?.minimal || 0), Validators.max(this.serviceInfo.limits?.maximal || 0)]],
-      acceptZeroConf: [false]
+      acceptZeroConf: [false],
+      sendFromInternal: [true]
     });
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
@@ -61,6 +64,17 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
+    this.boltzService.boltzInfoChanged.
+      pipe(takeUntil(this.unSubs[0])).
+      subscribe({
+        next: (boltzInfo: BoltzInfo) => {
+          this.boltzInfo = boltzInfo;
+          this.isSendFromInternalCompatible = this.commonService.isVersionCompatible(this.boltzInfo.version, '2.0.0');
+        }, error: (err) => {
+          this.boltzInfo = { version: '2.0.0' };
+          this.logger.error(err);
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -71,7 +85,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onFormValueChanges() {
     if (this.direction === SwapTypeEnum.SWAP_OUT) {
-      this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[2])).subscribe((changedValues) => {
+      this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((changedValues) => {
         this.addressFormGroup.setErrors({ Invalid: true });
       });
     }
@@ -101,7 +115,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === SwapTypeEnum.SWAP_IN) {
-      this.boltzService.swapIn(this.inputFormGroup.controls.amount.value).pipe(takeUntil(this.unSubs[3])).
+      this.boltzService.swapIn(this.inputFormGroup.controls.amount.value, this.isSendFromInternalCompatible ? this.inputFormGroup.controls.sendFromInternal.value : null).pipe(takeUntil(this.unSubs[2])).
         subscribe({
           next: (swapStatus: CreateSwapResponse) => {
             this.swapStatus = swapStatus;
@@ -116,7 +130,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     } else {
       const destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
-      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress, this.inputFormGroup.controls.acceptZeroConf.value).pipe(takeUntil(this.unSubs[4])).
+      this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress, this.inputFormGroup.controls.acceptZeroConf.value).pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (swapStatus: CreateReverseSwapResponse) => {
             this.swapStatus = swapStatus;
@@ -142,7 +156,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 1:
         if (this.inputFormGroup.controls.amount.value) {
           if (this.direction === SwapTypeEnum.SWAP_IN) {
-            this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats';
+            this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Send from Internal Wallet: ' + (this.inputFormGroup.controls.sendFromInternal.value ? 'Yes' : 'No');
           } else {
             this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Zero Conf: ' + (this.inputFormGroup.controls.acceptZeroConf.value ? 'Yes' : 'No');
           }
@@ -187,7 +201,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onRestart() {
     this.stepper.reset();
     this.flgEditable = true;
-    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal, acceptZeroConf: false });
+    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal, acceptZeroConf: false, sendFromInternal: true });
     this.statusFormGroup.reset();
     this.addressFormGroup.reset({ addressType: 'local', address: '' });
     this.addressFormGroup.controls.address.disable();

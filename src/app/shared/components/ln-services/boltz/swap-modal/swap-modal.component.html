@@ -32,6 +32,12 @@
                     <mat-icon matTooltip="Only recommended for smaller payments, involves trust in Boltz" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
                   </div>
                 </div>
+                <div *ngIf="direction === swapTypeEnum.SWAP_IN && isSendFromInternalCompatible" fxLayout="column" fxFlex="48" fxLayoutAlign="start stretch">
+                  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-slide-toggle fxLayoutAlign="start center" tabindex="2" color="primary" formControlName="sendFromInternal" name="sendFromInternal">Send from Internal Wallet</mat-slide-toggle>
+                    <mat-icon matTooltip="Pay from the node's onchain wallet" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
+                  </div>
+                </div>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="direction === swapTypeEnum.SWAP_OUT" mat-button color="primary" tabindex="2" type="button" matStepperNext>Next</button>
@@ -87,7 +93,7 @@
   </div>
 </div>
 <ng-template #swapStatusBlock>
-  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [acceptZeroConf]="inputFormGroup?.controls?.acceptZeroConf.value" [direction]="direction" />
+  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [direction]="direction" [acceptZeroConf]="inputFormGroup?.controls?.acceptZeroConf.value" [sendFromInternal]="inputFormGroup?.controls?.sendFromInternal.value" />
 </ng-template>
 <div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
