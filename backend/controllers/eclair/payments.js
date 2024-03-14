@@ -104,13 +104,14 @@ export const queryPaymentRoute = (req, res, next) => {
     });
 };
 export const getSentPaymentsInformation = (req, res, next) => {
+    const { payments } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Getting Sent Payment Information..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    if (req.body.payments) {
-        const paymentsArr = req.body.payments.split(',');
+    if (payments) {
+        const paymentsArr = payments.split(',');
         return Promise.all(paymentsArr?.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
@@ -142,12 +143,13 @@ export const sendPaymentToRouteRequestCall = (selectedNode, shortChannelIds, inv
     });
 };
 export const sendPaymentToRoute = (req, res, next) => {
+    const { shortChannelIds, invoice, amountMsat } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment To Route..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    sendPaymentToRouteRequestCall(req.session.selectedNode, req.body.shortChannelIds, req.body.invoice, req.body.amountMsat).then((callRes) => {
+    sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((callRes) => {
         res.status(200).json(callRes);
     }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

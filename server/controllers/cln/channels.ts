@@ -78,14 +78,15 @@ export const closeChannel = (req, res, next) => {
 };
 
 export const listForwards = (req, res, next) => {
+  const { status } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel List Forwards..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listforwards';
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + req.body.status, data: body });
-    body.forwards = !body.forwards ? [] : (req.body.status === 'failed' || req.body.status === 'local_failed') ? body.forwards.slice(Math.max(0, body.forwards.length - 1000), Math.max(1000, body.forwards.length)).reverse() : body.forwards.reverse();
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Received For Status ' + status, data: body });
+    body.forwards = !body.forwards ? [] : (status === 'failed' || status === 'local_failed') ? body.forwards.slice(Math.max(0, body.forwards.length - 1000), Math.max(1000, body.forwards.length)).reverse() : body.forwards.reverse();
     res.status(200).json(body.forwards);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Forwarding History Error', req.session.selectedNode);

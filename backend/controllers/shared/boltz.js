@@ -79,6 +79,7 @@ export const getSwapInfo = (req, res, next) => {
     });
 };
 export const createSwap = (req, res, next) => {
+    const { amount, address } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Boltz', msg: 'Creating Swap..' });
     options = common.getBoltzServerOptions(req);
     if (options.url === '') {
@@ -87,9 +88,9 @@ export const createSwap = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     options.url = options.url + '/v1/createswap';
-    options.body = { amount: req.body.amount };
-    if (req.body.address !== '') {
-        options.body.address = req.body.address;
+    options.body = { amount: amount };
+    if (address && address !== '') {
+        options.body.address = address;
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Options Body', data: options.body });
     request.post(options).then((createSwapRes) => {
@@ -101,6 +102,7 @@ export const createSwap = (req, res, next) => {
     });
 };
 export const createReverseSwap = (req, res, next) => {
+    const { amount, acceptZeroConf, address } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Boltz', msg: 'Creating Reverse Swap..' });
     options = common.getBoltzServerOptions(req);
     if (options.url === '') {
@@ -109,9 +111,9 @@ export const createReverseSwap = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     options.url = options.url + '/v1/createreverseswap';
-    options.body = { amount: req.body.amount, accept_zero_conf: req.body.acceptZeroConf || false };
-    if (req.body.address !== '') {
-        options.body.address = req.body.address;
+    options.body = { amount: amount, accept_zero_conf: acceptZeroConf || false };
+    if (address && address !== '') {
+        options.body.address = address;
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Body', data: options.body });
     request.post(options).then((createReverseSwapRes) => {
@@ -123,6 +125,7 @@ export const createReverseSwap = (req, res, next) => {
     });
 };
 export const createChannel = (req, res, next) => {
+    const { amount, address } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Boltz', msg: 'Creating Boltz Channel..' });
     options = common.getBoltzServerOptions(req);
     if (options.url === '') {
@@ -131,9 +134,9 @@ export const createChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     options.url = options.url + '/v1/createchannel';
-    options.body = { amount: req.body.amount };
-    if (req.body.address !== '') {
-        options.body.address = req.body.address;
+    options.body = { amount: amount };
+    if (address && address !== '') {
+        options.body.address = address;
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Options Body', data: options.body });
     request.post(options).then((createChannelRes) => {

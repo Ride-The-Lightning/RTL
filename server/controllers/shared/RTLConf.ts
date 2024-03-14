@@ -134,29 +134,30 @@ export const getRTLConfig = (req, res, next) => {
 };
 
 export const updateUISettings = (req, res, next) => {
+  const { updatedSettings } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.Settings) {
-    node.Settings.userPersona = req.body.updatedSettings.userPersona;
-    node.Settings.themeMode = req.body.updatedSettings.themeMode;
-    node.Settings.themeColor = req.body.updatedSettings.themeColor;
-    node.Settings.unannouncedChannels = req.body.updatedSettings.unannouncedChannels;
-    node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
-    if (req.body.updatedSettings.fiatConversion) {
-      node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+    node.Settings.userPersona = updatedSettings.userPersona;
+    node.Settings.themeMode = updatedSettings.themeMode;
+    node.Settings.themeColor = updatedSettings.themeColor;
+    node.Settings.unannouncedChannels = updatedSettings.unannouncedChannels;
+    node.Settings.fiatConversion = updatedSettings.fiatConversion;
+    if (updatedSettings.fiatConversion) {
+      node.Settings.currencyUnit = updatedSettings.currencyUnit ? updatedSettings.currencyUnit : 'USD';
     } else {
       delete node.Settings.currencyUnit;
     }
     const selectedNode = common.findNode(req.session.selectedNode.index);
-    selectedNode.user_persona = req.body.updatedSettings.userPersona;
-    selectedNode.theme_mode = req.body.updatedSettings.themeMode;
-    selectedNode.theme_color = req.body.updatedSettings.themeColor;
-    selectedNode.unannounced_channels = req.body.updatedSettings.unannouncedChannels;
-    selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
-    if (req.body.updatedSettings.fiatConversion) {
-      selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+    selectedNode.user_persona = updatedSettings.userPersona;
+    selectedNode.theme_mode = updatedSettings.themeMode;
+    selectedNode.theme_color = updatedSettings.themeColor;
+    selectedNode.unannounced_channels = updatedSettings.unannouncedChannels;
+    selectedNode.fiat_conversion = updatedSettings.fiatConversion;
+    if (updatedSettings.fiatConversion) {
+      selectedNode.currency_unit = updatedSettings.currencyUnit ? updatedSettings.currencyUnit : 'USD';
     } else {
       delete selectedNode.currency_unit;
     }
@@ -174,15 +175,16 @@ export const updateUISettings = (req, res, next) => {
 };
 
 export const update2FASettings = (req, res, next) => {
+  const { secret2fa } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  if (req.body.secret2fa && req.body.secret2fa.trim() !== '') {
-    config.secret2fa = req.body.secret2fa;
+  if (secret2fa && secret2fa.trim() !== '') {
+    config.secret2fa = secret2fa;
   } else {
     delete config.secret2fa;
   }
-  const message = req.body.secret2fa.trim() === '' ? 'Two factor authentication disabled successfully.' : 'Two factor authentication enabled successfully.';
+  const message = secret2fa.trim() === '' ? 'Two factor authentication disabled successfully.' : 'Two factor authentication enabled successfully.';
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     common.rtl_secret2fa = config.secret2fa;
@@ -196,10 +198,11 @@ export const update2FASettings = (req, res, next) => {
 };
 
 export const updateDefaultNode = (req, res, next) => {
+  const { defaultNodeIndex } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Default Node..' });
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  config.defaultNodeIndex = req.body.defaultNodeIndex;
+  config.defaultNodeIndex = defaultNodeIndex;
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Default Node Updated', data: maskPasswords(config) });
@@ -293,11 +296,12 @@ export const getCurrencyRates = (req, res, next) => {
 };
 
 export const updateSSO = (req, res, next) => {
+  const { SSO } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating SSO Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   delete config.SSO;
-  config.SSO = req.body.SSO;
+  config.SSO = SSO;
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'SSO Setting Updated', data: maskPasswords(config) });
@@ -310,19 +314,20 @@ export const updateSSO = (req, res, next) => {
 };
 
 export const updateServiceSettings = (req, res, next) => {
+  const { service, settings } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings..' });
   const RTLConfFile = common.rtl_conf_file_path + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const selectedNode = common.findNode(req.session.selectedNode.index);
   config.nodes.forEach((node) => {
     if (node.index === req.session.selectedNode.index) {
-      switch (req.body.service) {
+      switch (service) {
         case 'LOOP':
-          if (req.body.settings.enable) {
-            node.Settings.swapServerUrl = req.body.settings.serverUrl;
-            node.Authentication.swapMacaroonPath = req.body.settings.macaroonPath;
-            selectedNode.swap_server_url = req.body.settings.serverUrl;
-            selectedNode.swap_macaroon_path = req.body.settings.macaroonPath;
+          if (settings.enable) {
+            node.Settings.swapServerUrl = settings.serverUrl;
+            node.Authentication.swapMacaroonPath = settings.macaroonPath;
+            selectedNode.swap_server_url = settings.serverUrl;
+            selectedNode.swap_macaroon_path = settings.macaroonPath;
           } else {
             delete node.Settings.swapServerUrl;
             delete node.Authentication.swapMacaroonPath;
@@ -332,11 +337,11 @@ export const updateServiceSettings = (req, res, next) => {
           break;
 
         case 'BOLTZ':
-          if (req.body.settings.enable) {
-            node.Settings.boltzServerUrl = req.body.settings.serverUrl;
-            node.Authentication.boltzMacaroonPath = req.body.settings.macaroonPath;
-            selectedNode.boltz_server_url = req.body.settings.serverUrl;
-            selectedNode.boltz_macaroon_path = req.body.settings.macaroonPath;
+          if (settings.enable) {
+            node.Settings.boltzServerUrl = settings.serverUrl;
+            node.Authentication.boltzMacaroonPath = settings.macaroonPath;
+            selectedNode.boltz_server_url = settings.serverUrl;
+            selectedNode.boltz_macaroon_path = settings.macaroonPath;
           } else {
             delete node.Settings.boltzServerUrl;
             delete node.Authentication.boltzMacaroonPath;
@@ -346,13 +351,13 @@ export const updateServiceSettings = (req, res, next) => {
           break;
 
         case 'OFFERS':
-          node.Settings.enableOffers = req.body.settings.enableOffers;
-          selectedNode.enable_offers = req.body.settings.enableOffers;
+          node.Settings.enableOffers = settings.enableOffers;
+          selectedNode.enable_offers = settings.enableOffers;
           break;
 
         case 'PEERSWAP':
-          node.Settings.enablePeerswap = req.body.settings.enablePeerswap;
-          selectedNode.enable_peerswap = req.body.settings.enablePeerswap;
+          node.Settings.enablePeerswap = settings.enablePeerswap;
+          selectedNode.enable_peerswap = settings.enablePeerswap;
           break;
 
         default:

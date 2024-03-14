@@ -6,21 +6,22 @@ const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
 export const loopOut = (req, res, next) => {
+  const { amount, targetConf, swapRoutingFee, minerFee, prepayRoutingFee, prepayAmt, swapFee, swapPublicationDeadline, chanId, destAddress } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping Out..' });
   options.uri = '/v1/loop/out';
   options.body = {
-    amt: req.body.amount,
-    sweep_conf_target: req.body.targetConf,
-    max_swap_routing_fee: req.body.swapRoutingFee,
-    max_miner_fee: req.body.minerFee,
-    max_prepay_routing_fee: req.body.prepayRoutingFee,
-    max_prepay_amt: req.body.prepayAmt,
-    max_swap_fee: req.body.swapFee,
-    swap_publication_deadline: req.body.swapPublicationDeadline,
+    amt: amount,
+    sweep_conf_target: targetConf,
+    max_swap_routing_fee: swapRoutingFee,
+    max_miner_fee: minerFee,
+    max_prepay_routing_fee: prepayRoutingFee,
+    max_prepay_amt: prepayAmt,
+    max_swap_fee: swapFee,
+    swap_publication_deadline: swapPublicationDeadline,
     initiator: 'RTL'
   };
-  if (req.body.chanId !== '') { options.body['loop_out_channel'] = req.body.chanId; }
-  if (req.body.destAddress !== '') { options.body['dest'] = req.body.destAddress; }
+  if (chanId !== '') { options.body['loop_out_channel'] = chanId; }
+  if (destAddress !== '') { options.body['dest'] = destAddress; }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body });
   request.post(options).then((loopOutRes) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looped Out', data: loopOutRes });
@@ -87,12 +88,13 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
 };
 
 export const loopIn = (req, res, next) => {
+  const { amount, swapFee, minerFee } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping In..' });
   options.uri = '/v1/loop/in';
   options.body = {
-    amt: req.body.amount,
-    max_swap_fee: req.body.swapFee,
-    max_miner_fee: req.body.minerFee,
+    amt: amount,
+    max_swap_fee: swapFee,
+    max_miner_fee: minerFee,
     initiator: 'RTL'
   };
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Body', data: options.body });

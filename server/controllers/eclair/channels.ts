@@ -154,7 +154,8 @@ export const closeChannel = (req, res, next) => {
 };
 
 export const circularRebalance = (req, res, next) => {
-  const crInvDescription = 'Circular rebalancing invoice for ' + (req.body.amountMsat / 1000) + ' Sats';
+  const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
+  const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.form = req.body;
@@ -162,22 +163,22 @@ export const circularRebalance = (req, res, next) => {
   const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
   // Check if unpaid Invoice exists already
   listPendingInvoicesRequestCall(req.session.selectedNode).then((callRes: any[]) => {
-    const foundExistingInvoice = callRes.find((inv) => inv.description.includes(crInvDescription) && inv.amount === req.body.amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
+    const foundExistingInvoice = callRes.find((inv) => inv.description.includes(crInvDescription) && inv.amount === amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
     // Create new invoice if doesn't exist already
     const requestCalls = foundExistingInvoice && foundExistingInvoice.serialized ?
-      [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format)] :
-      [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format), createInvoiceRequestCall(req.session.selectedNode, crInvDescription, req.body.amountMsat)];
+      [findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format)] :
+      [findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format), createInvoiceRequestCall(req.session.selectedNode, crInvDescription, amountMsat)];
     Promise.all(requestCalls).then((values: any[]) => {
       // eslint-disable-next-line arrow-body-style
       const routes = values[0]?.routes?.filter((route) => {
-        return !((route.shortChannelIds[0] === req.body.sourceShortChannelId && route.shortChannelIds[1] === req.body.targetShortChannelId) ||
-        (route.shortChannelIds[1] === req.body.sourceShortChannelId && route.shortChannelIds[0] === req.body.targetShortChannelId));
+        return !((route.shortChannelIds[0] === sourceShortChannelId && route.shortChannelIds[1] === targetShortChannelId) ||
+        (route.shortChannelIds[1] === sourceShortChannelId && route.shortChannelIds[0] === targetShortChannelId));
       });
       const firstRoute = routes[0].shortChannelIds.join() || '';
-      const shortChannelIds = req.body.sourceShortChannelId + ',' + firstRoute + ',' + req.body.targetShortChannelId;
+      const shortChannelIds = sourceShortChannelId + ',' + firstRoute + ',' + targetShortChannelId;
       const invoice = (foundExistingInvoice && foundExistingInvoice.serialized ? foundExistingInvoice.serialized : (values[1] ? values[1].serialized : '')) || '';
       const paymentHash = (foundExistingInvoice && foundExistingInvoice.paymentHash ? foundExistingInvoice.paymentHash : (values[1] ? values[1].paymentHash : '') || '');
-      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, req.body.amountMsat).then((payToRouteCallRes) => {
+      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((payToRouteCallRes) => {
         // eslint-disable-next-line arrow-body-style
         setTimeout(() => {
           return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash).then((sentInfoCallRes) => {

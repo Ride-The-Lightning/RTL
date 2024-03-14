@@ -5,6 +5,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 export const signMessage = (req, res, next) => {
+    const { message } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Signing Message..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -12,7 +13,7 @@ export const signMessage = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/signmessage';
     options.form = JSON.stringify({
-        msg: Buffer.from(req.body.message).toString('base64')
+        msg: Buffer.from(message).toString('base64')
     });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed', data: body });
@@ -23,6 +24,7 @@ export const signMessage = (req, res, next) => {
     });
 };
 export const verifyMessage = (req, res, next) => {
+    const { message, signature } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Verifying Message..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -30,8 +32,8 @@ export const verifyMessage = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/verifymessage';
     options.form = JSON.stringify({
-        msg: Buffer.from(req.body.message).toString('base64'),
-        signature: req.body.signature
+        msg: Buffer.from(message).toString('base64'),
+        signature: signature
     });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });

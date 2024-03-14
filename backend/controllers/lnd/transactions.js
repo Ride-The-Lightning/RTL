@@ -20,6 +20,7 @@ export const getTransactions = (req, res, next) => {
     });
 };
 export const postTransactions = (req, res, next) => {
+    const { amount, address, fees, blocks, sendAll } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Sending Transaction..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -27,13 +28,13 @@ export const postTransactions = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/transactions';
     options.form = {
-        amount: req.body.amount,
-        addr: req.body.address,
-        sat_per_byte: req.body.fees,
-        target_conf: req.body.blocks
+        amount: amount,
+        addr: address,
+        sat_per_byte: fees,
+        target_conf: blocks
     };
-    if (req.body.sendAll) {
-        options.form.send_all = req.body.sendAll;
+    if (sendAll) {
+        options.form.send_all = sendAll;
     }
     options.form = JSON.stringify(options.form);
     request.post(options).then((body) => {

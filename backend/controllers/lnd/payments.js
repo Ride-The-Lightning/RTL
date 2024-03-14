@@ -27,13 +27,14 @@ export const decodePayment = (req, res, next) => {
     });
 };
 export const decodePayments = (req, res, next) => {
+    const { payments } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Decoding Payments List..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    if (req.body.payments) {
-        const paymentsArr = req.body.payments.split(',');
+    if (payments) {
+        const paymentsArr = payments.split(',');
         return Promise.all(paymentsArr?.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });

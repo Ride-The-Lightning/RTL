@@ -35,6 +35,7 @@ export const getPeers = (req, res, next) => {
     });
 };
 export const postPeer = (req, res, next) => {
+    const { host, pubkey, perm } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Connecting Peer..' });
     options = common.getOptions(req);
     if (options.error) {
@@ -42,8 +43,8 @@ export const postPeer = (req, res, next) => {
     }
     options.url = req.session.selectedNode.ln_server_url + '/v1/peers';
     options.form = JSON.stringify({
-        addr: { host: req.body.host, pubkey: req.body.pubkey },
-        perm: req.body.perm
+        addr: { host: host, pubkey: pubkey },
+        perm: perm
     });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
@@ -52,7 +53,7 @@ export const postPeer = (req, res, next) => {
             const peers = (!body.peers) ? [] : body.peers;
             return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
                 if (body.peers) {
-                    body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
+                    body.peers = common.newestOnTop(body.peers, 'pub_key', pubkey);
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
                 }
                 res.status(201).json(body.peers);

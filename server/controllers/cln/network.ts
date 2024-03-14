@@ -41,13 +41,14 @@ export const listChannels = (req, res, next) => {
 };
 
 export const feeRates = (req, res, next) => {
+  const { style } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Getting Network Fee Rates..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/feerates';
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.body.style, data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + style, data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Fee Rates Error', req.session.selectedNode);
@@ -56,12 +57,12 @@ export const feeRates = (req, res, next) => {
 };
 
 export const listNodes = (req, res, next) => {
+  const filter_liquidity_ads = !!req.body.liquidity_ads;
+  delete req.body.liquidity_ads;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
-  const filter_liquidity_ads = !!req.body.liquidity_ads;
-  delete req.body.liquidity_ads;
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request.post(options).then((body) => {

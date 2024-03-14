@@ -18,10 +18,11 @@ export const listOfferBookmarks = (req, res, next) => {
     });
 };
 export const deleteOfferBookmark = (req, res, next) => {
+    const { offer_str } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Offer Bookmark..' });
-    databaseService.remove(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, req.body.offer_str).then((deleteRes) => {
+    databaseService.remove(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, offer_str).then((deleteRes) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmark Deleted', data: deleteRes });
-        res.status(204).json(req.body.offer_str);
+        res.status(204).json(offer_str);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'Offer Bookmark Delete Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

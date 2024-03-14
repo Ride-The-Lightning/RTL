@@ -74,17 +74,14 @@ export const getTransactions = (req, res, next) => {
     });
 };
 export const sendFunds = (req, res, next) => {
+    const { address, amount, blocks } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Sending On Chain Funds..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.ln_server_url + '/sendonchain';
-    options.form = {
-        address: req.body.address,
-        amountSatoshis: req.body.amount,
-        confirmationTarget: req.body.blocks
-    };
+    options.form = { address: address, amountSatoshis: amount, confirmationTarget: blocks };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Onchain', msg: 'Send Funds Options', data: options.form });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Onchain', msg: 'On Chain Funds Sent', data: body });
