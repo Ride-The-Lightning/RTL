@@ -361,6 +361,7 @@ export const UI_MESSAGES = {
   UPDATE_NODE_SETTINGS: 'Updating Node Settings...',
   UPDATE_SELECTED_NODE: 'Updating Selected Node...',
   OPEN_CONFIG_FILE: 'Opening Config File...',
+  GET_BOLTZ_INFO: 'Getting Boltz Info...',
   GET_SERVICE_INFO: 'Getting Service Info...',
   GET_QUOTE: 'Getting Quotes...',
   UPDATE_DEFAULT_NODE_SETTING: 'Updating Defaule Node Settings...',

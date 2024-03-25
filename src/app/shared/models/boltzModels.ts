@@ -1,3 +1,12 @@
+export interface BoltzInfo {
+  version: string;
+  node?: string;
+  network?: string;
+  nodePubkey?: string;
+  autoSwapStatus?: string;
+  blockHeights?: any;
+}
+
 export interface ServiceInfo {
   fees?: {percentage?: number | null, miner: {normal?: number | null, reverse?: number | null}};
   limits?: {minimal?: number | null, maximal?: number | null};
@@ -62,6 +71,7 @@ export interface CreateSwapResponse {
   address?: string;
   expectedAmount?: string;
   bip21?: string;
+  txId?: string;
 }
 
 export interface CreateReverseSwapRequest {

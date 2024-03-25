@@ -4,7 +4,7 @@ import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lnd
 import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
-import { ServiceInfo } from './boltzModels';
+import { BoltzInfo, ServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;

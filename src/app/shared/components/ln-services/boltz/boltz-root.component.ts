@@ -32,6 +32,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private store: Store<RTLState>, private boltzService: BoltzService) { }
 
   ngOnInit() {
+    this.boltzService.getBoltzInfo();
     this.boltzService.listSwaps();
     const linkFound = this.links.find((link) => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];

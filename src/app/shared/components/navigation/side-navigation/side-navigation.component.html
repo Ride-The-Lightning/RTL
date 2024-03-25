@@ -10,9 +10,9 @@
     <mat-divider class="w-100" />
     <mat-tree *ngIf="settings?.lnServerUrl" #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
-        <div  tabindex="2" (click)="onChildNavClicked(node)">
+        <div tabindex="2" (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <span *ngIf="node.iconType === 'SVG'" class="fa-icon-small mr-2"><ng-container [ngTemplateOutlet]="node.icon === 'boltzIconBlock' ? boltzIconBlock : null" /></span>
+            <span *ngIf="node.iconType === 'SVG'" class="fa-icon-small mr-2" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><ng-container [ngTemplateOutlet]="node.icon === 'boltzIconBlock' ? boltzIconBlock : null" /></span>
             <fa-icon *ngIf="node.iconType === 'FA'" class="fa-icon-small mr-2" [icon]="node.icon" />
             <mat-icon *ngIf="!node.iconType" class="mat-icon-36">{{node.icon}}</mat-icon>
             <span>{{node.name}}</span>

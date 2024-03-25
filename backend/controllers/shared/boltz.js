@@ -79,7 +79,7 @@ export const getSwapInfo = (req, res, next) => {
     });
 };
 export const createSwap = (req, res, next) => {
-    const { amount, address } = req.body;
+    const { amount, sendFromInternal, address } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Boltz', msg: 'Creating Swap..' });
     options = common.getBoltzServerOptions(req);
     if (options.url === '') {
@@ -89,6 +89,9 @@ export const createSwap = (req, res, next) => {
     }
     options.url = options.url + '/v1/createswap';
     options.body = { amount: amount };
+    if (sendFromInternal) {
+        options.body.send_from_internal = sendFromInternal;
+    }
     if (address && address !== '') {
         options.body.address = address;
     }

@@ -7,22 +7,22 @@
 <ng-template #swapOutBlock>
   <div fxLayout="column">
     <div fxLayout="row">
-      <div fxFlex="50">
+      <div fxFlex="33">
         <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
         <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
       </div>
-      <div fxFlex="50">
+      <div *ngIf="acceptZeroConf" fxFlex="33">
         <h4 fxLayoutAlign="start" class="font-bold-500">Routing Fee (mSats)</h4>
         <span class="foreground-secondary-text">{{swapStatus?.routingFeeMilliSat | number}}</span>
+      </div>
+      <div *ngIf="acceptZeroConf" fxFlex="33">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.claimTransactionId}}</span>
       </div>
     </div>
     <mat-divider class="w-100 my-1" />
     <div fxLayout="row">
-      <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.claimTransactionId}}</span>
-      </div>
-      <div fxFlex="50">
+      <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">Lockup Address</h4>
         <span class="foreground-secondary-text">{{swapStatus?.lockupAddress}}</span>
       </div>
@@ -30,29 +30,48 @@
   </div>
 </ng-template>
 <ng-template #swapInBlock>
-  <div fxLayout="column">
-    <div fxLayout="row">
-      <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
-      </div>
-      <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Expected Amount (Sats)</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.expectedAmount | number}}</span>
-      </div>
+  <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+    <div fxFlex="35" class="modal-qr-code-container padding-gap-large" [fxLayoutAlign]="(swapStatus?.txId || swapStatus?.address) !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+      <qr-code [value]="swapStatus?.txId || swapStatus?.address" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
+      <span *ngIf="(swapStatus?.txId || swapStatus?.address) === ''" class="font-size-300">N/A</span>
     </div>
-    <mat-divider class="w-100 my-1" />
-    <div fxLayout="row">
-      <div fxFlex="100">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.address}}</span>
-      </div>
-    </div>
-    <mat-divider class="w-100 my-1" />
-    <div fxLayout="row">
-      <div fxFlex="100">
-        <h4 fxLayoutAlign="start" class="font-bold-500">BIP 21</h4>
-        <span class="foreground-secondary-text">{{swapStatus?.bip21}}</span>
+    <div fxFlex="65">
+      <div fxLayout="column">
+        <div fxFlex="30" class="modal-qr-code-container padding-gap" [fxLayoutAlign]="(swapStatus?.txId || swapStatus?.address) !== '' ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qr-code [value]="swapStatus?.txId || swapStatus?.address" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
+          <span *ngIf="(swapStatus?.txId || swapStatus?.address) === ''" class="font-size-120">QR Code Not Applicable</span>
+        </div>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" [inset]="true" />
+        <div *ngIf="sendFromInternal" fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Transaction ID</h4>
+            <span class="foreground-secondary-text">{{swapStatus?.txId}}</span>
+          </div>
+        </div>
+        <div *ngIf="!sendFromInternal" fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
+            <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Expected Amount (Sats)</h4>
+            <span class="foreground-secondary-text">{{swapStatus?.expectedAmount | number}}</span>
+          </div>
+        </div>
+        <mat-divider *ngIf="!sendFromInternal" class="w-100 my-1" />
+        <div *ngIf="!sendFromInternal" fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
+            <span class="foreground-secondary-text">{{swapStatus?.address}}</span>
+          </div>
+        </div>
+        <mat-divider *ngIf="!sendFromInternal" class="w-100 my-1" />
+        <div *ngIf="!sendFromInternal" fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">BIP 21</h4>
+            <span class="foreground-secondary-text">{{swapStatus?.bip21}}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

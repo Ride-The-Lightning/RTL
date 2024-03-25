@@ -220,8 +220,11 @@
     & .ng-fa-icon, & .mat-icon {
       color: $primary-darker;
     }
-    & .sidenav-img svg {
+    & .sidenav-img svg, & .boltz-icon-fill {
       fill: $primary-darker;
+    }
+    & .boltz-icon {
+      stroke: $primary-darker;
     }
   }
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
