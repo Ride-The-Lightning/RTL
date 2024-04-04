@@ -174,6 +174,8 @@ export class mockLoopService {
 export class mockBoltzService {
 
   public swapsChanged = new BehaviorSubject<any[]>([]);
+  public boltzInfoChanged = new BehaviorSubject<any>({});
+  getBoltzInfo() { };
   getSwapsList() { };
   listSwaps() { };
   swapInfo(id: string) { };
