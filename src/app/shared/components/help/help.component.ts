@@ -272,7 +272,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   Offers and Liquidity Ads can be enabled/disabled.\n' +
         'Show LN Config (if configured)\n' +
         '   Shows lightning config file.\n',
-      link: '../config/layout',
+      link: '../config/nodesettings',
       linkCaption: 'Node Settings',
       lnImplementation: 'ALL'
     }));
