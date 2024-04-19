@@ -44,7 +44,7 @@ export const verifyWSUser = (info, next) => {
           } catch (err) {
             cookies = {};
             updatedReq['cookies'] = JSON.parse(cookies);
-            logger.log({ selectedNode: common.initSelectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to read CSRF token cookie', data: err });
+            logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to read CSRF token cookie', data: err });
           }
           csurfProtection(updatedReq, null, (err) => {
             if (err) {
@@ -54,7 +54,7 @@ export const verifyWSUser = (info, next) => {
             }
           });
         } catch (err) {
-          logger.log({ selectedNode: common.initSelectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to verify CSRF token', data: err });
+          logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to verify CSRF token', data: err });
           next(true);
         }
       }

@@ -10,7 +10,7 @@ export const deleteExpiredInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/delexpiredinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/delexpiredinvoice';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoices Deleted', data: body });
@@ -26,7 +26,7 @@ export const listInvoices = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/listinvoices';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listinvoices';
     options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
     request.post(options).then((body) => {
@@ -43,7 +43,7 @@ export const addInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/invoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoice';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: body });

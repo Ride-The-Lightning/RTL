@@ -28,7 +28,7 @@ export class RTLWebSocketServer {
             }
         }, 1000 * 60 * 60); // Terminate broken connections every hour
         this.mount = (httpServer) => {
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
+            this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
             this.webSocketServer = new WebSocketServer({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });
             httpServer.on('upgrade', (request, socket, head) => {
                 if (request.headers['upgrade'] !== 'websocket') {
@@ -46,7 +46,7 @@ export class RTLWebSocketServer {
             });
             this.webSocketServer.on('connection', this.mountEventsOnConnection);
             this.webSocketServer.on('close', () => clearInterval(this.pingInterval));
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
+            this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Websocket Server Connected' });
         };
         this.upgradeCallback = (websocket, request) => {
             this.webSocketServer.emit('connection', websocket, request);
@@ -58,13 +58,13 @@ export class RTLWebSocketServer {
             websocket.isAlive = true;
             websocket.sessionId = cookies && cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key) : null;
             websocket.clientNodeIndex = +protocols[1];
-            this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+            this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             websocket.on('error', this.sendErrorToAllLNClients);
             websocket.on('message', this.sendEventsToAllLNClients);
             websocket.on('pong', () => { websocket.isAlive = true; });
             websocket.on('close', (code, reason) => {
                 this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex);
-                this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected due to ' + code + ' : ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
+                this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected due to ' + code + ' : ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
             });
         };
         this.updateLNWSClientDetails = (sessionId, currNodeIndex, prevNodeIndex) => {
@@ -85,7 +85,7 @@ export class RTLWebSocketServer {
             }
             else {
                 const selectedNode = this.common.findNode(currNodeIndex);
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.' });
+                this.logger.log({ selectedNode: !selectedNode ? this.common.selectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Invalid Node Selection. Previous and current node indices can not be less than zero.' });
             }
         };
         this.disconnectFromNodeClient = (sessionId, prevNodeIndex) => {
@@ -99,8 +99,8 @@ export class RTLWebSocketServer {
                     const foundClientIdx = this.clientDetails.findIndex((clientDetail) => clientDetail.index === +prevNodeIndex);
                     this.clientDetails.splice(foundClientIdx, 1);
                     const prevSelectedNode = this.common.findNode(prevNodeIndex);
-                    if (prevSelectedNode && prevSelectedNode.ln_implementation) {
-                        switch (prevSelectedNode.ln_implementation) {
+                    if (prevSelectedNode && prevSelectedNode.lnImplementation) {
+                        switch (prevSelectedNode.lnImplementation) {
                             case 'LND':
                                 this.eventEmitterLND.emit('DISCONNECT', prevNodeIndex);
                                 break;
@@ -129,8 +129,8 @@ export class RTLWebSocketServer {
                 const currSelectedNode = this.common.findNode(currNodeIndex);
                 foundClient = { index: currNodeIndex, sessionIds: [sessionId] };
                 this.clientDetails.push(foundClient);
-                if (currSelectedNode && currSelectedNode.ln_implementation) {
-                    switch (currSelectedNode.ln_implementation) {
+                if (currSelectedNode && currSelectedNode.lnImplementation) {
+                    switch (currSelectedNode.lnImplementation) {
                         case 'LND':
                             this.eventEmitterLND.emit('CONNECT', currNodeIndex);
                             break;
@@ -149,27 +149,27 @@ export class RTLWebSocketServer {
         this.sendErrorToAllLNClients = (serverError, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
-                    this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverError });
+                    this.logger.log({ selectedNode: !selectedNode ? this.common.selectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Broadcasting error to clients...: ' + serverError });
                     if (+client.clientNodeIndex === +selectedNode.index) {
                         client.send(serverError);
                     }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: !selectedNode ? this.common.selectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
         this.sendEventsToAllLNClients = (newMessage, selectedNode) => {
             try {
                 this.webSocketServer.clients.forEach((client) => {
                     if (+client.clientNodeIndex === +selectedNode.index) {
-                        this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId + ', Message: ' + newMessage });
+                        this.logger.log({ selectedNode: !selectedNode ? this.common.selectedNode : selectedNode, level: 'DEBUG', fileName: 'WebSocketServer', msg: 'Broadcasting message to client...: ' + client.clientId + ', Message: ' + newMessage });
                         client.send(newMessage);
                     }
                 });
             }
             catch (err) {
-                this.logger.log({ selectedNode: !selectedNode ? this.common.initSelectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
+                this.logger.log({ selectedNode: !selectedNode ? this.common.selectedNode : selectedNode, level: 'ERROR', fileName: 'WebSocketServer', msg: 'Error while broadcasting message: ' + JSON.stringify(err) });
             }
         };
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');

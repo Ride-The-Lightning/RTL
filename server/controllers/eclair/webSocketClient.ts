@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { CommonSelectedNode } from '../../models/config.model.js';
+import { SelectedNode } from '../../models/config.model.js';
 import { ECLWSEventsEnum } from '../../models/ecl.model.js';
 
 export class ECLWebSocketClient {
@@ -11,7 +11,7 @@ export class ECLWebSocketClient {
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public wsServer = WSServer;
-  public webSocketClients: Array<{ selectedNode: CommonSelectedNode, reConnect: boolean, webSocketClient: any }> = [];
+  public webSocketClients: Array<{ selectedNode: SelectedNode, reConnect: boolean, webSocketClient: any }> = [];
   public reconnectTimeOut = null;
   public waitTime = 0.5;
 
@@ -36,17 +36,17 @@ export class ECLWebSocketClient {
     }, this.waitTime * 1000);
   };
 
-  public connect = (selectedNode: CommonSelectedNode) => {
+  public connect = (selectedNode: SelectedNode) => {
     try {
       const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
       if (!clientExists) {
-        if (selectedNode.ln_server_url) {
+        if (selectedNode.settings.lnServerUrl) {
           const newWebSocketClient = { selectedNode: selectedNode, reConnect: true, webSocketClient: null };
           this.connectWithClient(newWebSocketClient);
           this.webSocketClients.push(newWebSocketClient);
         }
       } else {
-        if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.ln_server_url) {
+        if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.settings.lnServerUrl) {
           clientExists.reConnect = true;
           this.connectWithClient(clientExists);
         }
@@ -58,9 +58,9 @@ export class ECLWebSocketClient {
 
   public connectWithClient = (eclWsClt) => {
     this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server..' });
-    const UpdatedLNServerURL = (eclWsClt.selectedNode.ln_server_url)?.replace(/^http/, 'ws');
+    const UpdatedLNServerURL = (eclWsClt.selectedNode.settings.lnServerUrl)?.replace(/^http/, 'ws');
     const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
-    const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.ln_api_password + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
+    const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.authentication.lnApiPassword + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
     eclWsClt.webSocketClient = new WebSocket(WS_LINK);
     eclWsClt.webSocketClient.onopen = () => {
       this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server..' });
@@ -69,7 +69,7 @@ export class ECLWebSocketClient {
     };
 
     eclWsClt.webSocketClient.onclose = (e) => {
-      if (eclWsClt && eclWsClt.selectedNode && eclWsClt.selectedNode.ln_implementation === 'ECL') {
+      if (eclWsClt && eclWsClt.selectedNode && eclWsClt.selectedNode.lnImplementation === 'ECL') {
         this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Web socket disconnected, will reconnect again...' });
         eclWsClt.webSocketClient.close();
         if (eclWsClt.reConnect) { this.reconnet(eclWsClt); }
@@ -87,7 +87,7 @@ export class ECLWebSocketClient {
     };
 
     eclWsClt.webSocketClient.onerror = (err) => {
-      if (eclWsClt.selectedNode.ln_version === '' || !eclWsClt.selectedNode.ln_version || this.common.isVersionCompatible(eclWsClt.selectedNode.ln, '0.5.0')) {
+      if (eclWsClt.selectedNode.lnVersion === '' || !eclWsClt.selectedNode.lnVersion || this.common.isVersionCompatible(eclWsClt.selectedNode.ln, '0.5.0')) {
         this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'ERROR', fileName: 'ECLWebSocket', msg: 'Web socket error', error: err });
         const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message }) : (typeof err === 'object') ? JSON.stringify({ error: err }) : ('{ "error": ' + err + ' }'));
         this.wsServer.sendErrorToAllLNClients(errStr, eclWsClt.selectedNode);
@@ -99,7 +99,7 @@ export class ECLWebSocketClient {
     };
   };
 
-  public disconnect = (selectedNode: CommonSelectedNode) => {
+  public disconnect = (selectedNode: SelectedNode) => {
     const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
     if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.readyState === WebSocket.OPEN) {
       this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Disconnecting from the Eclair\'s Websocket Server..' });
@@ -110,7 +110,7 @@ export class ECLWebSocketClient {
     }
   };
 
-  public updateSelectedNode = (newSelectedNode: CommonSelectedNode) => {
+  public updateSelectedNode = (newSelectedNode: SelectedNode) => {
     const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
     let newClient = this.webSocketClients[clientIdx];
     if (!newClient) { newClient = { selectedNode: null, reConnect: true, webSocketClient: null }; }
