@@ -212,11 +212,12 @@ export class RTLEffects implements OnDestroy {
         }
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED } }));
-        if (this.sessionService.getItem('token')) {
-          return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconf');
-        } else {
-          return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconfinit');
-        }
+        return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconf');
+        // if (this.sessionService.getItem('token')) {
+        //   return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconf');
+        // } else {
+        //   return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconf/true'); // Initial configuration
+        // }
       }),
       map((rtlConfig: RTLConfiguration) => {
         this.logger.info(rtlConfig);

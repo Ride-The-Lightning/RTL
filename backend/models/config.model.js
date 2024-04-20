@@ -52,15 +52,18 @@ export class SSO {
     }
 }
 export class ApplicationConfig {
-    constructor(defaultNodeIndex, selectedNodeIndex, dbDirectoryPath, rtlConfFilePath, rtlPass, allowPasswordUpdate, rtlSecret2fa, sso, nodes) {
+    constructor(defaultNodeIndex, selectedNodeIndex, dbDirectoryPath, rtlConfFilePath, rtlPass, multiPass, multiPassHashed, allowPasswordUpdate, enable2FA, rtlSecret2fa, SSO, nodes) {
         this.defaultNodeIndex = defaultNodeIndex;
         this.selectedNodeIndex = selectedNodeIndex;
         this.dbDirectoryPath = dbDirectoryPath;
         this.rtlConfFilePath = rtlConfFilePath;
         this.rtlPass = rtlPass;
+        this.multiPass = multiPass;
+        this.multiPassHashed = multiPassHashed;
         this.allowPasswordUpdate = allowPasswordUpdate;
+        this.enable2FA = enable2FA;
         this.rtlSecret2fa = rtlSecret2fa;
-        this.sso = sso;
+        this.SSO = SSO;
         this.nodes = nodes;
     }
 }

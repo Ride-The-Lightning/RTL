@@ -52,12 +52,12 @@ export const verifyToken = (twoFAToken) => !!(common.appConfig.rtlSecret2fa && c
 export const authenticateUser = (req, res, next) => {
   const { authenticateWith, authenticationValue, twoFAToken } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
-  if (+common.appConfig.sso.rtlSso) {
+  if (+common.appConfig.SSO.rtlSso) {
     if (authenticateWith === 'JWT' && jwt.verify(authenticationValue, common.secret_key)) {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
       res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
     } else if (authenticateWith === 'PASSWORD') {
-      if (common.appConfig.sso.cookieValue.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.appConfig.sso.cookieValue).digest('hex'), 'utf-8'), Buffer.from(authenticationValue, 'utf-8'))) {
+      if (common.appConfig.SSO.cookieValue.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.appConfig.SSO.cookieValue).digest('hex'), 'utf-8'), Buffer.from(authenticationValue, 'utf-8'))) {
         common.refreshCookie();
         if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
         const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
@@ -100,7 +100,7 @@ export const authenticateUser = (req, res, next) => {
 export const resetPassword = (req, res, next) => {
   const { currPassword, newPassword } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..' });
-  if (+common.appConfig.sso.rtlSso) {
+  if (+common.appConfig.SSO.rtlSso) {
     const errMsg = 'Password cannot be reset for SSO authentication';
     const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });

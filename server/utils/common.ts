@@ -12,7 +12,7 @@ export class CommonService {
   public nodes: SelectedNode[] = [];
   public selectedNode: SelectedNode = null;
   public ssoInit = { rtlSso: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' };
-  public appConfig: ApplicationConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, rtlSecret2fa: '', sso: this.ssoInit, nodes: [] };
+  public appConfig: ApplicationConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, enable2FA: false, rtlSecret2fa: '', SSO: this.ssoInit, nodes: [] };
   public port = 3000;
   public host = '';
   public secret_key = crypto.randomBytes(64).toString('hex');
@@ -352,20 +352,20 @@ export class CommonService {
   };
 
   public readCookie = () => {
-    const exists = fs.existsSync(this.appConfig.sso.rtlCookiePath);
+    const exists = fs.existsSync(this.appConfig.SSO.rtlCookiePath);
     if (exists) {
       try {
-        this.appConfig.sso.cookieValue = fs.readFileSync(this.appConfig.sso.rtlCookiePath, 'utf-8');
+        this.appConfig.SSO.cookieValue = fs.readFileSync(this.appConfig.SSO.rtlCookiePath, 'utf-8');
       } catch (err) {
         this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading cookie: \n' + err });
         throw new Error(err);
       }
     } else {
       try {
-        const directoryName = dirname(this.appConfig.sso.rtlCookiePath);
+        const directoryName = dirname(this.appConfig.SSO.rtlCookiePath);
         this.createDirectory(directoryName);
-        fs.writeFileSync(this.appConfig.sso.rtlCookiePath, crypto.randomBytes(64).toString('hex'));
-        this.appConfig.sso.cookieValue = fs.readFileSync(this.appConfig.sso.rtlCookiePath, 'utf-8');
+        fs.writeFileSync(this.appConfig.SSO.rtlCookiePath, crypto.randomBytes(64).toString('hex'));
+        this.appConfig.SSO.cookieValue = fs.readFileSync(this.appConfig.SSO.rtlCookiePath, 'utf-8');
       } catch (err) {
         this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while reading the cookie: \n' + err });
         throw new Error(err);
@@ -375,8 +375,8 @@ export class CommonService {
 
   public refreshCookie = () => {
     try {
-      fs.writeFileSync(this.appConfig.sso.rtlCookiePath, crypto.randomBytes(64).toString('hex'));
-      this.appConfig.sso.cookieValue = fs.readFileSync(this.appConfig.sso.rtlCookiePath, 'utf-8');
+      fs.writeFileSync(this.appConfig.SSO.rtlCookiePath, crypto.randomBytes(64).toString('hex'));
+      this.appConfig.SSO.cookieValue = fs.readFileSync(this.appConfig.SSO.rtlCookiePath, 'utf-8');
     } catch (err) {
       this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Something went wrong while refreshing cookie', error: err });
       throw new Error(err);
@@ -481,7 +481,7 @@ export class CommonService {
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DB_DIRECTORY_PATH: ' + this.appConfig.dbDirectoryPath });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.appConfig.sso.rtlSso });
+      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.appConfig.SSO.rtlSso });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.lnNode });
@@ -489,7 +489,7 @@ export class CommonService {
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.settings.fiatConversion });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.settings.currencyUnit });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.settings.lnServerUrl });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.appConfig.sso.logoutRedirectLink + '\r\n' });
+      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.appConfig.SSO.logoutRedirectLink + '\r\n' });
     }
   };
 

@@ -130,6 +130,7 @@ export class ConfigService {
                     this.errMsg = this.errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
                 }
                 this.common.appConfig.rtlSecret2fa = config.secret2fa;
+                this.common.appConfig.enable2FA = !!config.secret2fa;
             }
             else {
                 if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
@@ -141,7 +142,7 @@ export class ConfigService {
             this.common.appConfig.dbDirectoryPath = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
             if (config.nodes && config.nodes.length > 0) {
                 config.nodes.forEach((node, idx) => {
-                    this.common.nodes[idx] = {};
+                    this.common.nodes[idx] = { settings: {}, authentication: {} };
                     this.common.nodes[idx].index = node.index;
                     this.common.nodes[idx].lnNode = node.lnNode;
                     this.common.nodes[idx].lnImplementation = (process?.env?.lnImplementation) ? process?.env?.lnImplementation : node.lnImplementation ? node.lnImplementation : 'LND';
@@ -315,28 +316,28 @@ export class ConfigService {
         };
         this.setSSOParams = (config) => {
             if (process?.env?.RTL_SSO) {
-                this.common.appConfig.sso.rtlSso = +process?.env?.RTL_SSO;
+                this.common.appConfig.SSO.rtlSso = +process?.env?.RTL_SSO;
             }
             else if (config.SSO && config.SSO.rtlSSO) {
-                this.common.appConfig.sso.rtlSso = config.SSO.rtlSSO;
+                this.common.appConfig.SSO.rtlSso = config.SSO.rtlSSO;
             }
             if (process?.env?.RTL_COOKIE_PATH) {
-                this.common.appConfig.sso.rtlCookiePath = process?.env?.RTL_COOKIE_PATH;
+                this.common.appConfig.SSO.rtlCookiePath = process?.env?.RTL_COOKIE_PATH;
             }
             else if (config.SSO && config.SSO.rtlCookiePath) {
-                this.common.appConfig.sso.rtlCookiePath = config.SSO.rtlCookiePath;
+                this.common.appConfig.SSO.rtlCookiePath = config.SSO.rtlCookiePath;
             }
             else {
-                this.common.appConfig.sso.rtlCookiePath = '';
+                this.common.appConfig.SSO.rtlCookiePath = '';
             }
             if (process?.env?.LOGOUT_REDIRECT_LINK) {
-                this.common.appConfig.sso.logoutRedirectLink = process?.env?.LOGOUT_REDIRECT_LINK;
+                this.common.appConfig.SSO.logoutRedirectLink = process?.env?.LOGOUT_REDIRECT_LINK;
             }
             else if (config.SSO && config.SSO.logoutRedirectLink) {
-                this.common.appConfig.sso.logoutRedirectLink = config.SSO.logoutRedirectLink;
+                this.common.appConfig.SSO.logoutRedirectLink = config.SSO.logoutRedirectLink;
             }
-            if (+this.common.appConfig.sso.rtlSso) {
-                if (!this.common.appConfig.sso.rtlCookiePath || this.common.appConfig.sso.rtlCookiePath.trim() === '') {
+            if (+this.common.appConfig.SSO.rtlSso) {
+                if (!this.common.appConfig.SSO.rtlCookiePath || this.common.appConfig.SSO.rtlCookiePath.trim() === '') {
                     this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
                 }
                 else {

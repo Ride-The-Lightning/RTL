@@ -6,8 +6,8 @@ import { getRTLConfig, updateNodeSettings, getConfig, getFile, updateSelectedNod
 const router = Router();
 
 router.get('/rates', getCurrencyRates);
+router.get('/rtlconf', getRTLConfig);
 router.get('/file', isAuthenticated, getFile);
-router.get('/rtlconf/:init', isAuthenticated, getRTLConfig);
 router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', updateSelectedNode);
 router.get('/config/:nodeType', isAuthenticated, getConfig);
 router.post('/node', isAuthenticated, updateNodeSettings);

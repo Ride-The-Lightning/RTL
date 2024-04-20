@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import { sep } from 'path';
 import ini from 'ini';
@@ -7,6 +8,7 @@ import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
+import { NodeAuthentication, SSO } from '../../models/config.model.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
@@ -72,23 +74,44 @@ export const getRTLConfig = (req, res, next) => {
             return res.status(err.statusCode).json({ message: err.error, error: err.error });
         }
         else {
-            const nodeConfData = JSON.parse(data);
-            const nodesArr = [];
-            if (common.nodes && common.nodes.length > 0) {
-                common.nodes.forEach((node, i) => {
-                    nodesArr.push({
-                        index: node.index,
-                        lnNode: node.lnNode,
-                        lnImplementation: node.lnImplementation,
-                        settings: node.settings,
-                        authentication: req.params.init ? {} : node.authentication
-                    });
-                });
-            }
-            const body = { defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index),
-                sso: common.appConfig.sso, enable2FA: !!common.appConfig.rtlSecret2fa, allowPasswordUpdate: common.appConfig.allowPasswordUpdate, nodes: nodesArr };
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: body });
-            res.status(200).json(body);
+            const appConfData = JSON.parse(data);
+            delete appConfData.rtlConfFilePath;
+            delete appConfData.rtlPass;
+            delete appConfData.multiPass;
+            delete appConfData.multiPassHashed;
+            delete appConfData.rtlSecret2fa;
+            appConfData.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
+            appConfData.nodes.map((node) => {
+                node.authentication = node.Authentication;
+                node.settings = node.Settings;
+                delete node.Authentication;
+                delete node.Settings;
+                delete node.authentication.macaroonPath;
+                delete node.authentication.runePath;
+                delete node.authentication.lnApiPassword;
+                return node;
+            });
+            const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
+            jwt.verify(token, common.secret_key, (err, user) => {
+                if (err) {
+                    // Delete sensitive data for initial response (without security token)
+                    const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
+                    appConfData.SSO = new SSO();
+                    appConfData.secret2fa = '';
+                    appConfData.dbDirectoryPath = '';
+                    appConfData.nodes[selNodeIdx].authentication = new NodeAuthentication();
+                    delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
+                    delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
+                    delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
+                    delete appConfData.nodes[selNodeIdx].settings.boltzServerUrl;
+                    delete appConfData.nodes[selNodeIdx].settings.enableOffers;
+                    delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
+                    delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
+                    appConfData.nodes = [appConfData.nodes[selNodeIdx]];
+                }
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
+                res.status(200).json(appConfData);
+            });
         }
     });
 };
@@ -235,6 +258,7 @@ export const update2FASettings = (req, res, next) => {
     try {
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         common.appConfig.rtlSecret2fa = config.secret2fa;
+        common.appConfig.enable2FA = !!config.secret2fa;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: message });
         res.status(201).json({ message: message });
     }

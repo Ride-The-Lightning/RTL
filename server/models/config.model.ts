@@ -55,10 +55,10 @@ export class SelectedNode {
 export class SSO {
 
   constructor(
-    public rtlSso: number,
-    public rtlCookiePath: string,
-    public logoutRedirectLink: string,
-    public cookieValue: string
+    public rtlSso?: number,
+    public rtlCookiePath?: string,
+    public logoutRedirectLink?: string,
+    public cookieValue?: string
   ) { }
 
 }
@@ -71,9 +71,12 @@ export class ApplicationConfig {
     public dbDirectoryPath?: string,
     public rtlConfFilePath?: string,
     public rtlPass?: string,
+    public multiPass?: string,
+    public multiPassHashed?: string,
     public allowPasswordUpdate?: boolean,
+    public enable2FA?: boolean,
     public rtlSecret2fa?: string,
-    public sso?: SSO,
+    public SSO?: SSO,
     public nodes?: SelectedNode[]
   ) {}
 
