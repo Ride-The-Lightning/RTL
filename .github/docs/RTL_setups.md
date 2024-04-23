@@ -26,13 +26,13 @@ If your running RTL and LND on different devices on your local LAN, certain conf
       "index": 1,
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
         "swapMacaroonPath": "<Path of the folder containing 'loop.macaroon' on the device running RTL>",
         "boltzMacaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
         "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",

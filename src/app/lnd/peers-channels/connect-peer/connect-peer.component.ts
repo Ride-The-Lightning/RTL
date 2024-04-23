@@ -17,9 +17,9 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
 import { nodeInfoAndNodeSettingsAndAPIStatus } from '../../store/lnd.selector';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { CommonService } from 'src/app/shared/services/common.service';
-import { ApiCallStatusPayload } from 'src/app/shared/models/apiCallsPayload';
+import { Node } from '../../../shared/models/RTLconfig';
+import { CommonService } from '../../../shared/services/common.service';
+import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-connect-peer',
@@ -31,7 +31,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public peerAddress = '';
   public totalBalance = 0;
   public transTypes = TRANS_TYPES;
@@ -62,7 +62,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [!!this.selNode?.unannouncedChannels],
+      isPrivate: [!!this.selNode?.settings.unannouncedChannels],
       selTransType: [TRANS_TYPES[0].id],
       transTypeValue: [{ value: '', disabled: true }],
       taprootChannel: [false],
@@ -71,9 +71,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, apiCallStatus: ApiCallStatusPayload }) => {
         this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!infoSettingsStatusSelector.nodeSettings?.unannouncedChannels);
+        this.channelFormGroup.controls.isPrivate.setValue(!!infoSettingsStatusSelector.nodeSettings?.settings.unannouncedChannels);
         this.isTaprootAvailable = this.commonService.isVersionCompatible(infoSettingsStatusSelector.information.version, '0.17.0');
       });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {

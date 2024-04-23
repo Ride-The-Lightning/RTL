@@ -43,9 +43,9 @@ export const removeSecureData = (config: ApplicationConfig) => {
   delete config.multiPassHashed;
   delete config.secret2FA;
   config.nodes.map((node) => {
-    delete node.Authentication.macaroonPath;
-    delete node.Authentication.runePath;
-    delete node.Authentication.lnApiPassword;
+    delete node.authentication.macaroonPath;
+    delete node.authentication.runePath;
+    delete node.authentication.lnApiPassword;
     return node;
   });
   return config;
@@ -63,14 +63,14 @@ export const addSecureData = (config: ApplicationConfig) => {
     config.secret2FA = common.appConfig.secret2FA;
   }
   config.nodes.map((node, i) => {
-    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.macaroonPath) {
-      node.Authentication.macaroonPath = common.appConfig.nodes[i].Authentication.macaroonPath;
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].authentication && common.appConfig.nodes[i].authentication.macaroonPath) {
+      node.authentication.macaroonPath = common.appConfig.nodes[i].authentication.macaroonPath;
     }
-    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.runePath) {
-      node.Authentication.runePath = common.appConfig.nodes[i].Authentication.runePath;
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].authentication && common.appConfig.nodes[i].authentication.runePath) {
+      node.authentication.runePath = common.appConfig.nodes[i].authentication.runePath;
     }
-    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.lnApiPassword) {
-      node.Authentication.lnApiPassword = common.appConfig.nodes[i].Authentication.lnApiPassword;
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].authentication && common.appConfig.nodes[i].authentication.lnApiPassword) {
+      node.authentication.lnApiPassword = common.appConfig.nodes[i].authentication.lnApiPassword;
     }
     return node;
   });
@@ -92,7 +92,7 @@ export const getCurrencyRates = (req, res, next) => {
 
 export const getFile = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-  const file = req.query.path ? req.query.path : (req.session.selectedNode.Settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
+  const file = req.query.path ? req.query.path : (req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
   fs.readFile(file, 'utf8', (errRes, data) => {
@@ -130,14 +130,14 @@ export const getApplicationSettings = (req, res, next) => {
           appConfData.SSO = new SSO();
           appConfData.secret2FA = '';
           appConfData.dbDirectoryPath = '';
-          appConfData.nodes[selNodeIdx].Authentication = new Authentication();
-          delete appConfData.nodes[selNodeIdx].Settings.bitcoindConfigPath;
-          delete appConfData.nodes[selNodeIdx].Settings.lnServerUrl;
-          delete appConfData.nodes[selNodeIdx].Settings.swapServerUrl;
-          delete appConfData.nodes[selNodeIdx].Settings.boltzServerUrl;
-          delete appConfData.nodes[selNodeIdx].Settings.enableOffers;
-          delete appConfData.nodes[selNodeIdx].Settings.enablePeerswap;
-          delete appConfData.nodes[selNodeIdx].Settings.channelBackupPath;
+          appConfData.nodes[selNodeIdx].authentication = new Authentication();
+          delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
+          delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
+          delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
+          delete appConfData.nodes[selNodeIdx].settings.boltzServerUrl;
+          delete appConfData.nodes[selNodeIdx].settings.enableOffers;
+          delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
+          delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
           appConfData.nodes = [appConfData.nodes[selNodeIdx]];
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
@@ -171,10 +171,10 @@ export const getConfig = (req, res, next) => {
   let fileFormat = 'INI';
   switch (req.params.nodeType) {
     case 'ln':
-      confFile = req.session.selectedNode.Authentication.configPath;
+      confFile = req.session.selectedNode.authentication.configPath;
       break;
     case 'bitcoind':
-      confFile = req.session.selectedNode.Settings.bitcoindConfigPath;
+      confFile = req.session.selectedNode.settings.bitcoindConfigPath;
       break;
     case 'rtl':
       fileFormat = 'JSON';
@@ -220,14 +220,14 @@ export const updateNodeSettings = (req, res, next) => {
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
-  if (node && node.Settings) {
-    node.Settings = req.body;
+  if (node && node.settings) {
+    node.settings = req.body;
   }
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
-    if (selectedNode && selectedNode.Settings) {
-      selectedNode.Settings = req.body;
+    if (selectedNode && selectedNode.settings) {
+      selectedNode.settings = req.body;
       common.replaceNode(req, selectedNode);
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Node Settings Updated', data: maskPasswords(config) });

@@ -16,7 +16,7 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/cln.actions';
 import { clnNodeSettings } from '../../../store/cln.selector';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-open-channel',
@@ -29,7 +29,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public peer: Peer | null;
   public peers: Peer[];
   public sortedPeers: Peer[];
@@ -74,9 +74,9 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -136,7 +136,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     this.minConfValue = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();

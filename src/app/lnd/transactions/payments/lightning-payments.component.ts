@@ -15,7 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -49,7 +49,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'creation_date', sortOrder: SortOrderEnum.DESCENDING };
   public newlyAddedPayment = '';
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any = new MatTableDataSource([]);
@@ -77,7 +77,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -247,8 +247,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
             this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
           }
           if (this.paymentDecoded.num_satoshis) {
-            if (this.selNode && this.selNode.fiatConversion) {
-              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+            if (this.selNode && this.selNode.settings.fiatConversion) {
+              this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
                 pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {

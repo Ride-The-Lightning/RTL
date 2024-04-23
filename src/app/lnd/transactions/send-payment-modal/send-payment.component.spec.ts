@@ -20,7 +20,7 @@ import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
 import { RTLState } from '../../../store/rtl.state';
 import { sendPayment } from '../../store/lnd.actions';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { SendPayment } from '../../../shared/models/lndModels';
 
 describe('LightningSendPaymentsComponent', () => {
@@ -164,7 +164,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should decode payment when pay request changed and fiat conversion is true', () => {
-    const updatedSelNode: SelNodeChild = JSON.parse(JSON.stringify(component.selNode));
+    const updatedSelNode: Node = JSON.parse(JSON.stringify(component.selNode));
     updatedSelNode.fiatConversion = true;
     updatedSelNode.currencyUnits = ['BTC', 'SAT', 'USD'];
     Object.defineProperty(component, 'selNode', { value: updatedSelNode });

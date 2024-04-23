@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 
 import { LNDActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import {
   GetInfo, Peer, NetworkInfo, Fees, Channel, Invoice, ListInvoices, ChannelsTransaction, ClosedChannel, Transaction, SwitchReq,
   SwitchRes, QueryRoutes, LightningNode, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices,
@@ -13,9 +13,9 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: SelNodeChild | null }>());
+export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: Node | null }>());
 
-export const setChildNodeSettingsLND = createAction(LNDActions.SET_CHILD_NODE_SETTINGS_LND, props<{ payload: SelNodeChild }>());
+export const setChildNodeSettingsLND = createAction(LNDActions.SET_CHILD_NODE_SETTINGS_LND, props<{ payload: Node }>());
 
 export const fetchPageSettings = createAction(LNDActions.FETCH_PAGE_SETTINGS_LND);
 

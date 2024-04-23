@@ -10,10 +10,10 @@ import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actions';
-import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
-import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
-import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
+import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
+import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 
 @Component({
   selector: 'rtl-node-settings',
@@ -49,88 +49,49 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.selNode = selNode;
-      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.Settings.themeMode === themeMode.id) || this.themeModes[0];
-      this.selectedThemeColor = this.selNode.Settings.themeColor;
-      if (!this.selNode.Settings.fiatConversion) {
-        this.selNode.Settings.currencyUnit = '';
+      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id) || this.themeModes[0];
+      this.selectedThemeColor = this.selNode.settings.themeColor;
+      if (!this.selNode.settings.fiatConversion) {
+        this.selNode.settings.currencyUnit = '';
       }
-      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.Settings));
+      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.logger.info(selNode);
     });
   }
 
   onCurrencyChange(event: any) {
-    this.selNode.Settings.currencyUnits = [...CURRENCY_UNITS, event.value];
-    this.store.dispatch(setChildNodeSettingsLND({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsCLN({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsECL({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
+    this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
+    this.store.dispatch(setChildNodeSettingsLND({ payload: this.selNode }));
+    this.store.dispatch(setChildNodeSettingsCLN({ payload: this.selNode }));
+    this.store.dispatch(setChildNodeSettingsECL({ payload: this.selNode }));
   }
 
   toggleSettings(toggleField: string, event?: any) {
-    this.selNode.Settings[toggleField] = !this.selNode.Settings[toggleField];
+    this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
   }
 
   changeThemeColor(newThemeColor: string) {
     this.selectedThemeColor = newThemeColor;
-    this.selNode.Settings.themeColor = newThemeColor;
+    this.selNode.settings.themeColor = newThemeColor;
   }
 
   chooseThemeMode() {
-    this.selNode.Settings.themeMode = this.selectedThemeMode.id;
+    this.selNode.settings.themeMode = this.selectedThemeMode.id;
   }
 
   onUpdateNodeSettings(): boolean | void {
-    if (this.selNode.Settings.fiatConversion && !this.selNode.Settings.currencyUnit) {
+    if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
       return true;
     }
-    this.logger.info(this.selNode.Settings);
-    this.store.dispatch(setChildNodeSettingsLND({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
-        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsCLN({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
-        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsECL({
-      payload: {
-        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
-        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
-      }
-    }));
+    this.logger.info(this.selNode.settings);
+    this.store.dispatch(setChildNodeSettingsLND({ payload: this.selNode }));
+    this.store.dispatch(setChildNodeSettingsCLN({ payload: this.selNode }));
+    this.store.dispatch(setChildNodeSettingsECL({ payload: this.selNode }));
   }
 
   onResetSettings() {
     const prevIndex = this.selNode.index || -1;
-    this.selNode.Settings = this.previousSettings;
+    this.selNode.settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode) || this.themeModes[0];
     this.selectedThemeColor = this.previousSettings.themeColor;
     this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: +prevIndex, currentLnNode: this.selNode, isInitialSetup: true } }));

@@ -95,7 +95,7 @@ Example RTL-Config.json:
       "index": 1,
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "<Complete path of the folder containing LND admin.macaroon for the node>",
         "runePath": "<Complete path including filename for CLN rune for the node, rune format 'LIGHTNING_RUNE="your-rune"'>",
         "lnApiPassword": "<Can be used to provide password in ECL implementation>",
@@ -103,7 +103,7 @@ Example RTL-Config.json:
         "boltzMacaroonPath": "<Complete path of the folder containing Boltz admin.macaroon for the node>",
         "configPath": "<Optional:Path of the .conf if present locally or empty>",
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",

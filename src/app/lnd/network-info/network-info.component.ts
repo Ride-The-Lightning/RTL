@@ -6,7 +6,7 @@ import { faProjectDiagram, faBolt, faServer, faNetworkWired } from '@fortawesome
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, ChannelsStatus, PendingChannels, PendingChannelsSummary, Channel, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { CommonService } from '../../shared/services/common.service';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallsListLND, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
@@ -25,7 +25,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = {};
@@ -73,7 +73,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {

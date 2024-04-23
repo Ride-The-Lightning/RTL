@@ -8,11 +8,11 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngIf="selNode?.Settings?.swapServerUrl?.trim() !== ''" tabindex="1" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" routerLink="{{links[0].link}}" (click)="activeLink = links[0].link">{{links[0].name}}</div>
-        <div *ngIf="selNode?.Settings?.boltzServerUrl?.trim() !== ''" tabindex="2" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
-        <!-- <div *ngIf="selNode?.Settings?.enablePeerswap" tabindex="3" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div> -->
-        <!-- <div *ngIf="selNode?.Settings?.swapServerUrl?.trim() === '' && selNode?.Settings?.boltzServerUrl?.trim() === '' && !selNode?.Settings?.enablePeerswap" tabindex="4" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[3].link" routerLink="{{links[3].link}}" (click)="activeLink = links[3].link">{{links[3].name}}</div> -->
-        <div *ngIf="selNode?.Settings?.swapServerUrl?.trim() === '' && selNode?.Settings?.boltzServerUrl?.trim() === ''" tabindex="3" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
+        <div *ngIf="selNode?.settings?.swapServerUrl?.trim() !== ''" tabindex="1" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" routerLink="{{links[0].link}}" (click)="activeLink = links[0].link">{{links[0].name}}</div>
+        <div *ngIf="selNode?.settings?.boltzServerUrl?.trim() !== ''" tabindex="2" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
+        <!-- <div *ngIf="selNode?.settings?.enablePeerswap" tabindex="3" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div> -->
+        <!-- <div *ngIf="selNode?.settings?.swapServerUrl?.trim() === '' && selNode?.settings?.boltzServerUrl?.trim() === '' && !selNode?.settings?.enablePeerswap" tabindex="4" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[3].link" routerLink="{{links[3].link}}" (click)="activeLink = links[3].link">{{links[3].name}}</div> -->
+        <div *ngIf="selNode?.settings?.swapServerUrl?.trim() === '' && selNode?.settings?.boltzServerUrl?.trim() === ''" tabindex="3" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel />
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">

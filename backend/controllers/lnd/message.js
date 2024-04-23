@@ -11,7 +11,7 @@ export const signMessage = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/signmessage';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/signmessage';
     options.form = JSON.stringify({
         msg: Buffer.from(message).toString('base64')
     });
@@ -30,7 +30,7 @@ export const verifyMessage = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/verifymessage';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/verifymessage';
     options.form = JSON.stringify({
         msg: Buffer.from(message).toString('base64'),
         signature: signature

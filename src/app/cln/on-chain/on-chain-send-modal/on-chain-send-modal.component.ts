@@ -11,7 +11,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
-import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
+import { Node, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLNOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO, LocalRemoteBalance } from '../../../shared/models/clnModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLNActions, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
@@ -38,7 +38,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public utxos: UTXO[] = [];
@@ -132,8 +132,8 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     });
     combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[1])).
       subscribe(([selNode, appConfig]) => {
-        this.fiatConversion = selNode.Settings.fiatConversion;
-        this.amountUnits = selNode.Settings.currencyUnits;
+        this.fiatConversion = selNode.settings.fiatConversion;
+        this.amountUnits = selNode.settings.currencyUnits;
         this.appConfig = appConfig;
       });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[2])).

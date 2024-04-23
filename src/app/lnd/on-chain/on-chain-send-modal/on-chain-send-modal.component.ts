@@ -11,7 +11,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
-import { SelNodeChild, RTLConfiguration } from '../../../shared/models/RTLconfig';
+import { Node, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { GetInfo, AddressType, BlockchainBalance } from '../../../shared/models/lndModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
@@ -36,7 +36,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public selectedAddress: AddressType = {};
@@ -109,8 +109,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
     });
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
-      this.fiatConversion = selNode.Settings.fiatConversion;
-      this.amountUnits = selNode.Settings.currencyUnits;
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.amountUnits = selNode.settings.currencyUnits;
       this.logger.info(selNode);
     });
     this.actions.pipe(

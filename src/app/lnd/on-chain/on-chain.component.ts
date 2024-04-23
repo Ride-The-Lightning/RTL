@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
 import { blockchainBalance, lndNodeSettings } from '../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
@@ -18,7 +18,7 @@ import { BlockchainBalance } from '../../shared/models/lndModels';
 })
 export class OnChainComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public faExchangeAlt = faExchangeAlt;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -43,7 +43,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
         }
       });
     this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[2])).

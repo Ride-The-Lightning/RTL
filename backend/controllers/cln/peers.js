@@ -11,7 +11,7 @@ export const getPeers = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/listpeers';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listpeers';
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
         const peers = !body.peers ? [] : body.peers;
@@ -30,12 +30,12 @@ export const postPeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/connect';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/connect';
     options.body = req.body;
     request.post(options).then((connectRes) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: connectRes });
         const listOptions = common.getOptions(req);
-        listOptions.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/listpeers';
+        listOptions.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listpeers';
         request.post(listOptions).then((listPeersRes) => {
             const peers = listPeersRes && listPeersRes.peers ? common.newestOnTop(listPeersRes.peers, 'id', connectRes.id) : [];
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
@@ -55,7 +55,7 @@ export const deletePeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/disconnect';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/disconnect';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected', data: body });

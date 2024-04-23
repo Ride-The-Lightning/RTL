@@ -55,15 +55,15 @@ export class ApplicationConfig {
     }
 }
 export class SelectedNode {
-    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, Settings, Authentication) {
+    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, settings, authentication) {
         this.logLevel = logLevel;
         this.logFile = logFile;
         this.index = index;
         this.lnNode = lnNode;
         this.lnImplementation = lnImplementation;
         this.lnVersion = lnVersion;
-        this.Settings = Settings;
-        this.Authentication = Authentication;
+        this.settings = settings;
+        this.authentication = authentication;
     }
 }
 export class LogJSONObj {

@@ -75,8 +75,8 @@ export class SelectedNode {
     public lnNode?: string,
     public lnImplementation?: string,
     public lnVersion?: string,
-    public Settings?: Settings,
-    public Authentication?: Authentication
+    public settings?: Settings,
+    public authentication?: Authentication
   ) { }
 
 }

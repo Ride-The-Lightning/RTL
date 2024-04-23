@@ -13,7 +13,7 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, AlertTypeEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Offer, OfferRequest } from '../../../../shared/models/clnModels';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -50,7 +50,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'offers', recordsPerPage: PAGE_SIZE, sortBy: 'offer_id', sortOrder: SortOrderEnum.DESCENDING };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public newlyAddedOfferMemo = '';
   public newlyAddedOfferValue = 0;
   public description = '';
@@ -79,7 +79,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {

@@ -12,7 +12,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum, LNDActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { ChannelsStatus, GetInfo, Fees, Channel, BlockchainBalance, PendingChannels, PendingChannelsSummary, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
 import { blockchainBalance, channels, fees, nodeInfoAndNodeSettingsAndAPIStatus, pendingChannels } from '../store/lnd.selector';
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public activeChannels = 0;
   public inactiveChannels = 0;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -145,7 +145,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {

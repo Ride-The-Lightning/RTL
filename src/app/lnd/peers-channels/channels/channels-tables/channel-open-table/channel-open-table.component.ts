@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
-import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
+import { Node } from '../../../../../shared/models/RTLconfig';
 import { BlockchainBalance, Channel, ChannelsSummary, GetInfo, LightningBalance, Peer } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -50,7 +50,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];

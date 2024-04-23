@@ -16,7 +16,7 @@ export const getInfo = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/getinfo';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/getinfo';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.lnNode });
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from LND server url ' + options.url });
     if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {

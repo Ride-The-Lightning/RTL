@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel, LightningBalance, ChannelsStatus } from '../../../shared/models/eclModels';
 import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ECLActions, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
@@ -30,7 +30,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
   public paymentAmount = null;
@@ -48,7 +48,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
@@ -91,8 +91,8 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
               this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
             } else {
               this.zeroAmtInvoice = false;
-              if (this.selNode && this.selNode.fiatConversion && this.paymentDecoded.amount) {
-                this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+              if (this.selNode && this.selNode.settings.fiatConversion && this.paymentDecoded.amount) {
+                this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
                   pipe(takeUntil(this.unSubs[2])).
                   subscribe({
                     next: (data) => {
@@ -140,8 +140,8 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
               this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
             } else {
               this.zeroAmtInvoice = false;
-              if (this.selNode && this.selNode.fiatConversion && this.paymentDecoded.amount) {
-                this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+              if (this.selNode && this.selNode.settings.fiatConversion && this.paymentDecoded.amount) {
+                this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
                   pipe(takeUntil(this.unSubs[3])).
                   subscribe({
                     next: (data) => {

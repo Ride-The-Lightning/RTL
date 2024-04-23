@@ -8,16 +8,16 @@
       <mat-slide-toggle autoFocus class="ml-2" tabindex="1" color="primary" name="loop" [(ngModel)]="enableLoop" (change)="onEnableServiceChanged($event)">Enable Loop Service</mat-slide-toggle>
       <mat-form-field class="mb-2">
         <mat-label>Loop Server URL</mat-label>
-        <input #srvrUrl="ngModel" matInput type="text" id="swapServerUrl" name="srvrUrl" tabindex="2" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.Settings.swapServerUrl">
+        <input #srvrUrl="ngModel" matInput type="text" id="swapServerUrl" name="srvrUrl" tabindex="2" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.settings.swapServerUrl">
         <mat-hint>Service url for loop server REST APIs, eg. https://127.0.0.1:8081</mat-hint>
-        <mat-error *ngIf="!selNode.Settings.swapServerUrl && enableLoop">Loop server URL is required.</mat-error>
+        <mat-error *ngIf="!selNode.settings.swapServerUrl && enableLoop">Loop server URL is required.</mat-error>
         <mat-error *ngIf="srvrUrl?.errors?.invalid && enableLoop">Specify the loop server url with 'https://'.</mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Loop Macaroon Path</mat-label>
-        <input matInput type="text" id="swapMacaroonPath" name="swapMacaroonPath" tabindex="3" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.Authentication.swapMacaroonPath">
+        <input matInput type="text" id="swapMacaroonPath" name="swapMacaroonPath" tabindex="3" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.authentication.swapMacaroonPath">
         <mat-hint>Path for the folder containing service 'loop.macaroon', eg. D:\\xyz\\AppData\\Local\\Loop\\testnet</mat-hint>
-        <mat-error *ngIf="!selNode.Authentication.swapMacaroonPath && enableLoop">Loop macaroon path is required.</mat-error>
+        <mat-error *ngIf="!selNode.authentication.swapMacaroonPath && enableLoop">Loop macaroon path is required.</mat-error>
       </mat-form-field>
     </div>
   </form>

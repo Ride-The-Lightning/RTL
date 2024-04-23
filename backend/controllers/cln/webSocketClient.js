@@ -27,14 +27,14 @@ export class CLWebSocketClient {
             try {
                 const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
                 if (!clientExists) {
-                    if (selectedNode.Settings.lnServerUrl) {
+                    if (selectedNode.settings.lnServerUrl) {
                         const newWebSocketClient = { selectedNode: selectedNode, reConnect: true, webSocketClient: null };
                         this.connectWithClient(newWebSocketClient);
                         this.webSocketClients.push(newWebSocketClient);
                     }
                 }
                 else {
-                    if ((!clientExists.webSocketClient || !clientExists.webSocketClient.connected) && selectedNode.Settings.lnServerUrl) {
+                    if ((!clientExists.webSocketClient || !clientExists.webSocketClient.connected) && selectedNode.settings.lnServerUrl) {
                         clientExists.reConnect = true;
                         this.connectWithClient(clientExists);
                     }
@@ -47,11 +47,11 @@ export class CLWebSocketClient {
         this.connectWithClient = (clWsClt) => {
             this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the Core Lightning\'s Websocket Server..' });
             try {
-                if (!clWsClt.selectedNode.Authentication.runeValue) {
-                    clWsClt.selectedNode.Authentication.runeValue = this.common.getRuneValue(clWsClt.selectedNode.Authentication.runePath);
+                if (!clWsClt.selectedNode.authentication.runeValue) {
+                    clWsClt.selectedNode.authentication.runeValue = this.common.getRuneValue(clWsClt.selectedNode.authentication.runePath);
                 }
-                clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.Settings.lnServerUrl, {
-                    extraHeaders: { rune: clWsClt.selectedNode.Authentication.runeValue },
+                clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.settings.lnServerUrl, {
+                    extraHeaders: { rune: clWsClt.selectedNode.authentication.runeValue },
                     transports: ['websocket'],
                     secure: true,
                     rejectUnauthorized: false

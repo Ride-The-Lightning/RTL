@@ -16,7 +16,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLNLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -49,7 +49,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public tableSetting: TableSetting = { tableId: 'payments', recordsPerPage: PAGE_SIZE, sortBy: 'created_at', sortOrder: SortOrderEnum.DESCENDING };
   public faHistory = faHistory;
   public newlyAddedPayment = '';
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public payments: any = new MatTableDataSource([]);
   public paymentJSONArr: Payment[] = [];
@@ -82,7 +82,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -234,8 +234,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         pipe(takeUntil(this.unSubs[5])).subscribe((decodedPayment: PayRequest) => {
           this.paymentDecoded = decodedPayment;
           if (this.paymentDecoded.amount_msat) {
-            if (this.selNode?.fiatConversion) {
-              this.commonService.convertCurrency(this.paymentDecoded.amount_msat / 1000 || 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+            if (this.selNode?.settings.fiatConversion) {
+              this.commonService.convertCurrency(this.paymentDecoded.amount_msat / 1000 || 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
                 pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {

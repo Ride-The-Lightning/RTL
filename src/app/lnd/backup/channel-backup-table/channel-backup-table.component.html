@@ -6,7 +6,7 @@
     </div>
     <div fxFlex="100" class="alert alert-info">
       <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
-      <span><strong>Backup Folder Location: </strong>{{selNode.channelBackupPath}}.</span>
+      <span><strong>Backup Folder Location: </strong>{{selNode.settings.channelBackupPath}}.</span>
     </div>
     <div fxLayout="row" class="mt-2">
       <button mat-stroked-button class="mr-1" color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>

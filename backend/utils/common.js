@@ -23,15 +23,15 @@ export class CommonService {
         ];
         this.setSwapServerOptions = (req) => {
             const swapOptions = {
-                baseUrl: req.session.selectedNode.Settings.swapServerUrl,
+                baseUrl: req.session.selectedNode.settings.swapServerUrl,
                 uri: '',
                 rejectUnauthorized: false,
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': '' }
             };
-            if (req.session.selectedNode.Authentication.swapMacaroonPath) {
+            if (req.session.selectedNode.authentication.swapMacaroonPath) {
                 try {
-                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.Authentication.swapMacaroonPath, 'loop.macaroon')).toString('hex') };
+                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.swapMacaroonPath, 'loop.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
@@ -42,14 +42,14 @@ export class CommonService {
         };
         this.getBoltzServerOptions = (req) => {
             const boltzOptions = {
-                url: req.session.selectedNode.Settings.boltzServerUrl,
+                url: req.session.selectedNode.settings.boltzServerUrl,
                 rejectUnauthorized: false,
                 json: true,
                 headers: { 'Grpc-Metadata-macaroon': '' }
             };
-            if (req.session.selectedNode.Authentication.boltzMacaroonPath) {
+            if (req.session.selectedNode.authentication.boltzMacaroonPath) {
                 try {
-                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.Authentication.boltzMacaroonPath, 'admin.macaroon')).toString('hex') };
+                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.boltzMacaroonPath, 'admin.macaroon')).toString('hex') };
                 }
                 catch (err) {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
@@ -59,12 +59,12 @@ export class CommonService {
             return boltzOptions;
         };
         this.getOptions = (req) => {
-            if (req.session.selectedNode && req.session.selectedNode.Authentication.options) {
-                req.session.selectedNode.Authentication.options.method = (req.session.selectedNode.lnImplementation && req.session.selectedNode.lnImplementation.toUpperCase() === 'LND') ? 'GET' : 'POST';
-                delete req.session.selectedNode.Authentication.options.form;
-                delete req.session.selectedNode.Authentication.options.body;
-                req.session.selectedNode.Authentication.options.qs = {};
-                return req.session.selectedNode.Authentication.options;
+            if (req.session.selectedNode && req.session.selectedNode.authentication.options) {
+                req.session.selectedNode.authentication.options.method = (req.session.selectedNode.lnImplementation && req.session.selectedNode.lnImplementation.toUpperCase() === 'LND') ? 'GET' : 'POST';
+                delete req.session.selectedNode.authentication.options.form;
+                delete req.session.selectedNode.authentication.options.body;
+                req.session.selectedNode.authentication.options.qs = {};
+                return req.session.selectedNode.authentication.options;
             }
             return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity' }, 'Session Expired', 'Session Expiry Error', this.selectedNode);
         };
@@ -72,7 +72,7 @@ export class CommonService {
             if (!req.session.selectedNode) {
                 req.session.selectedNode = {};
             }
-            req.session.selectedNode.Authentication.options = {
+            req.session.selectedNode.authentication.options = {
                 url: '',
                 rejectUnauthorized: false,
                 json: true,
@@ -83,30 +83,30 @@ export class CommonService {
                     switch (req.session.selectedNode.lnImplementation.toUpperCase()) {
                         case 'CLN':
                             try {
-                                if (!req.session.selectedNode.Authentication.runeValue) {
-                                    req.session.selectedNode.Authentication.runeValue = this.getRuneValue(req.session.selectedNode.Authentication.runePath);
+                                if (!req.session.selectedNode.authentication.runeValue) {
+                                    req.session.selectedNode.authentication.runeValue = this.getRuneValue(req.session.selectedNode.authentication.runePath);
                                 }
-                                req.session.selectedNode.Authentication.options.headers = { rune: req.session.selectedNode.Authentication.runeValue };
+                                req.session.selectedNode.authentication.options.headers = { rune: req.session.selectedNode.authentication.runeValue };
                             }
                             catch (err) {
                                 throw new Error(err);
                             }
                             break;
                         case 'ECL':
-                            req.session.selectedNode.Authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.Authentication.lnApiPassword).toString('base64') };
+                            req.session.selectedNode.authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.authentication.lnApiPassword).toString('base64') };
                             break;
                         default:
-                            req.session.selectedNode.Authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.Authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                            req.session.selectedNode.authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
                             break;
                     }
                 }
                 if (req.session.selectedNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.Authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.authentication.options });
                 }
                 return { status: 200, message: 'Updated Successfully' };
             }
             catch (err) {
-                req.session.selectedNode.Authentication.options = {
+                req.session.selectedNode.authentication.options = {
                     url: '',
                     rejectUnauthorized: false,
                     json: true,
@@ -128,12 +128,12 @@ export class CommonService {
             }
         };
         this.setOptions = (req) => {
-            if (this.nodes[0].Authentication.options && this.nodes[0].Authentication.options.headers) {
+            if (this.nodes[0].authentication.options && this.nodes[0].authentication.options.headers) {
                 return;
             }
             if (this.nodes && this.nodes.length > 0) {
                 this.nodes.forEach((node) => {
-                    node.Authentication.options = {
+                    node.authentication.options = {
                         url: '',
                         rejectUnauthorized: false,
                         json: true,
@@ -144,34 +144,34 @@ export class CommonService {
                             switch (node.lnImplementation.toUpperCase()) {
                                 case 'CLN':
                                     try {
-                                        if (!node.Authentication.runeValue) {
-                                            node.Authentication.runeValue = this.getRuneValue(node.Authentication.runePath);
+                                        if (!node.authentication.runeValue) {
+                                            node.authentication.runeValue = this.getRuneValue(node.authentication.runePath);
                                         }
-                                        node.Authentication.options.headers = { rune: node.Authentication.runeValue };
+                                        node.authentication.options.headers = { rune: node.authentication.runeValue };
                                     }
                                     catch (err) {
                                         throw new Error(err);
                                     }
                                     break;
                                 case 'ECL':
-                                    node.Authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.Authentication.lnApiPassword).toString('base64') };
+                                    node.authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.authentication.lnApiPassword).toString('base64') };
                                     break;
                                 default:
-                                    node.Authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.Authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                                    node.authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
                                     break;
                             }
                         }
                     }
                     catch (err) {
                         this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Common Set Options Error', error: err });
-                        node.Authentication.options = {
+                        node.authentication.options = {
                             url: '',
                             rejectUnauthorized: false,
                             json: true,
                             form: ''
                         };
                     }
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.Authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.authentication.options });
                 });
                 this.updateSelectedNodeOptions(req);
             }
@@ -411,12 +411,12 @@ export class CommonService {
             }
         };
         this.getAllNodeAllChannelBackup = (node) => {
-            const channel_backup_file = node.Settings.channelBackupPath + sep + 'channel-all.bak';
+            const channel_backup_file = node.settings.channelBackupPath + sep + 'channel-all.bak';
             const options = {
-                url: node.Settings.lnServerUrl + '/v1/channels/backup',
+                url: node.settings.lnServerUrl + '/v1/channels/backup',
                 rejectUnauthorized: false,
                 json: true,
-                headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.Authentication.macaroonPath + '/admin.macaroon').toString('hex') }
+                headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.authentication.macaroonPath + '/admin.macaroon').toString('hex') }
             };
             this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Getting Channel Backup for Node ' + node.lnNode + '..' });
             request(options).then((body) => {
@@ -478,9 +478,9 @@ export class CommonService {
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.lnNode });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.lnImplementation });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.Settings.fiatConversion });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.Settings.currencyUnit });
-                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.Settings.lnServerUrl });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.settings.fiatConversion });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.settings.currencyUnit });
+                this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.settings.lnServerUrl });
                 this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.appConfig.SSO.logoutRedirectLink + '\r\n' });
             }
         };

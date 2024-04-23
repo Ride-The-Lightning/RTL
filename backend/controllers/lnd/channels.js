@@ -6,7 +6,7 @@ const logger = Logger;
 const common = Common;
 export const getAliasForChannel = (selNode, channel) => {
     const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
-    options.url = selNode.Settings.lnServerUrl + '/v1/graph/node/' + pubkey;
+    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
     return request(options).then((aliasBody) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
         channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
@@ -22,7 +22,7 @@ export const getAllChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
     options.qs = req.query;
     let local = 0;
     let remote = 0;
@@ -60,7 +60,7 @@ export const getPendingChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels/pending';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/pending';
     options.qs = req.query;
     request(options).then((body) => {
         if (!body.total_limbo_balance) {
@@ -98,7 +98,7 @@ export const getClosedChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels/closed';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/closed';
     options.qs = req.query;
     request(options).then((body) => {
         if (body.channels && body.channels.length > 0) {
@@ -129,7 +129,7 @@ export const postChannel = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
     options.form = {
         node_pubkey_string: node_pubkey,
         local_funding_amount: local_funding_amount,
@@ -162,7 +162,7 @@ export const postTransactions = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels/transaction-stream';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/transaction-stream';
     options.form = { payment_request: paymentReq };
     if (paymentAmount) {
         options.form.amt = paymentAmount;
@@ -208,7 +208,7 @@ export const closeChannel = (req, res, next) => {
             return res.status(options.statusCode).json({ message: options.message, error: options.error });
         }
         const channelpoint = req.params.channelPoint?.replace(':', '/');
-        options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
         if (req.query.target_conf) {
             options.url = options.url + '&target_conf=' + req.query.target_conf;
         }
@@ -232,7 +232,7 @@ export const postChanPolicy = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/chanpolicy';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/chanpolicy';
     if (chanPoint === 'all') {
         options.form = JSON.stringify({
             global: true,

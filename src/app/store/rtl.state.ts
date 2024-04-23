@@ -1,6 +1,6 @@
 import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
-import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
-import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
+import { APICallStatusEnum, UserPersonaEnum } from '../shared/services/consts-enums-functions';
+import { RTLConfiguration, Node, GetInfoRoot, Settings, Authentication } from '../shared/models/RTLconfig';
 
 import { LNDState } from '../lnd/store/lnd.state';
 import { CLNState } from '../cln/store/cln.state';
@@ -14,13 +14,16 @@ export interface RootState {
   nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
+const initNodeSettings: Settings = { userPersona: UserPersonaEnum.OPERATOR, themeMode: 'DAY', themeColor: 'PURPLE',
+  channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false,
+  currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false,
+  logLevel: 'ERROR', lnServerUrl: '', swapServerUrl: '', boltzServerUrl: '', currencyUnit: 'USD' };
+const initNodeAuthentication: Authentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {
   apiURL: '',
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
-  selNode: { index: 1, lnNode: 'Node 1', Settings: initNodeSettings, Authentication: initNodeAuthentication, lnImplementation: 'LND' },
+  selNode: { index: 1, lnNode: 'Node 1', settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
@@ -28,7 +31,7 @@ export const initRootState: RootState = {
     enable2FA: false,
     secret2FA: '',
     allowPasswordUpdate: true,
-    nodes: [{ Settings: initNodeSettings, Authentication: initNodeAuthentication }]
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },
   nodeData: {}
 };

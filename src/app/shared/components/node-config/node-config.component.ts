@@ -59,7 +59,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
           this.lnImplementationStr = 'LND Config';
           break;
       }
-      if (this.selNode.Authentication && this.selNode.Authentication.configPath && this.selNode.Authentication.configPath.trim() !== '') {
+      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
         this.links[4].name = this.lnImplementationStr;
         this.showLnConfig = true;
       }

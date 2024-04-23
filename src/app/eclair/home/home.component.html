@@ -1,4 +1,4 @@
-<div *ngIf="selNode?.userPersona === userPersonaEnum.OPERATOR;  else merchantDashboard"fxLayout="column">
+<div *ngIf="selNode?.settings.userPersona === userPersonaEnum.OPERATOR;  else merchantDashboard"fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container mb-2">
     <fa-icon class="page-title-img mr-1" [icon]="apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" />
     <span class="page-title">{{apiCallStatusNodeInfo.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>

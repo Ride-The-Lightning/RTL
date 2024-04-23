@@ -8,7 +8,7 @@
       </perfect-scrollbar>
     </mat-select>
     <mat-divider class="w-100" />
-    <mat-tree *ngIf="selNode.Settings?.lnServerUrl" #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
+    <mat-tree *ngIf="selNode.settings?.lnServerUrl" #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
         <div tabindex="2" (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">

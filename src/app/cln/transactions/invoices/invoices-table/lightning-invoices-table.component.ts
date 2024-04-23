@@ -11,7 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, CLNActions, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS, DEFAULT_INVOICE_EXPIRY } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 import { GetInfo, Invoice, ListInvoices } from '../../../../shared/models/clnModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -48,7 +48,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expires_at', sortOrder: SortOrderEnum.DESCENDING };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public description = '';
@@ -77,8 +77,8 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
-      this.selNode = <SelNodeChild>nodeSettings;
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+      this.selNode = <Node>nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
       this.information = nodeInfo;
@@ -253,9 +253,9 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue! > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion && this.invoiceValue! > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue!, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode?.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+      this.commonService.convertCurrency(this.invoiceValue!, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode?.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
         pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {

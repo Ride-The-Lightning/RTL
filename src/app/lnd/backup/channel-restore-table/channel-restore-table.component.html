@@ -1,16 +1,16 @@
 <div fxLayout="column" class="mt-2">
   <div *ngIf="allRestoreExists" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+    <h4 fxFlex="100">Restore folder location: {{selNode.settings.channelBackupPath}}/restore</h4>
     <div fxLayout="row" class="mt-2">
       <button mat-flat-button color="primary" tabindex="1" (click)="onRestoreChannels({})">Restore All</button>
     </div>
   </div>
   <div *ngIf="!allRestoreExists && (!channels || channels?.data?.length<=0)" fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap">
-    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+    <h4 fxFlex="100">Restore folder location: {{selNode.settings.channelBackupPath}}/restore</h4>
     <h4 fxFlex="100" class="mt-1">All channel backup file not found! To perform channel restoration, channel backup file/s must be placed at the above location.</h4>
   </div>
   <div *ngIf="!allRestoreExists && channels && channels?.data?.length && channels?.data?.length>0" fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap">
-    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+    <h4 fxFlex="100">Restore folder location: {{selNode.settings.channelBackupPath}}/restore</h4>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container mt-2">
     <div fxFlex="70"></div>

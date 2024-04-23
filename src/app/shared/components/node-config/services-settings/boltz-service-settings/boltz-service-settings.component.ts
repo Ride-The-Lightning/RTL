@@ -37,9 +37,9 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableBoltz = !!(selNode.Settings.boltzServerUrl && selNode.Settings.boltzServerUrl.trim() !== '');
-        this.serverUrl = this.selNode.Settings.boltzServerUrl || '';
-        this.macaroonPath = this.selNode.Authentication.boltzMacaroonPath;
+        this.enableBoltz = !!(selNode.settings.boltzServerUrl && selNode.settings.boltzServerUrl.trim() !== '');
+        this.serverUrl = this.selNode.settings.boltzServerUrl || '';
+        this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
         this.logger.info(selNode);
       });
@@ -67,33 +67,33 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.logger.info(this.selNode);
-    this.selNode.Settings.boltzServerUrl = this.serverUrl;
-    this.selNode.Authentication.boltzMacaroonPath = this.macaroonPath;
+    this.selNode.settings.boltzServerUrl = this.serverUrl;
+    this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
     // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath } } }));
     // this.store.dispatch(setChildNodeSettingsLND({
     //   payload: {
-    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.Settings.enableOffers
+    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsCLN({
     //   payload: {
-    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.Settings.enableOffers
+    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsECL({
     //   payload: {
-    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.Settings.enableOffers
+    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
     //   }
     // }));
   }
 
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
-    this.serverUrl = this.selNode.Settings.boltzServerUrl || '';
-    this.macaroonPath = this.selNode.Authentication.boltzMacaroonPath;
+    this.serverUrl = this.selNode.settings.boltzServerUrl || '';
+    this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
     this.enableBoltz = !!(this.serverUrl && this.serverUrl.trim() !== '');
   }
 

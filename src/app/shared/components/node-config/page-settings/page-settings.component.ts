@@ -11,7 +11,7 @@ import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { SelNodeChild, Node } from '../../../models/RTLconfig';
+import { Node } from '../../../models/RTLconfig';
 import { TableSetting, PageSettings } from '../../../models/pageSettings';
 import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
 import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
@@ -58,7 +58,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.nodePageDefs = CLN_PAGE_DEFS;
           this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(clnNodeSettings))).
-            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
               const updatedPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;
               this.apiCallStatus = settings.apiCallStatus;
@@ -67,14 +67,14 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
                 this.pageSettings = updatedPageSettings;
                 this.initialPageSettings = updatedPageSettings;
               } else {
-                if (!nodeSettings?.enableOffers) {
+                if (!nodeSettings?.settings.enableOffers) {
                   const transactionsPage = updatedPageSettings.find((pg) => pg.pageId === 'transactions');
                   const offerIdx = transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offers');
                   const offerBookmarkIdx = transactionsPage?.tables.findIndex((tb) => tb.tableId === 'offer_bookmarks');
                   if (offerIdx > -1) { transactionsPage?.tables.splice(offerIdx, 1); }
                   if (offerBookmarkIdx > -1) { transactionsPage?.tables.splice(offerBookmarkIdx, 1); }
                 }
-                if (!nodeSettings?.enablePeerswap) {
+                if (!nodeSettings?.settings.enablePeerswap) {
                   const psIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'peerswap');
                   if (psIdx > -1) { updatedPageSettings.splice(psIdx, 1); }
                 }
@@ -97,7 +97,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.nodePageDefs = ECL_PAGE_DEFS;
           this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(eclNodeSettings))).
-            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
               const updatedPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;
               this.apiCallStatus = settings.apiCallStatus;
@@ -125,7 +125,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.nodePageDefs = LND_PAGE_DEFS;
           this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[1]),
             withLatestFrom(this.store.select(lndNodeSettings))).
-            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
+            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
               const updatedPageSettings: PageSettings[] = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;
               this.apiCallStatus = settings.apiCallStatus;
@@ -134,15 +134,15 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
                 this.pageSettings = updatedPageSettings;
                 this.initialPageSettings = updatedPageSettings;
               } else {
-                if (!nodeSettings?.swapServerUrl || nodeSettings.swapServerUrl.trim() === '') {
+                if (!nodeSettings?.settings.swapServerUrl || nodeSettings.settings.swapServerUrl.trim() === '') {
                   const loopIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'loop');
                   if (loopIdx > -1) { updatedPageSettings.splice(loopIdx, 1); }
                 }
-                if (!nodeSettings?.boltzServerUrl || nodeSettings.boltzServerUrl.trim() === '') {
+                if (!nodeSettings?.settings.boltzServerUrl || nodeSettings.settings.boltzServerUrl.trim() === '') {
                   const boltzIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'boltz');
                   if (boltzIdx > -1) { updatedPageSettings.splice(boltzIdx, 1); }
                 }
-                if (!nodeSettings?.enablePeerswap) {
+                if (!nodeSettings?.settings.enablePeerswap) {
                   const psIdx = updatedPageSettings.findIndex((pg) => pg.pageId === 'peerswap');
                   if (psIdx > -1) { updatedPageSettings.splice(psIdx, 1); }
                 }

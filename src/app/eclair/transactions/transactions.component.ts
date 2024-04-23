@@ -11,7 +11,7 @@ import { RTLState } from '../../store/rtl.state';
 import { eclNodeSettings, allChannelsInfo } from '../store/ecl.selector';
 import { Channel, ChannelsStatus, LightningBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-ecl-transactions',
@@ -42,9 +42,9 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1]),
       withLatestFrom(this.store.select(eclNodeSettings))).
-      subscribe(([allChannels, nodeSettings]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
-        this.currencyUnits = nodeSettings?.currencyUnits || [];
-        if (nodeSettings && nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+      subscribe(([allChannels, nodeSettings]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
+        this.currencyUnits = nodeSettings?.settings.currencyUnits || [];
+        if (nodeSettings && nodeSettings.settings.userPersona === UserPersonaEnum.OPERATOR) {
           this.balances = [{ title: 'Local Capacity', dataValue: allChannels.lightningBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: allChannels.lightningBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
           this.balances = [{ title: 'Outbound Capacity', dataValue: allChannels.lightningBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: allChannels.lightningBalance.remoteBalance, tooltip: 'Amount you can receive' }];

@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 
 import { ECLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, QueryRoutes, Transaction,
   SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes,
   CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
@@ -10,9 +10,9 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: SelNodeChild | null }>());
+export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: Node | null }>());
 
-export const setChildNodeSettingsECL = createAction(ECLActions.SET_CHILD_NODE_SETTINGS_ECL, props<{ payload: SelNodeChild }>());
+export const setChildNodeSettingsECL = createAction(ECLActions.SET_CHILD_NODE_SETTINGS_ECL, props<{ payload: Node }>());
 
 export const fetchPageSettings = createAction(ECLActions.FETCH_PAGE_SETTINGS_ECL);
 

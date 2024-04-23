@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../shared/models/eclModels';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
@@ -24,7 +24,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public numOfOpenChannels = 0;
   public numOfPendingChannels = 0;
   public numOfInactiveChannels = 0;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public totalBalance = 0;
@@ -50,7 +50,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.logger.info(allChannelsSelector);
       });
     this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).

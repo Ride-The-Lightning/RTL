@@ -12,7 +12,7 @@ import { RTLState } from '../../store/rtl.state';
 import { clnNodeSettings, utxoBalances } from '../store/cln.selector';
 import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { fetchOffers, fetchOfferBookmarks } from '../store/cln.actions';
 
 @Component({
@@ -27,7 +27,7 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
   currencyUnits: string[] = [];
   routerUrl = '';
   balances = [{ title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive' }];
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public links = [{ link: 'payments', name: 'Payments' }, { link: 'invoices', name: 'Invoices' }];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -45,9 +45,9 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
           this.routerUrl = (<ResolveEnd>value).urlAfterRedirects;
         }
       });
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
-      if (this.selNode && this.selNode.enableOffers) {
+      if (this.selNode && this.selNode.settings.enableOffers) {
         this.store.dispatch(fetchOffers());
         this.store.dispatch(fetchOfferBookmarks());
         this.links.push({ link: 'offers', name: 'Offers' });
@@ -58,9 +58,9 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
     });
     this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[2]),
       withLatestFrom(this.store.select(clnNodeSettings))).
-      subscribe(([utxoBalancesSeletor, nodeSettings]: [{ utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (SelNodeChild | null)]) => {
-        this.currencyUnits = nodeSettings?.currencyUnits || [];
-        if (nodeSettings && nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+      subscribe(([utxoBalancesSeletor, nodeSettings]: [{ utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
+        this.currencyUnits = nodeSettings?.settings.currencyUnits || [];
+        if (nodeSettings && nodeSettings.settings.userPersona === UserPersonaEnum.OPERATOR) {
           this.balances = [{ title: 'Local Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Remote Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];
         } else {
           this.balances = [{ title: 'Outbound Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.localBalance, tooltip: 'Amount you can send' }, { title: 'Inbound Capacity', dataValue: utxoBalancesSeletor.localRemoteBalance.remoteBalance, tooltip: 'Amount you can receive' }];

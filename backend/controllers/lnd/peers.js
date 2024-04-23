@@ -5,7 +5,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 export const getAliasForPeers = (selNode, peer) => {
-    options.url = selNode.Settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key;
+    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key;
     return request(options).then((aliasBody) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Alias Received', data: aliasBody.node.alias });
         peer.alias = aliasBody.node.alias;
@@ -21,7 +21,7 @@ export const getPeers = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/peers';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
         const peers = !body.peers ? [] : body.peers;
@@ -41,14 +41,14 @@ export const postPeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/peers';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
     options.form = JSON.stringify({
         addr: { host: host, pubkey: pubkey },
         perm: perm
     });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
-        options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/peers';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
         request(options).then((body) => {
             const peers = (!body.peers) ? [] : body.peers;
             return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
@@ -76,7 +76,7 @@ export const deletePeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/peers/' + req.params.peerPubKey;
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers/' + req.params.peerPubKey;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnect Pubkey', data: req.params.peerPubKey });
     request.delete(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconneted', data: body });

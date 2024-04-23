@@ -27,7 +27,7 @@ export const getAllForwardingEvents = (req, start, end, offset, caller, callback
         return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
     }
     options = common.getOptions(req);
-    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/switch';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/switch';
     options.form = {};
     if (start) {
         options.form.start_time = start;

@@ -34,8 +34,8 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
 
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
-      this.fiatConversion = selNode.Settings.fiatConversion;
-      this.currencyUnits = selNode.Settings.currencyUnits;
+      this.fiatConversion = selNode.settings.fiatConversion;
+      this.currencyUnits = selNode.settings.currencyUnits;
       if (!this.fiatConversion) {
         this.currencyUnits.splice(2, 1);
       }

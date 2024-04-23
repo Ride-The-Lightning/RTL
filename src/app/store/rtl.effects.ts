@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of, Subject, forkJoin, Observable } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -220,7 +220,7 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
         let searchNode: Node | null = null;
         rtlConfig.nodes.forEach((node) => {
-          node.Settings.currencyUnits = [...CURRENCY_UNITS, (node.Settings?.currencyUnit ? node.Settings?.currencyUnit : '')];
+          node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
           if (+(node.index || -1) === rtlConfig.selectedNodeIndex) {
             searchNode = node;
           }
@@ -243,34 +243,24 @@ export class RTLEffects implements OnDestroy {
       }))
   );
 
-  updataNodeSettings = createEffect(
+  updateNodeSettings = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.UPDATE_NODE_SETTINGS),
       mergeMap((action: { type: string, payload: UpdateNodeSettings }) => {
-        this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateNodeSettings', status: APICallStatusEnum.INITIATED } }));
-        const updateSettingReq = new Observable();
-        // if (action.payload.Settings && action.payload.defaultNodeIndex) {
-        //   const settingsRes = this.httpClient.post<Settings>(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.Settings });
-        //   const defaultNodeRes = this.httpClient.post(API_END_POINTS.CONF_API + '/node', { defaultNodeIndex: action.payload.defaultNodeIndex });
-        //   updateSettingReq = forkJoin([settingsRes, defaultNodeRes]);
-        // } else if (action.payload.Settings && !action.payload.defaultNodeIndex) {
-        //   updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.Settings });
-        // } else if (!action.payload.Settings && action.payload.defaultNodeIndex) {
-        //   updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API + '/node', { defaultNodeIndex: action.payload.defaultNodeIndex });
-        // }
-        return updateSettingReq.pipe(map((updateStatus: any) => {
-          this.logger.info(updateStatus);
-          this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
-          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-          return {
-            type: RTLActions.OPEN_SNACK_BAR,
-            payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
-          };
-        }), catchError((err) => {
-          this.handleErrorWithAlert('UpdateNodeSettings', action.payload.uiMessage, 'Update Node Settings Failed!', API_END_POINTS.CONF_API, (!err.length) ? err : err[0]);
-          return of({ type: RTLActions.VOID });
-        }));
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.INITIATED } }));
+        return this.httpClient.post(API_END_POINTS.CONF_API + '/node', action.payload).
+          pipe(map((updatedNode: UpdateNodeSettings) => {
+            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+            return {
+              type: RTLActions.OPEN_SNACK_BAR,
+              payload: 'Node settings updated successfully!'
+            };
+          }), catchError((err: any) => {
+            this.handleErrorWithAlert('updateNodeSettings', UI_MESSAGES.UPDATE_APPLICATION_SETTINGS, 'Update Node Settings Failed!', API_END_POINTS.CONF_API + '/node', err);
+            return of({ type: RTLActions.VOID });
+          }));
       }))
   );
 
@@ -281,7 +271,7 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.INITIATED } }));
         action.payload.config.nodes.forEach((node) => {
-          delete node.Settings.currencyUnits;
+          delete node.settings.currencyUnits;
         });
         return this.httpClient.post(API_END_POINTS.CONF_API + '/application', action.payload.config).
           pipe(map((appConfig: RTLConfiguration) => {
@@ -295,7 +285,7 @@ export class RTLEffects implements OnDestroy {
               payload: appConfig
             };
           }), catchError((err: any) => {
-            this.handleErrorWithAlert('updateApplicationSettings', UI_MESSAGES.UPDATE_APPLICATION_SETTINGS, 'Update Application Settings Failed!', API_END_POINTS.CONF_API + '/config/' + action.payload, err);
+            this.handleErrorWithAlert('updateApplicationSettings', UI_MESSAGES.UPDATE_APPLICATION_SETTINGS, 'Update Application Settings Failed!', API_END_POINTS.CONF_API + '/application', err);
             return of({ type: RTLActions.VOID });
           }));
       }))
@@ -525,19 +515,16 @@ export class RTLEffects implements OnDestroy {
   initializeNode(node: Node, isInitialSetup: boolean) {
     this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
-    const selNode = { userPersona: node.Settings.userPersona, channelBackupPath: node.Settings.channelBackupPath, unannouncedChannels: !!node.Settings.unannouncedChannels,
-      selCurrencyUnit: node.Settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.Settings.fiatConversion, lnImplementation: node.lnImplementation,
-      swapServerUrl: node.Settings.swapServerUrl, boltzServerUrl: node.Settings.boltzServerUrl, enableOffers: node.Settings.enableOffers, enablePeerswap: node.Settings.enablePeerswap };
-    if (node.Settings.fiatConversion && node.Settings.currencyUnit) {
-      selNode['currencyUnits'] = [...CURRENCY_UNITS, node.Settings.currencyUnit];
-    }
+    // if (node.settings.fiatConversion && node.settings.currencyUnit) {
+    //   selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
+    // }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clnUnlocked');
     this.sessionService.removeItem('eclUnlocked');
     this.store.dispatch(resetRootStore({ payload: node }));
-    this.store.dispatch(resetLNDStore({ payload: selNode }));
-    this.store.dispatch(resetCLNStore({ payload: selNode }));
-    this.store.dispatch(resetECLStore({ payload: selNode }));
+    this.store.dispatch(resetLNDStore({ payload: node }));
+    this.store.dispatch(resetCLNStore({ payload: node }));
+    this.store.dispatch(resetECLStore({ payload: node }));
     if (this.sessionService.getItem('token')) {
       const nodeLnImplementation = node.lnImplementation ? node.lnImplementation.toUpperCase() : 'LND';
       this.dataService.setLnImplementation(nodeLnImplementation);

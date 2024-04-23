@@ -4,7 +4,7 @@ import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, ChannelsStatus, FeeRates, LocalRemoteBalance, Channel, ListForwards, UTXO, Balance } from '../../shared/models/clnModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
@@ -25,7 +25,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
   public faLink = faLink;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
@@ -81,7 +81,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
+      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {

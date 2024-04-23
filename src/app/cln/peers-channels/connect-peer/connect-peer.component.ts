@@ -17,7 +17,7 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/cln.actions';
 import { clnNodeSettings } from '../../store/cln.selector';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-connect-peer',
@@ -29,7 +29,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public peerAddress = '';
   public totalBalance = 0;
   public feeRateTypes = FEE_RATE_TYPES;
@@ -67,7 +67,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [!!this.selNode?.unannouncedChannels],
+      isPrivate: [!!this.selNode?.settings.unannouncedChannels],
       selFeeRate: [null],
       customFeeRate: [null],
       flgMinConf: [false],
@@ -76,9 +76,9 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
       });
     this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((flg) => {
       if (flg) {
