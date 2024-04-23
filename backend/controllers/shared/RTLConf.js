@@ -48,7 +48,6 @@ export const removeSecureData = (config) => {
 };
 export const addSecureData = (config) => {
     config.SSO.rtlCookiePath = common.appConfig.SSO.rtlCookiePath;
-    config.rtlPass = common.appConfig.rtlPass;
     config.multiPass = common.appConfig.multiPass;
     config.multiPassHashed = common.appConfig.multiPassHashed;
     config.secret2FA = common.appConfig.secret2FA;
@@ -233,6 +232,8 @@ export const updateApplicationSettings = (req, res, next) => {
     const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
     try {
         const config = addSecureData(req.body);
+        delete config.selectedNodeIndex;
+        delete config.enable2FA;
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         common.appConfig = config;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: maskPasswords(common.appConfig) });

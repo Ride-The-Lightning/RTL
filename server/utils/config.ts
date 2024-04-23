@@ -125,17 +125,16 @@ export class ConfigService {
   private validateNodeConfig = (config) => {
     if ((process?.env?.RTL_SSO && +process?.env?.RTL_SSO === 0) || (typeof process?.env?.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
       if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
-        this.common.appConfig.rtlPass = this.hash.update(process?.env?.APP_PASSWORD).digest('hex');
+        config.rtlPass = this.hash.update(process?.env?.APP_PASSWORD).digest('hex');
         this.common.appConfig.allowPasswordUpdate = false;
       } else if (config.multiPassHashed && config.multiPassHashed !== '') {
-        this.common.appConfig.rtlPass = config.multiPassHashed;
+        config.rtlPass = config.multiPassHashed;
       } else if (config.multiPass && config.multiPass !== '') {
-        this.common.appConfig.rtlPass = this.common.replacePasswordWithHash(this.hash.update(config.multiPass).digest('hex'));
+        config.rtlPass = this.common.replacePasswordWithHash(this.hash.update(config.multiPass).digest('hex'));
       } else {
         this.errMsg = this.errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
       }
-      this.common.appConfig.secret2FA = config.secret2FA;
-      this.common.appConfig.enable2FA = !!config.secret2FA;
+      config.enable2FA = !!config.secret2FA;
     } else {
       if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
         this.errMsg = this.errMsg + '\nRTL Password cannot be set with SSO. Please set SSO as 0 or remove password.';
@@ -143,7 +142,7 @@ export class ConfigService {
     }
     this.common.port = (process?.env?.PORT) ? this.normalizePort(process?.env?.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
     this.common.host = (process?.env?.HOST) ? process?.env?.HOST : (config.host) ? config.host : null;
-    this.common.appConfig.dbDirectoryPath = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+    config.dbDirectoryPath = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
     if (config.nodes && config.nodes.length > 0) {
       config.nodes.forEach((node, idx) => {
         this.common.nodes[idx] = { Settings: {}, Authentication: {} };
@@ -273,7 +272,7 @@ export class ConfigService {
         } catch (err) {
           this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
         }
-        this.common.nodes[idx].Settings.logFile = this.common.appConfig.rtlConfFilePath + '/logs/RTL-Node-' + node.index + '.log';
+        this.common.nodes[idx].Settings.logFile = config.rtlConfFilePath + '/logs/RTL-Node-' + node.index + '.log';
         this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.nodes[idx]) });
         const log_file = this.common.nodes[idx].Settings.logFile;
         if (fs.existsSync(log_file || '')) {
@@ -296,27 +295,27 @@ export class ConfigService {
 
   private setSSOParams = (config) => {
     if (process?.env?.RTL_SSO) {
-      this.common.appConfig.SSO.rtlSso = +process?.env?.RTL_SSO;
+      config.SSO.rtlSso = +process?.env?.RTL_SSO;
     } else if (config.SSO && config.SSO.rtlSSO) {
-      this.common.appConfig.SSO.rtlSso = config.SSO.rtlSSO;
+      config.SSO.rtlSso = config.SSO.rtlSSO;
     }
 
     if (process?.env?.RTL_COOKIE_PATH) {
-      this.common.appConfig.SSO.rtlCookiePath = process?.env?.RTL_COOKIE_PATH;
+      config.SSO.rtlCookiePath = process?.env?.RTL_COOKIE_PATH;
     } else if (config.SSO && config.SSO.rtlCookiePath) {
-      this.common.appConfig.SSO.rtlCookiePath = config.SSO.rtlCookiePath;
+      config.SSO.rtlCookiePath = config.SSO.rtlCookiePath;
     } else {
-      this.common.appConfig.SSO.rtlCookiePath = '';
+      config.SSO.rtlCookiePath = '';
     }
 
     if (process?.env?.LOGOUT_REDIRECT_LINK) {
-      this.common.appConfig.SSO.logoutRedirectLink = process?.env?.LOGOUT_REDIRECT_LINK;
+      config.SSO.logoutRedirectLink = process?.env?.LOGOUT_REDIRECT_LINK;
     } else if (config.SSO && config.SSO.logoutRedirectLink) {
-      this.common.appConfig.SSO.logoutRedirectLink = config.SSO.logoutRedirectLink;
+      config.SSO.logoutRedirectLink = config.SSO.logoutRedirectLink;
     }
 
-    if (+this.common.appConfig.SSO.rtlSso) {
-      if (!this.common.appConfig.SSO.rtlCookiePath || this.common.appConfig.SSO.rtlCookiePath.trim() === '') {
+    if (+config.SSO.rtlSso) {
+      if (!config.SSO.rtlCookiePath || config.SSO.rtlCookiePath.trim() === '') {
         this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
       } else {
         this.common.readCookie();
@@ -340,9 +339,11 @@ export class ConfigService {
         fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig()));
       }
       const config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
+      config.rtlConfFilePath = this.common.appConfig.rtlConfFilePath;
       this.updateLogByLevel();
       this.validateNodeConfig(config);
       this.setSelectedNode(config);
+      this.common.appConfig = config;
     } catch (err: any) {
       this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while configuring the node server: \n' + err });
       throw new Error(err);
