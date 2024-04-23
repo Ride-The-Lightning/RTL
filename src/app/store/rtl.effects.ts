@@ -277,17 +277,19 @@ export class RTLEffects implements OnDestroy {
   updateApplicationSettings = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.UPDATE_APPLICATION_SETTINGS),
-      mergeMap((action: { type: string, payload: RTLConfiguration }) => {
+      mergeMap((action: { type: string, payload: { showSnackBar: boolean, message: string, config: RTLConfiguration } }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.INITIATED } }));
-        action.payload.nodes.forEach((node) => {
+        action.payload.config.nodes.forEach((node) => {
           delete node.Settings.currencyUnits;
         });
-        return this.httpClient.post(API_END_POINTS.CONF_API + '/application', action.payload).
+        return this.httpClient.post(API_END_POINTS.CONF_API + '/application', action.payload.config).
           pipe(map((appConfig: RTLConfiguration) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
-            this.store.dispatch(openSnackBar({ payload: 'Application Settings Updated Successfully!' }));
+            if (action.payload.showSnackBar) {
+              this.store.dispatch(openSnackBar({ payload: action.payload.message }));
+            }
             return {
               type: RTLActions.SET_APPLICATION_SETTINGS,
               payload: appConfig
