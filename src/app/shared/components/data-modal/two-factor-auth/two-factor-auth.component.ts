@@ -91,6 +91,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
 
   onVerifyToken(): boolean | void {
     if (this.appConfig?.enable2FA) {
+      this.appConfig.enable2FA = false;
       this.appConfig.secret2FA = '';
       this.store.dispatch(updateApplicationSettings({ payload: this.appConfig }));
       this.generateSecret();
@@ -104,6 +105,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
+      this.appConfig.enable2FA = true;
       this.appConfig.secret2FA = this.secretFormGroup.controls.secret.value;
       this.store.dispatch(updateApplicationSettings({ payload: this.appConfig }));
       this.tokenFormGroup.controls.token.setValue('');

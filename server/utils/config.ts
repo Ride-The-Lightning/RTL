@@ -123,10 +123,11 @@ export class ConfigService {
   };
 
   private validateNodeConfig = (config) => {
+    config.allowPasswordUpdate = true;
     if ((process?.env?.RTL_SSO && +process?.env?.RTL_SSO === 0) || (typeof process?.env?.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
       if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
         config.rtlPass = this.hash.update(process?.env?.APP_PASSWORD).digest('hex');
-        this.common.appConfig.allowPasswordUpdate = false;
+        config.allowPasswordUpdate = false;
       } else if (config.multiPassHashed && config.multiPassHashed !== '') {
         config.rtlPass = config.multiPassHashed;
       } else if (config.multiPass && config.multiPass !== '') {
@@ -333,13 +334,13 @@ export class ConfigService {
 
   public setServerConfiguration = () => {
     try {
-      this.common.appConfig.rtlConfFilePath = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
-      const confFileFullPath = this.common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
+      const rtlConfFilePath = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
+      const confFileFullPath = rtlConfFilePath + sep + 'RTL-Config.json';
       if (!fs.existsSync(confFileFullPath)) {
         fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig()));
       }
       const config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
-      config.rtlConfFilePath = this.common.appConfig.rtlConfFilePath;
+      config.rtlConfFilePath = rtlConfFilePath;
       this.updateLogByLevel();
       this.validateNodeConfig(config);
       this.setSelectedNode(config);

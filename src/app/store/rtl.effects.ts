@@ -287,6 +287,7 @@ export class RTLEffects implements OnDestroy {
           pipe(map((appConfig: RTLConfiguration) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+            this.store.dispatch(openSnackBar({ payload: 'Application Settings Updated Successfully!' }));
             return {
               type: RTLActions.SET_APPLICATION_SETTINGS,
               payload: appConfig
