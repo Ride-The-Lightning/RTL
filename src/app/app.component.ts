@@ -14,7 +14,7 @@ import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { AlertTypeEnum, RTLActions, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { rootAppConfig, rootNodeData, rootSelectedNode } from './store/rtl.selector';
-import { RTLConfiguration, Settings, GetInfoRoot } from './shared/models/RTLconfig';
+import { RTLConfiguration, GetInfoRoot } from './shared/models/RTLconfig';
 import { closeAllDialogs, fetchRTLConfig, login, logout, openAlert } from './store/rtl.actions';
 import { routeAnimation } from './shared/animation/route-animation';
 
@@ -30,11 +30,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('sideNavContent', { static: false }) sideNavContent: any;
-  public settings: Settings;
   public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
   public flgSideNavOpened = true;
   public flgCopied = false;
+  public selNode: Node | any;
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public xSmallScreen = false;
@@ -78,7 +78,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(fetchRTLConfig());
     this.accessKey = this.readAccessKey() || '';
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
-      this.settings = selNode.settings;
       if (!this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.flgLoading[0] = false;
@@ -86,6 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoggedIn = true;
         this.userIdle.startWatching();
       }
+      this.selNode = selNode;
     });
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
     this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {

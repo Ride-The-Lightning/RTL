@@ -250,13 +250,13 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateNodeSettings', status: APICallStatusEnum.INITIATED } }));
         const updateSettingReq = new Observable();
-        // if (action.payload.settings && action.payload.defaultNodeIndex) {
-        //   const settingsRes = this.httpClient.post<Settings>(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.settings });
+        // if (action.payload.Settings && action.payload.defaultNodeIndex) {
+        //   const settingsRes = this.httpClient.post<Settings>(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.Settings });
         //   const defaultNodeRes = this.httpClient.post(API_END_POINTS.CONF_API + '/node', { defaultNodeIndex: action.payload.defaultNodeIndex });
         //   updateSettingReq = forkJoin([settingsRes, defaultNodeRes]);
-        // } else if (action.payload.settings && !action.payload.defaultNodeIndex) {
-        //   updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.settings });
-        // } else if (!action.payload.settings && action.payload.defaultNodeIndex) {
+        // } else if (action.payload.Settings && !action.payload.defaultNodeIndex) {
+        //   updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API, { UpdateNodeSettings: action.payload.Settings });
+        // } else if (!action.payload.Settings && action.payload.defaultNodeIndex) {
         //   updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API + '/node', { defaultNodeIndex: action.payload.defaultNodeIndex });
         // }
         return updateSettingReq.pipe(map((updateStatus: any) => {

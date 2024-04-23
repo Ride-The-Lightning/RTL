@@ -1,4 +1,15 @@
-export class NodeSettings {
+export class SSO {
+
+  constructor(
+    public rtlSso?: number,
+    public rtlCookiePath?: string,
+    public logoutRedirectLink?: string,
+    public cookieValue?: string
+  ) { }
+
+}
+
+export class Settings {
 
   constructor(
     public lnServerUrl?: string,
@@ -20,7 +31,7 @@ export class NodeSettings {
 
 }
 
-export class NodeAuthentication {
+export class Authentication {
 
   constructor(
     public options?: any,
@@ -32,33 +43,6 @@ export class NodeAuthentication {
     public lnApiPassword?: string,
     public swapMacaroonPath?: string,
     public boltzMacaroonPath?: string
-  ) { }
-
-}
-
-export class SelectedNode {
-
-  constructor(
-    public logLevel?: string,
-    public logFile?: string,
-    public index?: number,
-    public lnNode?: string,
-    public lnImplementation?: string,
-    public lnVersion?: string,
-    public apiVersion?: string,
-    public Settings?: NodeSettings,
-    public Authentication?: NodeAuthentication
-  ) { }
-
-}
-
-export class SSO {
-
-  constructor(
-    public rtlSso?: number,
-    public rtlCookiePath?: string,
-    public logoutRedirectLink?: string,
-    public cookieValue?: string
   ) { }
 
 }
@@ -79,6 +63,21 @@ export class ApplicationConfig {
     public SSO?: SSO,
     public nodes?: SelectedNode[]
   ) {}
+
+}
+
+export class SelectedNode {
+
+  constructor(
+    public logLevel?: string,
+    public logFile?: string,
+    public index?: number,
+    public lnNode?: string,
+    public lnImplementation?: string,
+    public lnVersion?: string,
+    public Settings?: Settings,
+    public Authentication?: Authentication
+  ) { }
 
 }
 

@@ -1,4 +1,4 @@
-<div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[settings.themeColor | lowercase, settings.themeMode | lowercase]">
+<div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[selNode.Settings.themeColor | lowercase, selNode.Settings.themeMode | lowercase]">
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="bg-primary rtl-top-toolbar">
     <div>
       <button *ngIf="flgLoggedIn" mat-icon-button matTooltipPosition="right" [matTooltip]="flgSideNavOpened ? 'Hide Navigation Menu' : 'Show Navigation Menu'" [matTooltipDisabled]="smallScreen" (click)="sideNavToggle()">
@@ -29,7 +29,7 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
-  <div *ngIf="!settings.themeColor" class="rtl-spinner">
+  <div *ngIf="!selNode.Settings.themeColor" class="rtl-spinner">
     <mat-spinner color="accent" />
     <h4>Loading RTL...</h4>
   </div>

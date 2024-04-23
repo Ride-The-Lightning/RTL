@@ -41,18 +41,6 @@ export class Authentication {
 
 }
 
-export class Node {
-
-  constructor(
-    public Settings: Settings,
-    public Authentication: Authentication,
-    public index?: number,
-    public lnNode?: string,
-    public lnImplementation?: string
-  ) { }
-
-}
-
 export class RTLConfiguration {
 
   constructor(
@@ -63,6 +51,18 @@ export class RTLConfiguration {
     public secret2FA: string,
     public allowPasswordUpdate: boolean,
     public nodes: Node[]
+  ) { }
+
+}
+
+export class Node {
+
+  constructor(
+    public Settings: Settings,
+    public Authentication: Authentication,
+    public index?: number,
+    public lnNode?: string,
+    public lnImplementation?: string
   ) { }
 
 }

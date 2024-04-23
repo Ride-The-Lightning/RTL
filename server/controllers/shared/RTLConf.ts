@@ -8,7 +8,7 @@ import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { ApplicationConfig, NodeAuthentication, SSO } from '../../models/config.model.js';
+import { ApplicationConfig, Authentication, SSO } from '../../models/config.model.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;
@@ -36,7 +36,7 @@ export const maskPasswords = (obj) => {
   return obj;
 };
 
-export const removeSensitiveData = (config: ApplicationConfig) => {
+export const removeSecureData = (config: ApplicationConfig) => {
   delete config.rtlConfFilePath;
   delete config.rtlPass;
   delete config.multiPass;
@@ -46,6 +46,27 @@ export const removeSensitiveData = (config: ApplicationConfig) => {
     delete node.Authentication.macaroonPath;
     delete node.Authentication.runePath;
     delete node.Authentication.lnApiPassword;
+    return node;
+  });
+  return config;
+};
+
+export const addSecureData = (config: ApplicationConfig) => {
+  config.SSO.rtlCookiePath = common.appConfig.SSO.rtlCookiePath;
+  config.rtlPass = common.appConfig.rtlPass;
+  config.multiPass = common.appConfig.multiPass;
+  config.multiPassHashed = common.appConfig.multiPassHashed;
+  config.secret2FA = common.appConfig.secret2FA;
+  config.nodes.map((node, i) => {
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.macaroonPath) {
+      node.Authentication.macaroonPath = common.appConfig.nodes[i].Authentication.macaroonPath;
+    }
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.runePath) {
+      node.Authentication.runePath = common.appConfig.nodes[i].Authentication.runePath;
+    }
+    if (common.appConfig && common.appConfig.nodes && common.appConfig.nodes.length > i && common.appConfig.nodes[i].Authentication && common.appConfig.nodes[i].Authentication.lnApiPassword) {
+      node.Authentication.lnApiPassword = common.appConfig.nodes[i].Authentication.lnApiPassword;
+    }
     return node;
   });
   return config;
@@ -91,7 +112,7 @@ export const getApplicationSettings = (req, res, next) => {
       const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
-      const appConfData = removeSensitiveData(JSON.parse(data));
+      const appConfData = removeSecureData(JSON.parse(data));
       appConfData.allowPasswordUpdate = common.appConfig.allowPasswordUpdate;
       appConfData.enable2FA = common.appConfig.enable2FA;
       appConfData.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
@@ -103,7 +124,7 @@ export const getApplicationSettings = (req, res, next) => {
           appConfData.SSO = new SSO();
           appConfData.secret2FA = '';
           appConfData.dbDirectoryPath = '';
-          appConfData.nodes[selNodeIdx].Authentication = new NodeAuthentication();
+          appConfData.nodes[selNodeIdx].Authentication = new Authentication();
           delete appConfData.nodes[selNodeIdx].Settings.bitcoindConfigPath;
           delete appConfData.nodes[selNodeIdx].Settings.lnServerUrl;
           delete appConfData.nodes[selNodeIdx].Settings.swapServerUrl;
@@ -216,10 +237,11 @@ export const updateApplicationSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Application Settings..' });
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   try {
-    fs.writeFileSync(RTLConfFile, JSON.stringify(req.body, null, 2), 'utf-8');
-    common.appConfig = req.body;
+    const config = addSecureData(req.body);
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    common.appConfig = config;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: maskPasswords(common.appConfig) });
-    res.status(201).json(removeSensitiveData(common.appConfig));
+    res.status(201).json(removeSecureData(config));
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);

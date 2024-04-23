@@ -42,7 +42,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
       this.showBitcoind = false;
       this.selNode = selNode;
-      if (this.selNode.settings && this.selNode.Settings.bitcoindConfigPath && this.selNode.Settings.bitcoindConfigPath.trim() !== '') {
+      if (this.selNode.Settings && this.selNode.Settings.bitcoindConfigPath && this.selNode.Settings.bitcoindConfigPath.trim() !== '') {
         this.showBitcoind = true;
       }
     });

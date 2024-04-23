@@ -15,9 +15,9 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>Loop Macaroon Path</mat-label>
-        <input matInput type="text" id="swapMacaroonPath" name="swapMacaroonPath" tabindex="3" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.authentication.swapMacaroonPath">
+        <input matInput type="text" id="swapMacaroonPath" name="swapMacaroonPath" tabindex="3" [required]="enableLoop" [disabled]="!enableLoop" [(ngModel)]="selNode.Authentication.swapMacaroonPath">
         <mat-hint>Path for the folder containing service 'loop.macaroon', eg. D:\\xyz\\AppData\\Local\\Loop\\testnet</mat-hint>
-        <mat-error *ngIf="!selNode.authentication.swapMacaroonPath && enableLoop">Loop macaroon path is required.</mat-error>
+        <mat-error *ngIf="!selNode.Authentication.swapMacaroonPath && enableLoop">Loop macaroon path is required.</mat-error>
       </mat-form-field>
     </div>
   </form>

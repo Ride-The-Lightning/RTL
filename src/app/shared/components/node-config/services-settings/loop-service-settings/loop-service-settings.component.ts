@@ -44,7 +44,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
   onEnableServiceChanged(event) {
     this.enableLoop = event.checked;
     if (!this.enableLoop) {
-      this.selNode.authentication.swapMacaroonPath = '';
+      this.selNode.Authentication.swapMacaroonPath = '';
       this.selNode.Settings.swapServerUrl = '';
     }
   }
@@ -53,11 +53,11 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
     if (this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
       this.form.controls.srvrUrl.setErrors({ invalid: true });
     }
-    if (this.enableLoop && (!this.selNode.Settings.swapServerUrl || this.selNode.Settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) {
+    if (this.enableLoop && (!this.selNode.Settings.swapServerUrl || this.selNode.Settings.swapServerUrl.trim() === '' || !this.selNode.Authentication.swapMacaroonPath || this.selNode.Authentication.swapMacaroonPath.trim() === '')) {
       return true;
     }
     this.logger.info(this.selNode);
-    // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.Settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } } }));
+    // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.Settings.swapServerUrl, macaroonPath: this.selNode.Authentication.swapMacaroonPath } } }));
     // this.store.dispatch(setChildNodeSettingsLND({
     //   payload: {
     //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,

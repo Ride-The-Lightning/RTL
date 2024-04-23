@@ -54,7 +54,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       if (!this.selNode.Settings.fiatConversion) {
         this.selNode.Settings.currencyUnit = '';
       }
-      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
+      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.Settings));
       this.logger.info(selNode);
     });
   }
@@ -85,7 +85,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   toggleSettings(toggleField: string, event?: any) {
-    this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
+    this.selNode.Settings[toggleField] = !this.selNode.Settings[toggleField];
   }
 
   changeThemeColor(newThemeColor: string) {
@@ -101,7 +101,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     if (this.selNode.Settings.fiatConversion && !this.selNode.Settings.currencyUnit) {
       return true;
     }
-    this.logger.info(this.selNode.settings);
+    this.logger.info(this.selNode.Settings);
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
         userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
@@ -130,7 +130,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   onResetSettings() {
     const prevIndex = this.selNode.index || -1;
-    this.selNode.settings = this.previousSettings;
+    this.selNode.Settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find((themeMode) => themeMode.id === this.previousSettings.themeMode) || this.themeModes[0];
     this.selectedThemeColor = this.previousSettings.themeColor;
     this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: +prevIndex, currentLnNode: this.selNode, isInitialSetup: true } }));

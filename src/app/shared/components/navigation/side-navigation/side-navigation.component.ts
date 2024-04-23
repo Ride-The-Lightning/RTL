@@ -35,7 +35,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
   public selNode: Node | any;
-  public settings: Settings | null;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
@@ -93,7 +92,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.smallScreen = true;
         }
         this.selNode = rootData.selNode;
-        this.settings = this.selNode?.settings || null;
         this.selConfigNodeIndex = +(rootData.selNode?.index || 0);
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
@@ -162,12 +160,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
-          (navMenuChild.link === '/services/loop' && this.settings?.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.Settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+          (navMenuChild.link === '/services/loop' && this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '') ||
+          (navMenuChild.link === '/services/boltz' && this.selNode.Settings.boltzServerUrl && this.selNode.Settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.Settings.userPersona;
     });
   }
 
@@ -176,12 +174,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/peerswap') ||
-          (navMenuChild.link === '/services/peerswap' && this.settings?.enablePeerswap) ||
-          (navMenuChild.link === '/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.Settings.userPersona) && navMenuChild.link !== '/services/peerswap') ||
+          (navMenuChild.link === '/services/peerswap' && this.selNode.Settings.enablePeerswap) ||
+          (navMenuChild.link === '/services/boltz' && this.selNode.Settings.boltzServerUrl && this.selNode.Settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.Settings.userPersona;
     });
   }
 

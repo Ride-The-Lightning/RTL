@@ -40,7 +40,7 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
   }
 
   setActiveLink() {
-    if (this.selNode && this.selNode.settings) {
+    if (this.selNode && this.selNode.Settings) {
       if (this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '') {
         this.activeLink = this.links[0].link;
       } else if (this.selNode.Settings.boltzServerUrl && this.selNode.Settings.boltzServerUrl.trim() !== '') {

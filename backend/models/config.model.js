@@ -1,4 +1,12 @@
-export class NodeSettings {
+export class SSO {
+    constructor(rtlSso, rtlCookiePath, logoutRedirectLink, cookieValue) {
+        this.rtlSso = rtlSso;
+        this.rtlCookiePath = rtlCookiePath;
+        this.logoutRedirectLink = logoutRedirectLink;
+        this.cookieValue = cookieValue;
+    }
+}
+export class Settings {
     constructor(lnServerUrl, swapServerUrl, boltzServerUrl, bitcoindConfigPath, channelBackupPath, logLevel, logFile, userPersona, themeMode, themeColor, unannouncedChannels, fiatConversion, currencyUnit, enableOffers, enablePeerswap) {
         this.lnServerUrl = lnServerUrl;
         this.swapServerUrl = swapServerUrl;
@@ -17,7 +25,7 @@ export class NodeSettings {
         this.enablePeerswap = enablePeerswap;
     }
 }
-export class NodeAuthentication {
+export class Authentication {
     constructor(options, configPath, macaroonPath, macaroonValue, runePath, runeValue, lnApiPassword, swapMacaroonPath, boltzMacaroonPath) {
         this.options = options;
         this.configPath = configPath;
@@ -28,27 +36,6 @@ export class NodeAuthentication {
         this.lnApiPassword = lnApiPassword;
         this.swapMacaroonPath = swapMacaroonPath;
         this.boltzMacaroonPath = boltzMacaroonPath;
-    }
-}
-export class SelectedNode {
-    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, apiVersion, Settings, Authentication) {
-        this.logLevel = logLevel;
-        this.logFile = logFile;
-        this.index = index;
-        this.lnNode = lnNode;
-        this.lnImplementation = lnImplementation;
-        this.lnVersion = lnVersion;
-        this.apiVersion = apiVersion;
-        this.Settings = Settings;
-        this.Authentication = Authentication;
-    }
-}
-export class SSO {
-    constructor(rtlSso, rtlCookiePath, logoutRedirectLink, cookieValue) {
-        this.rtlSso = rtlSso;
-        this.rtlCookiePath = rtlCookiePath;
-        this.logoutRedirectLink = logoutRedirectLink;
-        this.cookieValue = cookieValue;
     }
 }
 export class ApplicationConfig {
@@ -65,6 +52,18 @@ export class ApplicationConfig {
         this.secret2FA = secret2FA;
         this.SSO = SSO;
         this.nodes = nodes;
+    }
+}
+export class SelectedNode {
+    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, Settings, Authentication) {
+        this.logLevel = logLevel;
+        this.logFile = logFile;
+        this.index = index;
+        this.lnNode = lnNode;
+        this.lnImplementation = lnImplementation;
+        this.lnVersion = lnVersion;
+        this.Settings = Settings;
+        this.Authentication = Authentication;
     }
 }
 export class LogJSONObj {

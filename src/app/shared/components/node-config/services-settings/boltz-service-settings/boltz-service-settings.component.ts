@@ -39,7 +39,7 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
         this.selNode = selNode;
         this.enableBoltz = !!(selNode.Settings.boltzServerUrl && selNode.Settings.boltzServerUrl.trim() !== '');
         this.serverUrl = this.selNode.Settings.boltzServerUrl || '';
-        this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
+        this.macaroonPath = this.selNode.Authentication.boltzMacaroonPath;
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
         this.logger.info(selNode);
       });
@@ -68,7 +68,7 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
     }
     this.logger.info(this.selNode);
     this.selNode.Settings.boltzServerUrl = this.serverUrl;
-    this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
+    this.selNode.Authentication.boltzMacaroonPath = this.macaroonPath;
     // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath } } }));
     // this.store.dispatch(setChildNodeSettingsLND({
     //   payload: {
@@ -93,7 +93,7 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
     this.serverUrl = this.selNode.Settings.boltzServerUrl || '';
-    this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
+    this.macaroonPath = this.selNode.Authentication.boltzMacaroonPath;
     this.enableBoltz = !!(this.serverUrl && this.serverUrl.trim() !== '');
   }
 
