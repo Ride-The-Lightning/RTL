@@ -13,7 +13,7 @@ export class LNDWebSocketClient {
         this.connect = (selectedNode) => {
             try {
                 const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
-                if (!clientExists && selectedNode.settings.lnServerUrl) {
+                if (!clientExists && selectedNode.Settings.lnServerUrl) {
                     const newWebSocketClient = { selectedNode: selectedNode };
                     this.webSocketClients.push(newWebSocketClient);
                 }
@@ -25,7 +25,7 @@ export class LNDWebSocketClient {
         this.fetchUnpaidInvoices = (selectedNode) => {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Getting Unpaid Invoices..' });
             const options = this.setOptionsForSelNode(selectedNode);
-            options.url = selectedNode.settings.lnServerUrl + '/v1/invoices?pending_only=true';
+            options.url = selectedNode.Settings.lnServerUrl + '/v1/invoices?pending_only=true';
             return request(options).then((body) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Unpaid Invoices Received', data: body });
                 if (body.invoices && body.invoices.length > 0) {
@@ -44,7 +44,7 @@ export class LNDWebSocketClient {
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
             rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
-            options.url = selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash;
+            options.url = selectedNode.Settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash;
             request(options).then((msg) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
                 if (typeof msg === 'string') {
@@ -67,7 +67,7 @@ export class LNDWebSocketClient {
         };
         this.subscribeToPayment = (options, selectedNode, paymentHash) => {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Payment ' + paymentHash + ' ..' });
-            options.url = selectedNode.settings.lnServerUrl + '/v2/router/track/' + paymentHash;
+            options.url = selectedNode.Settings.lnServerUrl + '/v2/router/track/' + paymentHash;
             request(options).then((msg) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Payment Information Received for ' + paymentHash });
                 msg['type'] = 'payment';
@@ -84,7 +84,7 @@ export class LNDWebSocketClient {
         this.setOptionsForSelNode = (selectedNode) => {
             const options = { url: '', rejectUnauthorized: false, json: true, form: null };
             try {
-                options['headers'] = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                options['headers'] = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(selectedNode.Authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
             }
             catch (err) {
                 this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'WebSocketClient', msg: 'Set Options Error', error: JSON.stringify(err) });

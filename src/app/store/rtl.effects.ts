@@ -14,7 +14,7 @@ import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
 import { DataService } from '../shared/services/data.service';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { API_URL, API_END_POINTS, RTLActions, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
 import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateNodeSettings, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
@@ -218,9 +218,9 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(rtlConfig);
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
-        let searchNode: ConfigSettingsNode | null = null;
+        let searchNode: Node | null = null;
         rtlConfig.nodes.forEach((node) => {
-          node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
+          node.Settings.currencyUnits = [...CURRENCY_UNITS, (node.Settings?.currencyUnit ? node.Settings?.currencyUnit : '')];
           if (+(node.index || -1) === rtlConfig.selectedNodeIndex) {
             searchNode = node;
           }
@@ -280,6 +280,9 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: RTLConfiguration }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.INITIATED } }));
+        action.payload.nodes.forEach((node) => {
+          delete node.Settings.currencyUnits;
+        });
         return this.httpClient.post(API_END_POINTS.CONF_API + '/application', action.payload).
           pipe(map((appConfig: RTLConfiguration) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.COMPLETED } }));
@@ -516,14 +519,14 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  initializeNode(node: ConfigSettingsNode, isInitialSetup: boolean) {
+  initializeNode(node: Node, isInitialSetup: boolean) {
     this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
-    const selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, unannouncedChannels: !!node.settings.unannouncedChannels,
-      selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation,
-      swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
-    if (node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
+    const selNode = { userPersona: node.Settings.userPersona, channelBackupPath: node.Settings.channelBackupPath, unannouncedChannels: !!node.Settings.unannouncedChannels,
+      selCurrencyUnit: node.Settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.Settings.fiatConversion, lnImplementation: node.lnImplementation,
+      swapServerUrl: node.Settings.swapServerUrl, boltzServerUrl: node.Settings.boltzServerUrl, enableOffers: node.Settings.enableOffers, enablePeerswap: node.Settings.enablePeerswap };
+    if (node.Settings.fiatConversion && node.Settings.currencyUnit) {
+      selNode['currencyUnits'] = [...CURRENCY_UNITS, node.Settings.currencyUnit];
     }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clnUnlocked');

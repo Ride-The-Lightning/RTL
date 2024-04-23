@@ -5,7 +5,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 export const getFilteredNodes = (selNode, peersNodeIds) => {
-    options.url = selNode.settings.lnServerUrl + '/nodes';
+    options.url = selNode.Settings.lnServerUrl + '/nodes';
     options.form = { nodeIds: peersNodeIds };
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Filtered Nodes Received', data: nodes });
@@ -18,7 +18,7 @@ export const getPeers = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/peers';
+    options.url = req.session.selectedNode.Settings.lnServerUrl + '/peers';
     options.form = {};
     if (common.read_dummy_data) {
         common.getDummyData('Peers', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
@@ -58,7 +58,7 @@ export const connectPeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/connect';
+    options.url = req.session.selectedNode.Settings.lnServerUrl + '/connect';
     options.form = {};
     if (req.query) {
         options.form = req.query;
@@ -74,7 +74,7 @@ export const connectPeer = (req, res, next) => {
             const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
-        options.url = req.session.selectedNode.settings.lnServerUrl + '/peers';
+        options.url = req.session.selectedNode.Settings.lnServerUrl + '/peers';
         options.form = {};
         request.post(options).then((body) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List after Connect', data: body });
@@ -112,7 +112,7 @@ export const deletePeer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/disconnect';
+    options.url = req.session.selectedNode.Settings.lnServerUrl + '/disconnect';
     options.form = {};
     if (req.params.nodeId) {
         options.form = { nodeId: req.params.nodeId };

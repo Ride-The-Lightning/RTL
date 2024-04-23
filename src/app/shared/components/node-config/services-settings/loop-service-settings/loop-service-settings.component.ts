@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
-import { ConfigSettingsNode } from '../../../../models/RTLconfig';
+import { Node } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateNodeSettings } from '../../../../../store/rtl.actions';
@@ -23,8 +23,8 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode | any;
-  public previousSelNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
+  public previousSelNode: Node | any;
   public enableLoop = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -35,7 +35,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enableLoop = !!(selNode.settings.swapServerUrl && selNode.settings.swapServerUrl.trim() !== '');
+        this.enableLoop = !!(selNode.Settings.swapServerUrl && selNode.Settings.swapServerUrl.trim() !== '');
         this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
         this.logger.info(selNode);
       });
@@ -45,42 +45,42 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
     this.enableLoop = event.checked;
     if (!this.enableLoop) {
       this.selNode.authentication.swapMacaroonPath = '';
-      this.selNode.settings.swapServerUrl = '';
+      this.selNode.Settings.swapServerUrl = '';
     }
   }
 
   onUpdateService(): boolean | void {
-    if (this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
+    if (this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
       this.form.controls.srvrUrl.setErrors({ invalid: true });
     }
-    if (this.enableLoop && (!this.selNode.settings.swapServerUrl || this.selNode.settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) {
+    if (this.enableLoop && (!this.selNode.Settings.swapServerUrl || this.selNode.Settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) {
       return true;
     }
     this.logger.info(this.selNode);
-    // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } } }));
+    // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.Settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } } }));
     // this.store.dispatch(setChildNodeSettingsLND({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsCLN({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsECL({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers
     //   }
     // }));
   }
 
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
-    this.enableLoop = !!(this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '');
+    this.enableLoop = !!(this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '');
   }
 
   ngOnDestroy() {

@@ -8,7 +8,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
 import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import { RTLConfiguration, ConfigSettingsNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
+import { RTLConfiguration, Node, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -34,7 +34,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEye = faEye;
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public settings: Settings | null;
   public version = '';
   public information: GetInfoRoot = {};
@@ -73,7 +73,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
     });
     this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
-      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode | null }) => {
+      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: Node | null }) => {
         this.information = rootData.nodeDate;
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {

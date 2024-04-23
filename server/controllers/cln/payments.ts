@@ -11,7 +11,7 @@ const common: CommonService = Common;
 const databaseService: DatabaseService = Database;
 
 export const getMemo = (selNode: SelectedNode, payment: any) => {
-  options.url = selNode.settings.lnServerUrl + '/v1/decode';
+  options.url = selNode.Settings.lnServerUrl + '/v1/decode';
   options.body = { string: payment.bolt11 };
   return request.post(options).then((res) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
@@ -74,7 +74,7 @@ export const listPayments = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'List Payments..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listsendpays';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/listsendpays';
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
     body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
@@ -95,7 +95,7 @@ export const postPayment = (req, res, next) => {
   const options_body = JSON.parse(JSON.stringify(req.body));
   if (paymentType === 'KEYSEND') {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/keysend';
+    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/keysend';
     delete options_body.uiMessage;
     delete options_body.fromDialog;
     delete options_body.paymentType;
@@ -134,7 +134,7 @@ export const postPayment = (req, res, next) => {
     delete options_body.pubkey;
     delete options_body.saveToDB;
     options.body = options_body;
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/pay';
+    options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/pay';
   }
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });

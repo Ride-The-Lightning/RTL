@@ -41,11 +41,11 @@ export class Authentication {
 
 }
 
-export class ConfigSettingsNode {
+export class Node {
 
   constructor(
-    public settings: Settings,
-    public authentication: Authentication,
+    public Settings: Settings,
+    public Authentication: Authentication,
     public index?: number,
     public lnNode?: string,
     public lnImplementation?: string
@@ -62,7 +62,7 @@ export class RTLConfiguration {
     public enable2FA: boolean,
     public secret2FA: string,
     public allowPasswordUpdate: boolean,
-    public nodes: ConfigSettingsNode[]
+    public nodes: Node[]
   ) { }
 
 }

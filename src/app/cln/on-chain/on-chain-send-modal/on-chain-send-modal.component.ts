@@ -132,8 +132,8 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     });
     combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[1])).
       subscribe(([selNode, appConfig]) => {
-        this.fiatConversion = selNode.settings.fiatConversion;
-        this.amountUnits = selNode.settings.currencyUnits;
+        this.fiatConversion = selNode.Settings.fiatConversion;
+        this.amountUnits = selNode.Settings.currencyUnits;
         this.appConfig = appConfig;
       });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[2])).

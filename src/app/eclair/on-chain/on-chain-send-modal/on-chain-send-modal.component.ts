@@ -48,8 +48,8 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
-      this.fiatConversion = selNode.settings.fiatConversion;
-      this.amountUnits = selNode.settings.currencyUnits;
+      this.fiatConversion = selNode.Settings.fiatConversion;
+      this.amountUnits = selNode.Settings.currencyUnits;
       this.logger.info(selNode);
     });
     this.actions.pipe(

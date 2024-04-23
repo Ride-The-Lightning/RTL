@@ -11,7 +11,7 @@ import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { SelNodeChild, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { SelNodeChild, Node } from '../../../models/RTLconfig';
 import { TableSetting, PageSettings } from '../../../models/pageSettings';
 import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
 import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
@@ -29,7 +29,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
 
   public faPenRuler = faPenRuler;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: ConfigSettingsNode;
+  public selNode: Node;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;

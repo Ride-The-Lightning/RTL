@@ -1,6 +1,6 @@
 import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
 import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import { LNDState } from '../lnd/store/lnd.state';
 import { CLNState } from '../cln/store/cln.state';
@@ -9,7 +9,7 @@ import { ECLState } from '../eclair/store/ecl.state';
 export interface RootState {
   apiURL: string;
   apisCallStatus: ApiCallsListRoot;
-  selNode: ConfigSettingsNode | any;
+  selNode: Node | any;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }
@@ -28,7 +28,7 @@ export const initRootState: RootState = {
     enable2FA: false,
     secret2FA: '',
     allowPasswordUpdate: true,
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
+    nodes: [{ Settings: initNodeSettings, Authentication: initNodeAuthentication }]
   },
   nodeData: {}
 };

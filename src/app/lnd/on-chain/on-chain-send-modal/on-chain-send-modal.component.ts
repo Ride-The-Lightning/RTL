@@ -109,8 +109,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
     });
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
-      this.fiatConversion = selNode.settings.fiatConversion;
-      this.amountUnits = selNode.settings.currencyUnits;
+      this.fiatConversion = selNode.Settings.fiatConversion;
+      this.amountUnits = selNode.Settings.currencyUnits;
       this.logger.info(selNode);
     });
     this.actions.pipe(

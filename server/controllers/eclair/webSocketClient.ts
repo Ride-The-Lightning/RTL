@@ -40,13 +40,13 @@ export class ECLWebSocketClient {
     try {
       const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
       if (!clientExists) {
-        if (selectedNode.settings.lnServerUrl) {
+        if (selectedNode.Settings.lnServerUrl) {
           const newWebSocketClient = { selectedNode: selectedNode, reConnect: true, webSocketClient: null };
           this.connectWithClient(newWebSocketClient);
           this.webSocketClients.push(newWebSocketClient);
         }
       } else {
-        if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.settings.lnServerUrl) {
+        if ((!clientExists.webSocketClient || clientExists.webSocketClient.readyState !== WebSocket.OPEN) && selectedNode.Settings.lnServerUrl) {
           clientExists.reConnect = true;
           this.connectWithClient(clientExists);
         }
@@ -58,9 +58,9 @@ export class ECLWebSocketClient {
 
   public connectWithClient = (eclWsClt) => {
     this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connecting to the Eclair\'s Websocket Server..' });
-    const UpdatedLNServerURL = (eclWsClt.selectedNode.settings.lnServerUrl)?.replace(/^http/, 'ws');
+    const UpdatedLNServerURL = (eclWsClt.selectedNode.Settings.lnServerUrl)?.replace(/^http/, 'ws');
     const firstSubStrIndex = (UpdatedLNServerURL.indexOf('//') + 2);
-    const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.authentication.lnApiPassword + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
+    const WS_LINK = UpdatedLNServerURL.slice(0, firstSubStrIndex) + ':' + eclWsClt.selectedNode.Authentication.lnApiPassword + '@' + UpdatedLNServerURL.slice(firstSubStrIndex) + '/ws';
     eclWsClt.webSocketClient = new WebSocket(WS_LINK);
     eclWsClt.webSocketClient.onopen = () => {
       this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'INFO', fileName: 'ECLWebSocket', msg: 'Connected to the Eclair\'s Websocket Server..' });

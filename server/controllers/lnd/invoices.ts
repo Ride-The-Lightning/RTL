@@ -12,7 +12,7 @@ export const invoiceLookup = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/invoices/lookup';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v2/invoices/lookup';
   if (req.query.payment_addr) {
     options.url = options.url + '?payment_addr=' + req.query.payment_addr;
   } else {
@@ -34,7 +34,7 @@ export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting List Invoices..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset +
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset +
     '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
@@ -57,7 +57,7 @@ export const addInvoice = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Adding Invoice..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoices';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/invoices';
   options.form = JSON.stringify(req.body);
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added', data: body });

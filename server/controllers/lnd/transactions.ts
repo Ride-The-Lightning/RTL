@@ -9,7 +9,7 @@ export const getTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Getting Transactions..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/transactions';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transactions List Received', data: body });
     res.status(200).json(body.transactions);
@@ -24,7 +24,7 @@ export const postTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Sending Transaction..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/transactions';
   options.form = {
     amount: amount,
     addr: address,

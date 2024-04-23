@@ -1,5 +1,5 @@
 import { ServicesEnum } from '../services/consts-enums-functions';
-import { ConfigSettingsNode, RTLConfiguration, Settings } from './RTLconfig';
+import { Node, Settings } from './RTLconfig';
 
 export interface OpenSnackBar {
   message: string;
@@ -10,7 +10,7 @@ export interface OpenSnackBar {
 export interface SetSelectedNode {
   uiMessage: string;
   prevLnNodeIndex: number;
-  currentLnNode: ConfigSettingsNode | null;
+  currentLnNode: Node | null;
   isInitialSetup: boolean;
 }
 

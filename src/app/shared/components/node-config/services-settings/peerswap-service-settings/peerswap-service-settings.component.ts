@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
-import { ConfigSettingsNode } from '../../../../models/RTLconfig';
+import { Node } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateNodeSettings } from '../../../../../store/rtl.actions';
@@ -22,7 +22,7 @@ import { rootSelectedNode } from '../../../../../store/rtl.selector';
 export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
 
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public enablePeerswap = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -33,7 +33,7 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[0])).
       subscribe((selNode) => {
         this.selNode = selNode;
-        this.enablePeerswap = !!selNode?.settings.enablePeerswap;
+        this.enablePeerswap = !!selNode?.Settings.enablePeerswap;
         this.logger.info(selNode);
       });
   }
@@ -42,23 +42,23 @@ export class PeerswapServiceSettingsComponent implements OnInit, OnDestroy {
     // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_PEERSWAP_SETTINGS, service: ServicesEnum.PEERSWAP, settings: { enablePeerswap: this.enablePeerswap } } }));
     // this.store.dispatch(setChildNodeSettingsLND({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap:
-    //  this.selNode.settings.enablePeerswap
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers, enablePeerswap:
+    //  this.selNode.Settings.enablePeerswap
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsCLN({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap:
-    //  this.selNode.settings.enablePeerswap
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers, enablePeerswap:
+    //  this.selNode.Settings.enablePeerswap
     //   }
     // }));
     // this.store.dispatch(setChildNodeSettingsECL({
     //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers, enablePeerswap:
-    //  this.selNode.settings.enablePeerswap
+    //     userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion,
+    //     unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl, enableOffers: this.selNode.Settings.enableOffers, enablePeerswap:
+    //  this.selNode.Settings.enablePeerswap
     //   }
     // }));
   }

@@ -9,7 +9,7 @@ export const getBlockchainBalance = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Getting Balance..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/balance/blockchain';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/balance/blockchain';
   options.qs = req.query;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: 'Request params', data: req.params });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: 'Request Query', data: req.query });

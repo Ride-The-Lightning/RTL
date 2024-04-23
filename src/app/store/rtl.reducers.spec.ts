@@ -18,9 +18,9 @@ describe('RTL reducer', () => {
       const SetSelectedNodeAction = setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
       const newState = RootReducer(initRootState, SetSelectedNodeAction);
 
-      expect(newState.selNode.settings.themeMode).toBe('NIGHT');
-      expect(newState.selNode.settings.themeColor).toBe('TEAL');
-      expect(newState.selNode.settings.userPersona).toBe('MERCHANT');
+      expect(newState.selNode.Settings.themeMode).toBe('NIGHT');
+      expect(newState.selNode.Settings.themeColor).toBe('TEAL');
+      expect(newState.selNode.Settings.userPersona).toBe('MERCHANT');
       expect(newState.selNode.lnImplementation).toEqual('LND');
     });
   });

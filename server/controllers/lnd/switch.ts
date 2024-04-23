@@ -25,7 +25,7 @@ export const getAllForwardingEvents = (req, start, end, offset, caller, callback
     const err = common.handleError({ message: 'Session Expired after a day\'s inactivity.', statusCode: 401 }, 'Balance', 'Get Balance Error', req.session.selectedNode);
     return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
   } options = common.getOptions(req);
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/switch';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/v1/switch';
   options.form = {};
   if (start) { options.form.start_time = start; }
   if (end) { options.form.end_time = end; }

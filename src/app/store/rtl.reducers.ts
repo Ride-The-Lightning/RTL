@@ -2,8 +2,6 @@ import { createReducer, on } from '@ngrx/store';
 import { initRootState } from './rtl.state';
 
 import { resetRootStore, setNodeData, setApplicationSettings, setSelectedNode, updateRootAPICallStatus } from './rtl.actions';
-import { ServicesEnum } from '../shared/services/consts-enums-functions';
-import { ConfigSettingsNode } from '../shared/models/RTLconfig';
 
 export const RootReducer = createReducer(initRootState,
   on(updateRootAPICallStatus, (state, { payload }) => {

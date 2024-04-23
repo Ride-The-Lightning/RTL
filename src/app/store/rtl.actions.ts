@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, UpdateNodeSettings, VerifyTwoFA } from '../shared/models/rtlModels';
 import { RTLActions } from '../shared/services/consts-enums-functions';
 
@@ -36,7 +36,7 @@ export const showConfig = createAction(RTLActions.SHOW_CONFIG, props<{ payload: 
 
 export const updateSelectedNodeOptions = createAction(RTLActions.UPDATE_SELECTED_NODE_OPTIONS);
 
-export const resetRootStore = createAction(RTLActions.RESET_ROOT_STORE, props<{ payload: ConfigSettingsNode }>());
+export const resetRootStore = createAction(RTLActions.RESET_ROOT_STORE, props<{ payload: Node }>());
 
 export const fetchRTLConfig = createAction(RTLActions.FETCH_APPLICATION_SETTINGS);
 

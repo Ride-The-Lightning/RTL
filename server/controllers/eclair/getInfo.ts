@@ -16,7 +16,7 @@ export const getInfo = (req, res, next) => {
   common.setOptions(req);
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/getinfo';
+  options.url = req.session.selectedNode.Settings.lnServerUrl + '/getinfo';
   options.form = {};
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.lnNode });
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url ' + options.url });

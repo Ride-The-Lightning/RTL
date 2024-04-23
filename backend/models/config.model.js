@@ -31,7 +31,7 @@ export class NodeAuthentication {
     }
 }
 export class SelectedNode {
-    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, apiVersion, settings, authentication) {
+    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, apiVersion, Settings, Authentication) {
         this.logLevel = logLevel;
         this.logFile = logFile;
         this.index = index;
@@ -39,8 +39,8 @@ export class SelectedNode {
         this.lnImplementation = lnImplementation;
         this.lnVersion = lnVersion;
         this.apiVersion = apiVersion;
-        this.settings = settings;
-        this.authentication = authentication;
+        this.Settings = Settings;
+        this.Authentication = Authentication;
     }
 }
 export class SSO {

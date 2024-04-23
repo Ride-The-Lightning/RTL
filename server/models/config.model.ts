@@ -41,13 +41,13 @@ export class SelectedNode {
   constructor(
     public logLevel?: string,
     public logFile?: string,
-    public index?: string,
+    public index?: number,
     public lnNode?: string,
     public lnImplementation?: string,
     public lnVersion?: string,
     public apiVersion?: string,
-    public settings?: NodeSettings,
-    public authentication?: NodeAuthentication
+    public Settings?: NodeSettings,
+    public Authentication?: NodeAuthentication
   ) { }
 
 }

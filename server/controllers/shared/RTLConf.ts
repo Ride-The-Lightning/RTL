@@ -8,7 +8,7 @@ import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { NodeAuthentication, SSO } from '../../models/config.model.js';
+import { ApplicationConfig, NodeAuthentication, SSO } from '../../models/config.model.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;
@@ -25,7 +25,7 @@ export const maskPasswords = (obj) => {
         keys[keys[i]] = maskPasswords(obj[keys[i]]);
       }
       if (typeof keys[i] === 'string' &&
-        (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass') ||
+        ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
           keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
           keys[i].toLowerCase().includes('rpcuser'))
       ) {
@@ -36,20 +36,16 @@ export const maskPasswords = (obj) => {
   return obj;
 };
 
-export const removeSensitiveData = (config) => {
+export const removeSensitiveData = (config: ApplicationConfig) => {
   delete config.rtlConfFilePath;
   delete config.rtlPass;
   delete config.multiPass;
   delete config.multiPassHashed;
   delete config.secret2FA;
   config.nodes.map((node) => {
-    node.authentication = node.Authentication;
-    node.settings = node.Settings;
-    delete node.Authentication;
-    delete node.Settings;
-    delete node.authentication.macaroonPath;
-    delete node.authentication.runePath;
-    delete node.authentication.lnApiPassword;
+    delete node.Authentication.macaroonPath;
+    delete node.Authentication.runePath;
+    delete node.Authentication.lnApiPassword;
     return node;
   });
   return config;
@@ -70,7 +66,7 @@ export const getCurrencyRates = (req, res, next) => {
 
 export const getFile = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-  const file = req.query.path ? req.query.path : (req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
+  const file = req.query.path ? req.query.path : (req.session.selectedNode.Settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
   fs.readFile(file, 'utf8', (errRes, data) => {
@@ -96,6 +92,7 @@ export const getApplicationSettings = (req, res, next) => {
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
       const appConfData = removeSensitiveData(JSON.parse(data));
+      appConfData.allowPasswordUpdate = common.appConfig.allowPasswordUpdate;
       appConfData.enable2FA = common.appConfig.enable2FA;
       appConfData.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
       const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
@@ -106,14 +103,14 @@ export const getApplicationSettings = (req, res, next) => {
           appConfData.SSO = new SSO();
           appConfData.secret2FA = '';
           appConfData.dbDirectoryPath = '';
-          appConfData.nodes[selNodeIdx].authentication = new NodeAuthentication();
-          delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
-          delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
-          delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
-          delete appConfData.nodes[selNodeIdx].settings.boltzServerUrl;
-          delete appConfData.nodes[selNodeIdx].settings.enableOffers;
-          delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
-          delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
+          appConfData.nodes[selNodeIdx].Authentication = new NodeAuthentication();
+          delete appConfData.nodes[selNodeIdx].Settings.bitcoindConfigPath;
+          delete appConfData.nodes[selNodeIdx].Settings.lnServerUrl;
+          delete appConfData.nodes[selNodeIdx].Settings.swapServerUrl;
+          delete appConfData.nodes[selNodeIdx].Settings.boltzServerUrl;
+          delete appConfData.nodes[selNodeIdx].Settings.enableOffers;
+          delete appConfData.nodes[selNodeIdx].Settings.enablePeerswap;
+          delete appConfData.nodes[selNodeIdx].Settings.channelBackupPath;
           appConfData.nodes = [appConfData.nodes[selNodeIdx]];
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
@@ -147,10 +144,10 @@ export const getConfig = (req, res, next) => {
   let fileFormat = 'INI';
   switch (req.params.nodeType) {
     case 'ln':
-      confFile = req.session.selectedNode.authentication.configPath;
+      confFile = req.session.selectedNode.Authentication.configPath;
       break;
     case 'bitcoind':
-      confFile = req.session.selectedNode.settings.bitcoindConfigPath;
+      confFile = req.session.selectedNode.Settings.bitcoindConfigPath;
       break;
     case 'rtl':
       fileFormat = 'JSON';
@@ -202,8 +199,8 @@ export const updateNodeSettings = (req, res, next) => {
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
-    if (selectedNode && selectedNode.settings) {
-      selectedNode.settings = req.body;
+    if (selectedNode && selectedNode.Settings) {
+      selectedNode.Settings = req.body;
       common.replaceNode(req, selectedNode);
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Node Settings Updated', data: maskPasswords(config) });
@@ -219,12 +216,9 @@ export const updateApplicationSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Application Settings..' });
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   try {
-    const config = JSON.parse(req.body);
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    // config.enable2FA = common.appConfig.enable2FA;
-    // config.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
-    common.appConfig = config;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: maskPasswords(config) });
+    fs.writeFileSync(RTLConfFile, JSON.stringify(req.body, null, 2), 'utf-8');
+    common.appConfig = req.body;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: maskPasswords(common.appConfig) });
     res.status(201).json(removeSensitiveData(common.appConfig));
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';

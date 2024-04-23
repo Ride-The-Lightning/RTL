@@ -3,7 +3,7 @@ import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
-import { ConfigSettingsNode } from '../../../models/RTLconfig';
+import { Node } from '../../../models/RTLconfig';
 import { Store } from '@ngrx/store';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
@@ -19,7 +19,7 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
   // public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }, { link: 'noservice', name: 'No Service' }];
   public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'noservice', name: 'No Service' }];
   public activeLink = '';
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
@@ -41,11 +41,11 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   setActiveLink() {
     if (this.selNode && this.selNode.settings) {
-      if (this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '') {
+      if (this.selNode.Settings.swapServerUrl && this.selNode.Settings.swapServerUrl.trim() !== '') {
         this.activeLink = this.links[0].link;
-      } else if (this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '') {
+      } else if (this.selNode.Settings.boltzServerUrl && this.selNode.Settings.boltzServerUrl.trim() !== '') {
         this.activeLink = this.links[1].link;
-      } else if (this.selNode.settings.enablePeerswap) {
+      } else if (this.selNode.Settings.enablePeerswap) {
         this.activeLink = this.links[2].link;
       } else {
         this.activeLink = this.links[this.links.length - 1].link;

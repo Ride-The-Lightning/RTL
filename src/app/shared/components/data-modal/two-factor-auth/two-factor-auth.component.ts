@@ -91,7 +91,8 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
 
   onVerifyToken(): boolean | void {
     if (this.appConfig?.enable2FA) {
-      this.store.dispatch(updateApplicationSettings({ payload: { enable2FA: this.appConfig?.enable2FA, secret2FA: '' } }));
+      this.appConfig.secret2FA = '';
+      this.store.dispatch(updateApplicationSettings({ payload: this.appConfig }));
       this.generateSecret();
       this.isTokenValid = true;
     } else {
@@ -103,7 +104,8 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(updateApplicationSettings({ payload: { enable2FA: this.appConfig?.enable2FA, secret2FA: this.secretFormGroup.controls.secret.value } }));
+      this.appConfig.secret2FA = this.secretFormGroup.controls.secret.value;
+      this.store.dispatch(updateApplicationSettings({ payload: this.appConfig }));
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;

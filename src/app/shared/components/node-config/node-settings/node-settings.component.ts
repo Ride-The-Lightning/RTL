@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
-import { ConfigSettingsNode, Settings } from '../../../models/RTLconfig';
+import { Node, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
@@ -27,7 +27,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
   public faEyeSlash = faEyeSlash;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = FIAT_CURRENCY_UNITS;
   public themeModes = NODE_SETTINGS.modes;
@@ -49,10 +49,10 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.selNode = selNode;
-      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id) || this.themeModes[0];
-      this.selectedThemeColor = this.selNode.settings.themeColor;
-      if (!this.selNode.settings.fiatConversion) {
-        this.selNode.settings.currencyUnit = '';
+      this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.Settings.themeMode === themeMode.id) || this.themeModes[0];
+      this.selectedThemeColor = this.selNode.Settings.themeColor;
+      if (!this.selNode.Settings.fiatConversion) {
+        this.selNode.Settings.currencyUnit = '';
       }
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.logger.info(selNode);
@@ -60,26 +60,26 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   }
 
   onCurrencyChange(event: any) {
-    this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
+    this.selNode.Settings.currencyUnits = [...CURRENCY_UNITS, event.value];
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
+        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
+        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
+        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
+        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsECL({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value,
-        currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels,
-        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath, selCurrencyUnit: event.value,
+        currencyUnits: this.selNode.Settings.currencyUnits, fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels,
+        lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
   }
@@ -90,40 +90,40 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   changeThemeColor(newThemeColor: string) {
     this.selectedThemeColor = newThemeColor;
-    this.selNode.settings.themeColor = newThemeColor;
+    this.selNode.Settings.themeColor = newThemeColor;
   }
 
   chooseThemeMode() {
-    this.selNode.settings.themeMode = this.selectedThemeMode.id;
+    this.selNode.Settings.themeMode = this.selectedThemeMode.id;
   }
 
   onUpdateNodeSettings(): boolean | void {
-    if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
+    if (this.selNode.Settings.fiatConversion && !this.selNode.Settings.currencyUnit) {
       return true;
     }
     this.logger.info(this.selNode.settings);
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
+        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
+        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
+        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsCLN({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
+        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
+        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
+        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
     this.store.dispatch(setChildNodeSettingsECL({
       payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,
-        selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits,
-        fiatConversion: this.selNode.settings.fiatConversion, unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
-        swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl
+        userPersona: this.selNode.Settings.userPersona, channelBackupPath: this.selNode.Settings.channelBackupPath,
+        selCurrencyUnit: this.selNode.Settings.currencyUnit, currencyUnits: this.selNode.Settings.currencyUnits,
+        fiatConversion: this.selNode.Settings.fiatConversion, unannouncedChannels: this.selNode.Settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation,
+        swapServerUrl: this.selNode.Settings.swapServerUrl, boltzServerUrl: this.selNode.Settings.boltzServerUrl
       }
     }));
   }
