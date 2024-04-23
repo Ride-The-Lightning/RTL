@@ -24,8 +24,9 @@ export const initRootState: RootState = {
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
-    sso: { rtlSSO: 0, logoutRedirectLink: '' },
+    SSO: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
+    secret2FA: '',
     allowPasswordUpdate: true,
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },

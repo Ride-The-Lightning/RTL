@@ -1,16 +1,10 @@
 import { ServicesEnum } from '../services/consts-enums-functions';
-import { ConfigSettingsNode, Settings } from './RTLconfig';
+import { ConfigSettingsNode, RTLConfiguration, Settings } from './RTLconfig';
 
 export interface OpenSnackBar {
   message: string;
   duration?: number;
   type?: string;
-}
-
-export interface SaveSettings {
-  uiMessage: string;
-  settings?: Settings;
-  defaultNodeIndex?: number;
 }
 
 export interface SetSelectedNode {
@@ -20,10 +14,11 @@ export interface SetSelectedNode {
   isInitialSetup: boolean;
 }
 
-export interface UpdateServiceSetting {
+export interface UpdateNodeSettings {
   uiMessage: string;
+  defaultNodeIndex?: number;
   service: ServicesEnum;
-  settings: any;
+  settings: Settings;
 }
 
 export interface ResetPassword {

@@ -44,7 +44,7 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
         };
     }
 };
-export const verifyToken = (twoFAToken) => !!(common.appConfig.rtlSecret2fa && common.appConfig.rtlSecret2fa !== '' && otplib.authenticator.check(twoFAToken, common.appConfig.rtlSecret2fa));
+export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && otplib.authenticator.check(twoFAToken, common.appConfig.secret2FA));
 export const authenticateUser = (req, res, next) => {
     const { authenticateWith, authenticationValue, twoFAToken } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });

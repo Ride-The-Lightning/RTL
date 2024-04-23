@@ -1,10 +1,10 @@
 import exprs from 'express';
 const { Router } = exprs;
 import { isAuthenticated } from '../../utils/authCheck.js';
-import { getRTLConfig, updateNodeSettings, getConfig, getFile, updateSelectedNode, updateApplicationSettings, getCurrencyRates } from '../../controllers/shared/RTLConf.js';
+import { updateNodeSettings, getConfig, getFile, updateSelectedNode, updateApplicationSettings, getCurrencyRates, getApplicationSettings } from '../../controllers/shared/RTLConf.js';
 const router = Router();
+router.get('/', getApplicationSettings);
 router.get('/rates', getCurrencyRates);
-router.get('/rtlconf', getRTLConfig);
 router.get('/file', isAuthenticated, getFile);
 router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', updateSelectedNode);
 router.get('/config/:nodeType', isAuthenticated, getConfig);

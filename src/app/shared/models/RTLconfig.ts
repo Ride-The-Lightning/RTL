@@ -58,8 +58,9 @@ export class RTLConfiguration {
   constructor(
     public defaultNodeIndex: number,
     public selectedNodeIndex: number,
-    public sso: SSO,
+    public SSO: SSO,
     public enable2FA: boolean,
+    public secret2FA: string,
     public allowPasswordUpdate: boolean,
     public nodes: ConfigSettingsNode[]
   ) { }

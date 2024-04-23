@@ -12,10 +12,9 @@ import * as sha256 from 'sha256';
 
 import { RTLConfiguration } from '../../../models/RTLconfig';
 import { AuthConfig } from '../../../models/alertData';
-
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
-import { isAuthorized, twoFASaveSettings } from '../../../../store/rtl.actions';
+import { isAuthorized, updateApplicationSettings } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-two-factor-auth',
@@ -92,7 +91,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
 
   onVerifyToken(): boolean | void {
     if (this.appConfig?.enable2FA) {
-      this.store.dispatch(twoFASaveSettings({ payload: { secret2fa: '' } }));
+      this.store.dispatch(updateApplicationSettings({ payload: { enable2FA: this.appConfig?.enable2FA, secret2FA: '' } }));
       this.generateSecret();
       this.isTokenValid = true;
     } else {
@@ -104,13 +103,10 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(twoFASaveSettings({ payload: { secret2fa: this.secretFormGroup.controls.secret.value } }));
+      this.store.dispatch(updateApplicationSettings({ payload: { enable2FA: this.appConfig?.enable2FA, secret2FA: this.secretFormGroup.controls.secret.value } }));
       this.tokenFormGroup.controls.token.setValue('');
     }
     this.flgValidated = true;
-    if (this.appConfig) {
-      this.appConfig.enable2FA = !this.appConfig?.enable2FA;
-    }
   }
 
   stepSelectionChanged(event: any) {

@@ -129,8 +129,8 @@ export class ConfigService {
                 else {
                     this.errMsg = this.errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
                 }
-                this.common.appConfig.rtlSecret2fa = config.secret2fa;
-                this.common.appConfig.enable2FA = !!config.secret2fa;
+                this.common.appConfig.secret2FA = config.secret2FA;
+                this.common.appConfig.enable2FA = !!config.secret2FA;
             }
             else {
                 if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {

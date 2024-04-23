@@ -9,7 +9,7 @@ import { ConfigSettingsNode, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { saveSettings, setSelectedNode } from '../../../../store/rtl.actions';
+import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
 import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
@@ -97,12 +97,11 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.themeMode = this.selectedThemeMode.id;
   }
 
-  onUpdateSettings(): boolean | void {
+  onUpdateNodeSettings(): boolean | void {
     if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
       return true;
     }
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(saveSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings } }));
     this.store.dispatch(setChildNodeSettingsLND({
       payload: {
         userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath,

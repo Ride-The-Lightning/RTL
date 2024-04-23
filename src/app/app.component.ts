@@ -98,11 +98,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.actions.pipe(
       takeUntil(this.unSubs[4]),
-      filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
+      filter((action) => action.type === RTLActions.FETCH_APPLICATION_SETTINGS || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
       subscribe((action: (any)) => {
-        if (action.type === RTLActions.SET_RTL_CONFIG) {
+        if (action.type === RTLActions.SET_APPLICATION_SETTINGS) {
           if (!this.sessionService.getItem('token')) {
-            if (+action.payload.sso.rtlSSO) {
+            if (+action.payload.SSO.rtlSSO) {
               if (!this.accessKey || this.accessKey.trim().length < 32) {
                 this.router.navigate(['./error'], { state: { errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.' } });
               } else {

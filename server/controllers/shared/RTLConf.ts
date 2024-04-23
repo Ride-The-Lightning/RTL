@@ -36,6 +36,25 @@ export const maskPasswords = (obj) => {
   return obj;
 };
 
+export const removeSensitiveData = (config) => {
+  delete config.rtlConfFilePath;
+  delete config.rtlPass;
+  delete config.multiPass;
+  delete config.multiPassHashed;
+  delete config.secret2FA;
+  config.nodes.map((node) => {
+    node.authentication = node.Authentication;
+    node.settings = node.Settings;
+    delete node.Authentication;
+    delete node.Settings;
+    delete node.authentication.macaroonPath;
+    delete node.authentication.runePath;
+    delete node.authentication.lnApiPassword;
+    return node;
+  });
+  return config;
+};
+
 export const getCurrencyRates = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..' });
   options.url = 'https://blockchain.info/ticker';
@@ -67,7 +86,7 @@ export const getFile = (req, res, next) => {
   });
 };
 
-export const getRTLConfig = (req, res, next) => {
+export const getApplicationSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..' });
   const confFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   fs.readFile(confFile, 'utf8', (errRes, data) => {
@@ -76,30 +95,16 @@ export const getRTLConfig = (req, res, next) => {
       const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
-      const appConfData = JSON.parse(data);
-      delete appConfData.rtlConfFilePath;
-      delete appConfData.rtlPass;
-      delete appConfData.multiPass;
-      delete appConfData.multiPassHashed;
-      delete appConfData.rtlSecret2fa;
+      const appConfData = removeSensitiveData(JSON.parse(data));
+      appConfData.enable2FA = common.appConfig.enable2FA;
       appConfData.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
-      appConfData.nodes.map((node) => {
-        node.authentication = node.Authentication;
-        node.settings = node.Settings;
-        delete node.Authentication;
-        delete node.Settings;
-        delete node.authentication.macaroonPath;
-        delete node.authentication.runePath;
-        delete node.authentication.lnApiPassword;
-        return node;
-      });
       const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
       jwt.verify(token, common.secret_key, (err, user) => {
         if (err) {
-          // Delete sensitive data for initial response (without security token)
+          // Delete unnecessary data for initial response (without security token)
           const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
           appConfData.SSO = new SSO();
-          appConfData.secret2fa = '';
+          appConfData.secret2FA = '';
           appConfData.dbDirectoryPath = '';
           appConfData.nodes[selNodeIdx].authentication = new NodeAuthentication();
           delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
@@ -187,38 +192,21 @@ export const getConfig = (req, res, next) => {
 };
 
 export const updateNodeSettings = (req, res, next) => {
-  const { updatedSettings } = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Node Settings..' });
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.Settings) {
-    node.Settings.userPersona = updatedSettings.userPersona;
-    node.Settings.themeMode = updatedSettings.themeMode;
-    node.Settings.themeColor = updatedSettings.themeColor;
-    node.Settings.unannouncedChannels = updatedSettings.unannouncedChannels;
-    node.Settings.fiatConversion = updatedSettings.fiatConversion;
-    if (updatedSettings.fiatConversion) {
-      node.Settings.currencyUnit = updatedSettings.currencyUnit ? updatedSettings.currencyUnit : 'USD';
-    } else {
-      delete node.Settings.currencyUnit;
-    }
-    const selectedNode = common.findNode(req.session.selectedNode.index);
-    selectedNode.settings.userPersona = updatedSettings.userPersona;
-    selectedNode.settings.themeMode = updatedSettings.themeMode;
-    selectedNode.settings.themeColor = updatedSettings.themeColor;
-    selectedNode.settings.unannouncedChannels = updatedSettings.unannouncedChannels;
-    selectedNode.settings.fiatConversion = updatedSettings.fiatConversion;
-    if (updatedSettings.fiatConversion) {
-      selectedNode.settings.currencyUnit = updatedSettings.currencyUnit ? updatedSettings.currencyUnit : 'USD';
-    } else {
-      delete selectedNode.settings.currencyUnit;
-    }
-    common.replaceNode(req, selectedNode);
+    node.Settings = req.body;
   }
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'UI Settings Updated', data: maskPasswords(config) });
+    const selectedNode = common.findNode(req.session.selectedNode.index);
+    if (selectedNode && selectedNode.settings) {
+      selectedNode.settings = req.body;
+      common.replaceNode(req, selectedNode);
+    }
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Node Settings Updated', data: maskPasswords(config) });
     res.status(201).json({ message: 'Node Settings Updated Successfully' });
   } catch (errRes) {
     const errMsg = 'Update Node Settings Error';
@@ -228,124 +216,18 @@ export const updateNodeSettings = (req, res, next) => {
 };
 
 export const updateApplicationSettings = (req, res, next) => {
-  const { defaultNodeIndex } = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Default Node..' });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Application Settings..' });
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
-  const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  config.defaultNodeIndex = defaultNodeIndex;
   try {
+    const config = JSON.parse(req.body);
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Default Node Updated', data: maskPasswords(config) });
-    res.status(201).json({ message: 'Default Node Updated Successfully' });
+    // config.enable2FA = common.appConfig.enable2FA;
+    // config.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
+    common.appConfig = config;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: maskPasswords(config) });
+    res.status(201).json(removeSensitiveData(common.appConfig));
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.error, error: err.error });
-  }
-};
-
-export const update2FASettings = (req, res, next) => {
-  const { secret2fa } = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings..' });
-  const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
-  const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  if (secret2fa && secret2fa.trim() !== '') {
-    config.secret2fa = secret2fa;
-  } else {
-    delete config.secret2fa;
-  }
-  const message = secret2fa.trim() === '' ? 'Two factor authentication disabled successfully.' : 'Two factor authentication enabled successfully.';
-  try {
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    common.appConfig.rtlSecret2fa = config.secret2fa;
-    common.appConfig.enable2FA = !!config.secret2fa;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: message });
-    res.status(201).json({ message: message });
-  } catch (errRes) {
-    const errMsg = 'Update 2FA Settings Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.error, error: err.error });
-  }
-};
-
-export const updateSSO = (req, res, next) => {
-  const { SSO } = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating SSO Settings..' });
-  const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
-  const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  delete config.SSO;
-  config.SSO = SSO;
-  try {
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'SSO Setting Updated', data: maskPasswords(config) });
-    res.status(201).json({ message: 'SSO Updated Successfully' });
-  } catch (errRes) {
-    const errMsg = 'Update SSO Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.error, error: err.error });
-  }
-};
-
-export const updateServiceSettings = (req, res, next) => {
-  const { service, settings } = req.body;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings..' });
-  const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
-  const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  const selectedNode = common.findNode(req.session.selectedNode.index);
-  config.nodes.forEach((node) => {
-    if (node.index === req.session.selectedNode.index) {
-      switch (service) {
-        case 'LOOP':
-          if (settings.enable) {
-            node.Settings.swapServerUrl = settings.serverUrl;
-            node.Authentication.swapMacaroonPath = settings.macaroonPath;
-            selectedNode.settings.swapServerUrl = settings.serverUrl;
-            selectedNode.authentication.swapMacaroonPath = settings.macaroonPath;
-          } else {
-            delete node.Settings.swapServerUrl;
-            delete node.Authentication.swapMacaroonPath;
-            delete selectedNode.settings.swapServerUrl;
-            delete selectedNode.authentication.swapMacaroonPath;
-          }
-          break;
-
-        case 'BOLTZ':
-          if (settings.enable) {
-            node.Settings.boltzServerUrl = settings.serverUrl;
-            node.Authentication.boltzMacaroonPath = settings.macaroonPath;
-            selectedNode.settings.boltzServerUrl = settings.serverUrl;
-            selectedNode.authentication.boltzMacaroonPath = settings.macaroonPath;
-          } else {
-            delete node.Settings.boltzServerUrl;
-            delete node.Authentication.boltzMacaroonPath;
-            delete selectedNode.settings.boltzServerUrl;
-            delete selectedNode.authentication.boltzMacaroonPath;
-          }
-          break;
-
-        case 'OFFERS':
-          node.Settings.enableOffers = settings.enableOffers;
-          selectedNode.settings.enableOffers = settings.enableOffers;
-          break;
-
-        case 'PEERSWAP':
-          node.Settings.enablePeerswap = settings.enablePeerswap;
-          selectedNode.settings.enablePeerswap = settings.enablePeerswap;
-          break;
-
-        default:
-          break;
-      }
-      common.replaceNode(req, selectedNode);
-    }
-    return node;
-  });
-  try {
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Service Settings Updated', data: maskPasswords(config) });
-    res.status(201).json({ message: 'Service Settings Updated Successfully' });
-  } catch (errRes) {
-    const errMsg = 'Update Service Settings Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.error, error: err.error });
   }

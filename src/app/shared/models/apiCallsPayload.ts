@@ -13,9 +13,8 @@ export interface ApiCallsListRoot {
   Login: ApiCallStatusPayload;
   IsAuthorized: ApiCallStatusPayload;
   FetchRTLConfig?: ApiCallStatusPayload;
-  UpdateSettings?: ApiCallStatusPayload;
-  UpdateServiceSettings?: ApiCallStatusPayload;
-  Update2FASettings?: ApiCallStatusPayload;
+  UpdateNodeSettings?: ApiCallStatusPayload;
+  UpdateApplicationSettings?: ApiCallStatusPayload;
   fetchConfig?: ApiCallStatusPayload;
   VerifyToken?: ApiCallStatusPayload;
   ResetPassword?: ApiCallStatusPayload;

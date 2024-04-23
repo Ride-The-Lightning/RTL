@@ -67,7 +67,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   }
 
   showLnConfigClicked() {
-    if (!this.appConfig.sso.rtlSSO) {
+    if (!this.appConfig.SSO.rtlSSO) {
       this.store.dispatch(openAlert({
         payload: {
           maxWidth: '50rem',

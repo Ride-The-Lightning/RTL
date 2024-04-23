@@ -7,7 +7,7 @@
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
         <div tabindex="1" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" routerLink="{{links[0].link}}" (click)="activeLink = links[0].link">{{links[0].name}}</div>
-        <div *ngIf="!+appConfig.sso.rtlSSO" tabindex="2" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
+        <div *ngIf="!+appConfig.SSO.rtlSSO" tabindex="2" role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }" (click)="activeLink = links[1].link">{{links[1].name}}</div>
         <div *ngIf="showBitcoind" role="tab" tabindex="3" mat-tab-link class="mat-tab-label" [active]="activeLink === links[2].link" routerLink="{{links[2].link}}" (click)="activeLink = links[2].link">{{links[2].name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel />

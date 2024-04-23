@@ -10,7 +10,7 @@ export class CommonService {
         this.nodes = [];
         this.selectedNode = null;
         this.ssoInit = { rtlSso: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' };
-        this.appConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, enable2FA: false, rtlSecret2fa: '', SSO: this.ssoInit, nodes: [] };
+        this.appConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, enable2FA: false, secret2FA: '', SSO: this.ssoInit, nodes: [] };
         this.port = 3000;
         this.host = '';
         this.secret_key = crypto.randomBytes(64).toString('hex');

@@ -75,7 +75,7 @@ export class ApplicationConfig {
     public multiPassHashed?: string,
     public allowPasswordUpdate?: boolean,
     public enable2FA?: boolean,
-    public rtlSecret2fa?: string,
+    public secret2FA?: string,
     public SSO?: SSO,
     public nodes?: SelectedNode[]
   ) {}
