@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -28,7 +28,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
 
   ngOnChanges() {
     if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-      this.getCurrencyValues(this.values);
+      this.getCurrencyValues();
     }
   }
 
@@ -40,32 +40,33 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
         this.currencyUnits.splice(2, 1);
       }
       if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-        this.getCurrencyValues(this.values);
+        this.getCurrencyValues();
       }
     });
   }
 
-  getCurrencyValues(values) {
-    values.forEach((value) => {
+  getCurrencyValues() {
+    this.values.forEach((value, i) => {
       if (value.dataValue > 0) {
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, value.title).
           pipe(takeUntil(this.unSubs[1])).
           subscribe((data) => {
-            value[CurrencyUnitEnum.BTC] = data.BTC;
+            this.values[i][CurrencyUnitEnum.BTC] = data.BTC;
           });
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, value.title).
           pipe(takeUntil(this.unSubs[2])).
           subscribe({
             next: (data) => {
-              value[CurrencyUnitEnum.OTHER] = data.OTHER;
+              console.log(data);
+              this.values[i][CurrencyUnitEnum.OTHER] = data.OTHER;
             }, error: (err) => {
               this.conversionErrorMsg = 'Conversion Error: ' + err;
             }
           });
       } else {
-        value[CurrencyUnitEnum.BTC] = value.dataValue;
+        this.values[i][CurrencyUnitEnum.BTC] = value.dataValue;
         if (this.conversionErrorMsg === '') {
-          value[CurrencyUnitEnum.OTHER] = value.dataValue;
+          this.values[i][CurrencyUnitEnum.OTHER] = value.dataValue;
         }
       }
     });

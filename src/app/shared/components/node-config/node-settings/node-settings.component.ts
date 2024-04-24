@@ -9,8 +9,8 @@ import { Node, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actions';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { updateNodeSettings, setSelectedNode, updateSelectedNodeSettings } from '../../../../store/rtl.actions';
 import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
 import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
 import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
@@ -61,9 +61,11 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   onCurrencyChange(event: any) {
     this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
+    this.store.dispatch(updateSelectedNodeSettings({ payload: this.selNode }));
     this.store.dispatch(setChildNodeSettingsLND({ payload: this.selNode }));
     this.store.dispatch(setChildNodeSettingsCLN({ payload: this.selNode }));
     this.store.dispatch(setChildNodeSettingsECL({ payload: this.selNode }));
+    // this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
 
   toggleSettings(toggleField: string, event?: any) {
@@ -84,9 +86,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(setChildNodeSettingsLND({ payload: this.selNode }));
-    this.store.dispatch(setChildNodeSettingsCLN({ payload: this.selNode }));
-    this.store.dispatch(setChildNodeSettingsECL({ payload: this.selNode }));
+    this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
 
   onResetSettings() {

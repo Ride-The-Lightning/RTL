@@ -17,7 +17,7 @@ import { DataService } from '../shared/services/data.service';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { API_URL, API_END_POINTS, RTLActions, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateNodeSettings, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -26,10 +26,10 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout } from './rtl.actions';
-import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
-import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN } from '../cln/store/cln.actions';
-import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL } from '../eclair/store/ecl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateSelectedNodeSettings } from './rtl.actions';
+import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND, setChildNodeSettingsLND } from '../lnd/store/lnd.actions';
+import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN, setChildNodeSettingsCLN } from '../cln/store/cln.actions';
+import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL, setChildNodeSettingsECL } from '../eclair/store/ecl.actions';
 import { rootAppConfig, rootNodeData } from './rtl.selector';
 
 @Injectable()
@@ -246,19 +246,23 @@ export class RTLEffects implements OnDestroy {
   updateNodeSettings = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.UPDATE_NODE_SETTINGS),
-      mergeMap((action: { type: string, payload: UpdateNodeSettings }) => {
-        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+      mergeMap((action: { type: string, payload: Node }) => {
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(API_END_POINTS.CONF_API + '/node', action.payload).
-          pipe(map((updatedNode: UpdateNodeSettings) => {
+          pipe(map((updatedNode: Node) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
-            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
+            this.store.dispatch(updateSelectedNodeSettings({ payload: updatedNode }));
+            this.store.dispatch(setChildNodeSettingsLND({ payload: action.payload }));
+            this.store.dispatch(setChildNodeSettingsCLN({ payload: action.payload }));
+            this.store.dispatch(setChildNodeSettingsECL({ payload: action.payload }));
             return {
               type: RTLActions.OPEN_SNACK_BAR,
               payload: 'Node settings updated successfully!'
             };
           }), catchError((err: any) => {
-            this.handleErrorWithAlert('updateNodeSettings', UI_MESSAGES.UPDATE_APPLICATION_SETTINGS, 'Update Node Settings Failed!', API_END_POINTS.CONF_API + '/node', err);
+            this.handleErrorWithAlert('updateNodeSettings', UI_MESSAGES.UPDATE_NODE_SETTINGS, 'Update Node Settings Failed!', API_END_POINTS.CONF_API + '/node', err);
             return of({ type: RTLActions.VOID });
           }));
       }))

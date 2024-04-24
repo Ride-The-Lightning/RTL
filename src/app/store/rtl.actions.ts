@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, UpdateNodeSettings, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 import { RTLActions } from '../shared/services/consts-enums-functions';
 
 export const voidAction = createAction(RTLActions.VOID);
@@ -44,7 +44,9 @@ export const setApplicationSettings = createAction(RTLActions.SET_APPLICATION_SE
 
 export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
 
-export const updateNodeSettings = createAction(RTLActions.UPDATE_NODE_SETTINGS, props<{ payload: UpdateNodeSettings }>());
+export const updateNodeSettings = createAction(RTLActions.UPDATE_NODE_SETTINGS, props<{ payload: Node }>());
+
+export const updateSelectedNodeSettings = createAction(RTLActions.UPDATE_SELECTED_NODE_SETTINGS, props<{ payload: Node }>());
 
 export const updateApplicationSettings = createAction(RTLActions.UPDATE_APPLICATION_SETTINGS, props<{ payload: { showSnackBar: boolean, message: string, config: RTLConfiguration } }>());
 

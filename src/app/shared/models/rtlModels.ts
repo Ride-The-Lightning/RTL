@@ -15,9 +15,7 @@ export interface SetSelectedNode {
 }
 
 export interface UpdateNodeSettings {
-  uiMessage: string;
-  defaultNodeIndex?: number;
-  service: ServicesEnum;
+  index: number;
   settings: Settings;
 }
 
