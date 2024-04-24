@@ -240,7 +240,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
                 subscribe({
                   next: (data) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ?
-                      (this.paymentDecoded.amount_msat / 1000) : 0) + ' Sats (' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0),
+                      (this.paymentDecoded.amount_msat / 1000) : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0),
                       CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Memo: ' + this.paymentDecoded.description;
                   }, error: (error) => {
                     this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +

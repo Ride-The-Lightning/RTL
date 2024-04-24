@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -8,8 +9,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CLNInvoiceInformation } from '../../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions, DEFAULT_INVOICE_EXPIRY } from '../../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions, DEFAULT_INVOICE_EXPIRY, getSelectedCurrency } from '../../../../shared/services/consts-enums-functions';
 import { Node } from '../../../../shared/models/RTLconfig';
+import { FiatCurrency } from '../../../../shared/models/rtlModels';
 import { GetInfo } from '../../../../shared/models/clnModels';
 import { CommonService } from '../../../../shared/services/common.service';
 
@@ -25,6 +27,7 @@ import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector
 export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
+  public selCurrency: FiatCurrency = null;
   public selNode: Node | null;
   public description = '';
   public expiry: number | null;
@@ -41,7 +44,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNInvoiceInformation, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) { }
+  constructor(public sanitizer: DomSanitizer, public dialogRef: MatDialogRef<CLNCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNInvoiceInformation, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) { }
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
@@ -93,17 +96,25 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.settings.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
-        subscribe({
-          next: (data) => {
-            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-          }, error: (err) => {
-            this.invoiceValueHint = 'Conversion Error: ' + err;
-          }
-        });
+      if (this.invoiceValue && this.invoiceValue > 99) {
+        this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
+          pipe(takeUntil(this.unSubs[3])).
+          subscribe({
+            next: (data) => {
+              if (!this.selCurrency) {
+                this.selCurrency = getSelectedCurrency(data.symbol);
+                if (this.selCurrency && this.selCurrency.iconType === 'SVG' && this.selCurrency.symbol && typeof this.selCurrency.symbol === 'string') {
+                  this.selCurrency.symbol = this.sanitizer.bypassSecurityTrustHtml(this.selCurrency.symbol);
+                }
+              }
+              this.invoiceValueHint = this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            }, error: (err) => {
+              this.invoiceValueHint = 'Conversion Error: ' + err;
+            }
+          });
+      }
     }
   }
 

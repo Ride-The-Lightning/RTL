@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -42,8 +43,15 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, public sanitizer: DomSanitizer) {
     this.screenSize = this.commonService.getScreenSize();
+    this.currencyUnits.map((currencyUnit) => {
+      if (currencyUnit.iconType === 'SVG' && typeof currencyUnit.symbol === 'string') {
+        currencyUnit.symbol = currencyUnit.symbol.replace('class= "currency-icon-small"', 'class= "currency-icon-medium"');
+        currencyUnit.symbol = this.sanitizer.bypassSecurityTrustHtml(<string>currencyUnit.symbol);
+      }
+      return currencyUnit;
+    });
   }
 
   ngOnInit() {

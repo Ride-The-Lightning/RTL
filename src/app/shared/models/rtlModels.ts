@@ -1,5 +1,6 @@
-import { ServicesEnum } from '../services/consts-enums-functions';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Node, Settings } from './RTLconfig';
+import { SafeHtml } from '@angular/platform-browser';
 
 export interface OpenSnackBar {
   message: string;
@@ -38,4 +39,11 @@ export interface VerifyTwoFA {
 export interface FetchFile {
   channelPoint: string;
   path?: string;
+}
+
+export interface FiatCurrency {
+  id: string;
+  name: string;
+  iconType: 'SVG' | 'FA';
+  symbol: string | IconDefinition | SafeHtml;
 }

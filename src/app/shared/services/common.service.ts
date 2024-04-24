@@ -92,20 +92,14 @@ export class CommonService implements OnDestroy {
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean, title?: string): Observable<any> {
     const latest_date = new Date().valueOf();
-    console.warn(value, from, to, otherCurrencyUnit, fiatConversion, title, this.conversionData.data);
     if (fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
-      console.warn('1');
       if (this.ratesAPIStatus !== APICallStatusEnum.INITIATED) {
-        console.warn('2');
         if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
-          console.warn('3');
           return of(this.convertWithFiat(value, from, otherCurrencyUnit));
         } else {
-          console.warn('4');
           this.ratesAPIStatus = APICallStatusEnum.INITIATED;
           return this.dataService.getFiatRates().pipe(takeUntil(this.unSubs[0]),
             switchMap((data) => {
-              console.warn('5');
               this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
               this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
               this.conversionData.last_fetched = latest_date;
@@ -118,14 +112,8 @@ export class CommonService implements OnDestroy {
           );
         }
       } else if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
-        console.warn('6');
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
-        console.warn(this.conversionData.data);
-        console.warn(this.conversionData.last_fetched);
-        console.warn(latest_date < (this.conversionData.last_fetched + 300000));
-        console.warn(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000)));
-        console.warn('7');
         return of(this.convertWithoutFiat(value, from));
       }
     } else {

@@ -62,7 +62,9 @@
       background: $foreground-secondary-text;
     }  
   }
-  
+  .currency-icon-medium path, .currency-icon-medium polygon {
+    fill: $foreground-text;
+  }
   .rtl-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;

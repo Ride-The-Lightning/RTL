@@ -1,6 +1,9 @@
+/* eslint-disable max-len */
 import { isDevMode } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CLNPageDefinitions, ECLPageDefinitions, LNDPageDefinitions, PageSettings } from '../models/pageSettings';
+import { FiatCurrency } from '../models/rtlModels';
+import { faBahtSign, faBrazilianRealSign, faDollarSign, faEuroSign, faFrancSign, faIndianRupeeSign, faRubleSign, faSterlingSign, faTurkishLiraSign, faWonSign, faYenSign } from '@fortawesome/free-solid-svg-icons';
 
 export function getPaginatorLabel(field: string) {
   const appPaginator = new MatPaginatorIntl();
@@ -44,16 +47,6 @@ export const API_END_POINTS = {
 
 export const CURRENCY_UNITS = ['Sats', 'BTC'];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2' };
-export const FIAT_CURRENCY_UNITS = [
-  { id: 'USD', name: 'USD' },
-  { id: 'AUD', name: 'AUD' }, { id: 'BRL', name: 'BRL' }, { id: 'CAD', name: 'CAD' },
-  { id: 'CHF', name: 'CHF' }, { id: 'CLP', name: 'CLP' }, { id: 'CNY', name: 'CNY' },
-  { id: 'DKK', name: 'DKK' }, { id: 'EUR', name: 'EUR' }, { id: 'GBP', name: 'GBP' },
-  { id: 'HKD', name: 'HKD' }, { id: 'INR', name: 'INR' }, { id: 'ISK', name: 'ISK' },
-  { id: 'JPY', name: 'JPY' }, { id: 'KRW', name: 'KRW' }, { id: 'NZD', name: 'NZD' },
-  { id: 'PLN', name: 'PLN' }, { id: 'RUB', name: 'RUB' }, { id: 'SEK', name: 'SEK' },
-  { id: 'SGD', name: 'SGD' }, { id: 'THB', name: 'THB' }, { id: 'TWD', name: 'TWD' }
-];
 
 export const TIME_UNITS = ['SECS', 'MINS', 'HOURS', 'DAYS'];
 export const DATA_FILTER_RANGE_UNITS = ['HOURS', 'DAYS', 'MONTHS', 'YEARS'];
@@ -1262,3 +1255,133 @@ export const ECL_PAGE_DEFS: ECLPageDefinitions = {
     }
   }
 };
+
+export const FIAT_CURRENCY_ICONS_SGV = {
+  CZK: `
+  <svg class= "currency-icon-small" version='1.0' xmlns='http://www.w3.org/2000/svg' width='14' height='17' viewBox='0 0 137.000000 118.000000' preserveAspectRatio='xMidYMid meet'>
+    <g transform='translate(0.000000,118.000000) scale(0.100000,-0.100000)' stroke='none'>
+      <path d='M80 600 l0 -410 50 0 50 0 0 138 0 138 69 68 69 69 46 -64 c25 -35
+      91 -128 146 -206 l101 -143 71 0 70 0 -24 33 c-99 130 -328 446 -328 451 0 4
+      75 81 168 171 l167 164 -70 1 -70 0 -200 -200 c-110 -110 -203 -200 -207 -200
+      -5 0 -8 90 -8 200 l0 200 -50 0 -50 0 0 -410z'/>
+      <path d='M946 935 l56 -75 57 0 57 0 57 70 c31 38 57 72 57 75 0 3 -24 5 -52
+      5 -52 0 -54 -1 -82 -46 l-30 -47 -23 29 c-13 16 -26 37 -29 47 -4 14 -17 17
+      -65 17 l-59 0 56 -75z'/>
+      <path d='M939 762 c-99 -51 -148 -164 -136 -315 12 -168 114 -267 274 -267 60
+      0 139 36 175 78 32 39 64 120 52 132 -5 4 -26 10 -47 12 -37 3 -40 1 -52 -35
+      -55 -160 -254 -136 -295 34 -29 121 10 258 84 293 78 37 173 9 197 -58 12 -32
+      17 -36 49 -36 54 0 65 11 51 51 -32 93 -106 139 -223 139 -63 0 -84 -5 -129
+      -28z'/>
+    </g>
+  </svg>
+  `,
+  DKK: `
+  <svg class= "currency-icon-small" xmlns='http://www.w3.org/2000/svg' width='12' height='17' viewBox='0 0 100 74.18'>
+    <path d='M58.58 72.85H41.05L22 42.15l-6.53 4.68v26H0V0H15.44V33.33l6.09-8.57L41.24 0H58.38L33 32.24 58.58 72.85ZM95 16.12a25.27 25.27 0 0 1 5.14.44L99 30.81a18.05 18.05 0 0 0-4.49-.49q-7.28 0-11.32 3.74T79.09 44.52V72.85H63.91V17.14H75.42l2.22 9.39h.75a21.26 21.26 0 0 1 7-7.55A17.15 17.15 0 0 1 95 16.12Zm10.48 49.59q0-4.18Z' />
+  </svg>
+  `,
+  HRK: `
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+  <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/15766/croatia-kuna-currency-symbol -->
+  <svg class= "currency-icon-small" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     width="75.045px" height="75.045px" viewBox="0 0 75.045 75.045" style="enable-background:new 0 0 75.045 75.045;"
+     xml:space="preserve">
+    <g>
+      <path d="M75.045,42.207v25.959c0,0.301-0.243,0.545-0.544,0.545h-6.817c-0.3,0-0.543-0.244-0.543-0.545V43.105
+        c0-8.162-3.111-12.302-9.244-12.302c-4.526,0-8.375,3.021-9.809,7.7c-0.331,0.912-0.516,2.187-0.516,3.522v26.14
+        c0,0.301-0.243,0.543-0.543,0.543h-8.448c-0.3,0-0.544-0.242-0.544-0.543l-0.033-43.474c0-0.145,0.059-0.283,0.159-0.385
+        c0.103-0.103,0.239-0.159,0.385-0.159h7.17c0.146,0,0.283,0.058,0.386,0.16c0.103,0.103,0.158,0.241,0.157,0.387l-0.03,5.434
+        c1.951-3.095,5.375-6.426,12.367-6.426C62.457,23.704,75.045,25.039,75.045,42.207z M14.096,46.926L31.08,25.684
+        c0.244-0.306,0.283-0.726,0.102-1.065c-0.176-0.331-0.519-0.535-0.897-0.535H23.02c-0.312,0-0.61,0.145-0.799,0.385L7.874,42.679
+        V7.293c0-0.546-0.453-0.989-1.011-0.989H1.012C0.454,6.305,0,6.748,0,7.293V67.75c0,0.547,0.454,0.989,1.012,0.989h5.851
+        c0.558,0,1.011-0.442,1.011-0.989V52.449l0.854-0.015l15.355,15.996c0.189,0.196,0.458,0.31,0.734,0.31h6.928
+        c0.385,0,0.743-0.219,0.913-0.562c0.175-0.358,0.114-0.783-0.159-1.086L14.096,46.926z"/>
+    </g>
+  </svg>
+  `,
+  HUF: `
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/150474/forint -->
+  <svg class= "currency-icon-small" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="445px" height="445px" viewBox="0 0 445 445" style="enable-background:new 0 0 445 445;" xml:space="preserve">
+    <g>
+      <polygon points="88.897,35 291.541,35 291.541,5 58.897,5 58.897,445 88.897,445 88.897,247.431 251.582,247.431 251.582,217.431 
+        88.897,217.431"/>
+      <path d="M386.103,141.215v-30h-39.973V0h-30v111.215h-39.978v30h39.978v242.919c0,30.804,25.062,55.865,55.865,55.865h14.107v-30
+        h-14.107c-14.262,0-25.865-11.603-25.865-25.865V141.215H386.103z"/>
+    </g>
+  </svg>
+  `,
+  PLN: `
+  <svg class= "currency-icon-small" version='1.0' xmlns='http://www.w3.org/2000/svg' width='12' height='17' viewBox='0 0 154.000000 169.000000' preserveAspectRatio='xMidYMid meet'>
+    <g transform='translate(0.000000,169.000000) scale(0.100000,-0.100000)' stroke='none'>
+      <path d='M1070 1225 l0 -324 -122 -93 c-68 -50 -126 -96 -130 -102 -13 -18 -9
+      -54 8 -70 27 -28 59 -17 147 49 48 36 89 65 92 65 3 0 5 -135 5 -300 l0 -300
+      100 0 100 0 0 379 0 379 116 86 c63 48 118 94 121 103 3 8 2 27 -3 42 -7 20
+      -17 27 -41 29 -26 3 -46 -8 -106 -52 -41 -31 -77 -56 -80 -56 -4 0 -7 110 -7
+      245 l0 245 -100 0 -100 0 0 -325z'/>
+      <path d='M114 1107 c-3 -8 -4 -47 -2 -88 l3 -74 233 -3 c127 -1 232 -5 232 -8
+      0 -3 -20 -29 -44 -57 -24 -29 -139 -176 -255 -327 l-211 -275 0 -62 0 -63 395
+      0 395 0 0 85 0 85 -256 0 c-141 0 -254 3 -252 8 2 4 33 45 70 92 37 47 150
+      193 252 325 l185 240 1 55 c0 31 -5 61 -12 68 -19 19 -727 17 -734 -1z'/>
+    </g>
+  </svg>
+  `,
+  RON: `
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+  <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/64526/romania-lei-currency -->
+  <svg class= "currency-icon-small" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     width="74.19px" height="74.19px" viewBox="0 0 74.19 74.19" style="enable-background:new 0 0 74.19 74.19;" xml:space="preserve"
+    >
+    <g>
+      <path d="M10.052,6.186v60.96c0,0.688-0.559,1.248-1.249,1.248H1.248C0.559,68.394,0,67.834,0,67.146V6.186
+        c0-0.689,0.559-1.248,1.248-1.248h7.555C9.493,4.938,10.052,5.496,10.052,6.186z M56.245,44.135c0,1.643-0.093,2.9-0.282,3.852
+        c-0.117,0.582-0.629,1.004-1.224,1.004c-0.001,0-0.002,0-0.004,0l-27.798-0.08c0.792,10.729,9.185,11.923,12.862,11.923
+        c5.455,0,8.639-0.995,11.035-1.97c0.334-0.137,0.711-0.119,1.032,0.041c0.321,0.164,0.558,0.455,0.647,0.804l1.373,5.323
+        c0.151,0.588-0.142,1.199-0.695,1.451c-2.799,1.264-7.574,2.771-14.422,2.771c-13.172,0-21.684-8.714-21.684-22.197
+        c0-13.98,8.563-23.744,20.824-23.744C51.443,23.311,56.245,34.529,56.245,44.135z M27.176,40.996h19.242
+        c-0.128-1.918-0.689-5.17-2.908-7.429c-1.531-1.56-3.617-2.351-6.201-2.351C31.211,31.217,28.124,36.212,27.176,40.996z
+        M67.963,19.197h0.086c3.5,0,6.142-2.64,6.142-6.144c0-3.452-2.603-6.054-6.058-6.054c-3.5,0-6.142,2.602-6.142,6.054
+        C61.991,16.557,64.559,19.197,67.963,19.197z M71.911,24.341h-7.555c-0.689,0-1.249,0.56-1.249,1.248v41.557
+        c0,0.688,0.559,1.248,1.249,1.248h7.555c0.69,0,1.249-0.56,1.249-1.248V25.589C73.159,24.901,72.602,24.341,71.911,24.341z"/>
+    </g>
+  </svg>
+  `,
+  TWD: `
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/142061/new-taiwan-dollar -->
+  <svg class= "currency-icon-small" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="300px" height="300px" viewBox="0 0 300 300" style="enable-background:new 0 0 300 300;" xml:space="preserve">
+    <g id="XMLID_7_">
+      <path id="XMLID_8_" d="M265,90c8.284,0,15-6.716,15-15s-6.716-15-15-15H35c-8.284,0-15,6.716-15,15s6.716,15,15,15h65v115
+        c0,35.841-29.159,65-65,65c-8.284,0-15,6.716-15,15s6.716,15,15,15c52.383,0,95-42.617,95-95V90h70v145c0,35.841,29.159,65,65,65
+        c8.284,0,15-6.716,15-15s-6.716-15-15-15c-19.299,0-35-15.701-35-35V90H265z"/>
+      <path id="XMLID_9_" d="M35,30h230c8.284,0,15-6.716,15-15s-6.716-15-15-15H35c-8.284,0-15,6.716-15,15S26.716,30,35,30z"/>
+    </g>
+  </svg>
+  `
+};
+
+// Name and symbols confirmed from https://www.xe.com/symbols/
+export const FIAT_CURRENCY_UNITS: FiatCurrency[] = [
+  { id: 'USD', name: 'United States Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'ARS', name: 'Argentina Peso', iconType: 'FA', symbol: faDollarSign }, { id: 'AUD', name: 'Australia Dollar', iconType: 'FA', symbol: faDollarSign },
+  { id: 'BRL', name: 'Brazil Real', iconType: 'FA', symbol: faBrazilianRealSign }, { id: 'CAD', name: 'Canada Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'CHF', name: 'Switzerland Franc', iconType: 'FA', symbol: faFrancSign },
+  { id: 'CLP', name: 'Chile Peso', iconType: 'FA', symbol: faDollarSign }, { id: 'CNY', name: 'China Yuan Renminbi', iconType: 'FA', symbol: faYenSign }, { id: 'CZK', name: 'Czech Republic Koruna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.CZK },
+  { id: 'DKK', name: 'Denmark Krone', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK }, { id: 'EUR', name: 'Euro Member Countries', iconType: 'FA', symbol: faEuroSign }, { id: 'GBP', name: 'United Kingdom Pound', iconType: 'FA', symbol: faSterlingSign },
+  { id: 'HKD', name: 'Hong Kong Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'HRK', name: 'Croatia Kuna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HRK }, { id: 'HUF', name: 'Hungary Forint', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HUF },
+  { id: 'INR', name: 'India Rupee', iconType: 'FA', symbol: faIndianRupeeSign }, { id: 'ISK', name: 'Iceland Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK }, { id: 'JPY', name: 'Japan Yen', iconType: 'FA', symbol: faYenSign },
+  { id: 'KRW', name: 'Korea (South) Won', iconType: 'FA', symbol: faWonSign }, { id: 'NZD', name: 'New Zealand Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'PLN', name: 'Poland Zloty', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.PLN },
+  { id: 'RON', name: 'Romania Leu', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.RON }, { id: 'RUB', name: 'Russia Ruble', iconType: 'FA', symbol: faRubleSign }, { id: 'SEK', name: 'Sweden Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK },
+  { id: 'SGD', name: 'Singapore Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'THB', name: 'Thailand Baht', iconType: 'FA', symbol: faBahtSign }, { id: 'TRY', name: 'Turkey Lira', iconType: 'FA', symbol: faTurkishLiraSign },
+  { id: 'TWD', name: 'Taiwan New Dollar', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.TWD }
+];
+
+export function getSelectedCurrency(currencyID: string) {
+  return FIAT_CURRENCY_UNITS.find((currencyUnit) => currencyUnit.id === currencyID);
+}

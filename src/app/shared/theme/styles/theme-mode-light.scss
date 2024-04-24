@@ -231,6 +231,15 @@
   .mat-expansion-panel.flat-expansion-panel {
     border: 1px solid $foreground-divider;
   }
+  .mat-mdc-form-field-hint {
+    color: $primary-color;
+    .currency-icon-small path {
+      fill: $primary-color;
+    }
+  }
+  .currency-icon-medium path {
+    fill: $foreground-text;
+  }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
     & .boltz-icon-fill { fill: $foreground-secondary-text; }

@@ -507,6 +507,13 @@
     border-bottom: 1px solid $foreground-divider;
     margin-bottom: $gap;
   }
+
+  .mat-mdc-form-field-hint .currency-icon-small {
+    color: $primary-color;
+    & path {
+      fill: $primary-color;
+    }
+  }
   
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {

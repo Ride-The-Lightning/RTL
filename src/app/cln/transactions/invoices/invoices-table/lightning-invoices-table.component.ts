@@ -259,7 +259,7 @@ export class CLNLightningInvoicesTableComponent implements OnInit, AfterViewInit
         pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }
