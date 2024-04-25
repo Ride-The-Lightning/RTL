@@ -17,12 +17,12 @@
             <mat-label>Amount</mat-label>
             <input matInput type="number" tabindex="3" name="invoiceValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
             <span matSuffix>  Sats </span>
-            <mat-hint>
-              <span *ngIf="invoiceValueHint !== ''">= </span>
-              <span *ngIf="selCurrency && selCurrency.iconType === 'FA'">
-                <fa-icon *ngIf="selCurrency && invoiceValueHint !== ''" [icon]="selCurrency.symbol" />
+            <mat-hint fxLayout="row wrap" fxFlex="100">
+              <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
+              <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
+                <fa-icon *ngIf="convertedCurrency && invoiceValueHint !== ''" [icon]="convertedCurrency.symbol" />
               </span>
-              <span *ngIf="selCurrency && selCurrency.iconType === 'SVG'" [innerHTML]="selCurrency.symbol"></span>
+              <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
               {{invoiceValueHint}}
             </mat-hint>
           </mat-form-field>

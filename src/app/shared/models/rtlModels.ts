@@ -46,4 +46,14 @@ export interface FiatCurrency {
   name: string;
   iconType: 'SVG' | 'FA';
   symbol: string | IconDefinition | SafeHtml;
+  class?: string;
 }
+
+export interface ConvertedCurrency {
+    unit: string;
+    iconType: 'FA' | 'SVG';
+    symbol: string | IconDefinition | SafeHtml;
+    Sats: number;
+    BTC: number;
+    OTHER: number;
+};

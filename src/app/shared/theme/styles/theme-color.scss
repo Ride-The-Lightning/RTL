@@ -508,7 +508,19 @@
     margin-bottom: $gap;
   }
 
-  .mat-mdc-form-field-hint .currency-icon-small {
+  .mat-mdc-option.mdc-list-item:hover, .mat-mdc-option.mdc-list-item.mat-mdc-option-active {
+    fa-icon svg path {
+      fill: $primary-color;
+    }
+    & .currency-icon {
+      color: $primary-color;
+      & path {
+        fill: $primary-color;
+      }
+    }
+  }
+
+  .mat-mdc-form-field-hint .currency-icon {
     color: $primary-color;
     & path {
       fill: $primary-color;

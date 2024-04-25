@@ -9,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Node } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel, GetInfo, OfferRequest, OfferInvoice } from '../../../shared/models/clnModels';
+import { PayRequest, Channel, OfferRequest, OfferInvoice } from '../../../shared/models/clnModels';
 import { APICallStatusEnum, CLNActions, PaymentTypes, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -17,9 +17,10 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { fetchOfferInvoice, sendPayment } from '../../store/cln.actions';
-import { channels, clnNodeInformation, clnNodeSettings } from '../../store/cln.selector';
+import { channels, clnNodeSettings } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { CLNPaymentInformation } from '../../../shared/models/alertData';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-cln-lightning-send-payments',
@@ -45,13 +46,14 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
   }
   public faExclamationTriangle = faExclamationTriangle;
+  public convertedCurrency: ConvertedCurrency = null;
   public paymentTypes = PaymentTypes;
   public paymentType = PaymentTypes.INVOICE;
   public selNode: Node | null;
-
   public offerDecoded: OfferRequest = {};
   public offerRequest = '';
-  public offerDecodedHint = '';
+  public offerDecodedHintPre = '';
+  public offerDecodedHintPost = '';
   public offerDescription = '';
   public offerIssuer = '';
   public offerTitle = '';
@@ -62,12 +64,14 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
-  public paymentDecodedHint = '';
+  public paymentDecodedHintPre = '';
+  public paymentDecodedHintPost = '';
   public zeroAmtInvoice = false;
   public paymentAmount = null;
 
   public pubkey = '';
   public keysendAmount = null;
+  public keysendValueHint = '';
   public selActiveChannel: Channel | null = {};
   public activeChannels = {};
   public feeLimit = null;
@@ -131,12 +135,17 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           }
           if (action.payload.action === 'DecodePayment') {
             if (this.paymentType === PaymentTypes.INVOICE) {
-              this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
+              this.paymentDecodedHintPre = 'ERROR: ' + action.payload.message;
+              this.paymentDecodedHintPost = '';
               this.paymentReq.control.setErrors({ decodeError: true });
             }
             if (this.paymentType === PaymentTypes.OFFER) {
-              this.offerDecodedHint = 'ERROR: ' + action.payload.message;
+              this.offerDecodedHintPre = 'ERROR: ' + action.payload.message;
+              this.offerDecodedHintPost = '';
               this.offerReq.control.setErrors({ decodeError: true });
+            }
+            if (this.paymentType === PaymentTypes.KEYSEND) {
+              this.keysendValueHint = 'ERROR: ' + action.payload.message;
             }
           }
           if (action.payload.action === 'FetchOfferInvoice' && this.paymentType === PaymentTypes.OFFER) {
@@ -166,7 +175,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.dataService.decodePayment(this.paymentRequest, true).
             pipe(takeUntil(this.unSubs[4])).subscribe((decodedPayment: PayRequest | OfferRequest) => {
               if (decodedPayment.type === 'bolt12 offer' && (<OfferRequest>decodedPayment).offer_id) {
-                this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+                this.paymentDecodedHintPre = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+                this.paymentDecodedHintPost = '';
                 this.paymentReq.control.setErrors({ decodeError: true });
               } else {
                 this.paymentDecoded = <PayRequest>decodedPayment;
@@ -189,7 +199,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.dataService.decodePayment(this.offerRequest, true).
             pipe(takeUntil(this.unSubs[5])).subscribe((decodedOffer: PayRequest | OfferRequest) => {
               if (decodedOffer.type === 'bolt11 invoice' && (<PayRequest>decodedOffer).payment_hash) {
-                this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+                this.offerDecodedHintPre = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+                this.offerDecodedHintPost = '';
                 this.offerReq.control.setErrors({ decodeError: true });
               } else {
                 this.offerDecoded = <OfferRequest>decodedOffer;
@@ -248,7 +259,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.dataService.decodePayment(event, true).pipe(takeUntil(this.unSubs[6])).subscribe((decodedRequest: PayRequest | OfferRequest) => {
         if (this.paymentType === PaymentTypes.INVOICE) {
           if (decodedRequest.type === 'bolt12 offer' && (<OfferRequest>decodedRequest).offer_id) {
-            this.paymentDecodedHint = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+            this.paymentDecodedHintPre = 'ERROR: Select Offer option to pay the bolt12 offer invoice.';
+            this.paymentDecodedHintPost = '';
             this.paymentReq.control.setErrors({ decodeError: true });
           } else {
             this.paymentDecoded = <PayRequest>decodedRequest;
@@ -256,7 +268,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           }
         } else if (this.paymentType === PaymentTypes.OFFER) {
           if (decodedRequest.type === 'bolt11 invoice' && (<PayRequest>decodedRequest).payment_hash) {
-            this.offerDecodedHint = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+            this.offerDecodedHintPre = 'ERROR: Select Invoice option to pay the bolt11 invoice.';
+            this.offerDecodedHintPost = '';
             this.offerReq.control.setErrors({ decodeError: true });
           } else {
             this.offerDecoded = <OfferRequest>decodedRequest;
@@ -270,7 +283,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   resetOfferDetails() {
     this.offerInvoice = null;
     this.offerAmount = null;
-    this.offerDecodedHint = '';
+    this.offerDecodedHintPre = '';
+    this.offerDecodedHintPost = '';
     this.zeroAmtOffer = false;
     this.paymentError = '';
     if (this.offerReq) { this.offerReq.control.setErrors(null); }
@@ -278,7 +292,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   resetInvoiceDetails() {
     this.paymentAmount = null;
-    this.paymentDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
     this.zeroAmtInvoice = false;
     this.paymentError = '';
     if (this.paymentReq) { this.paymentReq.control.setErrors(null); }
@@ -297,8 +312,10 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onPaymentTypeChange() {
     this.paymentError = '';
-    this.paymentDecodedHint = '';
-    this.offerDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
+    this.offerDecodedHintPre = '';
+    this.offerDecodedHintPost = '';
     this.offerInvoice = null;
   }
 
@@ -308,7 +325,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.zeroAmtOffer = true;
       this.offerDescription = this.offerDecoded.offer_description || '';
       this.offerIssuer = this.offerDecoded.offer_issuer ? this.offerDecoded.offer_issuer : '';
-      this.offerDecodedHint = 'Zero Amount Offer | Description: ' + this.offerDecoded.offer_description;
+      this.offerDecodedHintPre = 'Zero Amount Offer | Description: ' + this.offerDecoded.offer_description;
+      this.offerDecodedHintPost = '';
     } else {
       this.zeroAmtOffer = false;
       this.offerAmount = this.offerDecoded.offer_amount_msat ? this.offerDecoded.offer_amount_msat / 1000 : 0;
@@ -319,13 +337,17 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Description: ' + this.offerDecoded.offer_description;
+              this.convertedCurrency = data;
+              this.offerDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats (';
+              this.offerDecodedHintPost = this.decimalPipe.transform((this.convertedCurrency.OTHER ? this.convertedCurrency.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit + ') | Description: ' + this.offerDecoded.offer_description;
             }, error: (error) => {
-              this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description + '. Unable to convert currency.';
+              this.offerDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description + '. Unable to convert currency.';
+              this.offerDecodedHintPost = '';
             }
           });
       } else {
-        this.offerDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description;
+        this.offerDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.offerAmount) + ' Sats | Description: ' + this.offerDecoded.offer_description;
+        this.offerDecodedHintPost = '';
       }
     }
   }
@@ -334,7 +356,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentDecoded.created_at && !this.paymentDecoded.amount_msat) {
       this.paymentDecoded.amount_msat = 0;
       this.zeroAmtInvoice = true;
-      this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+      this.paymentDecodedHintPre = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+      this.paymentDecodedHintPost = '';
     } else {
       this.zeroAmtInvoice = false;
       if (this.selNode && this.selNode.settings.fiatConversion) {
@@ -343,14 +366,17 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           pipe(takeUntil(this.unSubs[8])).
           subscribe({
             next: (data) => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats (' + data.symbol +
-              this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Memo: ' + this.paymentDecoded.description;
+              this.convertedCurrency = data;
+              this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats (';
+              this.paymentDecodedHintPost = this.decimalPipe.transform((this.convertedCurrency.OTHER ? this.convertedCurrency.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit + ') | Memo: ' + this.paymentDecoded.description;
             }, error: (error) => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+              this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+              this.paymentDecodedHintPost = '';
             }
           });
       } else {
-        this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+        this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+        this.paymentDecodedHintPost = '';
       }
     }
   }
@@ -359,6 +385,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     switch (this.paymentType) {
       case PaymentTypes.KEYSEND:
         this.pubkey = '';
+        this.keysendValueHint = '';
         this.keysendAmount = null;
         break;
 
@@ -382,6 +409,25 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
     }
     this.paymentError = '';
   }
+
+  onKeysendAmountChange() {
+    if (this.selNode && this.selNode.settings.fiatConversion) {
+      this.keysendValueHint = '';
+      if (this.keysendAmount && this.keysendAmount > 99) {
+        this.commonService.convertCurrency(this.keysendAmount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
+          pipe(takeUntil(this.unSubs[3])).
+          subscribe({
+            next: (data) => {
+              this.convertedCurrency = data;
+              this.keysendValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
+            }, error: (err) => {
+              this.keysendValueHint = 'Conversion Error: ' + err;
+            }
+          });
+      }
+    }
+  }
+
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {

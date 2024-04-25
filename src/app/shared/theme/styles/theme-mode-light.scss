@@ -233,12 +233,12 @@
   }
   .mat-mdc-form-field-hint {
     color: $primary-color;
-    .currency-icon-small path {
+    .currency-icon path, .currency-icon polygon, fa-icon svg path {
       fill: $primary-color;
     }
   }
-  .currency-icon-medium path {
-    fill: $foreground-text;
+  .currency-icon path, .currency-icon polygon {
+    fill: $foreground-secondary-text;
   }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }

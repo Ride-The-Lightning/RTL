@@ -32,12 +32,12 @@
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
             <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" class="mr-2" [(ngModel)]="selNode.settings.fiatConversion" (change)="!selNode.settings.currencyUnit">Enable Fiat Conversion</mat-slide-toggle>
-            <mat-form-field fxFlex="20">
+            <mat-form-field fxFlex="25">
               <mat-label>Fiat Currency</mat-label>
               <mat-select #currencyUnit="ngModel" autoFocus tabindex="3" name="currencyUnit" [disabled]="!selNode.settings.fiatConversion" [required]="selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)">
                 <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
                   <span *ngIf="currencyUnit && currencyUnit.iconType === 'FA'" class="mr-1"><fa-icon [icon]="currencyUnit.symbol" /></span>
-                  <span *ngIf="currencyUnit && currencyUnit.iconType === 'SVG'" class="mr-1"><span [innerHTML]="currencyUnit.symbol"></span></span>
+                  <span *ngIf="currencyUnit && currencyUnit.iconType === 'SVG'" class="mr-1"><span fxLayoutAlign="center center" [innerHTML]="currencyUnit.symbol"></span></span>
                   {{currencyUnit.name}} ({{currencyUnit.id}})
                 </mat-option>
               </mat-select>

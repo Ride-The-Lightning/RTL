@@ -1258,7 +1258,7 @@ export const ECL_PAGE_DEFS: ECLPageDefinitions = {
 
 export const FIAT_CURRENCY_ICONS_SGV = {
   CZK: `
-  <svg class= "currency-icon-small" version='1.0' xmlns='http://www.w3.org/2000/svg' width='14' height='17' viewBox='0 0 137.000000 118.000000' preserveAspectRatio='xMidYMid meet'>
+  <svg class="currency-icon" version='1.0' xmlns='http://www.w3.org/2000/svg' width="300px" height="300px" viewBox='0 0 137.000000 118.000000' preserveAspectRatio='xMidYMid meet'>
     <g transform='translate(0.000000,118.000000) scale(0.100000,-0.100000)' stroke='none'>
       <path d='M80 600 l0 -410 50 0 50 0 0 138 0 138 69 68 69 69 46 -64 c25 -35
       91 -128 146 -206 l101 -143 71 0 70 0 -24 33 c-99 130 -328 446 -328 451 0 4
@@ -1276,7 +1276,7 @@ export const FIAT_CURRENCY_ICONS_SGV = {
   </svg>
   `,
   DKK: `
-  <svg class= "currency-icon-small" xmlns='http://www.w3.org/2000/svg' width='12' height='17' viewBox='0 0 100 74.18'>
+  <svg class="currency-icon" xmlns='http://www.w3.org/2000/svg' width="300px" height="300px" viewBox='0 0 100 74.18'>
     <path d='M58.58 72.85H41.05L22 42.15l-6.53 4.68v26H0V0H15.44V33.33l6.09-8.57L41.24 0H58.38L33 32.24 58.58 72.85ZM95 16.12a25.27 25.27 0 0 1 5.14.44L99 30.81a18.05 18.05 0 0 0-4.49-.49q-7.28 0-11.32 3.74T79.09 44.52V72.85H63.91V17.14H75.42l2.22 9.39h.75a21.26 21.26 0 0 1 7-7.55A17.15 17.15 0 0 1 95 16.12Zm10.48 49.59q0-4.18Z' />
   </svg>
   `,
@@ -1285,9 +1285,9 @@ export const FIAT_CURRENCY_ICONS_SGV = {
   <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
   <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
   <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/15766/croatia-kuna-currency-symbol -->
-  <svg class= "currency-icon-small" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-     width="75.045px" height="75.045px" viewBox="0 0 75.045 75.045" style="enable-background:new 0 0 75.045 75.045;"
-     xml:space="preserve">
+  <svg class="currency-icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="300px" height="300px" viewBox="0 0 75.045 75.045" style="enable-background:new 0 0 75.045 75.045;"
+    xml:space="preserve">
     <g>
       <path d="M75.045,42.207v25.959c0,0.301-0.243,0.545-0.544,0.545h-6.817c-0.3,0-0.543-0.244-0.543-0.545V43.105
         c0-8.162-3.111-12.302-9.244-12.302c-4.526,0-8.375,3.021-9.809,7.7c-0.331,0.912-0.516,2.187-0.516,3.522v26.14
@@ -1304,19 +1304,25 @@ export const FIAT_CURRENCY_ICONS_SGV = {
   HUF: `
   <?xml version="1.0" encoding="iso-8859-1"?>
   <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/150474/forint -->
-  <svg class= "currency-icon-small" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    width="445px" height="445px" viewBox="0 0 445 445" style="enable-background:new 0 0 445 445;" xml:space="preserve">
+  <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/183602/forint-business-and-finance -->
+  <svg class="currency-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="300px" height="300px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
     <g>
-      <polygon points="88.897,35 291.541,35 291.541,5 58.897,5 58.897,445 88.897,445 88.897,247.431 251.582,247.431 251.582,217.431 
-        88.897,217.431"/>
-      <path d="M386.103,141.215v-30h-39.973V0h-30v111.215h-39.978v30h39.978v242.919c0,30.804,25.062,55.865,55.865,55.865h14.107v-30
-        h-14.107c-14.262,0-25.865-11.603-25.865-25.865V141.215H386.103z"/>
+      <path d="M265.485,0.03L151.71,0.015c-0.364-0.036-0.62,0.004-0.929,0.015H37.932
+        c-15.708,0-28.444,12.735-28.444,28.444v455.082C9.489,499.264,22.224,512,37.932,512s28.444-12.735,28.444-28.444V287.128h142.408
+        c15.708,0,28.444-12.735,28.444-28.444c0-15.708-12.735-28.444-28.444-28.444H66.376V56.917h199.105
+        c15.708,0,28.442-12.733,28.444-28.442C293.927,12.769,281.193,0.032,265.485,0.03z"/>
+      <path d="M474.067,455.114c-36.596,0-66.368-29.773-66.368-66.368V170.692h28.444
+        c15.708,0,28.444-12.735,28.444-28.444s-12.735-28.444-28.444-28.444h-28.444V28.474c0-15.708-12.735-28.444-28.444-28.444
+        c-15.708,0-28.444,12.735-28.444,28.444v85.331h-28.444c-15.708,0-28.444,12.735-28.444,28.444s12.735,28.444,28.444,28.444h28.444
+        v218.052c0,67.963,55.292,123.256,123.256,123.256c15.708,0,28.444-12.735,28.444-28.444
+        C502.511,467.848,489.776,455.114,474.067,455.114z"/>
     </g>
   </svg>
   `,
   PLN: `
-  <svg class= "currency-icon-small" version='1.0' xmlns='http://www.w3.org/2000/svg' width='12' height='17' viewBox='0 0 154.000000 169.000000' preserveAspectRatio='xMidYMid meet'>
+  <svg class="currency-icon" version='1.0' xmlns='http://www.w3.org/2000/svg' 
+    width="300px" height="300px" viewBox='0 0 154.000000 169.000000' preserveAspectRatio='xMidYMid meet'>
     <g transform='translate(0.000000,169.000000) scale(0.100000,-0.100000)' stroke='none'>
       <path d='M1070 1225 l0 -324 -122 -93 c-68 -50 -126 -96 -130 -102 -13 -18 -9
       -54 8 -70 27 -28 59 -17 147 49 48 36 89 65 92 65 3 0 5 -135 5 -300 l0 -300
@@ -1335,8 +1341,8 @@ export const FIAT_CURRENCY_ICONS_SGV = {
   <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
   <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
   <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/64526/romania-lei-currency -->
-  <svg class= "currency-icon-small" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-     width="74.19px" height="74.19px" viewBox="0 0 74.19 74.19" style="enable-background:new 0 0 74.19 74.19;" xml:space="preserve"
+  <svg class="currency-icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="300px" height="300px" viewBox="0 0 74.19 74.19" style="enable-background:new 0 0 74.19 74.19;" xml:space="preserve"
     >
     <g>
       <path d="M10.052,6.186v60.96c0,0.688-0.559,1.248-1.249,1.248H1.248C0.559,68.394,0,67.834,0,67.146V6.186
@@ -1356,7 +1362,7 @@ export const FIAT_CURRENCY_ICONS_SGV = {
   <?xml version="1.0" encoding="iso-8859-1"?>
   <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
   <!-- License: CC0. Made by SVG Repo: https://www.svgrepo.com/svg/142061/new-taiwan-dollar -->
-  <svg class= "currency-icon-small" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  <svg class="currency-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
     width="300px" height="300px" viewBox="0 0 300 300" style="enable-background:new 0 0 300 300;" xml:space="preserve">
     <g id="XMLID_7_">
       <path id="XMLID_8_" d="M265,90c8.284,0,15-6.716,15-15s-6.716-15-15-15H35c-8.284,0-15,6.716-15,15s6.716,15,15,15h65v115
@@ -1369,19 +1375,24 @@ export const FIAT_CURRENCY_ICONS_SGV = {
 };
 
 // Name and symbols confirmed from https://www.xe.com/symbols/
+// Most SVGs are copied from https://www.svgviewer.dev
 export const FIAT_CURRENCY_UNITS: FiatCurrency[] = [
   { id: 'USD', name: 'United States Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'ARS', name: 'Argentina Peso', iconType: 'FA', symbol: faDollarSign }, { id: 'AUD', name: 'Australia Dollar', iconType: 'FA', symbol: faDollarSign },
   { id: 'BRL', name: 'Brazil Real', iconType: 'FA', symbol: faBrazilianRealSign }, { id: 'CAD', name: 'Canada Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'CHF', name: 'Switzerland Franc', iconType: 'FA', symbol: faFrancSign },
-  { id: 'CLP', name: 'Chile Peso', iconType: 'FA', symbol: faDollarSign }, { id: 'CNY', name: 'China Yuan Renminbi', iconType: 'FA', symbol: faYenSign }, { id: 'CZK', name: 'Czech Republic Koruna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.CZK },
-  { id: 'DKK', name: 'Denmark Krone', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK }, { id: 'EUR', name: 'Euro Member Countries', iconType: 'FA', symbol: faEuroSign }, { id: 'GBP', name: 'United Kingdom Pound', iconType: 'FA', symbol: faSterlingSign },
-  { id: 'HKD', name: 'Hong Kong Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'HRK', name: 'Croatia Kuna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HRK }, { id: 'HUF', name: 'Hungary Forint', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HUF },
-  { id: 'INR', name: 'India Rupee', iconType: 'FA', symbol: faIndianRupeeSign }, { id: 'ISK', name: 'Iceland Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK }, { id: 'JPY', name: 'Japan Yen', iconType: 'FA', symbol: faYenSign },
-  { id: 'KRW', name: 'Korea (South) Won', iconType: 'FA', symbol: faWonSign }, { id: 'NZD', name: 'New Zealand Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'PLN', name: 'Poland Zloty', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.PLN },
-  { id: 'RON', name: 'Romania Leu', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.RON }, { id: 'RUB', name: 'Russia Ruble', iconType: 'FA', symbol: faRubleSign }, { id: 'SEK', name: 'Sweden Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK },
+  { id: 'CLP', name: 'Chile Peso', iconType: 'FA', symbol: faDollarSign }, { id: 'CNY', name: 'China Yuan Renminbi', iconType: 'FA', symbol: faYenSign }, { id: 'CZK', name: 'Czech Republic Koruna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.CZK, class: 'currency-icon-x-large' },
+  { id: 'DKK', name: 'Denmark Krone', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK, class: 'currency-icon-medium' }, { id: 'EUR', name: 'Euro Member Countries', iconType: 'FA', symbol: faEuroSign }, { id: 'GBP', name: 'United Kingdom Pound', iconType: 'FA', symbol: faSterlingSign },
+  { id: 'HKD', name: 'Hong Kong Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'HRK', name: 'Croatia Kuna', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HRK, class: 'currency-icon-medium' }, { id: 'HUF', name: 'Hungary Forint', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.HUF, class: 'currency-icon-small' },
+  { id: 'INR', name: 'India Rupee', iconType: 'FA', symbol: faIndianRupeeSign }, { id: 'ISK', name: 'Iceland Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK, class: 'currency-icon-medium' }, { id: 'JPY', name: 'Japan Yen', iconType: 'FA', symbol: faYenSign },
+  { id: 'KRW', name: 'Korea (South) Won', iconType: 'FA', symbol: faWonSign }, { id: 'NZD', name: 'New Zealand Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'PLN', name: 'Poland Zloty', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.PLN, class: 'currency-icon-large' },
+  { id: 'RON', name: 'Romania Leu', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.RON, class: 'currency-icon-medium' }, { id: 'RUB', name: 'Russia Ruble', iconType: 'FA', symbol: faRubleSign }, { id: 'SEK', name: 'Sweden Krona', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.DKK, class: 'currency-icon-medium' },
   { id: 'SGD', name: 'Singapore Dollar', iconType: 'FA', symbol: faDollarSign }, { id: 'THB', name: 'Thailand Baht', iconType: 'FA', symbol: faBahtSign }, { id: 'TRY', name: 'Turkey Lira', iconType: 'FA', symbol: faTurkishLiraSign },
-  { id: 'TWD', name: 'Taiwan New Dollar', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.TWD }
+  { id: 'TWD', name: 'Taiwan New Dollar', iconType: 'SVG', symbol: FIAT_CURRENCY_ICONS_SGV.TWD, class: 'currency-icon-small' }
 ];
 
 export function getSelectedCurrency(currencyID: string) {
-  return FIAT_CURRENCY_UNITS.find((currencyUnit) => currencyUnit.id === currencyID);
+  const foundCurrency = FIAT_CURRENCY_UNITS.find((currencyUnit) => currencyUnit.id === currencyID);
+  if (foundCurrency.iconType === 'SVG' && typeof foundCurrency.symbol === 'string') {
+    foundCurrency.symbol = foundCurrency.symbol.replace('<svg class="currency-icon"', '<svg class= "currency-icon ' + foundCurrency.class + '"');
+  }
+  return foundCurrency;
 }

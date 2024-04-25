@@ -45,16 +45,16 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, public sanitizer: DomSanitizer) {
     this.screenSize = this.commonService.getScreenSize();
+  }
+
+  ngOnInit() {
     this.currencyUnits.map((currencyUnit) => {
       if (currencyUnit.iconType === 'SVG' && typeof currencyUnit.symbol === 'string') {
-        currencyUnit.symbol = currencyUnit.symbol.replace('class= "currency-icon-small"', 'class= "currency-icon-medium"');
+        currencyUnit.symbol = currencyUnit.symbol.replace('<svg class="currency-icon" ', '<svg class="currency-icon ' + currencyUnit.class + '"');
         currencyUnit.symbol = this.sanitizer.bypassSecurityTrustHtml(<string>currencyUnit.symbol);
       }
       return currencyUnit;
     });
-  }
-
-  ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
       this.selNode = selNode;
       this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id) || this.themeModes[0];

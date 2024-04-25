@@ -1,11 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 import { Subject, of, Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
-import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS } from './consts-enums-functions';
+import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS, getSelectedCurrency } from './consts-enums-functions';
 
 @Injectable()
 export class CommonService implements OnDestroy {
@@ -19,7 +20,7 @@ export class CommonService implements OnDestroy {
   public containerSizeUpdated: BehaviorSubject<any> = new BehaviorSubject(this.containerSize);
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public dataService: DataService, private logger: LoggerService, private datePipe: DatePipe) { }
+  constructor(public dataService: DataService, private logger: LoggerService, private datePipe: DatePipe, public sanitizer: DomSanitizer) { }
 
   getScreenSize() {
     return this.screenSize;
@@ -141,7 +142,16 @@ export class CommonService implements OnDestroy {
   }
 
   convertWithFiat(value: number, from: string, otherCurrencyUnit: string) {
-    const returnValue = { unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol };
+    const returnValue = { unit: otherCurrencyUnit, iconType: 'FA', symbol: null };
+    if (otherCurrencyUnit) {
+      const selCurrency = getSelectedCurrency(this.conversionData.data[otherCurrencyUnit].symbol);
+      returnValue.iconType = selCurrency.iconType;
+      if (selCurrency && selCurrency.iconType === 'SVG' && selCurrency.symbol && typeof selCurrency.symbol === 'string') {
+        returnValue.symbol = this.sanitizer.bypassSecurityTrustHtml(selCurrency.symbol);
+      } else {
+        returnValue.symbol = selCurrency.symbol;
+      }
+    }
     returnValue[CurrencyUnitEnum.SATS] = 0;
     returnValue[CurrencyUnitEnum.BTC] = 0;
     returnValue[CurrencyUnitEnum.OTHER] = 0;

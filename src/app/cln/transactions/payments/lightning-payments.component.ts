@@ -8,6 +8,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -25,7 +26,7 @@ import { sendPayment } from '../../store/cln.actions';
 import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
@@ -42,6 +43,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
+  public convertedCurrency: ConvertedCurrency = null;
   public nodePageDefs = CLN_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
@@ -57,7 +59,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public mppColumns: string[] = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
-  public paymentDecodedHint = '';
+  public paymentDecodedHintPre = '';
+  public paymentDecodedHintPost = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -228,7 +231,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   onPaymentRequestEntry(event: any) {
     this.paymentRequest = event;
-    this.paymentDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.dataService.decodePayment(this.paymentRequest, false).
         pipe(takeUntil(this.unSubs[5])).subscribe((decodedPayment: PayRequest) => {
@@ -239,20 +243,25 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
                 pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ?
-                      (this.paymentDecoded.amount_msat / 1000) : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0),
-                      CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit + ') | Memo: ' + this.paymentDecoded.description;
+                    this.convertedCurrency = data;
+                    this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ?
+                      (this.paymentDecoded.amount_msat / 1000) : 0) + ' Sats (';
+                    this.paymentDecodedHintPost = this.decimalPipe.transform((this.convertedCurrency.OTHER ? this.convertedCurrency.OTHER : 0),
+                      CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit + ') | Memo: ' + this.paymentDecoded.description;
                   }, error: (error) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
+                    this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
                     ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                    this.paymentDecodedHintPost = '';
                   }
                 });
             } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
+              this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount_msat ? this.paymentDecoded.amount_msat / 1000 : 0) +
               ' Sats | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHintPost = '';
             }
           } else {
-            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHintPre = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHintPost = '';
           }
         });
     }
