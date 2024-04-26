@@ -8,7 +8,7 @@ import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { ApplicationConfig, Authentication, SSO } from '../../models/config.model.js';
+import { ApplicationConfig, Authentication, SSO, SelectedNode } from '../../models/config.model.js';
 
 const options = { url: '' };
 const logger: LoggerService = Logger;
@@ -36,18 +36,21 @@ export const maskPasswords = (obj) => {
   return obj;
 };
 
+export const removeAuthSecureData = (node: SelectedNode) => {
+  delete node.authentication.macaroonPath;
+  delete node.authentication.runePath;
+  delete node.authentication.lnApiPassword;
+  delete node.authentication.options;
+  return node;
+};
+
 export const removeSecureData = (config: ApplicationConfig) => {
   delete config.rtlConfFilePath;
   delete config.rtlPass;
   delete config.multiPass;
   delete config.multiPassHashed;
   delete config.secret2FA;
-  config.nodes.map((node) => {
-    delete node.authentication.macaroonPath;
-    delete node.authentication.runePath;
-    delete node.authentication.lnApiPassword;
-    return node;
-  });
+  config.nodes.map((node) => removeAuthSecureData(node));
   return config;
 };
 
@@ -221,17 +224,19 @@ export const updateNodeSettings = (req, res, next) => {
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.settings) {
-    node.settings = req.body;
+    node.settings = req.body.settings;
   }
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
-      selectedNode.settings = req.body;
+      selectedNode.settings = req.body.settings;
       common.replaceNode(req, selectedNode);
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Node Settings Updated', data: maskPasswords(config) });
-    res.status(201).json({ message: 'Node Settings Updated Successfully' });
+    let responseNode = JSON.parse(JSON.stringify(common.selectedNode));
+    responseNode = removeAuthSecureData(responseNode);
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Node Settings Updated', data: responseNode });
+    res.status(201).json(responseNode);
   } catch (errRes) {
     const errMsg = 'Update Node Settings Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);

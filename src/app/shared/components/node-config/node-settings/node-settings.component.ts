@@ -56,7 +56,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       return currencyUnit;
     });
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
-      this.selNode = selNode;
+      this.selNode = JSON.parse(JSON.stringify(selNode));
       this.selectedThemeMode = this.themeModes.find((themeMode) => this.selNode.settings.themeMode === themeMode.id) || this.themeModes[0];
       this.selectedThemeColor = this.selNode.settings.themeColor;
       if (!this.selNode.settings.fiatConversion) {

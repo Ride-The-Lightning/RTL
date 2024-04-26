@@ -249,14 +249,16 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: Node }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.INITIATED } }));
+        delete action.payload.settings.currencyUnits;
         return this.httpClient.post(API_END_POINTS.CONF_API + '/node', action.payload).
           pipe(map((updatedNode: Node) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
+            updatedNode.settings.currencyUnits = [...CURRENCY_UNITS, (updatedNode.settings?.currencyUnit ? updatedNode.settings?.currencyUnit : '')];
             this.store.dispatch(updateSelectedNodeSettings({ payload: updatedNode }));
-            this.store.dispatch(setChildNodeSettingsLND({ payload: action.payload }));
-            this.store.dispatch(setChildNodeSettingsCLN({ payload: action.payload }));
-            this.store.dispatch(setChildNodeSettingsECL({ payload: action.payload }));
+            this.store.dispatch(setChildNodeSettingsLND({ payload: updatedNode }));
+            this.store.dispatch(setChildNodeSettingsCLN({ payload: updatedNode }));
+            this.store.dispatch(setChildNodeSettingsECL({ payload: updatedNode }));
             return {
               type: RTLActions.OPEN_SNACK_BAR,
               payload: 'Node settings updated successfully!'
@@ -519,12 +521,10 @@ export class RTLEffects implements OnDestroy {
   initializeNode(node: Node, isInitialSetup: boolean) {
     this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
-    // if (node.settings.fiatConversion && node.settings.currencyUnit) {
-    //   selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
-    // }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clnUnlocked');
     this.sessionService.removeItem('eclUnlocked');
+    node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
     this.store.dispatch(resetRootStore({ payload: node }));
     this.store.dispatch(resetLNDStore({ payload: node }));
     this.store.dispatch(resetCLNStore({ payload: node }));
