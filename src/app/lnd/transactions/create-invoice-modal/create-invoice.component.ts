@@ -16,6 +16,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewInvoice } from '../../store/lnd.actions';
 import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-create-invoices',
@@ -26,6 +27,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: Node | null;
+  public convertedCurrency: ConvertedCurrency = null;
   public memo = '';
   public expiry: number | null;
   public isAmp = false;
@@ -100,7 +102,8 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.convertedCurrency = data;
+            this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

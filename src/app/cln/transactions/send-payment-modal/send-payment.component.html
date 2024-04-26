@@ -32,10 +32,10 @@
     <textarea #paymentReq="ngModel" autoFocus matInput rows="4" name="paymentRequest" tabindex="4" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
     <mat-hint *ngIf="paymentRequest && paymentDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
       {{paymentDecodedHintPre}}
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
-        <fa-icon *ngIf="convertedCurrency && invoiceValueHint !== ''" [icon]="convertedCurrency.symbol" />
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
       </span>
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
       {{paymentDecodedHintPost}}
     </mat-hint>
     <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
@@ -60,10 +60,10 @@
     <span matSuffix>  Sats </span>
     <mat-hint fxLayout="row wrap" fxFlex="100">
       <span *ngIf="keysendValueHint !== ''" class="mr-3px">= </span>
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
-        <fa-icon *ngIf="convertedCurrency && keysendValueHint !== ''" [icon]="convertedCurrency.symbol" />
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && keysendValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
       </span>
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && keysendValueHint !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
       {{keysendValueHint}}
     </mat-hint>
     <mat-error *ngIf="!keysendAmount">Keysend amount is required.</mat-error>
@@ -75,10 +75,10 @@
     <textarea #offerReq="ngModel" autoFocus matInput rows="4" name="offerRequest" tabindex="4" required [ngModel]="offerRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
     <mat-hint *ngIf="offerRequest && offerDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
       {{offerDecodedHintPre}}
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
-        <fa-icon *ngIf="convertedCurrency && invoiceValueHint !== ''" [icon]="convertedCurrency.symbol" />
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && offerDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
       </span>
-      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && offerDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
       {{offerDecodedHintPost}}
     </mat-hint>
     <mat-error *ngIf="!offerRequest">Offer request is required.</mat-error>

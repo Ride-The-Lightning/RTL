@@ -8,6 +8,7 @@ import { faHistory, faEye, faEyeSlash, faBurst, faMoneyBill1, faArrowsTurnToDots
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -25,7 +26,7 @@ import { fetchInvoices, invoiceLookup, saveNewInvoice } from '../../store/lnd.ac
 import { invoices, lndNodeInformation, lndNodeSettings, lndPageSettings } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-lightning-invoices',
@@ -48,6 +49,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public faArrowsTurnRight = faArrowsTurnRight;
   public faBurst = faBurst;
   public faMoneyBill1 = faMoneyBill1;
+  public convertedCurrency: ConvertedCurrency = null;
   public nodePageDefs = LND_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
@@ -262,7 +264,8 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.convertedCurrency = data;
+            this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

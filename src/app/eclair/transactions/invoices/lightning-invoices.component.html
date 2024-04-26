@@ -9,7 +9,14 @@
       <mat-label>Amount</mat-label>
       <input #invcVal="ngModel" matInput type="number" tabindex="3" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
       <span matSuffix>  Sats </span>
-      <mat-hint>{{invoiceValueHint}}</mat-hint>
+      <mat-hint fxLayout="row wrap" fxFlex="100">
+        <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
+          <fa-icon [icon]="convertedCurrency.symbol" />
+        </span>
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+        {{invoiceValueHint}}
+      </mat-hint>      
     </mat-form-field>
     <div  fxLayout="row" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Field</button>

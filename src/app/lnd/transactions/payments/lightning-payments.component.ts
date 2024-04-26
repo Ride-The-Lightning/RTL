@@ -8,12 +8,13 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop, ListPayments } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
-
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { Node } from '../../../shared/models/RTLconfig';
 import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
@@ -25,7 +26,7 @@ import { sendPayment } from '../../store/lnd.actions';
 import { lndNodeInformation, lndNodeSettings, lndPageSettings, payments, peers } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -43,6 +44,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   public faHistory = faHistory;
+  public convertedCurrency: ConvertedCurrency = null;
   public nodePageDefs = LND_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
@@ -59,7 +61,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public htlcColumns: any[] = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
-  public paymentDecodedHint = '';
+  public paymentDecodedHintPre = '';
+  public paymentDecodedHintPost = '';
   private firstOffset = -1;
   private lastOffset = -1;
   public selFilter = '';
@@ -238,7 +241,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onPaymentRequestEntry(event: any) {
     this.paymentRequest = event;
-    this.paymentDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.dataService.decodePayment(this.paymentRequest, false).
         pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
@@ -252,17 +256,21 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
                 pipe(takeUntil(this.unSubs[6])).
                 subscribe({
                   next: (data) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol +
-                    this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+                    this.convertedCurrency = data;
+                    this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (';
+                    this.paymentDecodedHintPost = this.decimalPipe.transform((this.convertedCurrency.OTHER ? this.convertedCurrency.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
                   }, error: (error) => {
-                    this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                    this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+                    this.paymentDecodedHintPost = '';
                   }
                 });
             } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHintPost = '';
             }
           } else {
-            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHintPre = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+            this.paymentDecodedHintPost = '';
           }
         });
     }

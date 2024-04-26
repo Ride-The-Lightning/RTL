@@ -1,14 +1,14 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="110" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form *ngIf="calledFrom === 'home'" #sendPaymentForm="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
     <mat-form-field fxLayout="column" fxFlex="100">
       <mat-label>Payment Request</mat-label>
       <textarea #paymentReq="ngModel" matInput name="paymentRequest" tabindex="1" required [perfectScrollbar] [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
         {{paymentDecodedHintPre}}
-        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
-          <fa-icon *ngIf="convertedCurrency && invoiceValueHint !== ''" [icon]="convertedCurrency.symbol" />
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+          <fa-icon [icon]="convertedCurrency.symbol" />
         </span>
-        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
         {{paymentDecodedHintPost}}
       </mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>

@@ -93,32 +93,36 @@ export class CommonService implements OnDestroy {
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean, title?: string): Observable<any> {
     const latest_date = new Date().valueOf();
-    if (fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
-      if (this.ratesAPIStatus !== APICallStatusEnum.INITIATED) {
-        if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
+    try {
+      if (fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
+        if (this.ratesAPIStatus !== APICallStatusEnum.INITIATED) {
+          if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
+            return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+          } else {
+            this.ratesAPIStatus = APICallStatusEnum.INITIATED;
+            return this.dataService.getFiatRates().pipe(takeUntil(this.unSubs[0]),
+              switchMap((data) => {
+                this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
+                this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
+                this.conversionData.last_fetched = latest_date;
+                return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+              }),
+              catchError((err) => {
+                this.ratesAPIStatus = APICallStatusEnum.ERROR;
+                return throwError(() => 'Currency Conversion Error.');
+              })
+            );
+          }
+        } else if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
           return of(this.convertWithFiat(value, from, otherCurrencyUnit));
         } else {
-          this.ratesAPIStatus = APICallStatusEnum.INITIATED;
-          return this.dataService.getFiatRates().pipe(takeUntil(this.unSubs[0]),
-            switchMap((data) => {
-              this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
-              this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
-              this.conversionData.last_fetched = latest_date;
-              return of(this.convertWithFiat(value, from, otherCurrencyUnit));
-            }),
-            catchError((err) => {
-              this.ratesAPIStatus = APICallStatusEnum.ERROR;
-              return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
-            })
-          );
+          return of(this.convertWithoutFiat(value, from));
         }
-      } else if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
-        return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
         return of(this.convertWithoutFiat(value, from));
       }
-    } else {
-      return of(this.convertWithoutFiat(value, from));
+    } catch (error) {
+      return throwError(() => 'Currency Conversion Error.');
     }
   }
 

@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="110" fxLayoutAlign="start stretch" class="padding-gap">
   <form *ngIf="calledFrom === 'home'" #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100">
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
       <mat-label>Description</mat-label>
@@ -10,10 +10,10 @@
       <span matSuffix>  Sats </span>
       <mat-hint fxLayout="row wrap" fxFlex="100">
         <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
-        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA'" fxLayoutAlign="center center" class="mr-3px">
-          <fa-icon *ngIf="convertedCurrency && invoiceValueHint !== ''" [icon]="convertedCurrency.symbol" />
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
+          <fa-icon [icon]="convertedCurrency.symbol" />
         </span>
-        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG'" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+        <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
         {{invoiceValueHint}}
       </mat-hint>
     </mat-form-field>
