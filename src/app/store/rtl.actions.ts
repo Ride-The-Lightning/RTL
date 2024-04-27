@@ -46,7 +46,7 @@ export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<
 
 export const updateNodeSettings = createAction(RTLActions.UPDATE_NODE_SETTINGS, props<{ payload: Node }>());
 
-export const updateSelectedNodeSettings = createAction(RTLActions.UPDATE_SELECTED_NODE_SETTINGS, props<{ payload: Node }>());
+export const setSelectedNodeSettings = createAction(RTLActions.SET_SELECTED_NODE_SETTINGS, props<{ payload: Node }>());
 
 export const updateApplicationSettings = createAction(RTLActions.UPDATE_APPLICATION_SETTINGS, props<{ payload: { showSnackBar: boolean, message: string, config: RTLConfiguration } }>());
 

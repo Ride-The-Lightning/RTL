@@ -26,12 +26,6 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setActiveLink();
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe({
-        next: (value: ResolveEnd | Event) => {
-          this.setActiveLink();
-        }
-      });
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.selNode = selNode;
       this.setActiveLink();
@@ -39,19 +33,16 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  setActiveLink() {
-    if (this.selNode && this.selNode.settings) {
-      if (this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '') {
-        this.activeLink = this.links[0].link;
-      } else if (this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '') {
-        this.activeLink = this.links[1].link;
-      } else if (this.selNode.settings.enablePeerswap) {
-        this.activeLink = this.links[2].link;
+  setActiveLink(link?: string) {
+    if (link && link !== '') {
+      this.activeLink = link;
+    } else {
+      const linkFound = this.links.find((link) => this.router.url.includes(link.link));
+      if (linkFound) {
+        this.activeLink = this.selNode && this.selNode.lnImplementation === 'CLN' ? this.links[1].link : linkFound.link;
       } else {
         this.activeLink = this.links[this.links.length - 1].link;
       }
-    } else {
-      this.activeLink = this.links[this.links.length - 1].link;
     }
   }
 

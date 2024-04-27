@@ -3,15 +3,11 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
 import { Node } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { updateNodeSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCLN } from '../../../../../cln/store/cln.actions';
-import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
@@ -67,27 +63,14 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
       return true;
     }
     this.logger.info(this.selNode);
-    this.selNode.settings.boltzServerUrl = this.serverUrl;
-    this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
-    // this.store.dispatch(updateNodeSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_BOLTZ_SETTINGS, service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath } } }));
-    // this.store.dispatch(setChildNodeSettingsLND({
-    //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
-    //   }
-    // }));
-    // this.store.dispatch(setChildNodeSettingsCLN({
-    //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
-    //   }
-    // }));
-    // this.store.dispatch(setChildNodeSettingsECL({
-    //   payload: {
-    //     userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-    //     unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl, enableOffers: this.selNode.settings.enableOffers
-    //   }
-    // }));
+    if (!this.enableBoltz) {
+      delete this.selNode.settings.boltzServerUrl;
+      delete this.selNode.authentication.boltzMacaroonPath;
+    } else {
+      this.selNode.settings.boltzServerUrl = this.serverUrl;
+      this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
+    }
+    this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
 
   onReset() {

@@ -5,16 +5,13 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { Node, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { updateNodeSettings, setSelectedNode, updateSelectedNodeSettings } from '../../../../store/rtl.actions';
-import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
-import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
+import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-node-settings',
@@ -67,14 +64,14 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onCurrencyChange(event: any) {
-    this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
-    this.store.dispatch(updateSelectedNodeSettings({ payload: this.selNode }));
-    this.store.dispatch(setChildNodeSettingsLND({ payload: this.selNode }));
-    this.store.dispatch(setChildNodeSettingsCLN({ payload: this.selNode }));
-    this.store.dispatch(setChildNodeSettingsECL({ payload: this.selNode }));
-    // this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
-  }
+  // onCurrencyChange(event: any) {
+  //   if (this.selNode.settings.fiatConversion) {
+  //     this.selNode.settings.currencyUnit = '';
+  //   } else {
+  //     delete this.selNode.settings.currencyUnit;
+  //   }
+  //   this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
+  // }
 
   toggleSettings(toggleField: string, event?: any) {
     this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
@@ -87,6 +84,12 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   chooseThemeMode() {
     this.selNode.settings.themeMode = this.selectedThemeMode.id;
+  }
+
+  onFiatConversionChange(event: any) {
+    if (!this.selNode.settings.fiatConversion) {
+      delete this.selNode.settings.currencyUnit;
+    }
   }
 
   onUpdateNodeSettings(): boolean | void {

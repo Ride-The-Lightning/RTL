@@ -26,7 +26,7 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateSelectedNodeSettings } from './rtl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, setSelectedNodeSettings } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND, setChildNodeSettingsLND } from '../lnd/store/lnd.actions';
 import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN, setChildNodeSettingsCLN } from '../cln/store/cln.actions';
 import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL, setChildNodeSettingsECL } from '../eclair/store/ecl.actions';
@@ -249,13 +249,16 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: Node }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.INITIATED } }));
+        if (!action.payload.settings.fiatConversion) {
+          delete action.payload.settings.currencyUnit;
+        }
         delete action.payload.settings.currencyUnits;
         return this.httpClient.post(API_END_POINTS.CONF_API + '/node', action.payload).
           pipe(map((updatedNode: Node) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
             updatedNode.settings.currencyUnits = [...CURRENCY_UNITS, (updatedNode.settings?.currencyUnit ? updatedNode.settings?.currencyUnit : '')];
-            this.store.dispatch(updateSelectedNodeSettings({ payload: updatedNode }));
+            this.store.dispatch(setSelectedNodeSettings({ payload: updatedNode }));
             this.store.dispatch(setChildNodeSettingsLND({ payload: updatedNode }));
             this.store.dispatch(setChildNodeSettingsCLN({ payload: updatedNode }));
             this.store.dispatch(setChildNodeSettingsECL({ payload: updatedNode }));

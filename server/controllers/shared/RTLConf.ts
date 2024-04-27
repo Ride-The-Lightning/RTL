@@ -225,12 +225,24 @@ export const updateNodeSettings = (req, res, next) => {
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.settings) {
     node.settings = req.body.settings;
+    if (req.body.authentication.boltzMacaroonPath) {
+      node.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
+    } else {
+      delete node.authentication.boltzMacaroonPath;
+    }
+    if (req.body.authentication.swapMacaroonPath) {
+      node.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
+    } else {
+      delete node.authentication.swapMacaroonPath;
+    }
   }
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
       selectedNode.settings = req.body.settings;
+      selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
+      selectedNode.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
       common.replaceNode(req, selectedNode);
     }
     let responseNode = JSON.parse(JSON.stringify(common.selectedNode));
