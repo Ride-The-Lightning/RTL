@@ -22,8 +22,9 @@ import { Node } from '../../../shared/models/RTLconfig';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { sendPayment } from '../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings, clnPageSettings, payments } from '../../store/cln.selector';
+import { clnNodeInformation, clnPageSettings, payments } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
@@ -85,7 +86,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {

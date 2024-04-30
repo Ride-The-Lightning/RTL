@@ -16,7 +16,7 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/cln.actions';
-import { clnNodeSettings } from '../../store/cln.selector';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
@@ -75,7 +75,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
         this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);

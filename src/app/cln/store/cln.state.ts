@@ -12,7 +12,6 @@ const initNodeAuthentication: Authentication = { configPath: '', swapMacaroonPat
 
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
-  nodeSettings: Node | null;
   pageSettings: PageSettings[];
   information: GetInfo;
   fees: Fees;
@@ -51,7 +50,6 @@ export const initCLNState: CLNState = {
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { index: 1, lnNode: 'Node 1', settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'CLN' },
   pageSettings: CLN_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},

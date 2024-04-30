@@ -8,8 +8,9 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { CLNOnChainSendModalComponent } from './on-chain-send-modal/on-chain-send-modal.component';
 import { Node } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
+import { rootSelectedNode } from '../../store/rtl.selector';
 import { openAlert } from '../../store/rtl.actions';
-import { utxoBalances, clnNodeSettings } from '../store/cln.selector';
+import { utxoBalances } from '../store/cln.selector';
 import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
@@ -44,7 +45,7 @@ export class CLNOnChainComponent implements OnInit, OnDestroy {
           this.selectedTable = this.tables.find((table) => table.name === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1)) || this.tables[0];
         }
       });
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });

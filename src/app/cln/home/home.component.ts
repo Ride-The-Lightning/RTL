@@ -14,7 +14,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { channels, utxoBalances, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
+import { channels, utxoBalances, nodeInfoAndAPIsStatus } from '../store/cln.selector';
 
 export interface Tile {
   id: string;
@@ -117,7 +117,7 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(nodeInfoAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
       subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
         this.errorMessages[0] = '';
         this.errorMessages[3] = '';

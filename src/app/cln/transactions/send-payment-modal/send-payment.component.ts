@@ -16,8 +16,9 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchOfferInvoice, sendPayment } from '../../store/cln.actions';
-import { channels, clnNodeSettings } from '../../store/cln.selector';
+import { channels } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { CLNPaymentInformation } from '../../../shared/models/alertData';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
@@ -109,7 +110,7 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
           break;
       }
     }
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).

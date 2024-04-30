@@ -15,7 +15,7 @@ import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '.
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/cln.actions';
-import { clnNodeSettings } from '../../../store/cln.selector';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { Node } from '../../../../shared/models/RTLconfig';
 
 @Component({
@@ -73,7 +73,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
         this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;

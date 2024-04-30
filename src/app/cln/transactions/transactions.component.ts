@@ -9,7 +9,8 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { clnNodeSettings, utxoBalances } from '../store/cln.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { utxoBalances } from '../store/cln.selector';
 import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
@@ -45,7 +46,7 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
           this.routerUrl = (<ResolveEnd>value).urlAfterRedirects;
         }
       });
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
       if (this.selNode && this.selNode.settings.enableOffers) {
         this.store.dispatch(fetchOffers());
@@ -57,7 +58,7 @@ export class CLNTransactionsComponent implements OnInit, OnDestroy {
       }
     });
     this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[2]),
-      withLatestFrom(this.store.select(clnNodeSettings))).
+      withLatestFrom(this.store.select(rootSelectedNode))).
       subscribe(([utxoBalancesSeletor, nodeSettings]: [{ utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
         this.currencyUnits = nodeSettings?.settings.currencyUnits || [];
         if (nodeSettings && nodeSettings.settings.userPersona === UserPersonaEnum.OPERATOR) {

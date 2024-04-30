@@ -13,7 +13,7 @@ import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { Node } from '../../../models/RTLconfig';
 import { TableSetting, PageSettings } from '../../../models/pageSettings';
-import { clnNodeSettings, clnPageSettings } from '../../../../cln/store/cln.selector';
+import { clnPageSettings } from '../../../../cln/store/cln.selector';
 import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
 import { savePageSettings as savePageSettingsCLN } from '../../../../cln/store/cln.actions';
 import { savePageSettings as savePageSettingsLND } from '../../../../lnd/store/lnd.actions';
@@ -57,7 +57,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.defaultSettings = Object.assign([], CLN_DEFAULT_PAGE_SETTINGS);
           this.nodePageDefs = CLN_PAGE_DEFS;
           this.store.select(clnPageSettings).pipe(takeUntil(this.unSubs[1]),
-            withLatestFrom(this.store.select(clnNodeSettings))).
+            withLatestFrom(this.store.select(rootSelectedNode))).
             subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
               const updatedPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;

@@ -25,8 +25,9 @@ import { CLNOfferInformationComponent } from '../offer-information-modal/offer-i
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { disableOffer } from '../../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings, clnPageSettings, offers } from '../../../store/cln.selector';
+import { clnNodeInformation, clnPageSettings, offers } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
@@ -79,7 +80,7 @@ export class CLNOffersTableComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnInit() {
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {

@@ -14,8 +14,9 @@ import { GetInfo } from '../../../../shared/models/clnModels';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewOffer } from '../../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector';
+import { clnNodeInformation } from '../../../store/cln.selector';
 
 @Component({
   selector: 'rtl-cln-create-offer',
@@ -39,7 +40,7 @@ export class CLNCreateOfferComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
