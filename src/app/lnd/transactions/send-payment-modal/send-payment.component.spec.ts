@@ -65,7 +65,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should get lnd store value on ngOnInit', () => {
-    const storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd.nodeSettings));
+    const storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.root.selNode));
     component.ngOnInit();
     if (component.selNode) {
       expect(component.selNode.lnImplementation).toBe('LND');
@@ -112,7 +112,7 @@ describe('LightningSendPaymentsComponent', () => {
     expect(component.zeroAmtInvoice).toEqual(false);
     expect(component.paymentReq.control.errors).toBe(null);
     expect(component.paymentError).toEqual('');
-    expect(component.paymentDecodedHint).toEqual('');
+    expect(component.paymentDecodedHintPre).toEqual('');
   });
 
   it('should update title on advanced panel toggle', () => {
@@ -130,7 +130,7 @@ describe('LightningSendPaymentsComponent', () => {
 
   it('should return from decode payment when pay request length is less than hundred ', () => {
     component.onPaymentRequestEntry('lntb4u1psvdzaypp55');
-    expect(component.paymentDecodedHint).toEqual('');
+    expect(component.paymentDecodedHintPre).toEqual('');
   });
 
   it('should decode payment when pay request is for the zero amount invoice', () => {
@@ -142,7 +142,7 @@ describe('LightningSendPaymentsComponent', () => {
     component.onPaymentRequestEntry(component.paymentRequest);
     fixture.detectChanges();
     expect(component.zeroAmtInvoice).toBe(true);
-    expect(component.paymentDecodedHint).toEqual('Memo: Testing Empty Invoice for LND 3');
+    expect(component.paymentDecodedHintPre).toEqual('Memo: Testing Empty Invoice for LND 3');
     expect(component.filteredMinAmtActvChannels).toEqual(component.activeChannels);
   });
 
@@ -153,7 +153,7 @@ describe('LightningSendPaymentsComponent', () => {
     'cwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yryc' +
     'wh2g05qgqdnftgk');
     expect(component.zeroAmtInvoice).toBe(true);
-    expect(component.paymentDecodedHint).toEqual('Memo: Testing Empty Invoice for LND 3');
+    expect(component.paymentDecodedHintPre).toEqual('Memo: Testing Empty Invoice for LND 3');
     expect(component.filteredMinAmtActvChannels).toEqual(component.activeChannels);
     expect(component.paymentAmount).toBeNull();
     component.onSendPayment();
@@ -165,14 +165,15 @@ describe('LightningSendPaymentsComponent', () => {
 
   it('should decode payment when pay request changed and fiat conversion is true', () => {
     const updatedSelNode: Node = JSON.parse(JSON.stringify(component.selNode));
-    updatedSelNode.fiatConversion = true;
-    updatedSelNode.currencyUnits = ['BTC', 'SAT', 'USD'];
+    updatedSelNode.settings.fiatConversion = true;
+    updatedSelNode.settings.currencyUnits = ['SATS', 'BTC', 'USD'];
     Object.defineProperty(component, 'selNode', { value: updatedSelNode });
     component.onPaymentRequestEntry('lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3' +
     'txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvr' +
     'c8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630a' +
     'q38j0s3hrgpv4eel3');
-    expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats (USD 0.13) | Memo: Testing ngrx Effects 4');
+    expect(component.paymentDecodedHintPre).toEqual('Sending: 400 Sats (');
+    expect(component.paymentDecodedHintPost).toEqual('0.13) | Memo: Testing ngrx Effects 4');
   });
 
   it('should decode payment when pay request changed and fiat conversion is false', () => {
@@ -180,12 +181,12 @@ describe('LightningSendPaymentsComponent', () => {
     'vejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8s' +
     's5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j' +
     '0s3hrgpv4eel3');
-    expect(component.paymentDecodedHint).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
+    expect(component.paymentDecodedHintPre).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
   });
 
   it('should throw an error from decode payment when pay request is not found', () => {
     component.onPaymentRequestEntry('p555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp3434dsfdsf');
-    expect(component.paymentDecodedHint).toEqual('ERROR: Request Failed!');
+    expect(component.paymentDecodedHintPre).toEqual('ERROR: Request Failed!');
   });
 
   it('should convert Sats to USD by calling convertCurrency method from CommonService', () => {

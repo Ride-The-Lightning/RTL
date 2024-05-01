@@ -749,8 +749,8 @@ export const mockActionsData = {
       unannouncedChannels: false,
       fiatConversion: true,
       currencyUnits: [
+        'Sats',
         'BTC',
-        'SATS',
         'USD'
       ],
       bitcoindConfigPath: '',
@@ -771,22 +771,6 @@ export const mockActionsData = {
     index: 1,
     lnNode: 'LN Node Name',
     lnImplementation: 'LND'
-  },
-  resetChildrenStores: {
-    userPersona: 'MERCHANT',
-    channelBackupPath: '',
-    unannouncedChannels: false,
-    fiatConversion: true,
-    selCurrencyUnit: '',
-    currencyUnits: [
-      'Sats',
-      'BTC'
-    ],
-    lnImplementation: 'LND',
-    swapServerUrl: '',
-    boltzServerUrl: '',
-    enableOffers: false,
-    enablePeerswap: false
   },
   setSelectedNode: {
     settings: {
@@ -1002,21 +986,6 @@ export const mockRTLStoreState = {
     }
   },
   lnd: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {
       version: '0.12.1-beta commit=v0.12.1-beta',
       commit_hash: 'd233f61383f2f950aa06f5b09da5b0e78e784fae',
@@ -48640,21 +48609,6 @@ export const mockRTLStoreState = {
     }
   },
   cln: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {},
     fees: {},
     feeRatesPerKB: {},
@@ -48674,21 +48628,6 @@ export const mockRTLStoreState = {
     utxos: []
   },
   ecl: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {},
     fees: {},
     activeChannels: [],
