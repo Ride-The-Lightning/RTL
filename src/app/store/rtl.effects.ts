@@ -27,9 +27,9 @@ import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey
 
 import { RTLState } from './rtl.state';
 import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, setSelectedNodeSettings } from './rtl.actions';
-import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND, setChildNodeSettingsLND } from '../lnd/store/lnd.actions';
-import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN, setChildNodeSettingsCLN } from '../cln/store/cln.actions';
-import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL, setChildNodeSettingsECL } from '../eclair/store/ecl.actions';
+import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
+import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN } from '../cln/store/cln.actions';
+import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL } from '../eclair/store/ecl.actions';
 import { rootAppConfig, rootNodeData } from './rtl.selector';
 
 @Injectable()
@@ -259,9 +259,6 @@ export class RTLEffects implements OnDestroy {
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
             updatedNode.settings.currencyUnits = [...CURRENCY_UNITS, (updatedNode.settings?.currencyUnit ? updatedNode.settings?.currencyUnit : '')];
             this.store.dispatch(setSelectedNodeSettings({ payload: updatedNode }));
-            this.store.dispatch(setChildNodeSettingsLND({ payload: updatedNode }));
-            this.store.dispatch(setChildNodeSettingsCLN({ payload: updatedNode }));
-            this.store.dispatch(setChildNodeSettingsECL({ payload: updatedNode }));
             return {
               type: RTLActions.OPEN_SNACK_BAR,
               payload: 'Node settings updated successfully!'
@@ -366,9 +363,9 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.LOGIN),
       withLatestFrom(this.store.select(rootAppConfig)),
       mergeMap(([action, appConfig]: [{ type: string, payload: Login }, RTLConfiguration]) => {
-        this.store.dispatch(resetLNDStore({ payload: null }));
-        this.store.dispatch(resetCLNStore({ payload: null }));
-        this.store.dispatch(resetECLStore({ payload: null }));
+        this.store.dispatch(resetLNDStore());
+        this.store.dispatch(resetCLNStore());
+        this.store.dispatch(resetECLStore());
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Login', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API, {
           authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
@@ -529,9 +526,9 @@ export class RTLEffects implements OnDestroy {
     this.sessionService.removeItem('eclUnlocked');
     node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
     this.store.dispatch(resetRootStore({ payload: node }));
-    this.store.dispatch(resetLNDStore({ payload: node }));
-    this.store.dispatch(resetCLNStore({ payload: node }));
-    this.store.dispatch(resetECLStore({ payload: node }));
+    this.store.dispatch(resetLNDStore());
+    this.store.dispatch(resetCLNStore());
+    this.store.dispatch(resetECLStore());
     if (this.sessionService.getItem('token')) {
       const nodeLnImplementation = node.lnImplementation ? node.lnImplementation.toUpperCase() : 'LND';
       this.dataService.setLnImplementation(nodeLnImplementation);

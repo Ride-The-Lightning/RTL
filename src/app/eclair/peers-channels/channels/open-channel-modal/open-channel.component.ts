@@ -12,9 +12,9 @@ import { APICallStatusEnum, ECLActions } from '../../../../shared/services/const
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/ecl.actions';
 import { Node } from '../../../../shared/models/RTLconfig';
-import { eclNodeSettings } from '../../../store/ecl.selector';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -57,7 +57,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
         this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;

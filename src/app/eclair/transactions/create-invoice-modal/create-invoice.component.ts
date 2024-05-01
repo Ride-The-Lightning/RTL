@@ -14,8 +14,9 @@ import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { createInvoice } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
+import { eclNodeInformation } from '../../store/ecl.selector';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
@@ -47,7 +48,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });

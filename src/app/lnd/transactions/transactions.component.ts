@@ -8,7 +8,8 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 import { RTLState } from '../../store/rtl.state';
-import { channels, lndNodeSettings } from '../store/lnd.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { channels } from '../store/lnd.selector';
 import { Channel, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
@@ -41,7 +42,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         }
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1]),
-      withLatestFrom(this.store.select(lndNodeSettings))).
+      withLatestFrom(this.store.select(rootSelectedNode))).
       subscribe(([channelsSelector, nodeSettings]: [{ channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
         this.currencyUnits = nodeSettings?.settings.currencyUnits || [];
         if (nodeSettings?.settings.userPersona === UserPersonaEnum.OPERATOR) {

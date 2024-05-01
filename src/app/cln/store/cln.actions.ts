@@ -9,9 +9,7 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateCLNAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetCLNStore = createAction(CLNActions.RESET_CLN_STORE, props<{ payload: Node | null }>());
-
-export const setChildNodeSettingsCLN = createAction(CLNActions.SET_CHILD_NODE_SETTINGS_CLN, props<{ payload: Node }>());
+export const resetCLNStore = createAction(CLNActions.RESET_CLN_STORE);
 
 export const fetchPageSettings = createAction(CLNActions.FETCH_PAGE_SETTINGS_CLN);
 

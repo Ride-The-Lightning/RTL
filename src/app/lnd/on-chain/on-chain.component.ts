@@ -7,7 +7,8 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { Node } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
-import { blockchainBalance, lndNodeSettings } from '../store/lnd.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { blockchainBalance } from '../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { BlockchainBalance } from '../../shared/models/lndModels';
 
@@ -42,7 +43,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
           this.selectedTable = this.tables.find((table) => table.name === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1)) || this.tables[0];
         }
       });
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });

@@ -1,18 +1,10 @@
-import { Authentication, Node, Settings } from '../../shared/models/RTLconfig';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
-import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Peer, Fees, NetworkInfo, BlockchainBalance, Channel, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsSummary, UTXO, ListPayments, LightningBalance, ChannelsSummary } from '../../shared/models/lndModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
-const initNodeSettings: Settings = { userPersona: UserPersonaEnum.OPERATOR, themeMode: 'DAY', themeColor: 'PURPLE',
-  channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false,
-  currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false,
-  logLevel: 'ERROR', lnServerUrl: '', swapServerUrl: '', boltzServerUrl: '', currencyUnit: 'USD' };
-const initNodeAuthentication: Authentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
-
 export interface LNDState {
   apisCallStatus: ApiCallsListLND;
-  nodeSettings: Node | null;
   pageSettings: PageSettings[];
   information: GetInfo;
   peers: Peer[];
@@ -51,7 +43,6 @@ export const initLNDState: LNDState = {
     FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED },
     FetchNetwork: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { index: 1, lnNode: 'Node 1', settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND' },
   pageSettings: LND_DEFAULT_PAGE_SETTINGS,
   information: {},
   peers: [],

@@ -14,8 +14,9 @@ import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { saveNewInvoice } from '../../store/lnd.actions';
-import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
+import { lndNodeInformation } from '../../store/lnd.selector';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
@@ -48,7 +49,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.actions.pipe(takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).

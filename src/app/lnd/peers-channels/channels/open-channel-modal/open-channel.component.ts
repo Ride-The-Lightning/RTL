@@ -12,9 +12,9 @@ import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
 import { Node } from '../../../../shared/models/RTLconfig';
-import { lndNodeSettings } from '../../../store/lnd.selector';
 import { CommonService } from '../../../../shared/services/common.service';
 
 @Component({
@@ -66,7 +66,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.isTaprootAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
         this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;

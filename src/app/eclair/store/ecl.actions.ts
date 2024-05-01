@@ -10,9 +10,7 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: Node | null }>());
-
-export const setChildNodeSettingsECL = createAction(ECLActions.SET_CHILD_NODE_SETTINGS_ECL, props<{ payload: Node }>());
+export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE);
 
 export const fetchPageSettings = createAction(ECLActions.FETCH_PAGE_SETTINGS_ECL);
 

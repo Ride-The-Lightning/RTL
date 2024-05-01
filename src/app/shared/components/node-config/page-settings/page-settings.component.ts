@@ -14,10 +14,10 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { Node } from '../../../models/RTLconfig';
 import { TableSetting, PageSettings } from '../../../models/pageSettings';
 import { clnPageSettings } from '../../../../cln/store/cln.selector';
-import { lndNodeSettings, lndPageSettings } from '../../../../lnd/store/lnd.selector';
+import { lndPageSettings } from '../../../../lnd/store/lnd.selector';
 import { savePageSettings as savePageSettingsCLN } from '../../../../cln/store/cln.actions';
 import { savePageSettings as savePageSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { eclNodeSettings, eclPageSettings } from '../../../../eclair/store/ecl.selector';
+import { eclPageSettings } from '../../../../eclair/store/ecl.selector';
 import { savePageSettings as savePageSettingsECL } from '../../../../eclair/store/ecl.actions';
 
 @Component({
@@ -95,9 +95,8 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.initialPageSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
           this.defaultSettings = Object.assign([], ECL_DEFAULT_PAGE_SETTINGS);
           this.nodePageDefs = ECL_PAGE_DEFS;
-          this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1]),
-            withLatestFrom(this.store.select(eclNodeSettings))).
-            subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
+          this.store.select(eclPageSettings).pipe(takeUntil(this.unSubs[1])).
+            subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
               const updatedPageSettings = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;
               this.apiCallStatus = settings.apiCallStatus;
@@ -124,7 +123,7 @@ export class PageSettingsComponent implements OnInit, OnDestroy {
           this.defaultSettings = Object.assign([], LND_DEFAULT_PAGE_SETTINGS);
           this.nodePageDefs = LND_PAGE_DEFS;
           this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[1]),
-            withLatestFrom(this.store.select(lndNodeSettings))).
+            withLatestFrom(this.store.select(rootSelectedNode))).
             subscribe(([settings, nodeSettings]: [{ pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
               const updatedPageSettings: PageSettings[] = JSON.parse(JSON.stringify(settings.pageSettings));
               this.errorMessage = null;

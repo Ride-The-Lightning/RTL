@@ -8,7 +8,8 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 import { RTLState } from '../../store/rtl.state';
-import { eclNodeSettings, allChannelsInfo } from '../store/ecl.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { allChannelsInfo } from '../store/ecl.selector';
 import { Channel, ChannelsStatus, LightningBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
@@ -41,7 +42,7 @@ export class ECLTransactionsComponent implements OnInit, OnDestroy {
         }
       });
     this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1]),
-      withLatestFrom(this.store.select(eclNodeSettings))).
+      withLatestFrom(this.store.select(rootSelectedNode))).
       subscribe(([allChannels, nodeSettings]: [{ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }, (Node | null)]) => {
         this.currencyUnits = nodeSettings?.settings.currencyUnits || [];
         if (nodeSettings && nodeSettings.settings.userPersona === UserPersonaEnum.OPERATOR) {

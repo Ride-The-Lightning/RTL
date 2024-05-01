@@ -88,9 +88,9 @@ describe('RTL Root Effects', () => {
       expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
       expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.UPDATE_SELECTED_NODE }));
       expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(resetRootStore({ payload: mockActionsData.resetRootStore }));
-      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(resetLNDStore({ payload: mockActionsData.resetChildrenStores }));
-      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(resetCLNStore({ payload: mockActionsData.resetChildrenStores }));
-      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore({ payload: mockActionsData.resetChildrenStores }));
+      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(resetLNDStore());
+      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(resetCLNStore());
+      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore());
       expect(storeDispatchSpy.calls.all()[8].args[0]).toEqual(fetchPageSettingsLND());
       expect(storeDispatchSpy.calls.all()[9].args[0]).toEqual(fetchInfoLND({ payload: { loadPage: 'HOME' } }));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(10);

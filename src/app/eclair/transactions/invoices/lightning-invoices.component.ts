@@ -21,9 +21,10 @@ import { ECLCreateInvoiceComponent } from '../create-invoice-modal/create-invoic
 import { ECLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { openAlert } from '../../../store/rtl.actions';
 import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings, eclPageSettings, invoices } from '../../store/ecl.selector';
+import { eclNodeInformation, eclPageSettings, invoices } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
@@ -76,7 +77,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });

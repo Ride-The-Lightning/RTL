@@ -13,9 +13,7 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateLNDAPICallStatus = createAction(LNDActions.UPDATE_API_CALL_STATUS_LND, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE, props<{ payload: Node | null }>());
-
-export const setChildNodeSettingsLND = createAction(LNDActions.SET_CHILD_NODE_SETTINGS_LND, props<{ payload: Node }>());
+export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE);
 
 export const fetchPageSettings = createAction(LNDActions.FETCH_PAGE_SETTINGS_LND);
 

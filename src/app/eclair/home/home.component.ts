@@ -14,7 +14,8 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { allChannelsInfo, eclNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { allChannelsInfo, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
 
 export interface Tile {
   id: string;
@@ -117,7 +118,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });

@@ -5,6 +5,9 @@ import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+
 import { Channel, GetInfo, PendingChannels, PendingClosingChannel, PendingForceClosingChannel, PendingOpenChannel, WaitingCloseChannel } from '../../../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -15,10 +18,9 @@ import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { lndNodeInformation, lndNodeSettings, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
+import { lndNodeInformation, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
 import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
-import { MatPaginatorIntl } from '@angular/material/paginator';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -64,7 +66,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[2])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {

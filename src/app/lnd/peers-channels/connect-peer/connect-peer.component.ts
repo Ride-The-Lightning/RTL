@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
+import { take, takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -15,8 +15,9 @@ import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/serv
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
-import { nodeInfoAndNodeSettingsAndAPIStatus } from '../../store/lnd.selector';
+import { nodeInfoAndAPIStatus } from '../../store/lnd.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -70,11 +71,12 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, apiCallStatus: ApiCallStatusPayload }) => {
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!infoSettingsStatusSelector.nodeSettings?.settings.unannouncedChannels);
-        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoSettingsStatusSelector.information.version, '0.17.0');
+    this.store.select(nodeInfoAndAPIStatus).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoStatusSelector, nodeSettings]: [{ information: GetInfo | null, apiCallStatus: ApiCallStatusPayload }, nodeSettings: Node]) => {
+        this.selNode = nodeSettings;
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
+        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.17.0');
       });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {

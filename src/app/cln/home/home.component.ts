@@ -14,6 +14,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
+import { rootSelectedNode } from '../../store/rtl.selector';
 import { channels, utxoBalances, nodeInfoAndAPIsStatus } from '../store/cln.selector';
 
 export interface Tile {
@@ -117,21 +118,22 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: Node | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
+    this.store.select(nodeInfoAndAPIsStatus).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoFeeStatusSelector, nodeSettings]: [{ information: GetInfo, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }, Node | null]) => {
         this.errorMessages[0] = '';
         this.errorMessages[3] = '';
-        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
-        this.apiCallStatusFHistory = infoSettingsStatusSelector.apisCallStatus[1];
+        this.apiCallStatusNodeInfo = infoFeeStatusSelector.apisCallStatus[0];
+        this.apiCallStatusFHistory = infoFeeStatusSelector.apisCallStatus[1];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = !this.apiCallStatusNodeInfo.message ? '' : (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
         }
         if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
           this.errorMessages[3] = !this.apiCallStatusFHistory.message ? '' : (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
         }
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.information = infoSettingsStatusSelector.information;
-        this.fees = infoSettingsStatusSelector.fees;
+        this.selNode = nodeSettings;
+        this.information = infoFeeStatusSelector.information;
+        this.fees = infoFeeStatusSelector.fees;
       });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {

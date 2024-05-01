@@ -12,8 +12,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { Node } from '../../../shared/models/RTLconfig';
-import { lndNodeSettings } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-liquidity-info',
@@ -36,7 +36,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.showLoop = !!((nodeSettings?.settings.swapServerUrl && nodeSettings.settings.swapServerUrl.trim() !== ''));
     });
   }
