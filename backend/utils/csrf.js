@@ -8,11 +8,11 @@ class CSRF {
         this.common = Common;
     }
     mount(app) {
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CSRF', msg: 'Setting up CSRF..' });
+        this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'CSRF', msg: 'Setting up CSRF..' });
         if (process.env.NODE_ENV !== 'development') {
             app.use((req, res, next) => this.csrfProtection(req, res, next));
         }
-        this.logger.log({ selectedNode: this.common.initSelectedNode, level: 'INFO', fileName: 'CSRF', msg: 'CSRF Set' });
+        this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'CSRF', msg: 'CSRF Set' });
         return app;
     }
     ;

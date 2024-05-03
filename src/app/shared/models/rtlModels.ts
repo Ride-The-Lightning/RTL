@@ -1,5 +1,6 @@
-import { ServicesEnum } from '../services/consts-enums-functions';
-import { ConfigSettingsNode, Settings } from './RTLconfig';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { Node, Settings } from './RTLconfig';
+import { SafeHtml } from '@angular/platform-browser';
 
 export interface OpenSnackBar {
   message: string;
@@ -7,23 +8,16 @@ export interface OpenSnackBar {
   type?: string;
 }
 
-export interface SaveSettings {
-  uiMessage: string;
-  settings?: Settings;
-  defaultNodeIndex?: number;
-}
-
 export interface SetSelectedNode {
   uiMessage: string;
   prevLnNodeIndex: number;
-  currentLnNode: ConfigSettingsNode | null;
+  currentLnNode: Node | null;
   isInitialSetup: boolean;
 }
 
-export interface UpdateServiceSetting {
-  uiMessage: string;
-  service: ServicesEnum;
-  settings: any;
+export interface UpdateNodeSettings {
+  index: number;
+  settings: Settings;
 }
 
 export interface ResetPassword {
@@ -46,3 +40,20 @@ export interface FetchFile {
   channelPoint: string;
   path?: string;
 }
+
+export interface FiatCurrency {
+  id: string;
+  name: string;
+  iconType: 'SVG' | 'FA';
+  symbol: string | IconDefinition | SafeHtml;
+  class?: string;
+}
+
+export interface ConvertedCurrency {
+    unit: string;
+    iconType: 'FA' | 'SVG';
+    symbol: string | IconDefinition | SafeHtml;
+    Sats: number;
+    BTC: number;
+    OTHER: number;
+};

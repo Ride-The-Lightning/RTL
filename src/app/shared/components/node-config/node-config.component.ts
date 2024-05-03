@@ -8,7 +8,7 @@ import { openAlert } from '../../../store/rtl.actions';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { IsAuthorizedComponent } from '../../components/data-modal/is-authorized/is-authorized.component';
-import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
+import { Node, RTLConfiguration } from '../../models/RTLconfig';
 import { RTLState } from '../../../store/rtl.state';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
 
@@ -22,7 +22,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public showLnConfig = false;
   public appConfig: RTLConfiguration;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public lnImplementationStr = '';
   public links = [{ link: 'nodesettings', name: 'Node Settings' }, { link: 'pglayout', name: 'Page Layout' }, { link: 'services', name: 'Services' }, { link: 'experimental', name: 'Experimental' }, { link: 'lnconfig', name: this.lnImplementationStr }];
   public activeLink = '';
@@ -67,7 +67,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   }
 
   showLnConfigClicked() {
-    if (!this.appConfig.sso.rtlSSO) {
+    if (!this.appConfig.SSO.rtlSSO) {
       this.store.dispatch(openAlert({
         payload: {
           maxWidth: '50rem',

@@ -12,9 +12,9 @@ import { APICallStatusEnum, ECLActions } from '../../../../shared/services/const
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/ecl.actions';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { eclNodeSettings } from '../../../store/ecl.selector';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -24,7 +24,7 @@ import { eclNodeSettings } from '../../../store/ecl.selector';
 export class ECLOpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
@@ -57,10 +57,10 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -119,7 +119,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.feeRate = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();

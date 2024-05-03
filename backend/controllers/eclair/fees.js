@@ -99,7 +99,7 @@ export const getFees = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/audit';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/audit';
     const today = new Date(Date.now());
     const tillToday = (Math.round(today.getTime() / 1000)).toString();
     const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
@@ -109,7 +109,7 @@ export const getFees = (req, res, next) => {
     };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form });
     if (common.read_dummy_data) {
-        common.getDummyData('Fees', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangeFees(req.session.selectedNode, data, Math.round((new Date().getTime())))); });
+        common.getDummyData('Fees', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(arrangeFees(req.session.selectedNode, data, Math.round((new Date().getTime())))); });
     }
     else {
         request.post(options).then((body) => {
@@ -127,11 +127,11 @@ export const getPayments = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/audit';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/audit';
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
     options.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
-        common.getDummyData('Payments', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
+        common.getDummyData('Payments', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
     }
     else {
         request.post(options).then((body) => {

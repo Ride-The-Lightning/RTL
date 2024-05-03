@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
-import { HelpTopic, ConfigSettingsNode } from '../../models/RTLconfig';
+import { HelpTopic, Node } from '../../models/RTLconfig';
 import { SessionService } from '../../services/session.service';
 
 import { RTLState } from '../../../store/rtl.state';
@@ -19,7 +19,7 @@ export class HelpComponent implements OnInit, OnDestroy {
 
   public helpTopics: Array<HelpTopic> = [];
   public faQuestion = faQuestion;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public LNPLink = '/lnd/';
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];

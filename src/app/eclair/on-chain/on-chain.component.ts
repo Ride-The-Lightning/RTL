@@ -6,10 +6,11 @@ import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLOnChainSendModalComponent } from './on-chain-send-modal/on-chain-send-modal.component';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { RTLState } from '../../store/rtl.state';
+import { rootSelectedNode } from '../../store/rtl.selector';
 import { openAlert } from '../../store/rtl.actions';
-import { eclNodeSettings, onchainBalance } from '../store/ecl.selector';
+import { onchainBalance } from '../store/ecl.selector';
 import { OnChainBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
@@ -20,7 +21,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 })
 export class ECLOnChainComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public faExchangeAlt = faExchangeAlt;
   public faChartPie = faChartPie;
   public balances = [{ title: 'Total Balance', dataValue: 0 }, { title: 'Confirmed', dataValue: 0 }, { title: 'Unconfirmed', dataValue: 0 }];
@@ -40,7 +41,7 @@ export class ECLOnChainComponent implements OnInit, OnDestroy {
           this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         }
       });
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[1])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });

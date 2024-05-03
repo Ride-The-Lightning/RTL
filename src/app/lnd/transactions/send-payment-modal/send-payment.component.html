@@ -11,7 +11,14 @@
         <mat-form-field fxLayout="column" fxFlex="100">
           <mat-label>Payment Request</mat-label>
           <textarea #paymentReq="ngModel" autoFocus matInput name="paymentRequest" rows="4" tabindex="1" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
-          <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
+          <mat-hint *ngIf="paymentRequest && paymentDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
+            {{paymentDecodedHintPre}}
+            <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+              <fa-icon [icon]="convertedCurrency.symbol" />
+            </span>
+            <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+            {{paymentDecodedHintPost}}
+          </mat-hint>
           <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
           <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
         </mat-form-field>

@@ -1,18 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faProjectDiagram, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, ChannelsStatus, PendingChannels, PendingChannelsSummary, Channel, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { CommonService } from '../../shared/services/common.service';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { ApiCallsListLND, ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 import { RTLState } from '../../store/rtl.state';
-import { channels, fees, networkInfo, nodeInfoAndNodeSettingsAndAPIStatus, pendingChannels } from '../store/lnd.selector';
+import { rootSelectedNode } from 'src/app/store/rtl.selector';
+import { channels, fees, networkInfo, pendingChannels, nodeInfoAndAPIStatus } from '../store/lnd.selector';
 
 @Component({
   selector: 'rtl-network-info',
@@ -25,7 +26,7 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = {};
@@ -72,15 +73,16 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(nodeInfoAndAPIStatus).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoStatusSelector, nodeSettings]: [{ information: GetInfo | null, apiCallStatus: ApiCallStatusPayload }, nodeSettings: Node]) => {
         this.errorMessages[0] = '';
-        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
+        this.apiCallStatusNodeInfo = infoStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.information = infoSettingsStatusSelector.information;
+        this.selNode = nodeSettings;
+        this.information = infoStatusSelector.information;
       });
     this.store.select(networkInfo).pipe(takeUntil(this.unSubs[1])).
       subscribe((networkInfoSelector: { networkInfo: NetworkInfo, apiCallStatus: ApiCallStatusPayload }) => {

@@ -10,7 +10,7 @@ export const decodePayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/decode';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/decode';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
@@ -26,7 +26,7 @@ export const signMessage = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/signmessage';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/signmessage';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed', data: body });
@@ -42,7 +42,7 @@ export const verifyMessage = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/checkmessage';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/checkmessage';
     options.body = req.body;
     request.post(options, (error, response, body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
@@ -58,7 +58,7 @@ export const listConfigs = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/listconfigs';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listconfigs';
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Utility', msg: 'List Configs Received', data: body });
         res.status(200).json(body);

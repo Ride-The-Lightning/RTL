@@ -1,67 +1,82 @@
-export class CommonSelectedNode {
+export class SSO {
 
   constructor(
-    public options?: any,
-    public ln_server_url?: string,
-    public macaroon_path?: string,
-    public macaroon_value?: string,
-    public rune_path?: string,
-    public rune_value?: string,
-    public ln_api_password?: string,
-    public swap_server_url?: string,
-    public boltz_server_url?: string,
-    public config_path?: string,
-    public rtl_conf_file_path?: string,
-    public swap_macaroon_path?: string,
-    public boltz_macaroon_path?: string,
-    public bitcoind_config_path?: string,
-    public channel_backup_path?: string,
-    public log_level?: string,
-    public log_file?: string,
-    public index?: string,
-    public ln_node?: string,
-    public ln_implementation?: string,
-    public user_persona?: string,
-    public theme_mode?: string,
-    public theme_color?: string,
-    public unannounced_channels?: boolean,
-    public fiat_conversion?: boolean,
-    public currency_unit?: string,
-    public ln_version?: string,
-    public api_version?: string,
-    public enable_offers?: boolean,
-    public enable_peerswap?: boolean
+    public rtlSso?: number,
+    public rtlCookiePath?: string,
+    public logoutRedirectLink?: string,
+    public cookieValue?: string
   ) { }
 
 }
 
-export class AuthenticationConfiguration {
+export class Settings {
 
   constructor(
-    public configPath?: string,
-    public swapMacaroonPath?: string,
-    public boltzMacaroonPath?: string
-  ) { }
-
-}
-
-export class NodeSettingsConfiguration {
-
-  constructor(
+    public lnServerUrl?: string,
+    public swapServerUrl?: string,
+    public boltzServerUrl?: string,
+    public bitcoindConfigPath?: string,
+    public channelBackupPath?: string,
+    public logLevel?: string,
+    public logFile?: string,
     public userPersona?: string,
     public themeMode?: string,
     public themeColor?: string,
     public unannouncedChannels?: boolean,
     public fiatConversion?: boolean,
     public currencyUnit?: string,
-    public bitcoindConfigPath?: string,
-    public logLevel?: string,
-    public lnServerUrl?: string,
-    public swapServerUrl?: string,
-    public boltzServerUrl?: string,
-    public channelBackupPath?: string,
     public enableOffers?: boolean,
     public enablePeerswap?: boolean
+  ) { }
+
+}
+
+export class Authentication {
+
+  constructor(
+    public options?: any,
+    public configPath?: string,
+    public macaroonPath?: string,
+    public macaroonValue?: string,
+    public runePath?: string,
+    public runeValue?: string,
+    public lnApiPassword?: string,
+    public swapMacaroonPath?: string,
+    public boltzMacaroonPath?: string
+  ) { }
+
+}
+
+export class ApplicationConfig {
+
+  constructor(
+    public defaultNodeIndex: number,
+    public selectedNodeIndex: number,
+    public dbDirectoryPath?: string,
+    public rtlConfFilePath?: string,
+    public rtlPass?: string,
+    public multiPass?: string,
+    public multiPassHashed?: string,
+    public allowPasswordUpdate?: boolean,
+    public enable2FA?: boolean,
+    public secret2FA?: string,
+    public SSO?: SSO,
+    public nodes?: SelectedNode[]
+  ) {}
+
+}
+
+export class SelectedNode {
+
+  constructor(
+    public logLevel?: string,
+    public logFile?: string,
+    public index?: number,
+    public lnNode?: string,
+    public lnImplementation?: string,
+    public lnVersion?: string,
+    public settings?: Settings,
+    public authentication?: Authentication
   ) { }
 
 }
@@ -74,7 +89,7 @@ export class LogJSONObj {
     public data?: string | any | any[],
     public error?: string | any,
     public fileName?: string,
-    public selectedNode?: CommonSelectedNode
+    public selectedNode?: SelectedNode
   ) { }
 
 }

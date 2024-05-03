@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -22,13 +22,13 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   public currencyUnits: string[] = [];
   public fiatConversion = false;
   public conversionErrorMsg = '';
-  private unSubs = [new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public commonService: CommonService, private store: Store<RTLState>) { }
 
   ngOnChanges() {
     if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-      this.getCurrencyValues(this.values);
+      this.getCurrencyValues();
     }
   }
 
@@ -40,35 +40,69 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
         this.currencyUnits.splice(2, 1);
       }
       if (this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
-        this.getCurrencyValues(this.values);
+        this.getCurrencyValues();
       }
     });
   }
 
-  getCurrencyValues(values) {
-    values.forEach((value) => {
-      if (value.dataValue > 0) {
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
-          pipe(takeUntil(this.unSubs[1])).
-          subscribe((data) => {
-            value[CurrencyUnitEnum.BTC] = data.BTC;
-          });
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
-          pipe(takeUntil(this.unSubs[2])).
-          subscribe({
-            next: (data) => {
-              value[CurrencyUnitEnum.OTHER] = data.OTHER;
-            }, error: (err) => {
-              this.conversionErrorMsg = 'Conversion Error: ' + err;
+  getCurrencyValues() {
+    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, this.values[0].title).
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe((data) => {
+        this.values[0][CurrencyUnitEnum.BTC] = data.BTC;
+      });
+    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, this.values[0].title).
+      pipe(takeUntil(this.unSubs[2])).
+      subscribe({
+        next: (data) => {
+          this.values[0][CurrencyUnitEnum.OTHER] = data.OTHER;
+          if (data.unit && data.unit !== '') {
+            for (let i = 1; i < this.values.length; i++) {
+              const value = this.values[i];
+              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, value.title).
+                pipe(takeUntil(this.unSubs[3])).
+                subscribe((data) => {
+                  this.values[i][CurrencyUnitEnum.BTC] = data.BTC;
+                });
+              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, value.title).
+                pipe(takeUntil(this.unSubs[4])).
+                subscribe({
+                  next: (data) => {
+                    this.values[i][CurrencyUnitEnum.OTHER] = data.OTHER;
+                  }, error: (err) => {
+                    this.conversionErrorMsg = 'Conversion Error: ' + err;
+                  }
+                });
             }
-          });
-      } else {
-        value[CurrencyUnitEnum.BTC] = value.dataValue;
-        if (this.conversionErrorMsg === '') {
-          value[CurrencyUnitEnum.OTHER] = value.dataValue;
+          }
+        }, error: (err) => {
+          this.conversionErrorMsg = 'Conversion Error: ' + err;
         }
-      }
-    });
+      });
+    // this.values.forEach((value, i) => {
+    //   if (value.dataValue > 0) {
+    //     this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, value.title).
+    //       pipe(takeUntil(this.unSubs[1])).
+    //       subscribe((data) => {
+    //         this.values[i][CurrencyUnitEnum.BTC] = data.BTC;
+    //       });
+    //     this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, value.title).
+    //       pipe(takeUntil(this.unSubs[2])).
+    //       subscribe({
+    //         next: (data) => {
+    //           console.log(data);
+    //           this.values[i][CurrencyUnitEnum.OTHER] = data.OTHER;
+    //         }, error: (err) => {
+    //           this.conversionErrorMsg = 'Conversion Error: ' + err;
+    //         }
+    //       });
+    //   } else {
+    //     this.values[i][CurrencyUnitEnum.BTC] = value.dataValue;
+    //     if (this.conversionErrorMsg === '') {
+    //       this.values[i][CurrencyUnitEnum.OTHER] = value.dataValue;
+    //     }
+    //   }
+    // });
   }
 
   ngOnDestroy() {

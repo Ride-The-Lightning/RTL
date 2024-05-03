@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
@@ -12,10 +12,11 @@ import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum, LNDActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { ChannelsStatus, GetInfo, Fees, Channel, BlockchainBalance, PendingChannels, PendingChannelsSummary, ChannelsSummary, LightningBalance } from '../../shared/models/lndModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { blockchainBalance, channels, fees, nodeInfoAndNodeSettingsAndAPIStatus, pendingChannels } from '../store/lnd.selector';
+import { rootSelectedNode } from 'src/app/store/rtl.selector';
+import { blockchainBalance, channels, fees, nodeInfoAndAPIStatus, pendingChannels } from '../store/lnd.selector';
 
 export interface Tile {
   id: string;
@@ -47,7 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public activeChannels = 0;
   public inactiveChannels = 0;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -144,15 +145,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndNodeSettingsAndAPIStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, apiCallStatus: ApiCallStatusPayload }) => {
+    this.store.select(nodeInfoAndAPIStatus).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoStatusSelector, nodeSettings]: [{ information: GetInfo | null, apiCallStatus: ApiCallStatusPayload }, nodeSettings: Node]) => {
         this.errorMessages[0] = '';
-        this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apiCallStatus;
+        this.apiCallStatusNodeInfo = infoStatusSelector.apiCallStatus;
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
-        this.information = infoSettingsStatusSelector.information;
+        this.selNode = nodeSettings;
+        this.information = infoStatusSelector.information;
       });
     this.store.select(fees).pipe(takeUntil(this.unSubs[1])).
       subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {

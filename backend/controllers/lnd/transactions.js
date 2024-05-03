@@ -10,7 +10,7 @@ export const getTransactions = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/transactions';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transactions List Received', data: body });
         res.status(200).json(body.transactions);
@@ -26,7 +26,7 @@ export const postTransactions = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/transactions';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
     options.form = {
         amount: amount,
         addr: address,

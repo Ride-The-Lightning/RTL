@@ -2,8 +2,8 @@ import { createAction, props } from '@ngrx/store';
 
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot, SSO } from '../shared/models/RTLconfig';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, SaveSettings, SetSelectedNode, UpdateServiceSetting, VerifyTwoFA } from '../shared/models/rtlModels';
+import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 import { RTLActions } from '../shared/services/consts-enums-functions';
 
 export const voidAction = createAction(RTLActions.VOID);
@@ -36,25 +36,21 @@ export const showConfig = createAction(RTLActions.SHOW_CONFIG, props<{ payload: 
 
 export const updateSelectedNodeOptions = createAction(RTLActions.UPDATE_SELECTED_NODE_OPTIONS);
 
-export const resetRootStore = createAction(RTLActions.RESET_ROOT_STORE, props<{ payload: ConfigSettingsNode }>());
+export const resetRootStore = createAction(RTLActions.RESET_ROOT_STORE, props<{ payload: Node }>());
 
-export const fetchRTLConfig = createAction(RTLActions.FETCH_RTL_CONFIG);
+export const fetchRTLConfig = createAction(RTLActions.FETCH_APPLICATION_SETTINGS);
 
-export const setRTLConfig = createAction(RTLActions.SET_RTL_CONFIG, props<{ payload: RTLConfiguration }>());
-
-export const saveSettings = createAction(RTLActions.SAVE_SETTINGS, props<{ payload: SaveSettings }>());
-
-export const twoFASaveSettings = createAction(RTLActions.TWO_FA_SAVE_SETTINGS, props<{ payload: { secret2fa: string } }>());
+export const setApplicationSettings = createAction(RTLActions.SET_APPLICATION_SETTINGS, props<{ payload: RTLConfiguration }>());
 
 export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
 
-export const updateRootNodeSettings = createAction(RTLActions.UPDATE_ROOT_NODE_SETTINGS, props<{ payload: UpdateServiceSetting }>());
+export const updateNodeSettings = createAction(RTLActions.UPDATE_NODE_SETTINGS, props<{ payload: Node }>());
 
-export const updateServiceSettings = createAction(RTLActions.UPDATE_SERVICE_SETTINGS, props<{ payload: UpdateServiceSetting }>());
+export const setSelectedNodeSettings = createAction(RTLActions.SET_SELECTED_NODE_SETTINGS, props<{ payload: Node }>());
+
+export const updateApplicationSettings = createAction(RTLActions.UPDATE_APPLICATION_SETTINGS, props<{ payload: { showSnackBar: boolean, message: string, config: RTLConfiguration } }>());
 
 export const setNodeData = createAction(RTLActions.SET_NODE_DATA, props<{ payload: GetInfoRoot }>());
-
-export const saveSSO = createAction(RTLActions.SAVE_SSO, props<{ payload: SSO }>());
 
 export const logout = createAction(RTLActions.LOGOUT);
 

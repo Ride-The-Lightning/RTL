@@ -8,14 +8,16 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CLNInvoiceInformation } from '../../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions, DEFAULT_INVOICE_EXPIRY } from '../../../../shared/services/consts-enums-functions';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, CLNActions, DEFAULT_INVOICE_EXPIRY, getSelectedCurrency } from '../../../../shared/services/consts-enums-functions';
+import { Node } from '../../../../shared/models/RTLconfig';
+import { ConvertedCurrency } from '../../../../shared/models/rtlModels';
 import { GetInfo } from '../../../../shared/models/clnModels';
 import { CommonService } from '../../../../shared/services/common.service';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewInvoice } from '../../../store/cln.actions';
-import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector';
+import { clnNodeInformation } from '../../../store/cln.selector';
 
 @Component({
   selector: 'rtl-cln-create-invoices',
@@ -25,7 +27,8 @@ import { clnNodeInformation, clnNodeSettings } from '../../../store/cln.selector
 export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public convertedCurrency: ConvertedCurrency = null;
+  public selNode: Node | null;
   public description = '';
   public expiry: number | null;
   public invoiceValue: number | null;
@@ -45,7 +48,7 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => {
       this.selNode = nodeSettings;
     });
     this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => {
@@ -93,17 +96,20 @@ export class CLNCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
-        subscribe({
-          next: (data) => {
-            this.invoiceValueHint = '= ' + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-          }, error: (err) => {
-            this.invoiceValueHint = 'Conversion Error: ' + err;
-          }
-        });
+      if (this.invoiceValue && this.invoiceValue > 99) {
+        this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
+          pipe(takeUntil(this.unSubs[3])).
+          subscribe({
+            next: (data) => {
+              this.convertedCurrency = data;
+              this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
+            }, error: (err) => {
+              this.invoiceValueHint = 'Conversion Error: ' + err;
+            }
+          });
+      }
     }
   }
 

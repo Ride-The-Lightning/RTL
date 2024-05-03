@@ -1,12 +1,10 @@
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { APICallStatusEnum, CLN_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ListInvoices, UTXO, Offer, OfferBookmark, ListForwards } from '../../shared/models/clnModels';
 import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export interface CLNState {
   apisCallStatus: ApiCallsListCL;
-  nodeSettings: SelNodeChild | null;
   pageSettings: PageSettings[];
   information: GetInfo;
   fees: Fees;
@@ -45,7 +43,6 @@ export const initCLNState: CLNState = {
     FetchOffers: { status: APICallStatusEnum.UN_INITIATED },
     FetchOfferBookmarks: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, unannouncedChannels: false, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [], enableOffers: false, enablePeerswap: false },
   pageSettings: CLN_DEFAULT_PAGE_SETTINGS,
   information: {},
   fees: {},

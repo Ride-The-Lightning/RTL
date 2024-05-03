@@ -9,13 +9,15 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, ECLActions, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { createInvoice } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
+import { eclNodeInformation } from '../../store/ecl.selector';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-ecl-create-invoices',
@@ -25,7 +27,8 @@ import { eclNodeInformation, eclNodeSettings } from '../../store/ecl.selector';
 export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public convertedCurrency: ConvertedCurrency = null;
+  public selNode: Node | null;
   public description = '';
   public expiry: number | null;
   public invoiceValue: number | null = null;
@@ -45,8 +48,8 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
@@ -97,13 +100,14 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.convertedCurrency = data;
+            this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

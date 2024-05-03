@@ -39,7 +39,7 @@ export const getInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/getinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/getinvoice';
     options.form = { paymentHash: req.params.paymentHash };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Found', data: body });
@@ -55,8 +55,8 @@ export const getInvoice = (req, res, next) => {
 };
 export const listPendingInvoicesRequestCall = (selectedNode) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/listpendinginvoices';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
     return new Promise((resolve, reject) => {
         request.post(options).then((pendingInvoicesResponse) => {
@@ -76,16 +76,16 @@ export const listInvoices = (req, res, next) => {
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
     options.form = { from: 0, to: tillToday };
     const options1 = JSON.parse(JSON.stringify(options));
-    options1.url = req.session.selectedNode.ln_server_url + '/listinvoices';
+    options1.url = req.session.selectedNode.settings.lnServerUrl + '/listinvoices';
     options1.form = { from: 0, to: tillToday };
     const options2 = JSON.parse(JSON.stringify(options));
-    options2.url = req.session.selectedNode.ln_server_url + '/listpendinginvoices';
+    options2.url = req.session.selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options2.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
-        return common.getDummyData('Invoices', req.session.selectedNode.ln_implementation).then((body) => {
+        return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then((body) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-            return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+            return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                 then((values) => res.status(200).json(invoices));
         });
     }
@@ -96,7 +96,7 @@ export const listInvoices = (req, res, next) => {
             const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
             pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
             if (invoices && invoices.length > 0) {
-                return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+                return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                     then((values) => {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
                     return res.status(200).json(invoices);
@@ -119,8 +119,8 @@ export const listInvoices = (req, res, next) => {
 };
 export const createInvoiceRequestCall = (selectedNode, description, amount) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/createinvoice';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/createinvoice';
     options.form = { description: description, amountMsat: amount };
     return new Promise((resolve, reject) => {
         request.post(options).then((invResponse) => {

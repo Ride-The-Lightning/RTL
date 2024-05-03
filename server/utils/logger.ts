@@ -17,16 +17,16 @@ export class LoggerService {
           msgStr = msgStr + '.\r\n';
         }
         console.error(msgStr);
-        if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
-          fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+        if (msgJSON.selectedNode && msgJSON.selectedNode.settings.logFile) {
+          fs.appendFile(msgJSON.selectedNode.settings.logFile, msgStr, () => { });
         }
         break;
 
       case 'WARN':
         msgStr = prepMsgData(msgJSON, msgStr);
-        if (!msgJSON.selectedNode || msgJSON.selectedNode.log_level === 'WARN' || msgJSON.selectedNode.log_level === 'INFO' || msgJSON.selectedNode.log_level === 'DEBUG') {
-          if (msgJSON.selectedNode && msgJSON.selectedNode.log_file) {
-            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+        if (!msgJSON.selectedNode || msgJSON.selectedNode.settings.logLevel === 'WARN' || msgJSON.selectedNode.settings.logLevel === 'INFO' || msgJSON.selectedNode.settings.logLevel === 'DEBUG') {
+          if (msgJSON.selectedNode && msgJSON.selectedNode.settings.logFile) {
+            fs.appendFile(msgJSON.selectedNode.settings.logFile, msgStr, () => { });
           }
         }
         break;
@@ -34,17 +34,17 @@ export class LoggerService {
       case 'INFO':
         if (!msgJSON.selectedNode && msgJSON.fileName === 'RTL') {
           console.log(msgStr + '.\r\n');
-        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'INFO') {
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.settings.logLevel === 'INFO') {
           msgStr = msgStr + '.\r\n';
           console.log(msgStr);
-          if (msgJSON.selectedNode.log_file) {
-            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+          if (msgJSON.selectedNode.settings.logFile) {
+            fs.appendFile(msgJSON.selectedNode.settings.logFile, msgStr, () => { });
           }
-        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'DEBUG') {
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.settings.logLevel === 'DEBUG') {
           msgStr = prepMsgData(msgJSON, msgStr);
           console.log(msgStr);
-          if (msgJSON.selectedNode.log_file) {
-            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+          if (msgJSON.selectedNode.settings.logFile) {
+            fs.appendFile(msgJSON.selectedNode.settings.logFile, msgStr, () => { });
           }
         }
         break;
@@ -52,11 +52,11 @@ export class LoggerService {
       case 'DEBUG':
         if (!msgJSON.selectedNode) {
           console.log(msgStr + '.\r\n');
-        } else if (msgJSON.selectedNode && msgJSON.selectedNode.log_level === 'DEBUG') {
+        } else if (msgJSON.selectedNode && msgJSON.selectedNode.settings.logLevel === 'DEBUG') {
           msgStr = prepMsgData(msgJSON, msgStr);
           console.log(msgStr);
-          if (msgJSON.selectedNode.log_file) {
-            fs.appendFile(msgJSON.selectedNode.log_file, msgStr, () => { });
+          if (msgJSON.selectedNode.settings.logFile) {
+            fs.appendFile(msgJSON.selectedNode.settings.logFile, msgStr, () => { });
           }
         }
         break;

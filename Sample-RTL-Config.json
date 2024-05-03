@@ -13,13 +13,13 @@
       "index": 1,
       "lnNode": "Node 1",
       "lnImplementation": "LND",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
         "configPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\lnd.conf",
         "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet",
         "boltzMacaroonPath": "C:\\Users\\xyz\\AppData\\Boltz\\mainnet"
       },
-      "Settings": {
+      "settings": {
         "userPersona": "MERCHANT",
         "themeMode": "DAY",
         "themeColor": "PURPLE",

@@ -1,12 +1,10 @@
-import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
-import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Peer, Fees, NetworkInfo, BlockchainBalance, Channel, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsSummary, UTXO, ListPayments, LightningBalance, ChannelsSummary } from '../../shared/models/lndModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export interface LNDState {
   apisCallStatus: ApiCallsListLND;
-  nodeSettings: SelNodeChild | null;
   pageSettings: PageSettings[];
   information: GetInfo;
   peers: Peer[];
@@ -45,7 +43,6 @@ export const initLNDState: LNDState = {
     FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED },
     FetchNetwork: { status: APICallStatusEnum.UN_INITIATED }
   },
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, unannouncedChannels: false, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   pageSettings: LND_DEFAULT_PAGE_SETTINGS,
   information: {},
   peers: [],

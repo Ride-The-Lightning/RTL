@@ -2,14 +2,14 @@ import socketIOClient from 'socket.io-client';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { CommonSelectedNode } from '../../models/config.model.js';
+import { SelectedNode } from '../../models/config.model.js';
 
 export class CLWebSocketClient {
 
   public logger: LoggerService = Logger;
   public common: CommonService = Common;
   public wsServer = WSServer;
-  public webSocketClients: Array<{ selectedNode: CommonSelectedNode, reConnect: boolean, webSocketClient: any }> = [];
+  public webSocketClients: Array<{ selectedNode: SelectedNode, reConnect: boolean, webSocketClient: any }> = [];
   public reconnectTimeOut = null;
   public waitTime = 0.5;
 
@@ -34,17 +34,17 @@ export class CLWebSocketClient {
     }, this.waitTime * 1000);
   };
 
-  public connect = (selectedNode: CommonSelectedNode) => {
+  public connect = (selectedNode: SelectedNode) => {
     try {
       const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
       if (!clientExists) {
-        if (selectedNode.ln_server_url) {
+        if (selectedNode.settings.lnServerUrl) {
           const newWebSocketClient = { selectedNode: selectedNode, reConnect: true, webSocketClient: null };
           this.connectWithClient(newWebSocketClient);
           this.webSocketClients.push(newWebSocketClient);
         }
       } else {
-        if ((!clientExists.webSocketClient || !clientExists.webSocketClient.connected) && selectedNode.ln_server_url) {
+        if ((!clientExists.webSocketClient || !clientExists.webSocketClient.connected) && selectedNode.settings.lnServerUrl) {
           clientExists.reConnect = true;
           this.connectWithClient(clientExists);
         }
@@ -57,11 +57,11 @@ export class CLWebSocketClient {
   public connectWithClient = (clWsClt) => {
     this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Connecting to the Core Lightning\'s Websocket Server..' });
     try {
-      if (!clWsClt.selectedNode.rune_value) {
-        clWsClt.selectedNode.rune_value = this.common.getRuneValue(clWsClt.selectedNode.rune_path);
+      if (!clWsClt.selectedNode.authentication.runeValue) {
+        clWsClt.selectedNode.authentication.runeValue = this.common.getRuneValue(clWsClt.selectedNode.authentication.runePath);
       }
-      clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.ln_server_url, {
-        extraHeaders: { rune: clWsClt.selectedNode.rune_value },
+      clWsClt.webSocketClient = socketIOClient(clWsClt.selectedNode.settings.lnServerUrl, {
+        extraHeaders: { rune: clWsClt.selectedNode.authentication.runeValue },
         transports: ['websocket'],
         secure: true,
         rejectUnauthorized: false
@@ -76,7 +76,7 @@ export class CLWebSocketClient {
     });
 
     clWsClt.webSocketClient.on('disconnect', (reason) => {
-      if (clWsClt && clWsClt.selectedNode && clWsClt.selectedNode.ln_implementation === 'CLN') {
+      if (clWsClt && clWsClt.selectedNode && clWsClt.selectedNode.lnImplementation === 'CLN') {
         this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Web socket disconnected, will reconnect again...', data: reason });
         clWsClt.webSocketClient.close();
         if (clWsClt.reConnect) { this.reconnect(clWsClt); }
@@ -97,7 +97,7 @@ export class CLWebSocketClient {
     });
   };
 
-  public disconnect = (selectedNode: CommonSelectedNode) => {
+  public disconnect = (selectedNode: SelectedNode) => {
     const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
     if (clientExists && clientExists.webSocketClient && clientExists.webSocketClient.connected) {
       this.logger.log({ selectedNode: clientExists.selectedNode, level: 'INFO', fileName: 'CLWebSocket', msg: 'Disconnecting from the Core Lightning\'s Websocket Server..' });
@@ -108,7 +108,7 @@ export class CLWebSocketClient {
     }
   };
 
-  public updateSelectedNode = (newSelectedNode: CommonSelectedNode) => {
+  public updateSelectedNode = (newSelectedNode: SelectedNode) => {
     const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
     let newClient = this.webSocketClients[clientIdx];
     if (!newClient) { newClient = { selectedNode: null, reConnect: true, webSocketClient: null }; }

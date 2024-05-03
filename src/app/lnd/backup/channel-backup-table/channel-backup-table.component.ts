@@ -9,7 +9,9 @@ import { ChannelInformationComponent } from '../../peers-channels/channels/chann
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
+import { Node } from '../../../shared/models/RTLconfig';
 import { Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES, LNDActions, RTLActions } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -17,10 +19,10 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchFile, openAlert } from '../../../store/rtl.actions';
 import { backupChannels, verifyChannel } from '../../store/lnd.actions';
-import { channels, lndNodeSettings } from '../../store/lnd.selector';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { channels } from '../../store/lnd.selector';
 
 @Component({
   selector: 'rtl-channel-backup-table',
@@ -40,7 +42,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public faArchive = faArchive;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public displayedColumns = ['channel_point', 'actions'];
   public selectedChannel: Channel | null;
   public channelsData: Channel[] = [];
@@ -58,7 +60,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSeletor: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';

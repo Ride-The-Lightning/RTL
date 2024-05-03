@@ -1,6 +1,6 @@
 import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
-import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
-import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { APICallStatusEnum, UserPersonaEnum } from '../shared/services/consts-enums-functions';
+import { RTLConfiguration, Node, GetInfoRoot, Settings, Authentication } from '../shared/models/RTLconfig';
 
 import { LNDState } from '../lnd/store/lnd.state';
 import { CLNState } from '../cln/store/cln.state';
@@ -9,13 +9,16 @@ import { ECLState } from '../eclair/store/ecl.state';
 export interface RootState {
   apiURL: string;
   apisCallStatus: ApiCallsListRoot;
-  selNode: ConfigSettingsNode | any;
+  selNode: Node | any;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
+const initNodeSettings: Settings = { userPersona: UserPersonaEnum.OPERATOR, themeMode: 'DAY', themeColor: 'PURPLE',
+  channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false,
+  currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false,
+  logLevel: 'ERROR', lnServerUrl: '', swapServerUrl: '', boltzServerUrl: '', currencyUnit: 'USD' };
+const initNodeAuthentication: Authentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {
   apiURL: '',
@@ -24,8 +27,9 @@ export const initRootState: RootState = {
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
-    sso: { rtlSSO: 0, logoutRedirectLink: '' },
+    SSO: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
+    secret2FA: '',
     allowPasswordUpdate: true,
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },

@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUserCog } from '@fortawesome/free-solid-svg-icons';
 
-import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
+import { Node, RTLConfiguration } from '../../models/RTLconfig';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode, rootAppConfig } from '../../../store/rtl.selector';
 
@@ -18,7 +18,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public faUserCog = faUserCog;
   public showBitcoind = false;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public appConfig: RTLConfiguration;
   public links = [{ link: 'app', name: 'Application' }, { link: 'auth', name: 'Authentication' }, { link: 'bconfig', name: 'BitcoinD Config' }];
   public activeLink = '';

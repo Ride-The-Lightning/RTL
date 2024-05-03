@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 
 import { initECLState } from './ecl.state';
-import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus, setChildNodeSettingsECL,
+import { addInvoice, removeChannel, removePeer, resetECLStore, setActiveChannels, setChannelsStatus,
   setFees, setInactiveChannels, setInfo, setInvoices, setLightningBalance, setOnchainBalance, setPayments, setPeers, setPendingChannels,
   setTransactions, updateECLAPICallStatus, updateChannelState, updateInvoice, updateRelayedPayment, setPageSettings } from './ecl.actions';
 import { Channel, PaymentReceived, PaymentRelayed } from '../../shared/models/eclModels';
@@ -25,13 +25,8 @@ export const ECLReducer = createReducer(initECLState,
       apisCallStatus: updatedApisCallStatus
     };
   }),
-  on(setChildNodeSettingsECL, (state, { payload }) => ({
-    ...state,
-    nodeSettings: payload
-  })),
-  on(resetECLStore, (state, { payload }) => ({
-    ...initECLState,
-    nodeSettings: payload
+  on(resetECLStore, (state) => ({
+    ...initECLState
   })),
   on(setInfo, (state, { payload }) => ({
     ...state,

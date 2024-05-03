@@ -12,10 +12,10 @@ import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { lndNodeSettings } from '../../../store/lnd.selector';
-import { CommonService } from 'src/app/shared/services/common.service';
+import { Node } from '../../../../shared/models/RTLconfig';
+import { CommonService } from '../../../../shared/services/common.service';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -26,7 +26,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new UntypedFormControl();
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public amount = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
@@ -66,10 +66,10 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.isTaprootAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -127,7 +127,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   resetData() {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.taprootChannel = false;
     this.spendUnconfirmed = false;
     this.selTransType = '0';

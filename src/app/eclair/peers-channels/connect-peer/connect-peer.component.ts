@@ -15,8 +15,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/ecl.actions';
-import { eclNodeSettings } from '../../store/ecl.selector';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { rootSelectedNode } from '../../../store/rtl.selector';
+import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -28,7 +28,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public peerAddress = '';
   public totalBalance = 0;
   public flgChannelOpened = false;
@@ -61,15 +61,15 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
-      isPrivate: [!!this.selNode?.unannouncedChannels],
+      isPrivate: [!!this.selNode?.settings.unannouncedChannels],
       feeRate: [null],
       hiddenAmount: ['', [Validators.required]]
     });
     this.statusFormGroup = this.formBuilder.group({});
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.unannouncedChannels);
+        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),

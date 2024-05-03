@@ -8,7 +8,7 @@ import { faUserLock, faUserClock, faInfoCircle, faLock } from '@fortawesome/free
 import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
-import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { RTLConfiguration, Node } from '../../../models/RTLconfig';
 import { PASSWORD_BLACKLIST, RTLActions, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { SessionService } from '../../../services/session.service';
 import { openAlert, resetPassword, setSelectedNode } from '../../../../store/rtl.actions';
@@ -36,7 +36,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public errorConfirmMsg = '';
   public initializeNodeData = false;
   public appConfig: RTLConfiguration;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private router: Router, private sessionService: SessionService) { }

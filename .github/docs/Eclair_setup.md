@@ -71,11 +71,11 @@ Ensure that the follow values are correct per your config:
       "index": 1,
       "lnNode": "Eclair Testnet # 1",
       "lnImplementation": "ECL",
-      "Authentication": {
+      "authentication": {
         "configPath": "<Optional - Config file path, including .conf file>",
         "lnApiPassword": "<Mandatory if the configPath is missing - Password used for API authentication>",
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",

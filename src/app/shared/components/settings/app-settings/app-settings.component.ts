@@ -2,14 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faWindowRestore, faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faWindowRestore, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { RTLConfiguration } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 
 import { RTLState } from '../../../../store/rtl.state';
-import { saveSettings } from '../../../../store/rtl.actions';
+import { updateApplicationSettings } from '../../../../store/rtl.actions';
 import { rootAppConfig } from '../../../../store/rtl.selector';
 
 @Component({
@@ -19,7 +18,6 @@ import { rootAppConfig } from '../../../../store/rtl.selector';
 })
 export class AppSettingsComponent implements OnInit, OnDestroy {
 
-  public faInfoCircle = faInfoCircle;
   public faWindowRestore = faWindowRestore;
   public faPlus = faPlus;
   public appConfig: RTLConfiguration;
@@ -40,9 +38,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.logger.warn('ADD NEW NODE');
   }
 
-  onUpdateSettings(): boolean | void {
-    const defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : (this.appConfig && this.appConfig.nodes && this.appConfig.nodes.length && this.appConfig.nodes.length > 0 && this.appConfig.nodes[0].index) ? +this.appConfig.nodes[0].index : -1;
-    this.store.dispatch(saveSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_DEFAULT_NODE_SETTING, defaultNodeIndex: defaultNodeIndex } }));
+  onUpdateApplicationSettings(): boolean | void {
+    this.appConfig.defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : (this.appConfig && this.appConfig.nodes && this.appConfig.nodes.length && this.appConfig.nodes.length > 0 && this.appConfig.nodes[0].index) ? +this.appConfig.nodes[0].index : -1;
+    this.store.dispatch(updateApplicationSettings({ payload: { showSnackBar: true, message: 'Default Node Updated.', config: this.appConfig } }));
   }
 
   onResetSettings() {

@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import { initLNDState } from './lnd.state';
 import { addInvoice, removeChannel, removePeer, resetLNDStore, setChannels, setAllLightningTransactions, setBalanceBlockchain,
-  setChildNodeSettingsLND, setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers,
+  setClosedChannels, setFees, setForwardingHistory, setInfo, setInvoices, setNetwork, setPayments, setPeers,
   setPendingChannels, setTransactions, setUTXOs, updateLNDAPICallStatus, updateInvoice, updatePayment, setPageSettings } from './lnd.actions';
 import { Channel, ClosedChannel, SetAllLightningTransactions } from '../../shared/models/lndModels';
 import { PageSettings } from '../../shared/models/pageSettings';
@@ -28,13 +28,8 @@ export const LNDReducer = createReducer(initLNDState,
       apisCallStatus: updatedApisCallStatus
     };
   }),
-  on(setChildNodeSettingsLND, (state, { payload }) => ({
-    ...state,
-    nodeSettings: payload
-  })),
-  on(resetLNDStore, (state, { payload }) => ({
-    ...initLNDState,
-    nodeSettings: payload
+  on(resetLNDStore, (state) => ({
+    ...initLNDState
   })),
   on(setInfo, (state, { payload }) => ({
     ...state,

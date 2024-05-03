@@ -18,7 +18,7 @@ import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
-import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
+import { clnPageSettings, nodeInfoAndBalance } from '../../store/cln.selector';
 import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
@@ -93,12 +93,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes({ liquidity_ads: true })]).pipe(takeUntil(this.unSubs[1])).
+    combineLatest([this.store.select(nodeInfoAndBalance), this.dataService.listNetworkNodes({ liquidity_ads: true })]).pipe(takeUntil(this.unSubs[1])).
       subscribe({
-        next: ([infoSettingsBalSelector, nodeListRes]) => {
-          this.information = infoSettingsBalSelector.information;
-          this.totalBalance = infoSettingsBalSelector.balance.totalBalance || 0;
-          this.logger.info(infoSettingsBalSelector);
+        next: ([infoBalSelector, nodeListRes]) => {
+          this.information = infoBalSelector.information;
+          this.totalBalance = infoBalSelector.balance.totalBalance || 0;
+          this.logger.info(infoBalSelector);
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
           this.listNodesCallStatus = APICallStatusEnum.COMPLETED;

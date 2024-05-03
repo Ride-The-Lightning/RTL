@@ -77,11 +77,11 @@ Ensure that the follow values are correct per your config:
       "index": 1,
       "lnNode": "Core Lightning Testnet # 1",
       "lnImplementation": "CLN",
-      "Authentication": {
+      "authentication": {
         "runePath": "<Modify to include the path of the folder including filename which contains `rune`>",
         "configPath": "<Optional - Config file path for core lightning>"
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",

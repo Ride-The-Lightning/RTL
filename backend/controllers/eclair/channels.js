@@ -27,7 +27,7 @@ export const simplifyAllChannels = (selNode, channels) => {
         });
     });
     channelNodeIds = channelNodeIds.substring(1);
-    options.url = selNode.ln_server_url + '/nodes';
+    options.url = selNode.settings.lnServerUrl + '/nodes';
     options.form = { nodeIds: channelNodeIds };
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
     return request.post(options).then((nodes) => {
@@ -47,7 +47,7 @@ export const getChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/channels';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/channels';
     options.form = {};
     if (req.query && req.query.nodeId) {
         options.form = req.query;
@@ -55,7 +55,7 @@ export const getChannels = (req, res, next) => {
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
     if (common.read_dummy_data) {
-        common.getDummyData('Channels', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(data); });
+        common.getDummyData('Channels', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
     }
     else {
         request.post(options).then((body) => {
@@ -83,7 +83,7 @@ export const getChannelStats = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/channelstats';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/channelstats';
     const today = new Date(Date.now());
     const tillToday = (Math.round(today.getTime() / 1000)).toString();
     const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
@@ -105,7 +105,7 @@ export const openChannel = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/open';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/open';
     options.form = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
     request.post(options).then((body) => {
@@ -122,7 +122,7 @@ export const updateChannelRelayFee = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/updaterelayfee';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/updaterelayfee';
     options.form = req.query;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Params', data: options.form });
     request.post(options).then((body) => {
@@ -140,11 +140,11 @@ export const closeChannel = (req, res, next) => {
     }
     if (req.query.force !== 'true') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
-        options.url = req.session.selectedNode.ln_server_url + '/close';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/close';
     }
     else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Force Closing Channel..' });
-        options.url = req.session.selectedNode.ln_server_url + '/forceclose';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/forceclose';
     }
     options.form = { channelId: req.query.channelId };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close URL', data: options.url });

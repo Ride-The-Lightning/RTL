@@ -1,9 +1,8 @@
 import { mockActionsData } from '../shared/test-helpers/test-data';
-import { UI_MESSAGES } from '../shared/services/consts-enums-functions';
 
 import { initRootState } from './rtl.state';
 import { RootReducer } from './rtl.reducers';
-import { setSelectedNode } from './rtl.actions';
+import { resetRootStore } from './rtl.actions';
 
 describe('RTL reducer', () => {
   describe('default action', () => {
@@ -13,10 +12,10 @@ describe('RTL reducer', () => {
     });
   });
 
-  describe('Action SetSelectedNode', () => {
-    it('should set selected node', () => {
-      const SetSelectedNodeAction = setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: false } });
-      const newState = RootReducer(initRootState, SetSelectedNodeAction);
+  describe('Action Reset Root Store', () => {
+    it('should reset root store with new setup', () => {
+      const ResetRootStoreAction = resetRootStore({ payload: mockActionsData.setSelectedNode });
+      const newState = RootReducer(initRootState, ResetRootStoreAction);
 
       expect(newState.selNode.settings.themeMode).toBe('NIGHT');
       expect(newState.selNode.settings.themeColor).toBe('TEAL');

@@ -7,9 +7,10 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
-import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
+import { Node } from '../../../../../shared/models/RTLconfig';
 import { BlockchainBalance, Channel, ChannelsSummary, GetInfo, LightningBalance, Peer } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -23,12 +24,12 @@ import { LoopModalComponent } from '../../../../../shared/components/ln-services
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { RTLState } from '../../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
 import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { channelLookup, fetchChannels, updateChannel } from '../../../../store/lnd.actions';
-import { blockchainBalance, channels, lndNodeInformation, lndNodeSettings, lndPageSettings, peers } from '../../../../store/lnd.selector';
+import { blockchainBalance, channels, lndNodeInformation, lndPageSettings, peers } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -50,7 +51,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public tableSetting: TableSetting = { tableId: 'open', recordsPerPage: PAGE_SIZE, sortBy: 'balancedness', sortOrder: SortOrderEnum.DESCENDING };
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public totalBalance = 0;
   public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
@@ -89,7 +90,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.selFilterBy = window.history.state.filterColumn || 'all';
       this.selFilter = window.history.state.filterValue || '';
     }
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });

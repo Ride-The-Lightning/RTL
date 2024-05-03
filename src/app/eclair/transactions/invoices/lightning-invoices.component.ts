@@ -8,9 +8,10 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, ECLActions, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -20,12 +21,13 @@ import { ECLCreateInvoiceComponent } from '../create-invoice-modal/create-invoic
 import { ECLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { openAlert } from '../../../store/rtl.actions';
 import { createInvoice, invoiceLookup } from '../../store/ecl.actions';
-import { eclNodeInformation, eclNodeSettings, eclPageSettings, invoices } from '../../store/ecl.selector';
+import { eclNodeInformation, eclPageSettings, invoices } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -42,12 +44,13 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   @ViewChild(MatSort, { static: false }) sort: MatSort | undefined;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | undefined;
   faHistory = faHistory;
+  public convertedCurrency: ConvertedCurrency = null;
   public nodePageDefs = ECL_PAGE_DEFS;
   public selFilterBy = 'all';
   public colWidth = '20rem';
   public PAGE_ID = 'transactions';
   public tableSetting: TableSetting = { tableId: 'invoices', recordsPerPage: PAGE_SIZE, sortBy: 'expiresAt', sortOrder: SortOrderEnum.DESCENDING };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public newlyAddedInvoiceMemo: string | null = '';
   public newlyAddedInvoiceValue: number | null = 0;
   public description: string | null = '';
@@ -74,8 +77,8 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit() {
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[1])).
@@ -236,13 +239,14 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
         pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.convertedCurrency = data;
+            this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

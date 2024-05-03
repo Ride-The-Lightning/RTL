@@ -7,14 +7,11 @@ import { faInfoCircle, faCode, faExclamationTriangle } from '@fortawesome/free-s
 import { LoggerService } from '../../../services/logger.service';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { ConfigSettingsNode } from '../../../models/RTLconfig';
-import { updateServiceSettings } from '../../../../store/rtl.actions';
-import { setChildNodeSettingsLND } from '../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCLN } from '../../../../cln/store/cln.actions';
-import { setChildNodeSettingsECL } from '../../../../eclair/store/ecl.actions';
+import { Node } from '../../../models/RTLconfig';
+import { updateNodeSettings } from '../../../../store/rtl.actions';
 import { DataService } from '../../../services/data.service';
 import { CommonService } from '../../../services/common.service';
-import { ServicesEnum, UI_MESSAGES, LADS_POLICY } from '../../../services/consts-enums-functions';
+import { LADS_POLICY } from '../../../services/consts-enums-functions';
 import { utxoBalances } from '../../../../cln/store/cln.selector';
 import { Balance, FunderPolicy, LocalRemoteBalance, UTXO } from '../../../models/clnModels';
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
@@ -31,7 +28,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   public faCode = faCode;
   public features = [{ name: 'Offers', enabled: false }, { name: 'Channel Funding Policy', enabled: false }];
   public enableOffers = false;
-  public selNode: ConfigSettingsNode;
+  public selNode: Node;
   public fundingPolicy: FunderPolicy = {};
   public policyTypes = LADS_POLICY;
   public selPolicyType = LADS_POLICY[0];
@@ -91,25 +88,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
     this.logger.info(this.selNode);
     this.selNode.settings.enableOffers = this.enableOffers;
     this.features[0].enabled = this.enableOffers;
-    this.store.dispatch(updateServiceSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_SETTING, service: ServicesEnum.OFFERS, settings: { enableOffers: this.enableOffers } } }));
-    this.store.dispatch(setChildNodeSettingsLND({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsCLN({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsECL({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.settings.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.enableOffers
-      }
-    }));
+    this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
 
   onUpdateFundingPolicy() {

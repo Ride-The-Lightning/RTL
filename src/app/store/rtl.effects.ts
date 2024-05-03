@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of, Subject, forkJoin, Observable } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -14,10 +14,10 @@ import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
 import { DataService } from '../shared/services/data.service';
-import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { API_URL, API_END_POINTS, RTLActions, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, SaveSettings, SetSelectedNode, UpdateServiceSetting, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -26,7 +26,7 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLState } from './rtl.state';
-import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, updateRootNodeSettings, setRTLConfig } from './rtl.actions';
+import { resetRootStore, setNodeData, setSelectedNode, updateRootAPICallStatus, closeSpinner, openAlert, openSpinner, openSnackBar, fetchRTLConfig, closeAllDialogs, logout, setSelectedNodeSettings } from './rtl.actions';
 import { fetchInfoLND, resetLNDStore, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
 import { fetchInfoCLN, resetCLNStore, fetchPageSettings as fetchPageSettingsCLN } from '../cln/store/cln.actions';
 import { fetchInfoECL, resetECLStore, fetchPageSettings as fetchPageSettingsECL } from '../eclair/store/ecl.actions';
@@ -197,7 +197,7 @@ export class RTLEffects implements OnDestroy {
 
   appConfigFetch = createEffect(
     () => this.actions.pipe(
-      ofType(RTLActions.FETCH_RTL_CONFIG),
+      ofType(RTLActions.FETCH_APPLICATION_SETTINGS),
       mergeMap(() => {
         this.screenSize = this.commonService.getScreenSize();
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
@@ -212,17 +212,13 @@ export class RTLEffects implements OnDestroy {
         }
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED } }));
-        if (this.sessionService.getItem('token')) {
-          return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconf');
-        } else {
-          return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API + '/rtlconfinit');
-        }
+        return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API);
       }),
       map((rtlConfig: RTLConfiguration) => {
         this.logger.info(rtlConfig);
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
-        let searchNode: ConfigSettingsNode | null = null;
+        let searchNode: Node | null = null;
         rtlConfig.nodes.forEach((node) => {
           node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
           if (+(node.index || -1) === rtlConfig.selectedNodeIndex) {
@@ -232,7 +228,7 @@ export class RTLEffects implements OnDestroy {
         if (searchNode) {
           this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: searchNode, isInitialSetup: true } }));
           return {
-            type: RTLActions.SET_RTL_CONFIG,
+            type: RTLActions.SET_APPLICATION_SETTINGS,
             payload: rtlConfig
           };
         } else {
@@ -247,83 +243,58 @@ export class RTLEffects implements OnDestroy {
       }))
   );
 
-  settingSave = createEffect(
+  updateNodeSettings = createEffect(
     () => this.actions.pipe(
-      ofType(RTLActions.SAVE_SETTINGS),
-      mergeMap((action: { type: string, payload: SaveSettings }) => {
-        this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSettings', status: APICallStatusEnum.INITIATED } }));
-        let updateSettingReq = new Observable();
-        if (action.payload.settings && action.payload.defaultNodeIndex) {
-          const settingsRes = this.httpClient.post<Settings>(API_END_POINTS.CONF_API, { updatedSettings: action.payload.settings });
-          const defaultNodeRes = this.httpClient.post(API_END_POINTS.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
-          updateSettingReq = forkJoin([settingsRes, defaultNodeRes]);
-        } else if (action.payload.settings && !action.payload.defaultNodeIndex) {
-          updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API, { updatedSettings: action.payload.settings });
-        } else if (!action.payload.settings && action.payload.defaultNodeIndex) {
-          updateSettingReq = this.httpClient.post(API_END_POINTS.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+      ofType(RTLActions.UPDATE_NODE_SETTINGS),
+      mergeMap((action: { type: string, payload: Node }) => {
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
+        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.INITIATED } }));
+        if (!action.payload.settings.fiatConversion) {
+          delete action.payload.settings.currencyUnit;
         }
-        return updateSettingReq.pipe(map((updateStatus: any) => {
-          this.logger.info(updateStatus);
-          this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSettings', status: APICallStatusEnum.COMPLETED } }));
-          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-          return {
-            type: RTLActions.OPEN_SNACK_BAR,
-            payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
-          };
-        }), catchError((err) => {
-          this.handleErrorWithAlert('UpdateSettings', action.payload.uiMessage, 'Update Settings Failed!', API_END_POINTS.CONF_API, (!err.length) ? err : err[0]);
-          return of({ type: RTLActions.VOID });
-        }));
-      }))
-  );
-
-  updateServicesettings = createEffect(
-    () => this.actions.pipe(
-      ofType(RTLActions.UPDATE_SERVICE_SETTINGS),
-      mergeMap((action: { type: string, payload: UpdateServiceSetting }) => {
-        this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateServiceSettings', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.post(API_END_POINTS.CONF_API + '/updateServiceSettings', action.payload).pipe(
-          map((updateStatus: any) => {
-            this.logger.info(updateStatus);
-            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateServiceSettings', status: APICallStatusEnum.COMPLETED } }));
-            this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-            this.store.dispatch(updateRootNodeSettings({ payload: action.payload }));
+        delete action.payload.settings.currencyUnits;
+        return this.httpClient.post(API_END_POINTS.CONF_API + '/node', action.payload).
+          pipe(map((updatedNode: Node) => {
+            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateNodeSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_NODE_SETTINGS }));
+            updatedNode.settings.currencyUnits = [...CURRENCY_UNITS, (updatedNode.settings?.currencyUnit ? updatedNode.settings?.currencyUnit : '')];
+            this.store.dispatch(setSelectedNodeSettings({ payload: updatedNode }));
             return {
               type: RTLActions.OPEN_SNACK_BAR,
-              payload: updateStatus.message + '.'
+              payload: 'Node settings updated successfully!'
             };
-          }),
-          catchError((err) => {
-            this.handleErrorWithAlert('UpdateServiceSettings', action.payload.uiMessage, 'Update Service Settings Failed!', API_END_POINTS.CONF_API, err);
+          }), catchError((err: any) => {
+            this.handleErrorWithAlert('updateNodeSettings', UI_MESSAGES.UPDATE_NODE_SETTINGS, 'Update Node Settings Failed!', API_END_POINTS.CONF_API + '/node', err);
             return of({ type: RTLActions.VOID });
-          })
-        );
+          }));
       }))
   );
 
-  twoFASettingSave = createEffect(
+  updateApplicationSettings = createEffect(
     () => this.actions.pipe(
-      ofType(RTLActions.TWO_FA_SAVE_SETTINGS),
-      mergeMap((action: { type: string, payload: { secret2fa: string } }) => {
-        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_UI_SETTINGS }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Update2FASettings', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.post(API_END_POINTS.CONF_API + '/update2FA', { secret2fa: action.payload.secret2fa });
-      }),
-      withLatestFrom(this.store.select(rootAppConfig)),
-      map(([updateStatus, appConfig]: [any, RTLConfiguration]) => {
-        this.logger.info(updateStatus);
-        appConfig.enable2FA = !appConfig.enable2FA;
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Update2FASettings', status: APICallStatusEnum.COMPLETED } }));
-        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_UI_SETTINGS }));
-        this.store.dispatch(setRTLConfig({ payload: appConfig }));
-      }),
-      catchError((err) => {
-        this.handleErrorWithAlert('Update2FASettings', UI_MESSAGES.UPDATE_UI_SETTINGS, 'Update 2FA Settings Failed!', API_END_POINTS.CONF_API, err);
-        return of({ type: RTLActions.VOID });
-      })),
-    { dispatch: false }
+      ofType(RTLActions.UPDATE_APPLICATION_SETTINGS),
+      mergeMap((action: { type: string, payload: { showSnackBar: boolean, message: string, config: RTLConfiguration } }) => {
+        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.INITIATED } }));
+        action.payload.config.nodes.forEach((node) => {
+          delete node.settings.currencyUnits;
+        });
+        return this.httpClient.post(API_END_POINTS.CONF_API + '/application', action.payload.config).
+          pipe(map((appConfig: RTLConfiguration) => {
+            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'updateApplicationSettings', status: APICallStatusEnum.COMPLETED } }));
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_APPLICATION_SETTINGS }));
+            if (action.payload.showSnackBar) {
+              this.store.dispatch(openSnackBar({ payload: action.payload.message }));
+            }
+            return {
+              type: RTLActions.SET_APPLICATION_SETTINGS,
+              payload: appConfig
+            };
+          }), catchError((err: any) => {
+            this.handleErrorWithAlert('updateApplicationSettings', UI_MESSAGES.UPDATE_APPLICATION_SETTINGS, 'Update Application Settings Failed!', API_END_POINTS.CONF_API + '/application', err);
+            return of({ type: RTLActions.VOID });
+          }));
+      }))
   );
 
   configFetch = createEffect(
@@ -392,9 +363,9 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.LOGIN),
       withLatestFrom(this.store.select(rootAppConfig)),
       mergeMap(([action, appConfig]: [{ type: string, payload: Login }, RTLConfiguration]) => {
-        this.store.dispatch(resetLNDStore({ payload: null }));
-        this.store.dispatch(resetCLNStore({ payload: null }));
-        this.store.dispatch(resetECLStore({ payload: null }));
+        this.store.dispatch(resetLNDStore());
+        this.store.dispatch(resetCLNStore());
+        this.store.dispatch(resetECLStore());
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Login', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API, {
           authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
@@ -409,7 +380,7 @@ export class RTLEffects implements OnDestroy {
           catchError((err) => {
             this.logger.info('Redirecting to Login Error Page');
             this.handleErrorWithoutAlert('Login', UI_MESSAGES.NO_SPINNER, err);
-            if (+appConfig.sso.rtlSSO) {
+            if (+appConfig.SSO.rtlSSO) {
               this.router.navigate(['/error'], { state: { errorCode: '406', errorMessage: err.error && err.error.error ? err.error.error : 'Single Sign On Failed!' } });
             } else {
               this.router.navigate(['./login']);
@@ -449,8 +420,8 @@ export class RTLEffects implements OnDestroy {
       ofType(RTLActions.LOGOUT),
       mergeMap((appConfig: RTLConfiguration) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
-        if (appConfig.sso && +appConfig.sso.rtlSSO) {
-          window.location.href = appConfig.sso.logoutRedirectLink;
+        if (appConfig.SSO && +appConfig.SSO.rtlSSO) {
+          window.location.href = appConfig.SSO.logoutRedirectLink;
         } else {
           this.router.navigate(['./login']);
         }
@@ -547,22 +518,17 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  initializeNode(node: ConfigSettingsNode, isInitialSetup: boolean) {
+  initializeNode(node: Node, isInitialSetup: boolean) {
     this.logger.info('Initializing node from RTL Effects.');
     const landingPage = isInitialSetup ? '' : 'HOME';
-    const selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, unannouncedChannels: !!node.settings.unannouncedChannels,
-      selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation,
-      swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl, enableOffers: node.settings.enableOffers, enablePeerswap: node.settings.enablePeerswap };
-    if (node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode['currencyUnits'] = [...CURRENCY_UNITS, node.settings.currencyUnit];
-    }
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('clnUnlocked');
     this.sessionService.removeItem('eclUnlocked');
+    node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
     this.store.dispatch(resetRootStore({ payload: node }));
-    this.store.dispatch(resetLNDStore({ payload: selNode }));
-    this.store.dispatch(resetCLNStore({ payload: selNode }));
-    this.store.dispatch(resetECLStore({ payload: selNode }));
+    this.store.dispatch(resetLNDStore());
+    this.store.dispatch(resetCLNStore());
+    this.store.dispatch(resetECLStore());
     if (this.sessionService.getItem('token')) {
       const nodeLnImplementation = node.lnImplementation ? node.lnImplementation.toUpperCase() : 'LND';
       this.dataService.setLnImplementation(nodeLnImplementation);

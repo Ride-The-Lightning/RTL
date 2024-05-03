@@ -1127,6 +1127,28 @@ mat-card-content.mat-mdc-card-content:first-child {
   border-radius: 2px;
 }
 
+.currency-icon {
+  &.currency-icon-small {
+    max-width: $gap * 1.675;
+    max-height: $gap * 1.675;
+  }
+
+  &.currency-icon-medium {
+    max-width: $gap * 2;
+    max-height: $gap * 2;
+  }
+
+  &.currency-icon-large {
+    max-width: $gap * 2.25;
+    max-height: $gap * 2.25;
+  }
+
+  &.currency-icon-x-large {
+    max-width: $gap * 2.5;
+    max-height: $gap * 2.5;
+  }
+}
+
 .fa-icon-small, .top-icon-small {
   min-width: $fa-icon-small-size;
   svg {

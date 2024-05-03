@@ -2,7 +2,6 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ECLState } from './ecl.state';
 
 export const eclState = createFeatureSelector<ECLState>('ecl');
-export const eclNodeSettings = createSelector(eclState, (state: ECLState) => state.nodeSettings);
 export const eclPageSettings = createSelector(eclState, (state: ECLState) => ({ pageSettings: state.pageSettings, apiCallStatus: state.apisCallStatus.FetchPageSettings }));
 export const eclNodeInformation = createSelector(eclState, (state: ECLState) => state.information);
 export const nodeInfoStatus = createSelector(eclState, (state: ECLState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));

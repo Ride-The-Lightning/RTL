@@ -14,7 +14,7 @@ import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { AlertTypeEnum, RTLActions, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { rootAppConfig, rootNodeData, rootSelectedNode } from './store/rtl.selector';
-import { RTLConfiguration, Settings, GetInfoRoot } from './shared/models/RTLconfig';
+import { RTLConfiguration, GetInfoRoot } from './shared/models/RTLconfig';
 import { closeAllDialogs, fetchRTLConfig, login, logout, openAlert } from './store/rtl.actions';
 import { routeAnimation } from './shared/animation/route-animation';
 
@@ -30,11 +30,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('sideNavContent', { static: false }) sideNavContent: any;
-  public settings: Settings;
   public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
   public flgSideNavOpened = true;
   public flgCopied = false;
+  public selNode: Node | any;
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public xSmallScreen = false;
@@ -78,7 +78,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(fetchRTLConfig());
     this.accessKey = this.readAccessKey() || '';
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
-      this.settings = selNode.settings;
       if (!this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.flgLoading[0] = false;
@@ -86,6 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoggedIn = true;
         this.userIdle.startWatching();
       }
+      this.selNode = selNode;
     });
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
     this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {
@@ -98,11 +98,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.actions.pipe(
       takeUntil(this.unSubs[4]),
-      filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
+      filter((action) => action.type === RTLActions.FETCH_APPLICATION_SETTINGS || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
       subscribe((action: (any)) => {
-        if (action.type === RTLActions.SET_RTL_CONFIG) {
+        if (action.type === RTLActions.SET_APPLICATION_SETTINGS) {
           if (!this.sessionService.getItem('token')) {
-            if (+action.payload.sso.rtlSSO) {
+            if (+action.payload.SSO.rtlSSO) {
               if (!this.accessKey || this.accessKey.trim().length < 32) {
                 this.router.navigate(['./error'], { state: { errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.' } });
               } else {
