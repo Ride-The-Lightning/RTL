@@ -83,7 +83,8 @@ Ensure that the follow values are correct per your config:
         "logLevel": "INFO",
         "fiatConversion": false,
         "unannouncedChannels": false,
-        "lnServerUrl": "http://<eclair api server ip address>:port"
+        "lnServerUrl": "http://<eclair api server ip address>:port",
+        "blockExplorerUrl": "<Default: https://mempool.space>"
       }
     }
   ]

@@ -1,14 +1,14 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
-
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
-
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
 import { Peer, GetInfo, OnChainBalance } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, ECLActions, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -24,7 +24,7 @@ import { disconnectPeer } from '../../store/ecl.actions';
 import { eclNodeInformation, eclPageSettings, onchainBalance, peers } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -119,7 +119,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPeerClick(selPeer: Peer, event: any) {
-    const reorderedPeer = [
+    const reorderedPeer: MessageDataField[][] = [
       [{ key: 'nodeId', value: selPeer.nodeId, title: 'Public Key', width: 100 }],
       [{ key: 'address', value: selPeer.address, title: 'Address', width: 50 },
       { key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 }],

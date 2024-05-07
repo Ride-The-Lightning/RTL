@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum, LND_PAGE_DEFS, CLN_PAGE_DEFS, ECL_PAGE_DEFS } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
@@ -14,7 +15,7 @@ import { ColumnDefinition, TableSetting } from '../../models/pageSettings';
 import { Subject, takeUntil } from 'rxjs';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { CamelCaseWithReplacePipe } from '../../pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-transactions-report-table',
@@ -78,7 +79,7 @@ export class TransactionsReportTableComponent implements OnInit, AfterViewInit, 
   }
 
   onTransactionClick(selTransaction: any) {
-    const reorderedTransactions = [
+    const reorderedTransactions: MessageDataField[][] = [
       [{ key: 'date', value: this.dataRange === SCROLL_RANGES[1] ? this.datePipe.transform(selTransaction.date, 'MMM/yyyy') : this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE }],
       [{ key: 'amount_paid', value: Math.round(selTransaction.amount_paid), title: 'Amount Paid (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'num_payments', value: selTransaction.num_payments, title: '# Payments', width: 50, type: DataTypeEnum.NUMBER }],

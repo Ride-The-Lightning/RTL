@@ -13,6 +13,7 @@ import { ECLEffects } from '../../store/ecl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 import { getQueryRoutes } from '../../store/ecl.actions';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-ecl-query-routes',
@@ -75,7 +76,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onHopClick(selHop: RouteNode) {
-    const reorderedHop = [
+    const reorderedHop: MessageDataField[][] = [
       [{ key: 'alias', value: selHop.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'nodeId', value: selHop.nodeId, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }]
     ];

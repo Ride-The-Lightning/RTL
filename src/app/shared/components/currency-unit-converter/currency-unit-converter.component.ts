@@ -46,12 +46,12 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   }
 
   getCurrencyValues() {
-    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, this.values[0].title).
+    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
       pipe(takeUntil(this.unSubs[1])).
       subscribe((data) => {
         this.values[0][CurrencyUnitEnum.BTC] = data.BTC;
       });
-    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, this.values[0].title).
+    this.commonService.convertCurrency(this.values[0].dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
       pipe(takeUntil(this.unSubs[2])).
       subscribe({
         next: (data) => {
@@ -59,12 +59,12 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
           if (data.unit && data.unit !== '') {
             for (let i = 1; i < this.values.length; i++) {
               const value = this.values[i];
-              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, value.title).
+              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true).
                 pipe(takeUntil(this.unSubs[3])).
                 subscribe((data) => {
                   this.values[i][CurrencyUnitEnum.BTC] = data.BTC;
                 });
-              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, value.title).
+              this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion).
                 pipe(takeUntil(this.unSubs[4])).
                 subscribe({
                   next: (data) => {
@@ -79,30 +79,6 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
           this.conversionErrorMsg = 'Conversion Error: ' + err;
         }
       });
-    // this.values.forEach((value, i) => {
-    //   if (value.dataValue > 0) {
-    //     this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.BTC, '', true, value.title).
-    //       pipe(takeUntil(this.unSubs[1])).
-    //       subscribe((data) => {
-    //         this.values[i][CurrencyUnitEnum.BTC] = data.BTC;
-    //       });
-    //     this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion, value.title).
-    //       pipe(takeUntil(this.unSubs[2])).
-    //       subscribe({
-    //         next: (data) => {
-    //           console.log(data);
-    //           this.values[i][CurrencyUnitEnum.OTHER] = data.OTHER;
-    //         }, error: (err) => {
-    //           this.conversionErrorMsg = 'Conversion Error: ' + err;
-    //         }
-    //       });
-    //   } else {
-    //     this.values[i][CurrencyUnitEnum.BTC] = value.dataValue;
-    //     if (this.conversionErrorMsg === '') {
-    //       this.values[i][CurrencyUnitEnum.OTHER] = value.dataValue;
-    //     }
-    //   }
-    // });
   }
 
   ngOnDestroy() {

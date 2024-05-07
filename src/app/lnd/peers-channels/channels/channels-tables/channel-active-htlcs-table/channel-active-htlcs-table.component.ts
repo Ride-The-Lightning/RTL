@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { Channel, ChannelHTLC, ChannelsSummary, LightningBalance } from '../../../../../shared/models/lndModels';
@@ -18,7 +19,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { channels, lndPageSettings } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
@@ -97,7 +98,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {
-    const reorderedHTLC = [
+    const reorderedHTLC: MessageDataField[][] = [
       [{ key: 'remote_alias', value: selChannel.remote_alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'amount', value: selHtlc.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'incoming', value: (selHtlc.incoming ? 'Yes' : 'No'), title: 'Incoming', width: 50, type: DataTypeEnum.STRING }],

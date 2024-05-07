@@ -9,6 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { UTXO } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
@@ -24,7 +25,7 @@ import { openAlert, openConfirmation } from '../../../../store/rtl.actions';
 import { lndPageSettings, utxos } from '../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-on-chain-utxos',
@@ -158,8 +159,8 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onUTXOClick(selUTXO: UTXO) {
-    const reorderedUTXOs = [
-      [{ key: 'txid', value: selUTXO.outpoint?.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
+    const reorderedUTXOs: MessageDataField[][] = [
+      [{ key: 'txid', value: selUTXO.outpoint?.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'label', value: selUTXO.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'output_index', value: selUTXO.outpoint?.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER },
       { key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },

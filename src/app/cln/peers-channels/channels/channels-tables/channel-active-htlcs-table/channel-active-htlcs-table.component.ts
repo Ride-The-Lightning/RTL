@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { Channel, ChannelHTLC } from '../../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
@@ -17,7 +18,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { clnPageSettings, channels } from '../../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-channel-active-htlcs-table',
@@ -97,7 +98,7 @@ export class CLNChannelActiveHTLCsTableComponent implements OnInit, AfterViewIni
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {
-    const reorderedHTLC = [
+    const reorderedHTLC: MessageDataField[][] = [
       [{ key: 'alias', value: selChannel.alias, title: 'Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'amount_msat', value: ((selHtlc.amount_msat || 0) / 1000), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'direction', value: this.commonService.titleCase(selHtlc.direction || ''), title: 'Direction', width: 50, type: DataTypeEnum.STRING }],

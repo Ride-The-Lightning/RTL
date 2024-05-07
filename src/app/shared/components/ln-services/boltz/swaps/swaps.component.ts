@@ -7,6 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { Swap, ReverseSwap } from '../../../../models/boltzModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
@@ -19,7 +20,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../../models
 import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-boltz-swaps',
@@ -147,7 +148,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     this.boltzService.swapInfo(selSwap.id || '').pipe(takeUntil(this.unSubs[1])).
       subscribe((fetchedSwap: any) => {
         fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
-        const reorderedSwap = [
+        const reorderedSwap: MessageDataField[][] = [
           [{ key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING },
             { key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING }],
           [{ key: 'amount', value: fetchedSwap.onchainAmount ? fetchedSwap.onchainAmount : fetchedSwap.expectedAmount ? fetchedSwap.expectedAmount : 0,

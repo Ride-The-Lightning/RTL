@@ -28,6 +28,7 @@ import { clnNodeInformation, clnPageSettings, payments } from '../../store/cln.s
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-lightning-payments',
@@ -164,7 +165,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   sendPayment() {
     this.newlyAddedPayment = this.paymentDecoded?.payment_hash || '';
     if (!this.paymentDecoded.amount_msat || this.paymentDecoded.amount_msat === 0) {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -199,7 +200,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           }
         });
     } else {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -285,7 +286,7 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   onPaymentClick(selPayment: Payment) {
-    const reorderedPayment = [
+    const reorderedPayment: MessageDataField[][] = [
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING },
       { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],

@@ -28,6 +28,7 @@ import { lndNodeInformation, lndPageSettings, payments, peers } from '../../stor
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -164,7 +165,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -199,7 +200,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           }
         });
     } else {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -403,7 +404,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   showPaymentView(selPayment: Payment, pathAliases: string) {
-    const reorderedPayment = [
+    const reorderedPayment: MessageDataField[][] = [
       [{ key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],

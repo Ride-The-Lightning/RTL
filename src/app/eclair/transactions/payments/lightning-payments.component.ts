@@ -29,6 +29,7 @@ import { eclNodeInformation, eclPageSettings, payments } from '../../store/ecl.s
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-ecl-lightning-payments',
@@ -211,7 +212,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   sendPayment() {
     this.newlyAddedPayment = this.paymentDecoded.paymentHash || '';
     if (!this.paymentDecoded.amount || this.paymentDecoded.amount === 0) {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100 }],
         [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -246,7 +247,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           }
         });
     } else {
-      const reorderedPaymentDecoded = [
+      const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100 }],
         [{ key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
@@ -380,7 +381,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   showPartView(selPart: PaymentSentPart, selPayment: PaymentSent, sentPaymentInfo?: any[]) {
-    const reorderedPart = [
+    const reorderedPart: MessageDataField[][] = [
       [{ key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING }],

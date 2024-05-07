@@ -48,7 +48,7 @@
             <div *ngFor="let obj of objs; index as j;" fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
               <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
-                <span class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [ngSwitch]="obj.type">
+                <span class="foreground-secondary-text" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" [ngSwitch]="obj.type">
                   <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
                     <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>
                   </ng-container>
@@ -69,6 +69,7 @@
                       </ng-template>
                     </ng-template>
                   </ng-container>
+                  <span><fa-icon *ngIf="obj.explorerLink && obj.explorerLink !== ''" class="ml-1" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(obj)"/></span>
                 </span>
               </span>
               <ng-template #emptyField>

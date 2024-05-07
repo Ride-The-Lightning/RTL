@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { faBullhorn, faExclamationTriangle, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -22,7 +23,7 @@ import { clnPageSettings, nodeInfoAndBalance } from '../../store/cln.selector';
 import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
@@ -237,7 +238,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         }
       });
     }
-    const reorderedLQNode = [
+    const reorderedLQNode: MessageDataField[][] = [
       [{ key: 'alias', value: lqNode.alias, title: 'Node Alias', width: 50, type: DataTypeEnum.STRING },
       { key: 'last_timestamp', value: lqNode.last_timestamp, title: 'Last Timestamp', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'nodeid', value: lqNode.nodeid, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }],

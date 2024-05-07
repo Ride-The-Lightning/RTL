@@ -9,6 +9,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { Peer, GetInfo, Balance, UTXO, LocalRemoteBalance } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNActions, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -24,7 +25,7 @@ import { detachPeer } from '../../store/cln.actions';
 import { clnPageSettings, nodeInfoAndBalance, peers, utxoBalances } from '../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-peers',
@@ -125,7 +126,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPeerClick(selPeer: Peer, event: any) {
-    const reorderedPeer = [
+    const reorderedPeer: MessageDataField[][] = [
       [{ key: 'id', value: selPeer.id, title: 'Public Key', width: 100 }],
       [{ key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100 }],
       [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 50 },

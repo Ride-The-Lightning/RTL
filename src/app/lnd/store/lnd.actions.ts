@@ -17,6 +17,8 @@ export const resetLNDStore = createAction(LNDActions.RESET_LND_STORE);
 
 export const fetchPageSettings = createAction(LNDActions.FETCH_PAGE_SETTINGS_LND);
 
+export const updateSelectedNodeOptions = createAction(LNDActions.UPDATE_SELECTED_NODE_OPTIONS);
+
 export const setPageSettings = createAction(LNDActions.SET_PAGE_SETTINGS_LND, props<{ payload: PageSettings[] }>());
 
 export const savePageSettings = createAction(LNDActions.SAVE_PAGE_SETTINGS_LND, props<{ payload: PageSettings[] }>());

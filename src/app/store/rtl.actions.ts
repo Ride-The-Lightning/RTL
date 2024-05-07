@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 import { RTLActions } from '../shared/services/consts-enums-functions';
 
 export const voidAction = createAction(RTLActions.VOID);
@@ -34,15 +34,13 @@ export const fetchConfig = createAction(RTLActions.FETCH_CONFIG, props<{ payload
 
 export const showConfig = createAction(RTLActions.SHOW_CONFIG, props<{ payload: any }>());
 
-export const updateSelectedNodeOptions = createAction(RTLActions.UPDATE_SELECTED_NODE_OPTIONS);
-
 export const resetRootStore = createAction(RTLActions.RESET_ROOT_STORE, props<{ payload: Node }>());
 
 export const fetchRTLConfig = createAction(RTLActions.FETCH_APPLICATION_SETTINGS);
 
 export const setApplicationSettings = createAction(RTLActions.SET_APPLICATION_SETTINGS, props<{ payload: RTLConfiguration }>());
 
-export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: SetSelectedNode }>());
+export const setSelectedNode = createAction(RTLActions.SET_SELECTED_NODE, props<{ payload: UpdateSelectedNode }>());
 
 export const updateNodeSettings = createAction(RTLActions.UPDATE_NODE_SETTINGS, props<{ payload: Node }>());
 

@@ -89,7 +89,8 @@ Ensure that the follow values are correct per your config:
         "logLevel": "INFO",
         "fiatConversion": false,
         "unannouncedChannels": false,
-        "lnServerUrl": "https://<CLNRest api server ip address>:3001"
+        "lnServerUrl": "https://<CLNRest api server ip address>:3001",
+        "blockExplorerUrl": "<Default: https://mempool.space>"
       }
     }
   ]

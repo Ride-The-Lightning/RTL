@@ -7,6 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { Transaction } from '../../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -20,7 +21,7 @@ import { fetchTransactions } from '../../store/ecl.actions';
 import { eclPageSettings, transactions } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-ecl-on-chain-transaction-history',
@@ -121,9 +122,9 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
-    const reorderedTransactions = [
-      [{ key: 'blockHash', value: selTransaction.blockHash, title: 'Block Hash', width: 100 }],
-      [{ key: 'txid', value: selTransaction.txid, title: 'Transaction ID', width: 100 }],
+    const reorderedTransactions: MessageDataField[][] = [
+      [{ key: 'blockHash', value: selTransaction.blockHash || selTransaction.blockId_opt, title: 'Block Hash', width: 100, explorerLink: 'block' }],
+      [{ key: 'txid', value: selTransaction.txid, title: 'Transaction ID', width: 100, explorerLink: 'tx' }],
       [{ key: 'timestamp', value: selTransaction.timestamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'fees', value: selTransaction.fees, title: 'Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER },

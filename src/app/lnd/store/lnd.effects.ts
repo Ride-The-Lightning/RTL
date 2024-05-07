@@ -940,7 +940,7 @@ export class LNDEffects implements OnDestroy {
   );
 
   updateSelNodeOptions = createEffect(() => this.actions.pipe(
-    ofType(RTLActions.UPDATE_SELECTED_NODE_OPTIONS),
+    ofType(LNDActions.UPDATE_SELECTED_NODE_OPTIONS),
     mergeMap(() => this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.WALLET_API + '/updateSelNodeOptions').pipe(
       map((postRes: any) => {
         this.logger.info('Update Sel Node Successfull');

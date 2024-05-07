@@ -18,6 +18,7 @@ import { PageSettings, TableSetting } from '../../../shared/models/pageSettings'
 import { lndPageSettings } from '../../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -88,7 +89,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onHopClick(selHop: Hop, event: any) {
-    const reorderedHop = [
+    const reorderedHop: MessageDataField[][] = [
       [{ key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }],

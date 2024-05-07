@@ -17,7 +17,7 @@ export interface RootState {
 const initNodeSettings: Settings = { userPersona: UserPersonaEnum.OPERATOR, themeMode: 'DAY', themeColor: 'PURPLE',
   channelBackupPath: '', selCurrencyUnit: 'USD', unannouncedChannels: false, fiatConversion: false,
   currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '', enableOffers: false, enablePeerswap: false,
-  logLevel: 'ERROR', lnServerUrl: '', swapServerUrl: '', boltzServerUrl: '', currencyUnit: 'USD' };
+  logLevel: 'ERROR', lnServerUrl: '', swapServerUrl: '', boltzServerUrl: '', currencyUnit: 'USD', blockExplorerUrl: 'https://mempool.space' };
 const initNodeAuthentication: Authentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {

@@ -7,6 +7,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
 import { Channel, GetInfo, ChannelEdge, Balance, LookupChannelEdge } from '../../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -23,7 +25,7 @@ import { channelLookup, closeChannel, updateChannel } from '../../../../store/cl
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-channel-open-table',
@@ -131,7 +133,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       } else {
         remoteNode = resLookup.channels[1];
       }
-      const reorderedChannelPolicy = [
+      const reorderedChannelPolicy: MessageDataField[][] = [
         [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
         { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
         { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]

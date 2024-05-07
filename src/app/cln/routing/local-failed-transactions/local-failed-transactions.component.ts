@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ListForwards, LocalFailedEvent } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
@@ -20,7 +21,7 @@ import { clnPageSettings, localFailedForwardingHistory } from '../../store/cln.s
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-local-failed-history',
@@ -103,7 +104,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
   }
 
   onFailedLocalEventClick(selFEvent: LocalFailedEvent) {
-    const reorderedFHEvent = [
+    const reorderedFHEvent: MessageDataField[][] = [
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'in_msatoshi', value: selFEvent.in_msat, title: 'Amount In (mSats)', width: 100, type: DataTypeEnum.NUMBER }],
