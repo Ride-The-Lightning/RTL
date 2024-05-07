@@ -17,7 +17,7 @@ import { DataService } from '../shared/services/data.service';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { API_URL, API_END_POINTS, RTLActions, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, SetSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -468,7 +468,7 @@ export class RTLEffects implements OnDestroy {
   setSelectedNode = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.SET_SELECTED_NODE),
-      mergeMap((action: { type: string, payload: SetSelectedNode }) => {
+      mergeMap((action: { type: string, payload: UpdateSelectedNode }) => {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.get(API_END_POINTS.CONF_API + '/updateSelNode/' + action.payload.currentLnNode?.index + '/' + action.payload.prevLnNodeIndex).pipe(
@@ -476,7 +476,7 @@ export class RTLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
-            this.initializeNode(action.payload.currentLnNode!, action.payload.isInitialSetup);
+            this.initializeNode(postRes, action.payload.isInitialSetup);
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {

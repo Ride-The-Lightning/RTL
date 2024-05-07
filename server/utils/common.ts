@@ -26,6 +26,73 @@ export class CommonService {
 
   constructor() {}
 
+  public maskPasswords = (obj) => {
+    const keys = Object.keys(obj);
+    const length = keys.length;
+    if (length !== 0) {
+      for (let i = 0; i < length; i++) {
+        if (typeof obj[keys[i]] === 'object') {
+          keys[keys[i]] = this.maskPasswords(obj[keys[i]]);
+        }
+        if (typeof keys[i] === 'string' &&
+          ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
+            keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
+            keys[i].toLowerCase().includes('rpcuser'))
+        ) {
+          obj[keys[i]] = '*'.repeat(20);
+        }
+      }
+    }
+    return obj;
+  };
+
+  public removeAuthSecureData = (node: SelectedNode) => {
+    delete node.authentication.macaroonPath;
+    delete node.authentication.runePath;
+    delete node.authentication.runeValue;
+    delete node.authentication.lnApiPassword;
+    delete node.authentication.options;
+    return node;
+  };
+
+  public removeSecureData = (config: ApplicationConfig) => {
+    delete config.rtlConfFilePath;
+    delete config.rtlPass;
+    delete config.multiPass;
+    delete config.multiPassHashed;
+    delete config.secret2FA;
+    config.nodes?.map((node) => this.removeAuthSecureData(node));
+    return config;
+  };
+
+  public addSecureData = (config: ApplicationConfig) => {
+    config.rtlConfFilePath = this.appConfig.rtlConfFilePath;
+    config.rtlPass = this.appConfig.rtlPass;
+    config.multiPassHashed = this.appConfig.multiPassHashed;
+    config.SSO.rtlCookiePath = this.appConfig.SSO.rtlCookiePath;
+    if (this.appConfig.multiPass) {
+      config.multiPass = this.appConfig.multiPass;
+    }
+    if (config.secret2FA === this.appConfig.secret2FA) {
+      config.secret2FA = this.appConfig.secret2FA;
+    }
+    config.nodes.map((node, i) => {
+      if (this.appConfig && this.appConfig.nodes && this.appConfig.nodes.length > i && this.appConfig.nodes[i].authentication) {
+        if (this.appConfig.nodes[i].authentication.macaroonPath) {
+          node.authentication.macaroonPath = this.appConfig.nodes[i].authentication.macaroonPath;
+        }
+        if (this.appConfig.nodes[i].authentication.runePath) {
+          node.authentication.runePath = this.appConfig.nodes[i].authentication.runePath;
+        }
+        if (this.appConfig.nodes[i].authentication.lnApiPassword) {
+          node.authentication.lnApiPassword = this.appConfig.nodes[i].authentication.lnApiPassword;
+        }
+      }
+      return node;
+    });
+    return config;
+  };
+
   public setSwapServerOptions = (req) => {
     const swapOptions = {
       baseUrl: req.session.selectedNode.settings.swapServerUrl,
@@ -478,18 +545,8 @@ export class CommonService {
   public logEnvVariables = (req) => {
     const selNode = <SelectedNode>req.session.selectedNode;
     if (selNode && selNode.index) {
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'PORT: ' + this.port });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'HOST: ' + this.host });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DB_DIRECTORY_PATH: ' + this.appConfig.dbDirectoryPath });
+      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup:', msg: JSON.stringify(this.removeSecureData(JSON.parse(JSON.stringify(this.appConfig)))) });
       this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'SSO: ' + this.appConfig.SSO.rtlSso });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + selNode.index });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'INDEX: ' + selNode.index });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + selNode.lnNode });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + selNode.lnImplementation });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + selNode.settings.fiatConversion });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + selNode.settings.currencyUnit });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + selNode.settings.lnServerUrl });
-      this.logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + this.appConfig.SSO.logoutRedirectLink + '\r\n' });
     }
   };
 

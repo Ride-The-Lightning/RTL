@@ -17,6 +17,7 @@ import { getQueryRoutes } from '../../store/cln.actions';
 import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { clnPageSettings } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-query-routes',
@@ -85,7 +86,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onHopClick(selHop: Routes, event: any) {
-    const reorderedHop = [
+    const reorderedHop: MessageDataField[][] = [
       [{ key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],

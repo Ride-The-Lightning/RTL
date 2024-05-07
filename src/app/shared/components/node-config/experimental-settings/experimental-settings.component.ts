@@ -41,7 +41,6 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
   public updateMsg: { error?: string } | { data?: string } = {};
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-
   constructor(private logger: LoggerService, private store: Store<RTLState>, private dataService: DataService, private commonService: CommonService) { }
 
   ngOnInit() {

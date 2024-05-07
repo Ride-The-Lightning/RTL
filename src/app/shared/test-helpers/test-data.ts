@@ -761,7 +761,8 @@ export const mockActionsData = {
       channelBackupPath: '',
       currencyUnit: '',
       enableOffers: false,
-      enablePeerswap: false
+      enablePeerswap: false,
+      blockExplorerUrl: 'https://mempool.space'
     },
     authentication: {
       swapMacaroonPath: '',
@@ -792,7 +793,8 @@ export const mockActionsData = {
       channelBackupPath: '',
       currencyUnit: '',
       enableOffers: false,
-      enablePeerswap: false
+      enablePeerswap: false,
+      blockExplorerUrl: 'https://mempool.space'
     },
     authentication: {
       swapMacaroonPath: '',
@@ -863,7 +865,8 @@ export const mockRTLStoreState = {
           'Sats',
           'BTC',
           'USD'
-        ]
+        ],
+        blockExplorerUrl: 'https://mempool.space'
       },
       authentication: {
         configPath: '../AppData/Local/Lnd/lnd.conf',
@@ -901,7 +904,8 @@ export const mockRTLStoreState = {
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../AppData/Local/Lnd/lnd.conf',
@@ -930,7 +934,8 @@ export const mockRTLStoreState = {
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../Nodes/cln/config',
@@ -959,7 +964,8 @@ export const mockRTLStoreState = {
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../.eclair/eclair.conf',

@@ -73,7 +73,8 @@ export class ConfigService {
                             logLevel: 'ERROR',
                             lnServerUrl: 'https://127.0.0.1:8080',
                             fiatConversion: false,
-                            unannouncedChannels: false
+                            unannouncedChannels: false,
+                            blockExplorerUrl: 'https://mempool.space'
                         }
                     }
                 ]
@@ -142,7 +143,7 @@ export class ConfigService {
             config.dbDirectoryPath = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
             if (config.nodes && config.nodes.length > 0) {
                 config.nodes.forEach((node, idx) => {
-                    this.common.nodes[idx] = { settings: {}, authentication: {} };
+                    this.common.nodes[idx] = { settings: { blockExplorerUrl: '' }, authentication: {} };
                     this.common.nodes[idx].index = node.index;
                     this.common.nodes[idx].lnNode = node.lnNode;
                     this.common.nodes[idx].lnImplementation = (process?.env?.lnImplementation) ? process?.env?.lnImplementation : node.lnImplementation ? node.lnImplementation : 'LND';
@@ -269,6 +270,7 @@ export class ConfigService {
                     this.common.nodes[idx].settings.enablePeerswap = process?.env?.ENABLE_PEERSWAP ? process?.env?.ENABLE_PEERSWAP : (node.settings.enablePeerswap) ? node.settings.enablePeerswap : false;
                     this.common.nodes[idx].settings.bitcoindConfigPath = process?.env?.BITCOIND_CONFIG_PATH ? process?.env?.BITCOIND_CONFIG_PATH : (node.settings.bitcoindConfigPath) ? node.settings.bitcoindConfigPath : '';
                     this.common.nodes[idx].settings.channelBackupPath = process?.env?.CHANNEL_BACKUP_PATH ? process?.env?.CHANNEL_BACKUP_PATH : (node.settings.channelBackupPath) ? node.settings.channelBackupPath : this.common.appConfig.rtlConfFilePath + sep + 'channels-backup' + sep + 'node-' + node.index;
+                    this.common.nodes[idx].settings.blockExplorerUrl = process?.env?.BLOCK_EXPLORER_URL ? process.env.BLOCK_EXPLORER_URL : (node.settings.blockExplorerUrl) ? node.settings.blockExplorerUrl : 'https://mempool.space';
                     try {
                         this.common.createDirectory(this.common.nodes[idx].settings.channelBackupPath);
                         const exists = fs.existsSync(this.common.nodes[idx].settings.channelBackupPath + sep + 'channel-all.bak');

@@ -174,6 +174,7 @@ export interface Transaction {
   amount?: number;
   fees?: number;
   blockHash?: string;
+  blockId_opt?: string;
   confirmations?: number;
   txid?: string;
   timestamp?: number;

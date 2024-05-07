@@ -18,6 +18,8 @@ export interface MessageDataField {
   title: string;
   width: number;
   type?: DataTypeEnum;
+  digitsInfo?: string;
+  explorerLink?: string;
 }
 
 export interface InputData {

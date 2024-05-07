@@ -30,6 +30,7 @@ import { channelLookup, fetchChannels, updateChannel } from '../../../../store/l
 import { blockchainBalance, channels, lndNodeInformation, lndPageSettings, peers } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -156,7 +157,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       if (!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) {
         return false;
       }
-      const reorderedChannelPolicy = [
+      const reorderedChannelPolicy: MessageDataField[][] = [
         [{ key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER },
         { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER },
         { key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat / 10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8' },

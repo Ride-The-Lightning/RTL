@@ -1,4 +1,5 @@
 import { Component, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChanges, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,6 +8,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { LoopSwapStatus } from '../../../../models/loopModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopTypeEnum, LoopStateEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
@@ -19,8 +21,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../../models
 import { lndPageSettings } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
-import { DatePipe } from '@angular/common';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-swaps',
@@ -127,7 +128,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
     this.loopService.getSwap(selSwap.id_bytes?.replace(/\//g, '_')?.replace(/\+/g, '-') || '').pipe(takeUntil(this.unSubs[1])).
       subscribe((fetchedSwap: LoopSwapStatus) => {
-        const reorderedSwap = [
+        const reorderedSwap: MessageDataField[][] = [
           [{ key: 'state', value: LoopStateEnum[fetchedSwap.state || ''], title: 'Status', width: 50, type: DataTypeEnum.STRING },
           { key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
           [{ key: 'initiation_time', value: (fetchedSwap.initiation_time || 0) / 1000000000, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME },

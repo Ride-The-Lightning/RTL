@@ -8,7 +8,7 @@ export interface OpenSnackBar {
   type?: string;
 }
 
-export interface SetSelectedNode {
+export interface UpdateSelectedNode {
   uiMessage: string;
   prevLnNodeIndex: number;
   currentLnNode: Node | null;

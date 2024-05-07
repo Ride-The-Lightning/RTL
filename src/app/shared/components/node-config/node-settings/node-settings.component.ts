@@ -64,15 +64,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // onCurrencyChange(event: any) {
-  //   if (this.selNode.settings.fiatConversion) {
-  //     this.selNode.settings.currencyUnit = '';
-  //   } else {
-  //     delete this.selNode.settings.currencyUnit;
-  //   }
-  //   this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
-  // }
-
   toggleSettings(toggleField: string, event?: any) {
     this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
   }

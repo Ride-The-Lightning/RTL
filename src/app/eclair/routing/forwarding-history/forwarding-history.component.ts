@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
@@ -18,7 +19,7 @@ import { openAlert } from '../../../store/rtl.actions';
 import { eclPageSettings, payments } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -115,7 +116,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
-    const reorderedFHEvent = [
+    const reorderedFHEvent: MessageDataField[][] = [
       [{ key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'timestamp', value: Math.round((selFEvent.timestamp || 0) / 1000), title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'fee', value: ((selFEvent.amountIn || 0) - (selFEvent.amountOut || 0)), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER }],

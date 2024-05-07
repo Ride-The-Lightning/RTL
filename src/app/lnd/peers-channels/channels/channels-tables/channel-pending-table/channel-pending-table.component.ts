@@ -21,6 +21,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 import { lndNodeInformation, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
 import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -155,7 +156,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 100, type: DataTypeEnum.STRING }],
@@ -194,7 +195,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
@@ -223,7 +224,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
@@ -249,7 +250,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj3 = JSON.parse(JSON.stringify(selChannel.commitments, ['local_txid'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2, fcChannelObj3);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'local_txid', value: preOrderedChannel.local_txid, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },

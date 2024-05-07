@@ -27,7 +27,8 @@ export class Settings {
     public channelBackupPath?: string,
     public currencyUnit?: string,
     public enableOffers?: boolean,
-    public enablePeerswap?: boolean
+    public enablePeerswap?: boolean,
+    public blockExplorerUrl?: string
   ) { }
 
 }

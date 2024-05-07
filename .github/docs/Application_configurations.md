@@ -40,7 +40,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "unannouncedChannels": <parameter to turn off/on setting for opening announced Channels, default false, Optional>
         "lnServerUrl": "<Service url for LND/Core Lightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://127.0.0.1:8080', Optional>
         "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://127.0.0.1:8081, Optional>",
-        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://127.0.0.1:9003, Optional>"
+        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://127.0.0.1:9003, Optional>",
+        "blockExplorerUrl": "<url for local or centralized block explorer. e.g. https://mempool.space>"
       }
     }
   ]

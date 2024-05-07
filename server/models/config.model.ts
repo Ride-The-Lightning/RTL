@@ -12,6 +12,7 @@ export class SSO {
 export class Settings {
 
   constructor(
+    public blockExplorerUrl: string,
     public lnServerUrl?: string,
     public swapServerUrl?: string,
     public boltzServerUrl?: string,

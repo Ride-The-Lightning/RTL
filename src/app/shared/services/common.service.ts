@@ -91,7 +91,7 @@ export class CommonService implements OnDestroy {
     }
   }
 
-  convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean, title?: string): Observable<any> {
+  convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     const latest_date = new Date().valueOf();
     try {
       if (fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {

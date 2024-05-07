@@ -7,6 +7,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { Peer, GetInfo, BlockchainBalance } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
@@ -22,7 +23,7 @@ import { detachPeer } from '../../store/lnd.actions';
 import { blockchainBalance, lndNodeInformation, lndPageSettings, peers } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-peers',
@@ -108,8 +109,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPeerClick(selPeer: Peer, event: any) {
-    // const encodedStr = encodeURIComponent('&#181;');
-    const reorderedPeer = [
+    const reorderedPeer: MessageDataField[][] = [
       [{ key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100 }],
       [{ key: 'address', value: selPeer.address, title: 'Address', width: 100 }],
       [{ key: 'alias', value: selPeer.alias, title: 'Alias', width: 40 }, { key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30 }, { key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time (\u00B5s)', width: 30, type: DataTypeEnum.NUMBER }],
