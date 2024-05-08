@@ -724,9 +724,31 @@ export const mockResponseData = {
     }
   ],
   setSelectedNodeSuccess: {
-    status: 200,
-    body: {
-      status: 'Selected Node Updated To: LN Node Name!'
+    index: 1,
+    lnNode: 'Node 1',
+    lnImplementation: 'LND',
+    authentication: {
+      configPath: '/user/.lnd/lnd.conf',
+      swapMacaroonPath: '/user/.loop',
+      boltzMacaroonPath: '/user/.boltz'
+    },
+    settings: {
+      blockExplorerUrl: 'https://mempool.space/',
+      lnServerUrl: 'https://localhost:8080',
+      userPersona: 'MERCHANT',
+      themeMode: 'NIGHT',
+      themeColor: 'TEAL',
+      unannouncedChannels: true,
+      logLevel: 'DEBUG',
+      fiatConversion: true,
+      currencyUnit: 'CAD',
+      swapServerUrl: 'https://localhost:8081',
+      boltzServerUrl: 'https://localhost:9003',
+      enableOffers: false,
+      enablePeerswap: false,
+      bitcoindConfigPath: '',
+      channelBackupPath: '/user/RTL/channels-backup/node-1',
+      logFile: '/user/RTL/logs/RTL-Node-1.log'
     }
   },
   error401: {
@@ -774,36 +796,37 @@ export const mockActionsData = {
     lnImplementation: 'LND'
   },
   setSelectedNode: {
+    index: 1,
+    lnNode: 'Node 1',
+    lnImplementation: 'LND',
+    authentication: {
+      configPath: '/user/.lnd/lnd.conf',
+      swapMacaroonPath: '/user/.loop',
+      boltzMacaroonPath: '/user/.boltz'
+    },
     settings: {
+      blockExplorerUrl: 'https://mempool.space/',
+      lnServerUrl: 'https://localhost:8080',
       userPersona: 'MERCHANT',
       themeMode: 'NIGHT',
       themeColor: 'TEAL',
-      unannouncedChannels: false,
+      unannouncedChannels: true,
+      logLevel: 'DEBUG',
       fiatConversion: true,
-      currencyUnits: [
-        'BTC',
-        'SATS',
-        'USD'
-      ],
-      bitcoindConfigPath: '',
-      enableLogging: true,
-      lnServerUrl: '',
-      swapServerUrl: '',
-      boltzServerUrl: '',
-      channelBackupPath: '',
-      currencyUnit: '',
+      currencyUnit: 'CAD',
+      swapServerUrl: 'https://localhost:8081',
+      boltzServerUrl: 'https://localhost:9003',
       enableOffers: false,
       enablePeerswap: false,
-      blockExplorerUrl: 'https://mempool.space'
-    },
-    authentication: {
-      swapMacaroonPath: '',
-      boltzMacaroonPath: '',
-      configPath: ''
-    },
-    index: 1,
-    lnNode: 'LN Node Name',
-    lnImplementation: 'LND'
+      bitcoindConfigPath: '',
+      channelBackupPath: '/user/RTL/channels-backup/node-1',
+      logFile: '/user/RTL/logs/RTL-Node-1.log',
+      currencyUnits: [
+        'Sats',
+        'BTC',
+        'CAD'
+      ]
+    }
   },
   errorSendPaymentStatus: {
     action: 'SendPayment',
@@ -958,7 +981,7 @@ export const mockRTLStoreState = {
             lnServerUrl: 'http://127.0.0.1:9090',
             swapServerUrl: '',
             boltzServerUrl: '',
-            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-3',
+            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
               'Sats',

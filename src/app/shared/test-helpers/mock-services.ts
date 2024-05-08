@@ -22,7 +22,7 @@ export class mockLoggerService {
 export class mockHttpClient {
 
   post(url: string) {
-    return of(new HttpResponse(mockResponseData.setSelectedNodeSuccess));
+    return of(new HttpResponse({ status: 200, body: mockResponseData.setSelectedNodeSuccess }));
   }
 
 }
