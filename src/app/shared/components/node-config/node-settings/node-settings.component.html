@@ -4,6 +4,27 @@
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
           <mat-panel-title>
+            <fa-icon class="page-title-img mr-1" [icon]="faBarsStaggered" />
+            <span class="page-title">Block Explorer</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
+          <div fxFlex="100" class="alert alert-warn">
+            <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
+            <span>Configure your own blockchain explorer url or <strong><a href="https://mempool.space/" target="blank">mempool.space</a></strong> will be used.</span>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start center">
+            <mat-form-field fxLayout="column" fxFlex="100">
+              <mat-label>Block Explorer URL</mat-label>
+              <input matInput name="blockExplorerUrl" [(ngModel)]="selNode.settings.blockExplorerUrl">
+              <mat-hint>Blockchain explorer URL, eg. https://mempool.space or https://blockstream.info</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
             <fa-icon class="page-title-img mr-1" [icon]="faEyeSlash" />
             <span class="page-title">Open Unannounced Channels</span>
           </mat-panel-title>

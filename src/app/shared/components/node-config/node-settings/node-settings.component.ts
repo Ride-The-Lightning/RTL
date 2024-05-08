@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle, faEyeSlash, faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 
 import { UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { Node, Settings } from '../../../models/RTLconfig';
@@ -20,6 +20,7 @@ import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actio
 })
 export class NodeSettingsComponent implements OnInit, OnDestroy {
 
+  public faBarsStaggered = faBarsStaggered;
   public faExclamationTriangle = faExclamationTriangle;
   public faMoneyBillAlt = faMoneyBillAlt;
   public faPaintBrush = faPaintBrush;
@@ -87,6 +88,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     if (this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) {
       return true;
     }
+    this.selNode.settings.blockExplorerUrl = this.selNode.settings.blockExplorerUrl.replace(/\/$/, '');
     this.logger.info(this.selNode.settings);
     this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
