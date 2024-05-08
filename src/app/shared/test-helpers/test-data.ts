@@ -783,8 +783,8 @@ export const mockActionsData = {
       channelBackupPath: '',
       currencyUnit: '',
       enableOffers: false,
-      enablePeerswap: false,
-      blockExplorerUrl: 'https://mempool.space'
+      blockExplorerUrl: 'https://mempool.space',
+      enablePeerswap: false
     },
     authentication: {
       swapMacaroonPath: '',
