@@ -14,6 +14,30 @@ const logger = Logger;
 const common = Common;
 const wsServer = WSServer;
 const databaseService = Database;
+export const getExplorerFeesRecommended = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Recommended Fee Rates..' });
+    options.url = 'https://mempool.space/api/v1/fees/recommended';
+    request(options).then((body) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
+        res.status(200).json(JSON.parse(body));
+    }).catch((errRes) => {
+        const errMsg = 'Get Recommended Fee Rates Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    });
+};
+export const getExplorerTransaction = (req, res, next) => {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Transaction From Block Explorer..' });
+    options.url = 'https://mempool.space/api/tx/' + req.params.txid;
+    request(options).then((body) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
+        res.status(200).json(JSON.parse(body));
+    }).catch((errRes) => {
+        const errMsg = 'Get Transaction From Block Explorer Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    });
+};
 export const getCurrencyRates = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..' });
     options.url = 'https://blockchain.info/ticker';

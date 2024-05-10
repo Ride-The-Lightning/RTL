@@ -191,6 +191,62 @@ export const mockResponseData = {
       symbol: 'TWD'
     }
   },
+  blockExplorerRecommendedFee: {
+    fastestFee: 19,
+    halfHourFee: 19,
+    hourFee: 19,
+    economyFee: 19,
+    minimumFee: 10
+  },
+  blockExplorerTransaction: {
+    txid: '44a33c87c35fb21da5140286b91b56489b9ffaf7f62bcd0cce30ab568a0129ae',
+    version: 1,
+    locktime: 0,
+    vin: [
+      {
+        txid: 'a41831699ce28f98e75b333268c6f2b1703a77748c49d1aa914a3c2d538077cb',
+        vout: 0,
+        prevout: {
+          scriptpubkey: '0014378b753631273729605c694452ff89735dca7c19',
+          scriptpubkey_asm: 'OP_0 OP_PUSHBYTES_20 378b753631273729605c694452ff89735dca7c19',
+          scriptpubkey_type: 'v0_p2wpkh',
+          scriptpubkey_address: 'bc1qx79h2d33yumjjczud9z99lufwdwu5lqephsey4',
+          value: 1436617
+        },
+        scriptsig: '',
+        scriptsig_asm: '',
+        witness: [
+          '3045022100936bf7c13a6b349f59b7824f98da84f271c16d4eb8c8cf4933ce8921ba45ab00022015daa05a9430a2647d7deb86e13f71e7534538e3f7b6e8af70ffaec6a7b74dda01',
+          '0227b8e44fb3deac91671c648707b575ce761dc35905d09a4ac1be31198ad23eef'
+        ],
+        is_coinbase: false,
+        sequence: 4294967293
+      }
+    ],
+    vout: [
+      {
+        scriptpubkey: '0014f8ec16db533ed1147d638e9425ad330d4d0cb1ce',
+        scriptpubkey_asm: 'OP_0 OP_PUSHBYTES_20 f8ec16db533ed1147d638e9425ad330d4d0cb1ce',
+        scriptpubkey_type: 'v0_p2wpkh',
+        scriptpubkey_address: 'bc1qlrkpdk6n8mg3gltr362zttfnp4xsevww8qc8md',
+        value: 1350761
+      },
+      {
+        scriptpubkey: '76a9145af54c7385fe38521bddf13cd78486a344fcae1c88ac',
+        scriptpubkey_asm: 'OP_DUP OP_HASH160 OP_PUSHBYTES_20 5af54c7385fe38521bddf13cd78486a344fcae1c OP_EQUALVERIFY OP_CHECKSIG',
+        scriptpubkey_type: 'p2pkh',
+        scriptpubkey_address: '19HwfuwwZUMTgvUEmoic2teLh7RU7L1HHf',
+        value: 84128
+      }
+    ],
+    size: 226,
+    weight: 574,
+    sigops: 5,
+    fee: 1728,
+    status: {
+      confirmed: false
+    }
+  },
   decodePayment: {
     destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
     payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07',

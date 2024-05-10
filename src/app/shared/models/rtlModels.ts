@@ -50,10 +50,50 @@ export interface FiatCurrency {
 }
 
 export interface ConvertedCurrency {
-    unit: string;
-    iconType: 'FA' | 'SVG';
-    symbol: string | IconDefinition | SafeHtml;
-    Sats: number;
-    BTC: number;
-    OTHER: number;
+  unit: string;
+  iconType: 'FA' | 'SVG';
+  symbol: string | IconDefinition | SafeHtml;
+  Sats: number;
+  BTC: number;
+  OTHER: number;
 };
+
+export interface RecommendedFeeRates {
+  fastestFee: number;
+  halfHourFee: number;
+  hourFee: number;
+  economyFee?: number;
+  minimumFee?: number;
+};
+
+export interface BETransactionVOut {
+  value: number;
+  scriptpubkey?: string;
+  scriptpubkey_asm?: string;
+  scriptpubkey_type?: string;
+  scriptpubkey_address?: string;
+}
+
+export interface BETransactionVIn {
+  txid: string;
+  vout?: string;
+  prevout?: BETransactionVOut;
+  scriptsig?: string;
+  scriptsig_asm?: string;
+  witness?: string[];
+  is_coinbase?: boolean;
+  sequence?: number;
+}
+
+export interface BlockExplorerTransaction {
+  txid: string;
+  version?: number;
+  locktime?: number;
+  size?: number;
+  weight?: number;
+  sigops?: number;
+  fee?: number;
+  status?: any;
+  vin?: BETransactionVIn[];
+  vout?: BETransactionVOut[];
+}
