@@ -39,6 +39,14 @@ export class DataService implements OnDestroy {
     this.lnImplementationUpdated.next(this.lnImplementation);
   }
 
+  getRecommendedFeeRates() {
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerFeesRecommended');
+  }
+
+  getBlockExplorerTransaction(txid: string) {
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerTransaction/' + txid);
+  }
+
   getFiatRates() {
     return this.httpClient.get(API_END_POINTS.CONF_API + '/rates');
   }

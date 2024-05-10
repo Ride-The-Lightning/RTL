@@ -2,10 +2,11 @@ import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
+import { RecommendedFeeRates, BlockExplorerTransaction } from '../../../../shared/models/rtlModels';
 import { PendingOpenChannel } from '../../../../shared/models/lndModels';
 import { PendingOpenChannelInformation } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
@@ -35,6 +36,9 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public bumpFeeError = '';
+  public flgShowDustWarning = false;
+  public dustOutputValue = 0;
+  public recommendedFee = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
@@ -45,8 +49,25 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
     const channelPointArr = this.bumpFeeChannel.channel?.channel_point?.split(':') || [];
     if (this.bumpFeeChannel && this.bumpFeeChannel.channel) {
       this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
-      this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;
+      this.bumpFeeChannel.channel.output_index = channelPointArr[1] && channelPointArr[1] !== '' ? +channelPointArr[1] : null;
+      this.outputIndex = this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.output_index !== null && this.bumpFeeChannel.channel.output_index === 0 ? 1 : 0;
     }
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[0])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
+    this.dataService.getBlockExplorerTransaction(this.bumpFeeChannel?.channel?.channel_point).
+      pipe(takeUntil(this.unSubs[1])).subscribe({
+        next: (txRes: BlockExplorerTransaction) => {
+          this.dustOutputValue = txRes.vout[this.outputIndex].value;
+          this.flgShowDustWarning = this.dustOutputValue < 1000;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
   }
 
   onBumpFee(): boolean | void {

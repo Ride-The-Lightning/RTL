@@ -52,6 +52,14 @@ export class mockDataService {
     this.lnImplementationUpdated.next(this.lnImplementation);
   }
 
+  getRecommendedFeeRates() {
+    return of(mockResponseData.blockExplorerRecommendedFee);
+  }
+
+  getBlockExplorerTransaction(txid: string) {
+    return of(mockResponseData.blockExplorerTransaction);
+  }
+
   getFiatRates() {
     return of(mockResponseData.fiatRates);
   }
