@@ -15,30 +15,54 @@ const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const wsServer = WSServer;
 const databaseService: DatabaseService = Database;
+// Set local block explorer URL after first API call
+// if the selected node block explorer has working REST API suite
+// otherwise set it to mempool.space
+let blockExplorerUrl = '';
 
 export const getExplorerFeesRecommended = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Recommended Fee Rates..' });
-  options.url = 'https://mempool.space/api/v1/fees/recommended';
+  options.url = (blockExplorerUrl === '') ?
+    req.session.selectedNode.settings.blockExplorerUrl + '/api/v1/fees/recommended' :
+    blockExplorerUrl + '/api/v1/fees/recommended';
   request(options).then((body) => {
+    blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
     res.status(200).json(JSON.parse(body));
   }).catch((errRes) => {
-    const errMsg = 'Get Recommended Fee Rates Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    blockExplorerUrl = 'https://mempool.space';
+    options.url = blockExplorerUrl + '/api/v1/fees/recommended';
+    return request(options).then((body) => {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
+      res.status(200).json(JSON.parse(body));
+    }).catch((errRes) => {
+      const errMsg = 'Get Recommended Fee Rates Error';
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    });
   });
 };
 
 export const getExplorerTransaction = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Transaction From Block Explorer..' });
-  options.url = 'https://mempool.space/api/tx/' + req.params.txid;
+  options.url = (blockExplorerUrl === '') ?
+    req.session.selectedNode.settings.blockExplorerUrl + '/api/tx/' + req.params.txid :
+    blockExplorerUrl + '/api/tx/' + req.params.txid;
   request(options).then((body) => {
+    blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
     res.status(200).json(JSON.parse(body));
   }).catch((errRes) => {
-    const errMsg = 'Get Transaction From Block Explorer Error';
-    const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    blockExplorerUrl = 'https://mempool.space';
+    options.url = blockExplorerUrl + '/api/tx/' + req.params.txid;
+    return request(options).then((body) => {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
+      res.status(200).json(JSON.parse(body));
+    }).catch((errRes) => {
+      const errMsg = 'Get Transaction From Block Explorer Error';
+      const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.error, error: err.error });
+    });
   });
 };
 
@@ -126,6 +150,7 @@ export const updateSelectedNode = (req, res, next) => {
       databaseService.loadDatabase(req.session);
     }
   }
+  blockExplorerUrl = '';
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To ' + req.session.selectedNode.lnNode || '' });
   res.status(200).json(common.removeAuthSecureData(JSON.parse(JSON.stringify(req.session.selectedNode))));
 };
