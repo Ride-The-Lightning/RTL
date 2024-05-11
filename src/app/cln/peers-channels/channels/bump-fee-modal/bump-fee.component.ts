@@ -43,13 +43,14 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   public flgShowDustWarning = false;
   public dustOutputValue = 0;
-  public recommendedFee = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private actions: Actions, public dialogRef: MatDialogRef<CLNBumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNChannelInformation, private store: Store<RTLState>, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.bumpFeeChannel = this.data.channel;
+    this.logger.info(this.bumpFeeChannel);
     this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[0])).subscribe({
       next: (rfRes: RecommendedFeeRates) => {
         this.recommendedFee = rfRes;
@@ -81,7 +82,7 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
           payload: {
             destination: action.payload,
             satoshi: 'all',
-            feerate: (+(this.fees || 0) * 1000).toString(),
+            feerate: (+(this.fees || 0) * 1000).toString() + 'perkb',
             utxos: [this.bumpFeeChannel.funding_txid + ':' + (this.outputIndex || '').toString()]
           }
         }));
