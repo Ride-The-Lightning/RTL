@@ -45,7 +45,9 @@
                 <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="49">
                     <mat-label>Fee (Sats/vByte)</mat-label>
-                    <input #fee="ngModel" matInput type="number" name="fee" tabindex="7" [step]="1" [min]="0" [(ngModel)]="feeRate">
+                    <input #fee="ngModel" matInput type="number" name="fee" tabindex="7" [step]="1" [min]="recommendedFee.minimumFee" [(ngModel)]="feeRate">
+                    <mat-hint>Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
+                    <mat-error *ngIf="feeRate && feeRate < recommendedFee.minimumFee">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                   </mat-form-field>
                 </div>
               </div>
