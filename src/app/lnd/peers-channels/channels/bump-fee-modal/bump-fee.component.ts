@@ -38,7 +38,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   public flgShowDustWarning = false;
   public dustOutputValue = 0;
-  public recommendedFee = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
