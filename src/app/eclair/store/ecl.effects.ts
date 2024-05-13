@@ -787,8 +787,7 @@ export class ECLEffects implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.commonService.extractErrorMessage(err, genericErrorMessage) } }));
@@ -800,8 +799,7 @@ export class ECLEffects implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.commonService.extractErrorMessage(err);

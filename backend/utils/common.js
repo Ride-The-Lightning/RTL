@@ -303,15 +303,7 @@ export class CommonService {
             }
         };
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
-            let err = JSON.parse(JSON.stringify(errRes));
-            if (err && err.error && Object.keys(err.error).length === 0 && errRes.error && (errRes.error.stack || errRes.error.message)) {
-                errRes.error = errRes.error.stack || errRes.error.message;
-                err = JSON.parse(JSON.stringify(errRes));
-            }
-            else if (errRes.message || errRes.stack) {
-                errRes.error = errRes.message || errRes.stack;
-                err = JSON.parse(JSON.stringify(errRes));
-            }
+            const err = JSON.parse(JSON.stringify(errRes));
             if (!selectedNode) {
                 selectedNode = this.selectedNode;
             }
@@ -325,11 +317,11 @@ export class CommonService {
                     }
                     break;
                 case 'CLN':
-                    if (err.options && err.options.headers && err.options.headers.macaroon) {
-                        delete err.options.headers.macaroon;
+                    if (err.options && err.options.headers && err.options.headers.rune) {
+                        delete err.options.headers.rune;
                     }
-                    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
-                        delete err.response.request.headers.macaroon;
+                    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.rune) {
+                        delete err.response.request.headers.rune;
                     }
                     break;
                 case 'ECL':

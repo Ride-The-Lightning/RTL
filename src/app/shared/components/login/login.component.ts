@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, combineLatest } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { LoginTokenComponent } from '../data-modal/login-2fa-token/login-2fa-token.component';
 import { RTLConfiguration } from '../../models/RTLconfig';
-import { APICallStatusEnum, PASSWORD_BLACKLIST, ScreenSizeEnum } from '../../services/consts-enums-functions';
+import { APICallStatusEnum, PASSWORD_BLACKLIST, RTLActions, ScreenSizeEnum } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 import { LoggerService } from '../../services/logger.service';
 
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   public faUnlockAlt = faUnlockAlt;
   public appConfig: RTLConfiguration;
+  public logoutReason = '';
   public password = '';
   public rtlSSO = 0;
   public rtlCookiePath = '';
@@ -36,7 +38,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
+  constructor(private actions: Actions, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -56,6 +58,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
       this.logger.info(appConfig);
     });
+    this.actions.pipe(filter((action) => action.type === RTLActions.LOGOUT), take(1)).
+      subscribe((action: any) => {
+        this.logoutReason = action.payload;
+      });
   }
 
   onLogin(): boolean | void {
@@ -63,6 +69,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return true;
     }
     this.loginErrorMessage = '';
+    this.logoutReason = '';
     if (this.appConfig.enable2FA) {
       this.store.dispatch(openAlert({
         payload: {
@@ -87,6 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   resetData() {
     this.password = '';
     this.loginErrorMessage = '';
+    this.logoutReason = '';
     this.flgShow = false;
   }
 
