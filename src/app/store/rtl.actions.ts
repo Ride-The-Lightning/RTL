@@ -50,7 +50,7 @@ export const updateApplicationSettings = createAction(RTLActions.UPDATE_APPLICAT
 
 export const setNodeData = createAction(RTLActions.SET_NODE_DATA, props<{ payload: GetInfoRoot }>());
 
-export const logout = createAction(RTLActions.LOGOUT);
+export const logout = createAction(RTLActions.LOGOUT, props<{ payload: string }>());
 
 export const resetPassword = createAction(RTLActions.RESET_PASSWORD, props<{ payload: ResetPassword }>());
 

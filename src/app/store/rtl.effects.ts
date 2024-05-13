@@ -383,7 +383,7 @@ export class RTLEffects implements OnDestroy {
             if (+appConfig.SSO.rtlSSO) {
               this.router.navigate(['/error'], { state: { errorCode: '406', errorMessage: err.error && err.error.error ? err.error.error : 'Single Sign On Failed!' } });
             } else {
-              this.router.navigate(['./login']);
+              this.router.navigate(['./login'], { state: { logoutReason: err.error && err.error.error ? err.error.error : 'Single Sign On Failed!' } });
             }
             return of({ type: RTLActions.VOID });
           }));
@@ -418,12 +418,13 @@ export class RTLEffects implements OnDestroy {
   logOut = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.LOGOUT),
-      mergeMap((appConfig: RTLConfiguration) => {
+      withLatestFrom(this.store.select(rootAppConfig)),
+      mergeMap(([action, appConfig]: [{ type: string, payload: string }, RTLConfiguration]) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
         if (appConfig.SSO && +appConfig.SSO.rtlSSO) {
           window.location.href = appConfig.SSO.logoutRedirectLink;
         } else {
-          this.router.navigate(['./login']);
+          this.router.navigate(['./login'], { state: { logoutReason: action.payload } });
         }
         this.sessionService.clearAll();
         this.store.dispatch(setNodeData({ payload: {} }));
@@ -580,8 +581,7 @@ export class RTLEffects implements OnDestroy {
     if (err.status === 401 && actionName !== 'Login') {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       this.store.dispatch(updateRootAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status ? err.status.toString() : '', message: this.commonService.extractErrorMessage(err) } }));
@@ -596,8 +596,7 @@ export class RTLEffects implements OnDestroy {
     if (err.status === 401 && actionName !== 'Login') {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.commonService.extractErrorMessage(err);

@@ -109,7 +109,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store.dispatch(login({ payload: { password: sha256(this.accessKey).toString(), defaultPassword: false } }));
               }
             } else {
-              this.router.navigate(['./login']);
+              this.router.navigate(['./login'], { state: { logoutReason: 'Access key too short. It should be at least 32 characters long.' } });
             }
           }
         }
@@ -145,7 +145,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
         }));
-        this.store.dispatch(logout());
+        this.store.dispatch(logout({ payload: 'Logging Out. Time limit exceeded for session inactivity.' }));
       }
     });
     if (this.sessionService.getItem('defaultPassword') === 'true') {

@@ -145,7 +145,7 @@ export class LoopService implements OnDestroy {
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
       this.store.dispatch(openAlert({
@@ -171,7 +171,7 @@ export class LoopService implements OnDestroy {
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Loop Server.';
       setTimeout(() => {

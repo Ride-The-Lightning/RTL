@@ -99,7 +99,8 @@ export class CLNEffects implements OnDestroy {
                 }));
               }, 500);
               return {
-                type: RTLActions.LOGOUT
+                type: RTLActions.LOGOUT,
+                payload: 'Sorry Not Sorry, RTL is Bitcoin Only!'
               };
             } else {
               this.initializeRemainingData(info, action.payload.loadPage);
@@ -114,7 +115,7 @@ export class CLNEffects implements OnDestroy {
           catchError((err) => {
             const code = this.commonService.extractErrorCode(err);
             const msg = (code === 'ETIMEDOUT') ? 'Unable to Connect to Core Lightning Server.' : this.commonService.extractErrorMessage(err);
-            this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg } });
+            this.router.navigate(['/login'], { state: { logoutReason: JSON.stringify(msg) } });
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', { status: code, error: msg });
             return of({ type: RTLActions.VOID });
           })
@@ -926,8 +927,7 @@ export class CLNEffects implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.commonService.extractErrorMessage(err, genericErrorMessage);
@@ -940,8 +940,8 @@ export class CLNEffects implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
+      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed: ' + err.error }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.commonService.extractErrorMessage(err);

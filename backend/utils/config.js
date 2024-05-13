@@ -375,9 +375,9 @@ export class ConfigService {
             fs.writeFileSync(confFileFullPath, JSON.stringify(config, null, 2), 'utf-8');
         };
         this.setServerConfiguration = () => {
+            const rtlConfFilePath = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
+            const confFileFullPath = rtlConfFilePath + sep + 'RTL-Config.json';
             try {
-                const rtlConfFilePath = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');
-                const confFileFullPath = rtlConfFilePath + sep + 'RTL-Config.json';
                 if (!fs.existsSync(confFileFullPath)) {
                     fs.writeFileSync(confFileFullPath, JSON.stringify(this.setDefaultConfig(), null, 2), 'utf-8');
                 }
@@ -390,6 +390,7 @@ export class ConfigService {
                 this.common.appConfig = config;
             }
             catch (err) {
+                this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'Config', msg: 'Config file path: ' + confFileFullPath });
                 this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while configuring the node server: \n' + err });
                 throw new Error(err);
             }

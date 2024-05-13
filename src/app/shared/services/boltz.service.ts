@@ -98,7 +98,7 @@ export class BoltzService implements OnDestroy {
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
       this.store.dispatch(openAlert({
@@ -121,14 +121,14 @@ export class BoltzService implements OnDestroy {
     let errMsg = '';
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     }
     this.logger.error(err);
     this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
       setTimeout(() => {
