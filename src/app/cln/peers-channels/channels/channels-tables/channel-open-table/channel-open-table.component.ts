@@ -184,41 +184,27 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }
       });
     } else {
-      this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
-      this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false } }));
-      this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge) => {
-        if (resLookup.channels && resLookup.channels.length > 0 && resLookup.channels[0].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup.channels[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[0].fee_per_millionth };
-        } else if (resLookup.channels.length > 1 && resLookup.channels[1].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup.channels[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[1].fee_per_millionth };
-        } else {
-          this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
+      const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ?
+        channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias +
+      ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
+      const confirmationMsg = [];
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Update Fee Policy',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Update',
+            message: confirmationMsg,
+            titleMessage: titleMsg,
+            flgShowInput: true,
+            getInputs: [
+              { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: (channelToUpdate.fee_base_msat === '') ? 0 : channelToUpdate.fee_base_msat, step: 100, width: 48 },
+              { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: channelToUpdate.fee_proportional_millionths, min: 1, width: 48, hintFunction: this.percentHintFunction }
+            ]
+          }
         }
-        this.logger.info(this.myChanPolicy);
-        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ?
-          channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias +
-        ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
-        const confirmationMsg = [];
-        setTimeout(() => {
-          this.store.dispatch(openConfirmation({
-            payload: {
-              data: {
-                type: AlertTypeEnum.CONFIRM,
-                alertTitle: 'Update Fee Policy',
-                noBtnText: 'Cancel',
-                yesBtnText: 'Update',
-                message: confirmationMsg,
-                titleMessage: titleMsg,
-                flgShowInput: true,
-                getInputs: [
-                  { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, step: 100, width: 48 },
-                  { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
-                ]
-              }
-            }
-          }));
-        }, 0);
-      });
+      }));
       this.rtlEffects.closeConfirm.
         pipe(takeUntil(this.unSubs[4])).
         subscribe((confirmRes) => {
