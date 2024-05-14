@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
@@ -24,7 +24,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { openAlert, openConfirmation } from '../../../store/rtl.actions';
-import { sendPayment } from '../../store/ecl.actions';
+import { fetchPayments, sendPayment } from '../../store/ecl.actions';
 import { eclNodeInformation, eclPageSettings, payments } from '../../store/ecl.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
@@ -72,6 +72,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public totalRecords = 0;
+  public flgInit = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
@@ -105,6 +107,13 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         this.displayedColumns.map((col) => this.partColumns.push('group_' + col));
         this.pageSize = this.tableSetting.recordsPerPage ? +this.tableSetting.recordsPerPage : PAGE_SIZE;
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
+        if (!this.flgInit) {
+          this.flgInit = true;
+          // Uncomment after paginator api is fixed
+          // this.store.dispatch(fetchPayments({ payload : { count: this.pageSize, skip: 0 } }));
+          // Remove below one line after paginator api is fixed
+          this.store.dispatch(fetchPayments({ payload : { count: 1000000, skip: 0 } }));
+        }
         this.logger.info(this.displayedColumns);
       });
     this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
@@ -115,6 +124,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.sent && paymentsSeletor.payments.sent.length > 0) ? paymentsSeletor.payments.sent : [];
+        // Uncomment after paginator api is fixed
+        // this.totalRecords = paymentsSeletor.payments.totalRecords;
         if (this.paymentJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadPaymentsTable(this.paymentJSONArr);
         }
@@ -182,6 +193,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     };
+    // Remove below one line after paginator api is fixed
     this.payments.paginator = this.paginator;
     this.setFilterPredicate();
     this.applyFilter();
@@ -402,6 +414,10 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
       }
     }));
+  }
+
+  onPageChange(event: PageEvent) {
+    this.store.dispatch(fetchPayments({ payload : { count: this.pageSize, skip: event.pageIndex * event.pageSize } }));
   }
 
   onDownloadCSV() {
