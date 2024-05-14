@@ -249,6 +249,9 @@
         </table>
       </div>
     </div>
+    <!-- Remove below one line after paginator api is fixed -->
     <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+    <!-- Uncomment after paginator api is fixed -->
+    <!-- <mat-paginator class="mb-1" [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)" /> -->
   </div>
 </div>

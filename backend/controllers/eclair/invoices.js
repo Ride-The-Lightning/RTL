@@ -53,11 +53,18 @@ export const getInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-export const listPendingInvoicesRequestCall = (selectedNode) => {
+export const listPendingInvoicesRequestCall = (selectedNode, count, skip) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
     options = selectedNode.authentication.options;
     options.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
+    // Limit the number of invoices till provided count
+    if (count) {
+        options.form.count = count;
+    }
+    if (skip) {
+        options.form.skip = skip;
+    }
     return new Promise((resolve, reject) => {
         request.post(options).then((pendingInvoicesResponse) => {
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Pending Invoices List ', data: pendingInvoicesResponse });
@@ -74,27 +81,31 @@ export const listInvoices = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
-    options.form = { from: 0, to: tillToday };
     const options1 = JSON.parse(JSON.stringify(options));
     options1.url = req.session.selectedNode.settings.lnServerUrl + '/listinvoices';
     options1.form = { from: 0, to: tillToday };
+    if (req.query.count) {
+        options1.form.count = req.query.count;
+    }
+    if (req.query.skip) {
+        options1.form.skip = req.query.skip;
+    }
     const options2 = JSON.parse(JSON.stringify(options));
     options2.url = req.session.selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options2.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
-        return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then((body) => {
-            const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
-            pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
+        return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then(([invoices, pendingInvoicesRes]) => {
+            pendingInvoices = pendingInvoicesRes;
             return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                 then((values) => res.status(200).json(invoices));
         });
     }
     else {
         return Promise.all([request(options1), request(options2)]).
-            then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
-            const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
-            pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
+            then(([invoices, pendingInvoicesRes]) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: invoices });
+            // pendingInvoices will be used to get the status (paid/unpaid) of the invoice via getReceivedPaymentInfo
+            pendingInvoices = pendingInvoicesRes;
             if (invoices && invoices.length > 0) {
                 return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                     then((values) => {

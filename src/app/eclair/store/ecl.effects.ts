@@ -14,12 +14,12 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { GetInfo, OnChainBalance, Peer, Audit, Transaction, Invoice, Channel, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel,
   GetQueryRoutes, QueryRoutes, SendPayment, SendPaymentOnChain, CreateInvoice } from '../../shared/models/eclModels';
-import { API_URL, API_END_POINTS, RTLActions, ECLActions, APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum } from '../../shared/services/consts-enums-functions';
+import { API_URL, API_END_POINTS, RTLActions, ECLActions, APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 import { RTLState } from '../../store/rtl.state';
-import { fetchChannels, fetchFees, fetchInvoices, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels,
+import { fetchChannels, fetchFees, fetchOnchainBalance, fetchPayments, fetchPeers, sendPaymentStatus, setActiveChannels,
   setChannelsStatus, setInactiveChannels, setLightningBalance, setPeers, setPendingChannels, setQueryRoutes, updateECLAPICallStatus,
   updateChannelState, updateInvoice, updateRelayedPayment } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
@@ -29,6 +29,8 @@ import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 export class ECLEffects implements OnDestroy {
 
   CHILD_API_URL = API_URL + '/ecl';
+  private invoicesPageSettings = ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices');
+  private paymentsPageSettings = ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments');
   private flgInitialized = false;
   private flgReceivedPaymentUpdateFromWS = false;
   private latestPaymentRes = '';
@@ -167,9 +169,9 @@ export class ECLEffects implements OnDestroy {
 
   fetchPayments = createEffect(() => this.actions.pipe(
     ofType(ECLActions.FETCH_PAYMENTS_ECL),
-    mergeMap(() => {
+    mergeMap((action: { type: string, payload: { count: number, skip: number } }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPayments', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Audit>(this.CHILD_API_URL + API_END_POINTS.FEES_API + '/payments').
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + API_END_POINTS.FEES_API + '/payments?count=' + action.payload.count + '&skip=' + action.payload.skip).
         pipe(
           map((payments: any) => {
             this.logger.info(payments);
@@ -189,7 +191,7 @@ export class ECLEffects implements OnDestroy {
 
   channelsFetch = createEffect(() => this.actions.pipe(
     ofType(ECLActions.FETCH_CHANNELS_ECL),
-    mergeMap((action: { type: string, payload: { fetchPayments: boolean } }) => {
+    mergeMap((action: { type: string }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.INITIATED } }));
       return this.httpClient.get<Channel[]>(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API).
         pipe(
@@ -198,9 +200,6 @@ export class ECLEffects implements OnDestroy {
             this.rawChannelsList = channelsRes;
             this.setChannelsAndStatusAndBalances();
             this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchChannels', status: APICallStatusEnum.COMPLETED } }));
-            if (action.payload && action.payload.fetchPayments) {
-              this.store.dispatch(fetchPayments());
-            }
             return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
@@ -412,7 +411,6 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             setTimeout(() => {
               this.store.dispatch(closeSpinner({ payload: ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
-              this.store.dispatch(fetchChannels({ payload: { fetchPayments: false } }));
               this.store.dispatch(openSnackBar({ payload: (action.payload.force ? 'Channel Force Closed Successfully!' : 'Channel Closed Successfully!') }));
             }, 2000);
             return {
@@ -487,9 +485,9 @@ export class ECLEffects implements OnDestroy {
 
   transactionsFetch = createEffect(() => this.actions.pipe(
     ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
-    mergeMap(() => {
+    mergeMap((action: { type: string, payload: { count: number, skip: number } }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchTransactions', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/transactions?count=1000&skip=0');
+      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + API_END_POINTS.ON_CHAIN_API + '/transactions?count=' + action.payload.count + '&skip=' + action.payload.skip);
     }),
     map((transactions) => {
       this.logger.info(transactions);
@@ -571,9 +569,9 @@ export class ECLEffects implements OnDestroy {
 
   invoicesFetch = createEffect(() => this.actions.pipe(
     ofType(ECLActions.FETCH_INVOICES_ECL),
-    mergeMap(() => {
+    mergeMap((action: { type: string, payload: { count: number, skip: number } }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API).
+      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '?count=' + action.payload.count + '&skip=' + action.payload.skip).
         pipe(
           map((res: Invoice[]) => {
             this.logger.info(res);
@@ -659,6 +657,10 @@ export class ECLEffects implements OnDestroy {
         map((pageSettings: any) => {
           this.logger.info(pageSettings);
           this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchPageSettings', status: APICallStatusEnum.COMPLETED } }));
+          this.invoicesPageSettings = (pageSettings && Object.keys(pageSettings).length > 0 ? (pageSettings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices')) :
+            ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices'));
+          this.paymentsPageSettings = (pageSettings && Object.keys(pageSettings).length > 0 ? (pageSettings.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments')) :
+            ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments'));
           return {
             type: ECLActions.SET_PAGE_SETTINGS_ECL,
             payload: pageSettings || []
@@ -684,6 +686,14 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SavePageSettings', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.UPDATE_PAGE_SETTINGS }));
             this.store.dispatch(openSnackBar({ payload: 'Page Layout Updated Successfully!' }));
+            const invPgSz = (postRes.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices') || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'invoices'))?.recordsPerPage;
+            const payPgSz = (postRes.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments') || ECL_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === 'transactions')?.tables.find((table) => table.tableId === 'payments'))?.recordsPerPage;
+            if (this.invoicesPageSettings && invPgSz !== this.invoicesPageSettings?.recordsPerPage) {
+              this.invoicesPageSettings.recordsPerPage = invPgSz;
+            }
+            if (this.paymentsPageSettings && payPgSz !== this.paymentsPageSettings?.recordsPerPage) {
+              this.paymentsPageSettings.recordsPerPage = payPgSz;
+            }
             return {
               type: ECLActions.SET_PAGE_SETTINGS_ECL,
               payload: postRes || []
@@ -748,7 +758,6 @@ export class ECLEffects implements OnDestroy {
     this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
     this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEND_PAYMENT }));
     this.store.dispatch(sendPaymentStatus({ payload: this.latestPaymentRes }));
-    this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
     this.store.dispatch(openSnackBar({ payload: msg }));
   };
 
@@ -775,8 +784,7 @@ export class ECLEffects implements OnDestroy {
       newRoute = '/ecl/home';
     }
     this.router.navigate([newRoute]);
-    this.store.dispatch(fetchInvoices());
-    this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
+    this.store.dispatch(fetchChannels());
     this.store.dispatch(fetchFees());
     this.store.dispatch(fetchOnchainBalance());
     this.store.dispatch(fetchPeers());

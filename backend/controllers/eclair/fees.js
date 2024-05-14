@@ -130,6 +130,12 @@ export const getPayments = (req, res, next) => {
     options.url = req.session.selectedNode.settings.lnServerUrl + '/audit';
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
     options.form = { from: 0, to: tillToday };
+    if (req.query.count) {
+        options.form.count = req.query.count;
+    }
+    if (req.query.skip) {
+        options.form.skip = req.query.skip;
+    }
     if (common.read_dummy_data) {
         common.getDummyData('Payments', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
     }
