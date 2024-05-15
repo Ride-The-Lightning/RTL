@@ -206,7 +206,7 @@ export class DataService implements OnDestroy {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LABEL_UTXO }));
           return res;
         }), catchError((err) => {
-          this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LABEL_UTXO, err);
+          this.handleErrorWithoutAlert('Label UTXO', UI_MESSAGES.LABEL_UTXO, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         })
       );

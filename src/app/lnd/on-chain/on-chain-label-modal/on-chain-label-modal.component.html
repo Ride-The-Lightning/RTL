@@ -8,6 +8,10 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onLabelUTXO()" (reset)="resetData()">
+        <div *ngIf="label.toLowerCase().includes('sweep') && utxo.confirmations === '0'" fxFlex="100" class="alert alert-warn">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
+          <span>Bump fee option will be disabled for unconfirmed UTXOs where label text includes "sweep" in its value.</span>
+        </div>
         <mat-form-field fxLayout="column" fxFlex.gt-sm="100">
           <mat-label>UTXO Label</mat-label>
           <input autoFocus matInput name="label" tabindex="1" required [(ngModel)]="label">

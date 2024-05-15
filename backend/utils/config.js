@@ -358,7 +358,7 @@ export class ConfigService {
         this.updateConfig = (confFileFullPath, config) => {
             // Update Config file to change Settings to settings and Authentication to authentication
             // Added in v0.15.1, remove in a year?
-            if (!config.nodes || config.nodes[0].settings) {
+            if (!config.nodes) {
                 return;
             }
             config.nodes.map((node) => {

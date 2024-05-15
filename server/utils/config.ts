@@ -337,7 +337,7 @@ export class ConfigService {
   private updateConfig = (confFileFullPath, config) => {
     // Update Config file to change Settings to settings and Authentication to authentication
     // Added in v0.15.1, remove in a year?
-    if (!config.nodes || config.nodes[0].settings) { return; }
+    if (!config.nodes) { return; }
     config.nodes.map((node) => {
       if (node.Authentication) {
         node.authentication = JSON.parse(JSON.stringify(node.Authentication));

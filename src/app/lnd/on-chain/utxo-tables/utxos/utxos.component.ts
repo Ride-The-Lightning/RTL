@@ -26,6 +26,7 @@ import { lndPageSettings, utxos } from '../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../shared/models/alertData';
+import { BumpFeeComponent } from '../../../peers-channels/channels/bump-fee-modal/bump-fee.component';
 
 @Component({
   selector: 'rtl-on-chain-utxos',
@@ -247,6 +248,17 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
       });
+  }
+
+  onBumpFee(selUTXO: UTXO) {
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          selUTXO: selUTXO,
+          component: BumpFeeComponent
+        }
+      }
+    }));
   }
 
   onDownloadCSV() {
