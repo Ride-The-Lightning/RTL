@@ -9,8 +9,9 @@
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box mb-1 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel point: {{bumpFeeChannel?.channel?.channel_point}}
-            <fa-icon class="ml-1" matSuffix rtlClipboard matTooltip="Copy transaction ID" [icon]="faCopy" [payload]="bumpFeeChannel?.channel?.txid_str" (copied)="onCopyID($event)" />
+          <p fxLayoutAlign="start center" class="pb-1 word-break">
+            {{txid ? 'Bump fee for transaction ID: ' + txid : 'Bump fee: '}}
+            <fa-icon matTooltip="Show transaction ID" class="ml-1" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
           </p>
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div fxFlex="100" class="alert alert-info">
@@ -29,9 +30,9 @@
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-form-field fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
                 <mat-label>Index for Change Output</mat-label>
-                <input #outputIdx="ngModel" autoFocus matInput type="number" tabindex="1" required name="outputIdx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
-                <mat-error *ngIf="outputIdx.errors?.required">Index for change output is required.</mat-error>
-                <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
+                <input #outputIndx="ngModel" autoFocus matInput type="number" tabindex="1" required name="outputIndx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
+                <mat-error *ngIf="outputIndx.errors?.required">Index for change output is required.</mat-error>
+                <mat-error *ngIf="outputIndx.errors?.OutputIndexError">Invalid index value.</mat-error>
               </mat-form-field>
               <mat-form-field fxLayout="column" fxFlex.gt-sm="32">
                 <mat-select tabindex="2" [(value)]="selTransType" (selectionChange)="blocks = null;fees = null;">

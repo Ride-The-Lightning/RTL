@@ -154,7 +154,7 @@ export const labelTransaction = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/tx/label';
-    options.form = JSON.parse(JSON.stringify(options.form));
+    options.form = JSON.stringify(req.body);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Options', data: options.form });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled', data: body });

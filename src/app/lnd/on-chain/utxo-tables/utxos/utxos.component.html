@@ -89,6 +89,7 @@
                 <mat-option (click)="onUTXOClick(utxo)">View Info</mat-option>
                 <mat-option (click)="onLabelUTXO(utxo)">Label</mat-option>
                 <mat-option (click)="onLeaseUTXO(utxo)">Lease</mat-option>
+                <mat-option *ngIf="!utxo.label.toLowerCase().includes('sweep') && utxo.confirmations === '0'" (click)="onBumpFee(utxo)">Bump Fee</mat-option>
               </mat-select>
             </div>
           </td>

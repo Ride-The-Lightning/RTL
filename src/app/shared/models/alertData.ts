@@ -4,7 +4,7 @@ import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lnd
 import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
-import { BoltzInfo, ServiceInfo } from './boltzModels';
+import { ServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;
@@ -157,8 +157,9 @@ export interface ECLChannelInformation {
   component?: any;
 }
 
-export interface PendingOpenChannelInformation {
-  pendingChannel: PendingOpenChannel;
+export interface BumpFeeInformation {
+  pendingChannel?: PendingOpenChannel;
+  selUTXO?: UTXO;
   component?: any;
 }
 
@@ -242,6 +243,6 @@ export interface DialogConfig {
   minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
-  PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
+  BumpFeeInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }
