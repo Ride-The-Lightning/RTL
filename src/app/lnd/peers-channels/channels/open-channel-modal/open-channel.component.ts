@@ -5,7 +5,7 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
@@ -32,6 +32,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public selNode: Node | null;
   public amount = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public alertTitle: string;
   public peer: Peer | null;
   public peers: Peer[];

@@ -30,8 +30,21 @@
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mb-1" [formGroup]="channelFormGroup">
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                  <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                  <span fxLayout="column" fxFlex="100">
+                    <div>Fee rates recommended by mempool (sat/vByte):</div>
+                    <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                      <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                      <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                      <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                      <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                      <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                    </span>
+                  </span>
+                </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-                  <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="35" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
                     <input matInput autoFocus formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
                     <mat-hint>Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
@@ -40,11 +53,13 @@
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
                   </mat-form-field>
-                  <mat-form-field fxLayout="column" fxFlex="30">
+                  <mat-form-field fxLayout="column" fxFlex="40">
                     <mat-label>Fee (Sats/vByte)</mat-label>
-                    <input matInput formControlName="feeRate" type="number" name="feeRate" tabindex="7" [step]="1" [min]="0">
+                    <input matInput formControlName="feeRate" type="number" name="feeRate" tabindex="7" [step]="1" [min]="recommendedFee.minimumFee || 0">
+                    <mat-hint>Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
+                    <mat-error *ngIf="channelFormGroup.controls.feeRate.errors?.minimum">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                   </mat-form-field>
-                  <div fxFlex="35" fxLayoutAlign="start center">
+                  <div fxFlex="20" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="2" color="primary" formControlName="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
                   </div>
                 </div>

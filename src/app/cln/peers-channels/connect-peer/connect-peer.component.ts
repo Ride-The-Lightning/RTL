@@ -6,8 +6,10 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
+import { RecommendedFeeRates } from '../../../shared/models/rtlModels';
+import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clnModels';
@@ -29,6 +31,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public selNode: Node | null;
   public peerAddress = '';
   public totalBalance = 0;
@@ -43,12 +46,14 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   public channelFormLabel = 'Open Channel (Optional)';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   peerFormGroup: UntypedFormGroup;
   channelFormGroup: UntypedFormGroup;
   statusFormGroup: UntypedFormGroup;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private actions: Actions, private logger: LoggerService, private commonService: CommonService) {
+  constructor(public dialogRef: MatDialogRef<CLNConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private actions: Actions,
+  private logger: LoggerService, private commonService: CommonService, private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -126,6 +131,13 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
           }
         }
       });
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[4])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
   }
 
   onConnectPeer(): boolean | void {
@@ -137,6 +149,10 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
+    if (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && this.recommendedFee.minimumFee > this.channelFormGroup.controls.customFeeRate.value) {
+      this.channelFormGroup.controls.customFeeRate.setErrors({ minimum: true });
+      return true;
+    }
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) {
       return true;
     }

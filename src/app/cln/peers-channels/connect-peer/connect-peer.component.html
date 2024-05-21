@@ -30,6 +30,19 @@
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mb-1" [formGroup]="channelFormGroup" (ngSubmit)="onOpenChannel()">
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+                <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                  <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                  <span fxLayout="column" fxFlex="100">
+                    <div>Fee rates recommended by mempool (sat/vByte):</div>
+                    <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                      <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                      <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                      <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                      <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                      <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                    </span>
+                  </span>
+                </div>
                 <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="53" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
@@ -46,7 +59,7 @@
                 </div>
                 <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
                   <div fxFlex="53" fxLayoutAlign="space-between end">
-                    <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value ? '48' : '100'">
+                    <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value ? '25' : '100'">
                       <mat-label>Fee Rate</mat-label>
                       <mat-select tabindex="4" formControlName="selFeeRate">
                         <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
@@ -54,10 +67,12 @@
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
-                    <mat-form-field *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value" fxLayout="column" fxFlex="48" fxLayoutAlign="end center">
+                    <mat-form-field *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value" fxLayout="column" fxFlex="70" fxLayoutAlign="end center">
                       <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                      <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0">
+                      <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="recommendedFee.minimumFee || 0">
+                      <mat-hint>Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
                       <mat-error *ngIf="channelFormGroup.controls.selFeeRate.value === 'customperkb' && !channelFormGroup.controls.flgMinConf.value && !channelFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
+                      <mat-error *ngIf="channelFormGroup.controls.customFeeRate.value && channelFormGroup.controls.customFeeRate.errors?.minimum">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                     </mat-form-field>
                   </div>
                   <div fxFlex="45" fxLayout="row" fxLayoutAlign="start center">

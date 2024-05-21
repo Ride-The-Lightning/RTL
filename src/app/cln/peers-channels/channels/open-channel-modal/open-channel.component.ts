@@ -6,7 +6,7 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { DataService } from '../../../../shared/services/data.service';
@@ -31,6 +31,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public alertTitle: string;
   public selNode: Node | null;
   public peer: Peer | null;

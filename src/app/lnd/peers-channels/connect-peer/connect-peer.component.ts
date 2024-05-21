@@ -6,19 +6,21 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { GetInfo, Peer } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
+import { RecommendedFeeRates } from '../../../shared/models/rtlModels';
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
 import { nodeInfoAndAPIStatus } from '../../store/lnd.selector';
 import { Node } from '../../../shared/models/RTLconfig';
+import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
@@ -32,6 +34,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', { static: false }) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public selNode: Node | null;
   public peerAddress = '';
   public totalBalance = 0;
@@ -45,14 +48,15 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   peerFormGroup: UntypedFormGroup;
   channelFormGroup: UntypedFormGroup;
   statusFormGroup: UntypedFormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert,
     private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder,
-    private actions: Actions, private logger: LoggerService, private commonService: CommonService) { }
+    private actions: Actions, private logger: LoggerService, private commonService: CommonService, private dataService: DataService) { }
 
   ngOnInit() {
     this.totalBalance = this.data.message?.balance || 0;
@@ -142,8 +146,16 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) ||
-    (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) {
+    if (this.channelFormGroup.controls.selTransType.value === '2' && this.recommendedFee.minimumFee > this.channelFormGroup.controls.transTypeValue.value) {
+      this.channelFormGroup.controls.transTypeValue.setErrors({ minimum: true });
+      return true;
+    }
+    if (
+      !this.channelFormGroup.controls.fundingAmount.value ||
+      ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) ||
+      (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) ||
+      (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)
+    ) {
       return true;
     }
     this.channelConnectionError = '';
@@ -154,6 +166,19 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, commitmentType: (!!this.channelFormGroup.controls.taprootChannel.value ? 5 : null)
       }
     }));
+  }
+
+  onSelTransTypeChanged(event) {
+    this.channelFormGroup.controls.transTypeValue.setValue('');
+    if (event.value === this.transTypes[2].id) {
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
+    }
   }
 
   onClose() {

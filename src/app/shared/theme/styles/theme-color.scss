@@ -526,6 +526,14 @@
       fill: $primary-color;
     }
   }
+
+  .fa-icon-primary {
+    color: $primary-color;
+    &:hover {
+      cursor: pointer;
+      @include mat.elevation(4);
+    }
+  }
   
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {

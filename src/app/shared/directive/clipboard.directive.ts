@@ -25,7 +25,7 @@ export class ClipboardDirective {
 
   private copyUsingFallbackMethod(): void {
     const input = document.createElement('textarea');
-    input.innerText = this.payload;
+    input.value = this.payload;
     document.body.appendChild(input);
     input.select();
 

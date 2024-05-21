@@ -38,7 +38,7 @@
               </mat-form-field>
               <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxFlex="48" fxLayoutAlign="end center">
                 <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
+                <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
                 <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
               </mat-form-field>
             </div>
@@ -129,7 +129,7 @@
                 </mat-form-field>
                 <mat-form-field *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value" fxFlex="48" fxLayoutAlign="end center">
                   <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                  <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0">
+                  <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="0">
                   <mat-error *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value && !sendFundFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
                 </mat-form-field>
               </div>

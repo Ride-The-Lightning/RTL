@@ -69,7 +69,7 @@
                       </ng-template>
                     </ng-template>
                   </ng-container>
-                  <span><fa-icon *ngIf="obj.explorerLink && obj.explorerLink !== ''" class="ml-1" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(obj)"/></span>
+                  <span><fa-icon *ngIf="obj.explorerLink && obj.explorerLink !== ''" class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(obj)"/></span>
                 </span>
               </span>
               <ng-template #emptyField>

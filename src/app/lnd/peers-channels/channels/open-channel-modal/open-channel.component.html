@@ -41,6 +41,19 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+              <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                <span fxLayout="column" fxFlex="100">
+                  <div>Fee rates recommended by mempool (sat/vByte):</div>
+                  <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                    <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                    <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                    <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                    <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                    <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                  </span>
+                </span>
+              </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                 <mat-form-field fxLayout="column" fxFlex="49">
                   <mat-select tabindex="3" [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
