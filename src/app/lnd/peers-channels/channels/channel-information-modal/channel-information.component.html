@@ -25,7 +25,10 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel Point</h4>
-            <span class="foreground-secondary-text">{{channel.channel_point}}</span>
+            <span class="foreground-secondary-text">
+              {{channel.channel_point}}
+              <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>              
+            </span>
           </div>
         </div>
         <mat-divider class="my-1" [inset]="true" />

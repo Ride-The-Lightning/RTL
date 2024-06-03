@@ -22,9 +22,22 @@
               <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
               <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
-            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+            <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+              <span fxLayout="column" fxFlex="100">
+                <div>Fee rates recommended by mempool (sat/vByte):</div>
+                <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                  <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                  <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                  <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                  <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                  <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                </span>
+              </span>
+            </div>
+            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-form-field fxLayout="column" fxFlex.gt-sm="48">
-                <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType">
+                <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}
                   </mat-option>

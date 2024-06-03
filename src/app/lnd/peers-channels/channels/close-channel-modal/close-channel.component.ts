@@ -13,6 +13,8 @@ import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/s
 
 import { RTLState } from '../../../../store/rtl.state';
 import { closeChannel } from '../../../store/lnd.actions';
+import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
+import { DataService } from '../../../../shared/services/data.service';
 
 @Component({
   selector: 'rtl-close-channel',
@@ -30,9 +32,16 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public flgPendingHtlcs = false;
   public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<RTLState>, private actions: Actions, private logger: LoggerService) { }
+  constructor(
+    public dialogRef: MatDialogRef<CloseChannelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ChannelInformation,
+    private dataService: DataService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private logger: LoggerService) { }
 
   ngOnInit() {
     this.channelToClose = this.data.channel;
@@ -71,6 +80,18 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     this.selTransType = '0';
     this.blocks = null;
     this.fees = null;
+  }
+
+  onSelTransTypeChanged(event) {
+    if (event.value === '2') {
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[1])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
+    }
   }
 
   onClose() {

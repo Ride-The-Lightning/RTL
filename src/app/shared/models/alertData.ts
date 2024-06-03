@@ -141,6 +141,7 @@ export interface ECLPaymentInformation {
 
 export interface ChannelInformation {
   channel: Channel;
+  selNode?: Node | any;
   showCopy?: boolean;
   component?: any;
 }
