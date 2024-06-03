@@ -1,4 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,7 +24,14 @@ export class ECLChannelInformationComponent implements OnInit {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(public dialogRef: MatDialogRef<ECLChannelInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLChannelInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
+  constructor(
+    public dialogRef: MatDialogRef<ECLChannelInformationComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ECLChannelInformation,
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.channel = this.data.channel;
@@ -42,6 +50,11 @@ export class ECLChannelInformationComponent implements OnInit {
   onCopyChanID(payload: string) {
     this.snackBar.open((this.channelsType === 'open') ? ('Short channel ID ' + payload + ' copied.') : 'Channel ID copied.');
     this.logger.info('Copied Text: ' + payload);
+  }
+
+  onGoToLink(lookupType: string, lookupValue: string) {
+    this.router.navigateByUrl('/ecl/graph/lookups', { state: { lookupType: lookupType, lookupValue: lookupValue } });
+    this.onClose();
   }
 
 }

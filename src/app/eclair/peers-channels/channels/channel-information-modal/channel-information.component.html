@@ -34,7 +34,9 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
-            <span class="foreground-secondary-text">{{channel.nodeId}}</span>
+            <span tabindex="1" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink('0', channel.nodeId)">
+              {{channel.nodeId}}
+            </span>
           </div>
         </div>
         <mat-divider class="my-1" [inset]="true" />
@@ -81,12 +83,12 @@
           <mat-divider class="my-1" [inset]="true" />
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" fxFlex="100" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
-          <button *ngIf="channelsType === 'open'" mat-button color="primary" type="reset" tabindex="1" class="mr-1" (click)="onShowAdvanced()">
+          <button *ngIf="channelsType === 'open'" mat-button color="primary" type="reset" tabindex="2" class="mr-1" (click)="onShowAdvanced()">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button *ngIf="channelsType === 'open'" autoFocus mat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="channel.shortChannelId" (copied)="onCopyChanID($event)">Copy Short Channel ID</button>
-          <button *ngIf="channelsType !== 'open'" autoFocus mat-button color="primary" tabindex="3" type="submit" rtlClipboard [payload]="channel.channelId" (copied)="onCopyChanID($event)">Copy Channel ID</button>
+          <button *ngIf="channelsType === 'open'" autoFocus mat-button color="primary" tabindex="3" type="submit" rtlClipboard [payload]="channel.shortChannelId" (copied)="onCopyChanID($event)">Copy Short Channel ID</button>
+          <button *ngIf="channelsType !== 'open'" autoFocus mat-button color="primary" tabindex="4" type="submit" rtlClipboard [payload]="channel.channelId" (copied)="onCopyChanID($event)">Copy Channel ID</button>
         </div>
       </div>
     </mat-card-content>

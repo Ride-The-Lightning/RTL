@@ -305,6 +305,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       payload: {
         data: {
           channel: selChannel,
+          selNode: this.selNode,
           showCopy: true,
           component: ChannelInformationComponent
         }
