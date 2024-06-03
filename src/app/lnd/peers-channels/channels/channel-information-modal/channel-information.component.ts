@@ -54,8 +54,8 @@ export class ChannelInformationComponent implements OnInit {
     window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.channel.channel_point, '_blank');
   }
 
-  onGoToLink() {
-    this.router.navigateByUrl('/lnd/graph/lookups', { state: { lookupType: '1', lookupValue: this.channel.chan_id } }); // 1 = Channel
+  onGoToLink(lookupType: string, lookupValue: string) {
+    this.router.navigateByUrl('/lnd/graph/lookups', { state: { lookupType: lookupType, lookupValue: lookupValue } });
     this.onClose();
   }
 
