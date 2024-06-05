@@ -32,7 +32,7 @@
         <ng-template #tooltipTemplate let-model="model">
           <span class="tooltip-label">{{model.name}}: {{(model.value || 0) | number:'1.0-2'}}/# {{model.name === 'Paid' ? 'Payments' : 'Invoices'}}: {{(model.extra?.total || 0) | number}}</span>
         </ng-template>
-      </ngx-charts-bar-vertical-2d>      
+      </ngx-charts-bar-vertical-2d>
     </div>
     <div class="mt-1">
       <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [displayedColumns]="displayedColumns" [tableSetting]="tableSetting" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [selFilter]="transactionFilterValue" />

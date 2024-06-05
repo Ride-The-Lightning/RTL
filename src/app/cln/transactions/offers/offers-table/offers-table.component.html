@@ -22,7 +22,7 @@
       </div>
     </div>
     <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />      
+      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="offers" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="active">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Active"></th>

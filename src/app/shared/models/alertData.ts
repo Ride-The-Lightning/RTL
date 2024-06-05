@@ -148,6 +148,7 @@ export interface ChannelInformation {
 
 export interface CLNChannelInformation {
   channel: ChannelCLN;
+  selNode?: Node | any;
   showCopy?: boolean;
   component?: any;
 }

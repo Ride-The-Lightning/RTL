@@ -26,6 +26,7 @@ import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../../shared/models/alertData';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-cln-channel-open-table',
@@ -58,6 +59,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public selNode: Node | null;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -113,6 +115,11 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.logger.info(channelsSeletor);
       });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[3])).
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
+
   }
 
   ngAfterViewInit() {
@@ -176,7 +183,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           }
         }
       }));
-      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
+      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[4])).subscribe((confirmRes) => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
@@ -206,7 +213,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }
       }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -237,7 +244,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[5])).
+      pipe(takeUntil(this.unSubs[6])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(closeChannel({ payload: { id: channelToClose.id || '', channelId: channelToClose.channel_id || '', force: false } }));
@@ -250,6 +257,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       payload: {
         data: {
           channel: selChannel,
+          selNode: this.selNode,
           showCopy: true,
           component: CLNChannelInformationComponent
         }

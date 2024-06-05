@@ -125,7 +125,7 @@
       <h4 fxLayoutAlign="start" class="font-bold-500">AMP Invoice</h4>
       <span class="overflow-wrap foreground-secondary-text">{{invoice?.is_amp ? 'Yes' : 'No'}}</span>
     </div>
-  </div>  
+  </div>
   <mat-divider class="my-1" [inset]="true" />
   <div *ngIf="invoice?.htlcs && invoice?.htlcs.length > 0" fxLayout="row">
     <mat-expansion-panel class="flat-expansion-panel" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" (opened)="flgOpened = true" (closed)="onExpansionClosed()">

@@ -1,12 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { faReceipt } from '@fortawesome/free-solid-svg-icons';
+import { faReceipt, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { CLNChannelInformation } from '../../../../shared/models/alertData';
+import { Node } from '../../../../shared/models/RTLconfig';
 import { Channel } from '../../../../shared/models/clnModels';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
@@ -18,10 +19,12 @@ import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functio
 export class CLNChannelInformationComponent implements OnInit {
 
   public faReceipt = faReceipt;
+  public faUpRightFromSquare = faUpRightFromSquare;
   public showAdvanced = false;
   public showCopy = true;
   public showCopyField = null;
   public channel: Channel;
+  public selNode: Node;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
@@ -30,6 +33,7 @@ export class CLNChannelInformationComponent implements OnInit {
   ngOnInit() {
     this.channel = this.data.channel;
     this.showCopy = !!this.data.showCopy;
+    this.selNode = this.data.selNode;
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -49,6 +53,10 @@ export class CLNChannelInformationComponent implements OnInit {
   onGoToLink(lookupType: string, lookupValue: string) {
     this.router.navigateByUrl('/cln/graph/lookups', { state: { lookupType: lookupType, lookupValue: lookupValue } });
     this.onClose();
+  }
+
+  onExplorerClicked() {
+    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.channel.funding_txid, '_blank');
   }
 
 }

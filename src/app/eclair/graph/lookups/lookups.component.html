@@ -17,7 +17,7 @@
           <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
           <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
         </div>
-      </form>     
+      </form>
       <div *ngIf="flgSetLookupValue" fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mt-2">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
           <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
@@ -27,7 +27,7 @@
           <!-- <span fxFlex="100" *ngSwitchCase="1"><div *ngIf="channelLookupValue.length>0; else errorBlock"><rtl-cln-channel-lookup [lookupResult]="channelLookupValue"></rtl-cln-channel-lookup></div></span> -->
           <span *ngSwitchDefault> fxFlex="100"<h3>Error! Unable to find details!</h3></span>
         </div>
-      </div>      
+      </div>
     </mat-card-content>
   </div>
 </div>

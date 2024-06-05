@@ -11,12 +11,12 @@
     </mat-card-header>
     <ng-container *ngIf="data.scrollable">
       <mat-card-content #scrollContainer class="padding-gap-x-large" [perfectScrollbar] [ngClass]="{'h-40': data.scrollable}">
-        <ng-container *ngTemplateOutlet="contentBlock" />        
+        <ng-container *ngTemplateOutlet="contentBlock" />
       </mat-card-content>
     </ng-container>
     <ng-container *ngIf="!data.scrollable">
       <mat-card-content class="padding-gap-x-large">
-        <ng-container *ngTemplateOutlet="contentBlock" />        
+        <ng-container *ngTemplateOutlet="contentBlock" />
       </mat-card-content>
     </ng-container>
     <div *ngIf="data.scrollable && shouldScroll" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container padding-gap-x-large">
@@ -76,7 +76,7 @@
                 <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
               </ng-template>
               <mat-divider class="w-100 my-1" />
-            </div>    
+            </div>
           </div>
         </div>
       </div>

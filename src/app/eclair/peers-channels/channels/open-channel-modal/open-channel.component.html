@@ -26,7 +26,7 @@
               <mat-label>Amount</mat-label>
               <input #amount="ngModel" matInput type="number" tabindex="1" required name="amount" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
-              <span matSuffix>  Sats </span>
+              <span matSuffix>Sats </span>
               <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
               <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
@@ -65,7 +65,7 @@
                 </div>
               </div>
             </div>
-          </mat-expansion-panel>    
+          </mat-expansion-panel>
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />

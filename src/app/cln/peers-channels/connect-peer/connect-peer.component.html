@@ -5,13 +5,13 @@
         <span class="page-title">Connect to a new peer</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
-    </mat-card-header>    
+    </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
         <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
-              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
+              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>
               <mat-form-field fxLayout="column" fxFlex="100">
                 <mat-label>Lightning Address (pubkey OR pubkey&#64;ip:port)</mat-label>
                 <input autoFocus matInput formControlName="peerAddress" tabindex="1" required>
@@ -95,7 +95,7 @@
             </form>
           </mat-step>
         </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
           <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{newlyAddedPeer?.id ? 'Do It Later' : 'Close'}}</button>
         </div>
       </div>

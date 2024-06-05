@@ -57,7 +57,7 @@
                 </ng-container>
                 <ng-container matColumnDef="actions">
                   <th *matHeaderCellDef mat-header-cell>
-                    <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>          
+                    <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
                  </th>
                   <td *matCellDef="let hop" mat-cell fxLayoutAlign="end center">
                     <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onHopClick(hop)">View Info</button>
@@ -66,7 +66,7 @@
                 <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
                 <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
               </table>
-            </div>          
+            </div>
           </mat-panel-description>
         </mat-expansion-panel>
       </div>
