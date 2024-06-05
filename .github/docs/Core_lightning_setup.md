@@ -33,7 +33,7 @@ To download from master (*not recommended*):
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Or: Update existing build
@@ -42,7 +42,7 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Error on npm install
