@@ -26,7 +26,7 @@
         <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
           <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
             <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
-            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">  
+            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
               <mat-form-field fxLayout="column" fxFlex="48">
                 <mat-label>Amount</mat-label>
                 <input autoFocus matInput type="number" tabindex="1" formControlName="rebalanceAmount" required [step]="100">
@@ -70,7 +70,7 @@
                   <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
                   <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
                 </mat-form-field>
-              </div>    
+              </div>
             </div>
             <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
               <button mat-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
@@ -107,7 +107,7 @@
           </form>
         </mat-step>
       </mat-vertical-stepper>
-      <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
         <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">Close</button>
       </div>
     </div>

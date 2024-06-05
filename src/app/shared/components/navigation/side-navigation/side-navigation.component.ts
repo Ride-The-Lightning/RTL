@@ -8,7 +8,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
 import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import { RTLConfiguration, Node, Settings, GetInfoRoot } from '../../../models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';

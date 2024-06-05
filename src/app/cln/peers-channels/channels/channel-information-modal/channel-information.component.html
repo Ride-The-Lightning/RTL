@@ -39,6 +39,16 @@
         </div>
         <mat-divider class="my-1" />
         <div fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>
+            <span class="foreground-secondary-text">
+              {{channel.funding_txid}}
+              <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
+            </span>
+          </div>
+        </div>
+        <mat-divider class="my-1" />
+        <div fxLayout="row">
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel?.state | camelcaseWithReplace:'_'}}</span>
@@ -88,13 +98,6 @@
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Our Reserve (Sats)</h4>
               <span class="overflow-wrap foreground-secondary-text">{{channel.our_reserve_msat / 1000 | number:'1.0-2'}}</span>
-            </div>
-          </div>
-          <mat-divider class="my-1" />
-          <div fxLayout="row">
-            <div fxFlex="100">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>
-              <span class="foreground-secondary-text">{{channel.funding_txid}}</span>
             </div>
           </div>
           <mat-divider class="my-1" />

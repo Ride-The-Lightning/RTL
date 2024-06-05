@@ -5,7 +5,7 @@
         <span class="page-title">{{channelToClose.active ? 'Close Channel' : 'Force Close Channel'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
-    </mat-card-header>    
+    </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box mb-1 p-2">
@@ -60,7 +60,7 @@
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>
             </div>
-          </div>        
+          </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
           <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" tabindex="3" default (click)="resetData()">Clear</button>

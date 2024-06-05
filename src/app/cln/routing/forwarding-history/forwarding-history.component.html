@@ -35,7 +35,7 @@
         <td *matCellDef="let fhEvent" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.in_channel_alias}}</span>
-          </div>          
+          </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="out_channel">
@@ -47,7 +47,7 @@
         <td *matCellDef="let fhEvent" mat-cell>
           <div class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
-          </div>          
+          </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="payment_hash">

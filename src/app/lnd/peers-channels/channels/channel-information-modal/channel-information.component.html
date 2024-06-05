@@ -14,7 +14,7 @@
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
             <span tabindex="4" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink('1', channel.chan_id)" >
               {{channel.chan_id}}
-            </span>            
+            </span>
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Alias</h4>
@@ -27,7 +27,7 @@
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel Point</h4>
             <span tabindex="5" class="foreground-secondary-text">
               {{channel.channel_point}}
-              <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>              
+              <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
             </span>
           </div>
         </div>

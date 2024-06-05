@@ -7,7 +7,7 @@
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
       <mat-label>Amount</mat-label>
       <input matInput type="number" tabindex="2" name="invValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
-      <span matSuffix>  Sats </span>
+      <span matSuffix>Sats </span>
       <mat-hint fxLayout="row wrap" fxFlex="100">
         <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
         <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">

@@ -57,7 +57,7 @@
   <mat-form-field fxLayout="column" fxFlex="100">
     <mat-label>Amount</mat-label>
     <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount" (keyup)="onKeysendAmountChange()">
-    <span matSuffix>  Sats </span>
+    <span matSuffix>Sats </span>
     <mat-hint fxLayout="row wrap" fxFlex="100">
       <span *ngIf="keysendValueHint !== ''" class="mr-3px">= </span>
       <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && keysendValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
@@ -93,7 +93,7 @@
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
     <mat-checkbox fxFlex="none" tabindex="6" color="primary" [(ngModel)]="flgSaveToDB">Bookmark Offer</mat-checkbox>
     <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon">info_outline</mat-icon>
-  </div>    
+  </div>
   <mat-form-field *ngIf="flgSaveToDB || offerTitle !== ''" fxFlex="100" class="mt-1">
     <mat-label>Title to Save</mat-label>
     <input matInput tabindex="7" [(ngModel)]="offerTitle">

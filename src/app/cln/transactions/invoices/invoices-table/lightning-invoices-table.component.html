@@ -7,7 +7,7 @@
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
       <mat-label>Amount</mat-label>
       <input matInput name="invoiceValue" type="number" tabindex="3" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
-      <span matSuffix>  Sats </span>
+      <span matSuffix>Sats </span>
       <mat-hint fxLayout="row wrap" fxFlex="100">
         <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
         <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && invoiceValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />      
+      <mat-progress-bar *ngIf="apiCallStatus?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="invoices" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="status">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Status"></th>

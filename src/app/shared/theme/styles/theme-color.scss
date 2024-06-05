@@ -46,7 +46,7 @@
     white-space: pre-line;
     overflow-wrap: break-word;
     word-break: break-all;
-    min-height: ($gap*3);    
+    min-height: ($gap*3);
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
@@ -304,13 +304,11 @@
 
   .tab-badge {
     & .mat-badge-content {
-      width: auto;
-      min-width: $badge-size;
-      height: $badge-size;
-      line-height: $badge-size * 1.1;
-      border-radius: $badge-size * 1.2;
-      padding: math.div($gap, 2);
-      overflow: visible;
+      font-size: 90%;
+      padding-bottom: 2px;
+      &.mat-badge-active {
+        background: $primary-color;
+      }
     }
   }
 

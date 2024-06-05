@@ -55,12 +55,12 @@
       color: $primary-darker;
       & .tab-badge .mat-badge-content {
         background: $primary-darker;
-      }          
+      }
     }
     & .tab-badge .mat-badge-content {
       color: $dark-card-background-color;
       background: $foreground-secondary-text;
-    }  
+    }
   }
   .currency-icon path, .currency-icon polygon {
     fill: $foreground-text;

@@ -10,7 +10,7 @@
         </span>
         <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
         {{paymentDecodedHintPost}}
-      </mat-hint>      
+      </mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-1">
@@ -118,7 +118,7 @@
           <ng-container matColumnDef="hops">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Hops</th>
             <td *matCellDef="let payment" mat-cell><span fxLayoutAlign="end center">{{payment?.htlcs[0]?.route?.hops?.length || 0}}</span></td>
-          </ng-container>        
+          </ng-container>
           <ng-container matColumnDef="actions">
             <th *matHeaderCellDef mat-header-cell>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
@@ -129,7 +129,7 @@
               </div>
            </th>
             <td *matCellDef="let payment" mat-cell fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onPaymentClick(payment)">View Info</button>          
+              <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onPaymentClick(payment)">View Info</button>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_payment">
