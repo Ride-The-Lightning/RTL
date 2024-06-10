@@ -24,7 +24,6 @@ typings/
 _config.yml
 .classpath
 .DS_Store
-.eslintrc.json
 .gitattributes
 .gitignore
 .idea

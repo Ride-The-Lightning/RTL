@@ -32,7 +32,6 @@ export class ClipboardDirective {
     try {
       // Allowing deprecated command for older browsers where navigator is not available.
       // For newer browsers where execCommand is deprecated, navigator should be available and this fallback will not be called.
-      // eslint-disable-next-line deprecation/deprecation
       const result = document.execCommand('copy');
       if (result) {
         this.copied.emit(this.payload.toString());

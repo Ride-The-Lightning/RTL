@@ -17,8 +17,7 @@
     "serverUbuntu": "NODE_ENV=development nodemon --watch backend --watch server ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
     "test": "ng test --watch=false --browsers=ChromeHeadless",
-    "lint": "ng lint",
-    "lintServer": "eslint ./server/**/* --ext .ts"
+    "lint": "eslint"
   },
   "private": true,
   "dependencies": {
@@ -71,6 +70,7 @@
     "@angular/platform-browser": "^18.0.1",
     "@angular/platform-browser-dynamic": "^18.0.1",
     "@angular/router": "^18.0.1",
+    "@eslint/eslintrc": "^3.1.0",
     "@fortawesome/angular-fontawesome": "^0.15.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
