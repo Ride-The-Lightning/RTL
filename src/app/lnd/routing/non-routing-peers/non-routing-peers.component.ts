@@ -164,31 +164,6 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
     this.router.navigate(['../../', 'connections', 'channels', 'open'], { relativeTo: this.activatedRoute, state: { filterValue: selNonRoutingChannel.chan_id } });
   }
 
-  // groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {
-  //   const results: any[] = [];
-  //   forwardingEvents.forEach((event: ForwardingEvent) => {
-  //     const foundEntryInIdx = results.findIndex((result) => result.chan_id === event.chan_id_in);
-  //     const foundEntryOutIdx = results.findIndex((result) => result.chan_id === event.chan_id_out);
-  //     if (foundEntryInIdx < 0 && foundEntryOutIdx < 0) {
-  //       results.push({ chan_id: event.chan_id_in, alias: event.alias_in, amt_in_msat: +event.amt_in_msat, amt_out_msat: 0 });
-  //       results.push({ chan_id: event.chan_id_out, alias: event.alias_out, amt_out_msat: +event.amt_out_msat, amt_in_msat: 0 });
-  //     }
-  //     if (foundEntryInIdx < 0 && foundEntryOutIdx > -1) {
-  //       results.push({ chan_id: event.chan_id_in, alias: event.alias_in, amt_in_msat: +event.amt_in_msat, amt_out_msat: 0 });
-  //       results[foundEntryOutIdx].amt_out_msat = results[foundEntryOutIdx].amt_out_msat + +event.amt_out_msat;
-  //     }
-  //     if (foundEntryInIdx > -1 && foundEntryOutIdx < 0) {
-  //       results.push({ chan_id: event.chan_id_out, alias: event.alias_out, amt_out_msat: +event.amt_out_msat, amt_in_msat: 0 });
-  //       results[foundEntryInIdx].amt_in_msat = results[foundEntryInIdx].amt_in_msat + +event.amt_in_msat;
-  //     }
-  //     if (foundEntryInIdx > -1 && foundEntryOutIdx > -1) {
-  //       results[foundEntryInIdx].amt_in_msat = results[foundEntryInIdx].amt_in_msat + +event.amt_in_msat;
-  //       results[foundEntryOutIdx].amt_out_msat = results[foundEntryOutIdx].amt_out_msat + +event.amt_out_msat;
-  //     }
-  //   });
-  //   return this.commonService.sortDescByKey(results, 'alias');
-  // }
-
   applyFilter() {
     this.nonRoutingPeers.filter = this.selFilter.toLowerCase();
   }

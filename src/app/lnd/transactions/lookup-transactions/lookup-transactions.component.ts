@@ -63,12 +63,6 @@ export class LookupTransactionsComponent implements OnInit, OnDestroy {
         break;
       case 1:
         this.store.dispatch(invoiceLookup({ payload: { openSnackBar: false, paymentHash: Buffer.from(this.lookupKey.trim(), 'hex').toString('base64')?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
-        // if (this.lookupKey.trim().length < 45) {
-        //   this.store.dispatch(invoiceLookup({ payload: { openSnackBar: false, paymentAddress: this.lookupKey.trim()?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
-        // }
-        // if (this.lookupKey.trim().length > 45 && this.lookupKey.trim().length < 70) {
-        //   this.store.dispatch(invoiceLookup({ payload: { openSnackBar: false, paymentHash: Buffer.from(this.lookupKey.trim(), 'hex').toString('base64')?.replace(/\+/g, '-')?.replace(/[/]/g, '_') } }));
-        // }
         break;
       default:
         break;

@@ -3,15 +3,11 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
-import { ConfigSettingsNode } from '../../../../models/RTLconfig';
+import { Node } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { updateServiceSettings } from '../../../../../store/rtl.actions';
+import { updateNodeSettings } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { setChildNodeSettingsLND } from '../../../../../lnd/store/lnd.actions';
-import { setChildNodeSettingsCLN } from '../../../../../cln/store/cln.actions';
-import { setChildNodeSettingsECL } from '../../../../../eclair/store/ecl.actions';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
@@ -23,8 +19,8 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
-  public selNode: ConfigSettingsNode | any;
-  public previousSelNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
+  public previousSelNode: Node | any;
   public enableLoop = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -56,26 +52,12 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
     if (this.enableLoop && (!this.selNode.settings.swapServerUrl || this.selNode.settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) {
       return true;
     }
+    if (!this.enableLoop) {
+      delete this.selNode.settings.swapServerUrl;
+      delete this.selNode.authentication.swapMacaroonPath;
+    }
     this.logger.info(this.selNode);
-    this.store.dispatch(updateServiceSettings({ payload: { uiMessage: UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath } } }));
-    this.store.dispatch(setChildNodeSettingsLND({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsCLN({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
-      }
-    }));
-    this.store.dispatch(setChildNodeSettingsECL({
-      payload: {
-        userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion,
-        unannouncedChannels: this.selNode.unannouncedChannels, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl, enableOffers: this.selNode.settings.enableOffers
-      }
-    }));
+    this.store.dispatch(updateNodeSettings({ payload: this.selNode }));
   }
 
   onReset() {

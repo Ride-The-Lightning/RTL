@@ -12,10 +12,10 @@ export const genSeed = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     if (req.params.passphrase) {
-        options.url = req.session.selectedNode.ln_server_url + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
     }
     else {
-        options.url = req.session.selectedNode.ln_server_url + '/v1/genseed';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed';
     }
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated', data: body });
@@ -26,6 +26,7 @@ export const genSeed = (req, res, next) => {
     });
 };
 export const operateWallet = (req, res, next) => {
+    const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic } = req.body;
     let err_message = '';
     options = common.getOptions(req);
     if (options.error) {
@@ -34,26 +35,26 @@ export const operateWallet = (req, res, next) => {
     options.method = 'POST';
     if (!req.params.operation || req.params.operation === 'unlockwallet') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Unlocking Wallet..' });
-        options.url = req.session.selectedNode.ln_server_url + '/v1/unlockwallet';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/unlockwallet';
         options.form = JSON.stringify({
-            wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64')
+            wallet_password: Buffer.from(atob(wallet_password)).toString('base64')
         });
         err_message = 'Unlocking wallet failed! Verify that lnd is running and the wallet is locked!';
     }
     else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Initializing Wallet..' });
-        options.url = req.session.selectedNode.ln_server_url + '/v1/initwallet';
-        if (req.body.aezeed_passphrase && req.body.aezeed_passphrase !== '') {
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/initwallet';
+        if (aezeed_passphrase && aezeed_passphrase !== '') {
             options.form = JSON.stringify({
-                wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64'),
-                cipher_seed_mnemonic: req.body.cipher_seed_mnemonic,
-                aezeed_passphrase: Buffer.from(atob(req.body.aezeed_passphrase)).toString('base64')
+                wallet_password: Buffer.from(atob(wallet_password)).toString('base64'),
+                cipher_seed_mnemonic: cipher_seed_mnemonic,
+                aezeed_passphrase: Buffer.from(atob(aezeed_passphrase)).toString('base64')
             });
         }
         else {
             options.form = JSON.stringify({
-                wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64'),
-                cipher_seed_mnemonic: req.body.cipher_seed_mnemonic
+                wallet_password: Buffer.from(atob(wallet_password)).toString('base64'),
+                cipher_seed_mnemonic: cipher_seed_mnemonic
             });
         }
         err_message = 'Initializing wallet failed!';
@@ -103,8 +104,8 @@ export const getUTXOs = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos';
-    if (common.isVersionCompatible(req.session.selectedNode.ln_version, '0.14.0')) {
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/utxos';
+    if (common.isVersionCompatible(req.session.selectedNode.lnVersion, '0.14.0')) {
         options.form = JSON.stringify({ max_confs: req.query.max_confs });
     }
     else {
@@ -119,22 +120,23 @@ export const getUTXOs = (req, res, next) => {
     });
 };
 export const bumpFee = (req, res, next) => {
+    const { txid, outputIndex, targetConf, satPerByte } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/bumpfee';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/bumpfee';
     options.form = {};
     options.form.outpoint = {
-        txid_str: req.body.txid,
-        output_index: req.body.outputIndex
+        txid_str: txid,
+        output_index: outputIndex
     };
-    if (req.body.targetConf) {
-        options.form.target_conf = req.body.targetConf;
+    if (targetConf) {
+        options.form.target_conf = targetConf;
     }
-    else if (req.body.satPerByte) {
-        options.form.sat_per_byte = req.body.satPerByte;
+    else if (satPerByte) {
+        options.form.sat_per_byte = satPerByte;
     }
     options.form = JSON.stringify(options.form);
     request.post(options).then((body) => {
@@ -151,12 +153,8 @@ export const labelTransaction = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/tx/label';
-    options.form = {};
-    options.form.txid = req.body.txid;
-    options.form.label = req.body.label;
-    options.form.overwrite = req.body.overwrite;
-    options.form = JSON.stringify(options.form);
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/tx/label';
+    options.form = JSON.stringify(req.body);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Options', data: options.form });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled', data: body });
@@ -167,17 +165,18 @@ export const labelTransaction = (req, res, next) => {
     });
 };
 export const leaseUTXO = (req, res, next) => {
+    const { txid, outputIndex } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Leasing UTXO..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos/lease';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/utxos/lease';
     options.form = {};
-    options.form.id = req.body.txid;
+    options.form.id = txid;
     options.form.outpoint = {
-        txid_bytes: req.body.txid,
-        output_index: req.body.outputIndex
+        txid_bytes: txid,
+        output_index: outputIndex
     };
     options.form = JSON.stringify(options.form);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Options', data: options.form });
@@ -190,17 +189,18 @@ export const leaseUTXO = (req, res, next) => {
     });
 };
 export const releaseUTXO = (req, res, next) => {
+    const { txid, outputIndex } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Releasing UTXO..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v2/wallet/utxos/release';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/utxos/release';
     options.form = {};
-    options.form.id = req.body.txid;
+    options.form.id = txid;
     options.form.outpoint = {
-        txid_bytes: req.body.txid,
-        output_index: req.body.outputIndex
+        txid_bytes: txid,
+        output_index: outputIndex
     };
     options.form = JSON.stringify(options.form);
     request.post(options).then((body) => {

@@ -7,12 +7,12 @@ export class DatabaseService {
     constructor() {
         this.common = Common;
         this.logger = Logger;
-        this.dbDirectory = join(this.common.db_directory_path, 'database');
+        this.dbDirectory = join(this.common.appConfig.dbDirectoryPath, 'database');
         this.nodeDatabase = {};
     }
     migrateDatabase() {
         this.common.nodes?.map((node) => {
-            if (node.ln_implementation === 'ECL') {
+            if (node.lnImplementation === 'ECL') {
                 this.nodeDatabase[node.index] = { adapter: null, data: {} };
                 this.nodeDatabase[node.index].adapter = new DatabaseAdapter(this.dbDirectory, node);
                 this.fetchNodeData(node);
@@ -80,7 +80,7 @@ export class DatabaseService {
         }
     }
     fetchNodeData(selectedNode) {
-        switch (selectedNode.ln_implementation) {
+        switch (selectedNode.lnImplementation) {
             case 'CLN':
                 for (const collectionName in CLNCollection) {
                     if (CLNCollection.hasOwnProperty(collectionName)) {
@@ -250,14 +250,14 @@ export class DatabaseAdapter {
         this.dbFilePath = dbDirectoryPath + sep + 'node-' + selNode.index;
         // For backward compatibility Start
         const oldFilePath = dbDirectoryPath + sep + 'rtldb-node-' + selNode.index + '.json';
-        if (selNode.ln_implementation === 'CLN' && fs.existsSync(oldFilePath)) {
+        if (selNode.lnImplementation === 'CLN' && fs.existsSync(oldFilePath)) {
             this.renameOldDB(oldFilePath, selNode);
         }
         // For backward compatibility End
         this.insertSession(id);
     }
     renameOldDB(oldFilePath, selNode = null) {
-        const newFilePath = this.dbFilePath + sep + 'rtldb-' + selNode.ln_implementation + '-Offers.json';
+        const newFilePath = this.dbFilePath + sep + 'rtldb-' + selNode.lnImplementation + '-Offers.json';
         try {
             this.common.createDirectory(this.dbFilePath);
             const oldOffers = JSON.parse(fs.readFileSync(oldFilePath, 'utf-8'));
@@ -277,7 +277,7 @@ export class DatabaseAdapter {
         catch (err) {
             throw new Error(JSON.stringify(err));
         }
-        const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+        const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.lnImplementation + '-' + collectionName + '.json';
         try {
             if (!fs.existsSync(collectionFilePath)) {
                 fs.writeFileSync(collectionFilePath, '[]');
@@ -290,15 +290,15 @@ export class DatabaseAdapter {
             const otherFiles = fs.readdirSync(this.dbFilePath);
             otherFiles.forEach((oFileName) => {
                 let collectionValid = false;
-                switch (this.selNode.ln_implementation) {
+                switch (this.selNode.lnImplementation) {
                     case 'CLN':
-                        collectionValid = CLNCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+                        collectionValid = CLNCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.lnImplementation + '-' + collection + '.json'), false);
                         break;
                     case 'ECL':
-                        collectionValid = ECLCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+                        collectionValid = ECLCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.lnImplementation + '-' + collection + '.json'), false);
                         break;
                     default:
-                        collectionValid = LNDCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.ln_implementation + '-' + collection + '.json'), false);
+                        collectionValid = LNDCollection.reduce((acc, collection) => acc || oFileName === ('rtldb-' + this.selNode.lnImplementation + '-' + collection + '.json'), false);
                         break;
                 }
                 if (oFileName.endsWith('.json') && !collectionValid) {
@@ -324,7 +324,7 @@ export class DatabaseAdapter {
     saveData(collectionName, collectionData) {
         try {
             if (collectionData) {
-                const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.ln_implementation + '-' + collectionName + '.json';
+                const collectionFilePath = this.dbFilePath + sep + 'rtldb-' + this.selNode.lnImplementation + '-' + collectionName + '.json';
                 const tempFile = collectionFilePath + '.tmp';
                 fs.writeFileSync(tempFile, JSON.stringify(collectionData, null, 2));
                 fs.renameSync(tempFile, collectionFilePath);

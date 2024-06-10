@@ -10,7 +10,7 @@
       <mat-radio-group class="my-1" color="primary" name="paymentType" fxFlex="100" fxLayoutAlign="start start" [(ngModel)]="paymentType" (change)="onPaymentTypeChange()">
         <mat-radio-button fxFlex="20" tabindex="1" value="{{paymentTypes.INVOICE}}">Invoice</mat-radio-button>
         <mat-radio-button fxFlex="20" tabindex="2" value="{{paymentTypes.KEYSEND}}">Keysend</mat-radio-button>
-        <mat-radio-button *ngIf="selNode.enableOffers" fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
+        <mat-radio-button *ngIf="selNode.settings.enableOffers" fxFlex="20" tabindex="3" value="{{paymentTypes.OFFER}}">Offer</mat-radio-button>
       </mat-radio-group>
       <form #sendPaymentForm="ngForm" fxLayoutAlign="space-between stretch" fxLayout="column" (submit)="onSendPayment()" (reset)="resetData()">
         <ng-container *ngTemplateOutlet="paymentType === paymentTypes.KEYSEND ? keysendBlock : paymentType === paymentTypes.OFFER ? offerBlock : invoiceBlock" />
@@ -30,7 +30,14 @@
   <mat-form-field fxLayout="column" fxFlex="100">
     <mat-label>Payment Request</mat-label>
     <textarea #paymentReq="ngModel" autoFocus matInput rows="4" name="paymentRequest" tabindex="4" required [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
-    <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
+    <mat-hint *ngIf="paymentRequest && paymentDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
+      {{paymentDecodedHintPre}}
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
+      </span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      {{paymentDecodedHintPost}}
+    </mat-hint>
     <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
   </mat-form-field>
@@ -48,8 +55,17 @@
     <mat-error *ngIf="!pubkey">Pubkey is required.</mat-error>
   </mat-form-field>
   <mat-form-field fxLayout="column" fxFlex="100">
-    <mat-label>Amount (Sats)</mat-label>
-    <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount">
+    <mat-label>Amount</mat-label>
+    <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount" (keyup)="onKeysendAmountChange()">
+    <span matSuffix>Sats </span>
+    <mat-hint fxLayout="row wrap" fxFlex="100">
+      <span *ngIf="keysendValueHint !== ''" class="mr-3px">= </span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && keysendValueHint !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
+      </span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && keysendValueHint !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      {{keysendValueHint}}
+    </mat-hint>
     <mat-error *ngIf="!keysendAmount">Keysend amount is required.</mat-error>
   </mat-form-field>
 </ng-template>
@@ -57,7 +73,14 @@
   <mat-form-field fxLayout="column" fxFlex="100">
     <mat-label>Offer Request</mat-label>
     <textarea #offerReq="ngModel" autoFocus matInput rows="4" name="offerRequest" tabindex="4" required [ngModel]="offerRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true"></textarea>
-    <mat-hint *ngIf="offerRequest && offerDecodedHint !== ''">{{offerDecodedHint}}</mat-hint>
+    <mat-hint *ngIf="offerRequest && offerDecodedHintPre !== ''" fxLayout="row wrap" fxFlex="100">
+      {{offerDecodedHintPre}}
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'FA' && offerDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px">
+        <fa-icon [icon]="convertedCurrency.symbol" />
+      </span>
+      <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && offerDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
+      {{offerDecodedHintPost}}
+    </mat-hint>
     <mat-error *ngIf="!offerRequest">Offer request is required.</mat-error>
     <mat-error *ngIf="offerReq.errors?.decodeError">{{offerDecodedHint}}</mat-error>
   </mat-form-field>
@@ -70,7 +93,7 @@
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
     <mat-checkbox fxFlex="none" tabindex="6" color="primary" [(ngModel)]="flgSaveToDB">Bookmark Offer</mat-checkbox>
     <mat-icon matTooltip="Save offer in database for future payments" matTooltipPosition="below" fxFlex="none" class="info-icon">info_outline</mat-icon>
-  </div>    
+  </div>
   <mat-form-field *ngIf="flgSaveToDB || offerTitle !== ''" fxFlex="100" class="mt-1">
     <mat-label>Title to Save</mat-label>
     <input matInput tabindex="7" [(ngModel)]="offerTitle">

@@ -33,7 +33,7 @@ To download from master (*not recommended*):
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Or: Update existing build
@@ -42,7 +42,7 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Error on npm install
@@ -77,11 +77,11 @@ Ensure that the follow values are correct per your config:
       "index": 1,
       "lnNode": "Core Lightning Testnet # 1",
       "lnImplementation": "CLN",
-      "Authentication": {
+      "authentication": {
         "runePath": "<Modify to include the path of the folder including filename which contains `rune`>",
         "configPath": "<Optional - Config file path for core lightning>"
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",
@@ -89,7 +89,8 @@ Ensure that the follow values are correct per your config:
         "logLevel": "INFO",
         "fiatConversion": false,
         "unannouncedChannels": false,
-        "lnServerUrl": "https://<CLNRest api server ip address>:3001"
+        "lnServerUrl": "https://<CLNRest api server ip address>:3001",
+        "blockExplorerUrl": "<Default: https://mempool.space>"
       }
     }
   ]

@@ -8,7 +8,7 @@ const logger = Logger;
 const common = Common;
 const databaseService = Database;
 export const getMemo = (selNode, payment) => {
-    options.url = selNode.ln_server_url + '/v1/decode';
+    options.url = selNode.settings.lnServerUrl + '/v1/decode';
     options.body = { string: payment.bolt11 };
     return request.post(options).then((res) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
@@ -81,7 +81,7 @@ export const listPayments = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/listsendpays';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listsendpays';
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
@@ -95,14 +95,15 @@ export const listPayments = (req, res, next) => {
     });
 };
 export const postPayment = (req, res, next) => {
+    const { paymentType, saveToDB, bolt12, zeroAmtOffer, amount_msat, title, issuer, description } = req.body;
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     const options_body = JSON.parse(JSON.stringify(req.body));
-    if (req.body.paymentType === 'KEYSEND') {
+    if (paymentType === 'KEYSEND') {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment..' });
-        options.url = req.session.selectedNode.ln_server_url + '/v1/keysend';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/keysend';
         delete options_body.uiMessage;
         delete options_body.fromDialog;
         delete options_body.paymentType;
@@ -121,13 +122,13 @@ export const postPayment = (req, res, next) => {
         options.body = options_body;
     }
     else {
-        if (req.body.paymentType === 'OFFER') {
+        if (paymentType === 'OFFER') {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Offer Payment..' });
         }
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Invoice Payment..' });
         }
-        if (req.body.paymentType === 'OFFER') {
+        if (paymentType === 'OFFER') {
             // delete amount for zero amt offer also as fetchinvoice already has amount information
             delete options_body.amount_msat;
         }
@@ -143,22 +144,22 @@ export const postPayment = (req, res, next) => {
         delete options_body.pubkey;
         delete options_body.saveToDB;
         options.body = options_body;
-        options.url = req.session.selectedNode.ln_server_url + '/v1/pay';
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/pay';
     }
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
-        if (req.body.paymentType === 'OFFER') {
-            if (req.body.saveToDB && req.body.bolt12) {
-                const offerToUpdate = { bolt12: req.body.bolt12, amountMSat: (req.body.zeroAmtOffer ? 0 : req.body.amount_msat), title: req.body.title, lastUpdatedAt: new Date(Date.now()).getTime() };
-                if (req.body.issuer) {
-                    offerToUpdate['issuer'] = req.body.issuer;
+        if (paymentType === 'OFFER') {
+            if (saveToDB && bolt12) {
+                const offerToUpdate = { bolt12: bolt12, amountMSat: (zeroAmtOffer ? 0 : amount_msat), title: title, lastUpdatedAt: new Date(Date.now()).getTime() };
+                if (issuer) {
+                    offerToUpdate['issuer'] = issuer;
                 }
-                if (req.body.description) {
-                    offerToUpdate['description'] = req.body.description;
+                if (description) {
+                    offerToUpdate['description'] = description;
                 }
                 // eslint-disable-next-line arrow-body-style
                 return databaseService.validateDocument(CollectionsEnum.OFFERS, offerToUpdate).then((validated) => {
-                    return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, req.body.bolt12).then((updatedOffer) => {
+                    return databaseService.update(req.session.selectedNode, CollectionsEnum.OFFERS, offerToUpdate, CollectionFieldsEnum.BOLT12, bolt12).then((updatedOffer) => {
                         logger.log({ level: 'DEBUG', fileName: 'Payments', msg: 'Offer Updated', data: updatedOffer });
                         return res.status(201).json({ paymentResponse: body, saveToDBResponse: updatedOffer });
                     }).catch((errDB) => {
@@ -174,10 +175,10 @@ export const postPayment = (req, res, next) => {
                 return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
             }
         }
-        if (req.body.paymentType === 'INVOICE') {
+        if (paymentType === 'INVOICE') {
             return res.status(201).json({ paymentResponse: body, saveToDBResponse: 'NA' });
         }
-        if (req.body.paymentType === 'KEYSEND') {
+        if (paymentType === 'KEYSEND') {
             return res.status(201).json(body);
         }
     }).catch((errRes) => {

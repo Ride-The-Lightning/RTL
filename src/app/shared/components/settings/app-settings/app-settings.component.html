@@ -5,10 +5,6 @@
       <span class="page-title">Default Node</span>
     </div>
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="my-2">
-      <div fxLayout="row" fxFlex="100" class="alert alert-info">
-        <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
-        <span>The setting will apply after RTL server restarts.</span>
-      </div>
       <div fxLayout="row" fxLayoutAlign="start start">
         <mat-form-field fxLayout="column" fxLayoutAlign="start start">
           <mat-select autoFocus tabindex="1" name="defaultNode" [(ngModel)]="appConfig.defaultNodeIndex">
@@ -21,7 +17,7 @@
       <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
         <div fxLayout="row" fxLayoutAlign="start start">
           <button class="mr-1" mat-stroked-button color="primary" tabindex="2" (click)="onResetSettings()">Reset</button>
-          <button mat-flat-button color="primary" tabindex="3" (click)="onUpdateSettings()">Update</button>
+          <button mat-flat-button color="primary" tabindex="3" (click)="onUpdateApplicationSettings()">Update</button>
         </div>
       </div>
     </div>

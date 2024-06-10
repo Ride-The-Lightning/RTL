@@ -20,7 +20,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "index": <Incremental node indices starting from 1, Required>,
       "lnNode": "<Node name to uniquely identify the node in the UI, Required>",
       "lnImplementation": "<LNP implementation, Allowed values LND/CLN/ECL, Required>",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "<Path for the folder containing 'admin.macaroon' for LND node, Required for LND>",
         "runePath": "<Complete path including filename for CLN rune for the node, Required for CLN>",
         "lnApiPassword": "<Password to be used for ECL API authentication. Mandatory only for ECL if the configPath is missing>"
@@ -28,7 +28,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "boltzMacaroonPath": "<Path for the folder containing 'admin.macaroon' (Boltz), Required for Boltz Swaps>",
         "configPath": "<Full path of the lnd.conf/core lightning config/eclair.conf file including the file name, if present locally, Optional, only mandatory for ECL if the lnApiPassword is missing>",
       },
-      "Settings": {
+      "settings": {
         "userPersona": "<User persona to tailor the data on UI. Allowed values MERCHANT/OPERATOR. Default MERCHANT, Optional>",
         "themeMode": "<Theme modes, Allowed values DAY, NIGHT. Default DAY, Optional>",
         "themeColor": "<Theme colors, Allowed values PURPLE, TEAL, INDIGO, PINK, YELLOW. Default PURPLE, Optional>",
@@ -40,7 +40,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "unannouncedChannels": <parameter to turn off/on setting for opening announced Channels, default false, Optional>
         "lnServerUrl": "<Service url for LND/Core Lightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://127.0.0.1:8080', Optional>
         "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://127.0.0.1:8081, Optional>",
-        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://127.0.0.1:9003, Optional>"
+        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://127.0.0.1:9003, Optional>",
+        "blockExplorerUrl": "<url for local or centralized block explorer. e.g. https://mempool.space>"
       }
     }
   ]

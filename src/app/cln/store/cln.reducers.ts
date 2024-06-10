@@ -2,9 +2,9 @@ import { createReducer, on } from '@ngrx/store';
 import { initCLNState } from './cln.state';
 import {
   addInvoice, addPeer, removeChannel, removePeer, resetCLNStore, setChannels,
-  setChildNodeSettingsCLN, setFeeRates, setForwardingHistory,
-  setInfo, setInvoices, setOffers, addOffer, setPayments, setPeers, setUTXOBalances,
-  updateCLNAPICallStatus, updateInvoice, updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings
+  setFeeRates, setForwardingHistory, setInfo, setInvoices, setOffers, addOffer,
+  setPayments, setPeers, setUTXOBalances, updateCLNAPICallStatus, updateInvoice,
+  updateOffer, setOfferBookmarks, addUpdateOfferBookmark, removeOfferBookmark, setPageSettings
 } from './cln.actions';
 import { Channel, OfferBookmark } from '../../shared/models/clnModels';
 import { CLNForwardingEventsStatusEnum, CLN_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
@@ -27,13 +27,8 @@ export const CLNReducer = createReducer(initCLNState,
       apisCallStatus: updatedApisCallStatus
     };
   }),
-  on(setChildNodeSettingsCLN, (state, { payload }) => ({
-    ...state,
-    nodeSettings: payload
-  })),
-  on(resetCLNStore, (state, { payload }) => ({
-    ...initCLNState,
-    nodeSettings: payload
+  on(resetCLNStore, (state) => ({
+    ...initCLNState
   })),
   on(setInfo, (state, { payload }) => ({
     ...state,

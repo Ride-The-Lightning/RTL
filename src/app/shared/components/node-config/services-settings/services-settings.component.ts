@@ -3,7 +3,7 @@ import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
-import { ConfigSettingsNode } from '../../../models/RTLconfig';
+import { Node } from '../../../models/RTLconfig';
 import { Store } from '@ngrx/store';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
@@ -16,34 +16,34 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 export class ServicesSettingsComponent implements OnInit, OnDestroy {
 
   public faLayerGroup = faLayerGroup;
-  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }];
+  // public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }, { link: 'noservice', name: 'No Service' }];
+  public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'noservice', name: 'No Service' }];
   public activeLink = '';
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    const linkFound = this.links.find((link) => this.router.url.includes(link.link));
-    this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-    this.router.events.pipe(takeUntil(this.unSubs[0]), filter((e) => e instanceof ResolveEnd)).
-      subscribe({
-        next: (value: ResolveEnd | Event) => {
-          const linkFound = this.links.find((link) => (<ResolveEnd>value).urlAfterRedirects.includes(link.link));
-          if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
-            this.activeLink = this.links[2].link;
-          } else {
-            this.activeLink = linkFound ? linkFound.link : this.links[0].link;
-          }
-        }
-      });
+    this.setActiveLink();
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.selNode = selNode;
-      if (this.selNode.lnImplementation.toUpperCase() === 'CLN') {
-        this.activeLink = this.links[2].link;
-        this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
-      }
+      this.setActiveLink();
+      this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
     });
+  }
+
+  setActiveLink(link?: string) {
+    if (link && link !== '') {
+      this.activeLink = link;
+    } else {
+      const linkFound = this.links.find((link) => this.router.url.includes(link.link));
+      if (linkFound) {
+        this.activeLink = this.selNode && this.selNode.lnImplementation === 'CLN' ? this.links[1].link : linkFound.link;
+      } else {
+        this.activeLink = this.links[this.links.length - 1].link;
+      }
+    }
   }
 
   ngOnDestroy() {

@@ -27,8 +27,8 @@
               <input #amt="ngModel" matInput type="number" tabindex="1" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>(Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
               <span matSuffix> Sats </span>
-              <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
-              <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
+              <mat-error *ngIf="amt.errors?.required">Amount is required.</mat-error>
+              <mat-error *ngIf="amt.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
             <div fxFlex="35" fxLayoutAlign="start center">
               <mat-slide-toggle tabindex="2" color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
@@ -41,9 +41,22 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+              <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                <span fxLayout="column" fxFlex="100">
+                  <div>Fee rates recommended by mempool (sat/vByte):</div>
+                  <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                    <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                    <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                    <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                    <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                    <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                  </span>
+                </span>
+              </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <mat-select tabindex="3" [(value)]="selTransType">
+                  <mat-select tabindex="3" [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
                     <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                       {{transType.name}}
                     </mat-option>
@@ -51,11 +64,14 @@
                 </mat-form-field>
                 <mat-form-field fxLayout="column" fxFlex="49">
                   <mat-label>{{selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
-                  <input #transTypeVal="ngModel" matInput type="number" tabindex="4" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [step]="1" [min]="0" [(ngModel)]="transTypeValue">
-                  <mat-error *ngIf="selTransType!=='0' && !transTypeValue">{{selTransType === '1' ? 'Target Confirmation Blocks' : 'Fee'}} is required.</mat-error>
+                  <input #transTypeVal="ngModel" matInput type="number" tabindex="4" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [step]="1" [min]="selTransType === '2' ? recommendedFee.minimumFee : 0" [(ngModel)]="transTypeValue">
+                  <mat-hint *ngIf="selTransType === '2'">Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
+                  <mat-error *ngIf="selTransType === '1' && !transTypeValue">Target Confirmation Blocks is required.</mat-error>
+                  <mat-error *ngIf="selTransType === '2' && !transTypeValue">Fee is required.</mat-error>
+                  <mat-error *ngIf="selTransType === '2' && transTypeValue && +transTypeValue < recommendedFee.minimumFee">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                 </mat-form-field>
               </div>
-              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
                 <div *ngIf="isTaprootAvailable" fxFlex="50" fxLayoutAlign="start center">
                   <mat-slide-toggle tabindex="6" color="primary" name="taprootChannel" [(ngModel)]="taprootChannel">Taproot Channel</mat-slide-toggle>
                 </div>
@@ -64,7 +80,7 @@
                 </div>
               </div>
             </div>
-          </mat-expansion-panel>    
+          </mat-expansion-panel>
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />

@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
 import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
@@ -16,9 +16,11 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { sendPayment } from '../../store/lnd.actions';
-import { channels, lndNodeSettings } from '../../store/lnd.selector';
+import { channels } from '../../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-lightning-send-payments',
@@ -29,12 +31,14 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public convertedCurrency: ConvertedCurrency = null;
+  public selNode: Node | null;
   public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
   public paymentAmount: number | null = null;
   public paymentRequest = '';
-  public paymentDecodedHint = '';
+  public paymentDecodedHintPre = '';
+  public paymentDecodedHintPost = '';
   public showAdvanced = false;
   public activeChannels: Channel[] = [];
   public filteredMinAmtActvChannels: Channel[] = [];
@@ -49,7 +53,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.activeChannels = channelsSelector.channels && channelsSelector.channels.length ? channelsSelector.channels?.filter((channel) => channel.active) : [];
@@ -153,7 +157,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentRequest = event;
     this.paymentAmount = null;
     this.paymentError = '';
-    this.paymentDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
     this.zeroAmtInvoice = false;
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
@@ -175,20 +180,23 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
                 this.selectedChannelCtrl.disable();
               }
               this.zeroAmtInvoice = false;
-              if (this.selNode && this.selNode.fiatConversion) {
-                this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : 'BTC'), this.selNode.fiatConversion).
+              if (this.selNode && this.selNode.settings.fiatConversion) {
+                this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : 'BTC'), this.selNode.settings.fiatConversion).
                   pipe(takeUntil(this.unSubs[4])).
                   subscribe({
                     next: (data) => {
-                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) +
-                       ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' +
+                      this.convertedCurrency = data;
+                      this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (';
+                      this.paymentDecodedHintPost = this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' +
                        (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
                     }, error: (error) => {
-                      this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
+                      this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
+                      this.paymentDecodedHintPost = '';
                     }
                   });
               } else {
-                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                this.paymentDecodedHintPost = '';
               }
             } else {
               this.zeroAmtInvoice = true;
@@ -198,11 +206,13 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
               } else {
                 this.selectedChannelCtrl.disable();
               }
-              this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+              this.paymentDecodedHintPre = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+              this.paymentDecodedHintPost = '';
             }
           }, error: (err) => {
             this.logger.error(err);
-            this.paymentDecodedHint = 'ERROR: ' + err.message;
+            this.paymentDecodedHintPre = 'ERROR: ' + err.message;
+            this.paymentDecodedHintPost = '';
             this.paymentReq.control.setErrors({ decodeError: true });
           }
         });
@@ -234,7 +244,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.zeroAmtInvoice = false;
     this.paymentReq.control.setErrors(null);
     this.paymentError = '';
-    this.paymentDecodedHint = '';
+    this.paymentDecodedHintPre = '';
+    this.paymentDecodedHintPost = '';
   }
 
   ngOnDestroy() {

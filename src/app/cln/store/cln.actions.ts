@@ -2,16 +2,14 @@ import { createAction, props } from '@ngrx/store';
 
 import { CLNActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, InvoicePaymentNotification, ListInvoices, OnChain, UTXO, SaveChannel,
+import { Node } from '../../shared/models/RTLconfig';
+import { GetInfo, Peer, Payment, QueryRoutes, Channel, FeeRates, Invoice, InvoicePaymentNotification, ListInvoices, OnChain, UTXO, SaveChannel,
   GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, OfferInvoice, Offer, OfferBookmark, ListForwards, FetchListForwards } from '../../shared/models/clnModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateCLNAPICallStatus = createAction(CLNActions.UPDATE_API_CALL_STATUS_CLN, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetCLNStore = createAction(CLNActions.RESET_CLN_STORE, props<{ payload: SelNodeChild | null }>());
-
-export const setChildNodeSettingsCLN = createAction(CLNActions.SET_CHILD_NODE_SETTINGS_CLN, props<{ payload: SelNodeChild }>());
+export const resetCLNStore = createAction(CLNActions.RESET_CLN_STORE);
 
 export const fetchPageSettings = createAction(CLNActions.FETCH_PAGE_SETTINGS_CLN);
 

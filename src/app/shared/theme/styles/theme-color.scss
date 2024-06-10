@@ -46,7 +46,7 @@
     white-space: pre-line;
     overflow-wrap: break-word;
     word-break: break-all;
-    min-height: ($gap*3);    
+    min-height: ($gap*3);
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
@@ -304,13 +304,11 @@
 
   .tab-badge {
     & .mat-badge-content {
-      width: auto;
-      min-width: $badge-size;
-      height: $badge-size;
-      line-height: $badge-size * 1.1;
-      border-radius: $badge-size * 1.2;
-      padding: math.div($gap, 2);
-      overflow: visible;
+      font-size: 90%;
+      padding-bottom: 2px;
+      &.mat-badge-active {
+        background: $primary-color;
+      }
     }
   }
 
@@ -506,6 +504,33 @@
   .mat-mdc-tab-header .mat-mdc-tab-label-container, .mat-mdc-tab-nav-bar.mat-mdc-tab-header .mat-mdc-tab-link-container {
     border-bottom: 1px solid $foreground-divider;
     margin-bottom: $gap;
+  }
+
+  .mat-mdc-option.mdc-list-item:hover, .mat-mdc-option.mdc-list-item.mat-mdc-option-active {
+    fa-icon svg path {
+      fill: $primary-color;
+    }
+    & .currency-icon {
+      color: $primary-color;
+      & path {
+        fill: $primary-color;
+      }
+    }
+  }
+
+  .mat-mdc-form-field-hint .currency-icon {
+    color: $primary-color;
+    & path {
+      fill: $primary-color;
+    }
+  }
+
+  .fa-icon-primary {
+    color: $primary-color;
+    &:hover {
+      cursor: pointer;
+      @include mat.elevation(4);
+    }
   }
   
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {

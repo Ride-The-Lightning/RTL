@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { Balance, LocalRemoteBalance, UTXO } from '../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
@@ -17,7 +18,7 @@ import { openAlert } from '../../../../store/rtl.actions';
 import { clnPageSettings, utxoBalances } from '../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-on-chain-utxos',
@@ -119,8 +120,8 @@ export class CLNOnChainUtxosComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   onUTXOClick(selUtxo: UTXO, event: any) {
-    const reorderedUTXO = [
-      [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100 }],
+    const reorderedUTXO: MessageDataField[][] = [
+      [{ key: 'txid', value: selUtxo.txid, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'output', value: selUtxo.output, title: 'Output', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'amount_msat', value: (selUtxo.amount_msat || 0) / 1000, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'status', value: this.commonService.titleCase(selUtxo.status || ''), title: 'Status', width: 50, type: DataTypeEnum.STRING },

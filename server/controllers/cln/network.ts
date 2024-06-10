@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { CommonSelectedNode } from '../../models/config.model.js';
+import { SelectedNode } from '../../models/config.model.js';
 
 let options = null;
 const logger: LoggerService = Logger;
@@ -11,7 +11,7 @@ export const getRoute = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Getting Network Routes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/getroute';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/getroute';
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
@@ -29,7 +29,7 @@ export const listChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Channel Lookup..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/listchannels';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listchannels';
   options.body = req.body;
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Channel Lookup Finished', data: body });
@@ -41,13 +41,14 @@ export const listChannels = (req, res, next) => {
 };
 
 export const feeRates = (req, res, next) => {
+  const { style } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Getting Network Fee Rates..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/feerates';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/feerates';
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + req.body.style, data: body });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Fee Rates Received for ' + style, data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Network', 'Fee Rates Error', req.session.selectedNode);
@@ -56,12 +57,12 @@ export const feeRates = (req, res, next) => {
 };
 
 export const listNodes = (req, res, next) => {
+  const filter_liquidity_ads = !!req.body.liquidity_ads;
+  delete req.body.liquidity_ads;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'List Nodes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/listnodes';
-  const filter_liquidity_ads = !!req.body.liquidity_ads;
-  delete req.body.liquidity_ads;
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listnodes';
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Network', msg: 'List Nodes URL' + options.url });
   request.post(options).then((body) => {
@@ -77,8 +78,8 @@ export const listNodes = (req, res, next) => {
   });
 };
 
-export const getAlias = (selNode: CommonSelectedNode, peer: any, id: string) => {
-  options.url = selNode.ln_server_url + '/v1/listnodes';
+export const getAlias = (selNode: SelectedNode, peer: any, id: string) => {
+  options.url = selNode.settings.lnServerUrl + '/v1/listnodes';
   if (!peer[id]) {
     logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Network', msg: 'Empty Peer ID' });
     peer.alias = '';

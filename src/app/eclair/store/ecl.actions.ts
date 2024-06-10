@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 
 import { ECLActions } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, QueryRoutes, Transaction,
   SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes,
   CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
@@ -10,9 +10,7 @@ import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
 
-export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE, props<{ payload: SelNodeChild | null }>());
-
-export const setChildNodeSettingsECL = createAction(ECLActions.SET_CHILD_NODE_SETTINGS_ECL, props<{ payload: SelNodeChild }>());
+export const resetECLStore = createAction(ECLActions.RESET_ECL_STORE);
 
 export const fetchPageSettings = createAction(ECLActions.FETCH_PAGE_SETTINGS_ECL);
 
@@ -28,7 +26,7 @@ export const fetchFees = createAction(ECLActions.FETCH_FEES_ECL);
 
 export const setFees = createAction(ECLActions.SET_FEES_ECL, props<{ payload: Fees }>());
 
-export const fetchChannels = createAction(ECLActions.FETCH_CHANNELS_ECL, props<{ payload: { fetchPayments: boolean } }>());
+export const fetchChannels = createAction(ECLActions.FETCH_CHANNELS_ECL);
 
 export const setActiveChannels = createAction(ECLActions.SET_ACTIVE_CHANNELS_ECL, props<{ payload: Channel[] }>());
 
@@ -70,7 +68,7 @@ export const closeChannel = createAction(ECLActions.CLOSE_CHANNEL_ECL, props<{ p
 
 export const removeChannel = createAction(ECLActions.REMOVE_CHANNEL_ECL, props<{ payload: { channelId: string } }>());
 
-export const fetchPayments = createAction(ECLActions.FETCH_PAYMENTS_ECL);
+export const fetchPayments = createAction(ECLActions.FETCH_PAYMENTS_ECL, props<{ payload: { count: number, skip: number } }>());
 
 export const setPayments = createAction(ECLActions.SET_PAYMENTS_ECL, props<{ payload: Payments }>());
 
@@ -82,7 +80,7 @@ export const sendPayment = createAction(ECLActions.SEND_PAYMENT_ECL, props<{ pay
 
 export const sendPaymentStatus = createAction(ECLActions.SEND_PAYMENT_STATUS_ECL, props<{ payload: any }>());
 
-export const fetchTransactions = createAction(ECLActions.FETCH_TRANSACTIONS_ECL);
+export const fetchTransactions = createAction(ECLActions.FETCH_TRANSACTIONS_ECL, props<{ payload: { count: number, skip: number } }>());
 
 export const setTransactions = createAction(ECLActions.SET_TRANSACTIONS_ECL, props<{ payload: Transaction[] }>());
 
@@ -90,7 +88,7 @@ export const sendOnchainFunds = createAction(ECLActions.SEND_ONCHAIN_FUNDS_ECL, 
 
 export const sendOnchainFundsRes = createAction(ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL, props<{ payload: any }>());
 
-export const fetchInvoices = createAction(ECLActions.FETCH_INVOICES_ECL);
+export const fetchInvoices = createAction(ECLActions.FETCH_INVOICES_ECL, props<{ payload: { count: number, skip: number } }>());
 
 export const setInvoices = createAction(ECLActions.SET_INVOICES_ECL, props<{ payload: Invoice[] }>());
 

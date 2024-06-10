@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
@@ -27,7 +27,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public addressTypes = [];
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: OnChainBalance = {};

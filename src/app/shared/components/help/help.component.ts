@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
-import { HelpTopic, ConfigSettingsNode } from '../../models/RTLconfig';
+import { HelpTopic, Node } from '../../models/RTLconfig';
 import { SessionService } from '../../services/session.service';
 
 import { RTLState } from '../../../store/rtl.state';
@@ -19,7 +19,7 @@ export class HelpComponent implements OnInit, OnDestroy {
 
   public helpTopics: Array<HelpTopic> = [];
   public faQuestion = faQuestion;
-  public selNode: ConfigSettingsNode | any;
+  public selNode: Node | any;
   public LNPLink = '/lnd/';
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -272,7 +272,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   Offers and Liquidity Ads can be enabled/disabled.\n' +
         'Show LN Config (if configured)\n' +
         '   Shows lightning config file.\n',
-      link: '../config/layout',
+      link: '../config/nodesettings',
       linkCaption: 'Node Settings',
       lnImplementation: 'ALL'
     }));

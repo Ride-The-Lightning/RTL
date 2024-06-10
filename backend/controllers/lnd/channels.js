@@ -6,7 +6,7 @@ const logger = Logger;
 const common = Common;
 export const getAliasForChannel = (selNode, channel) => {
     const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
-    options.url = selNode.ln_server_url + '/v1/graph/node/' + pubkey;
+    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
     return request(options).then((aliasBody) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
         channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
@@ -22,7 +22,7 @@ export const getAllChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channels';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
     options.qs = req.query;
     let local = 0;
     let remote = 0;
@@ -60,7 +60,7 @@ export const getPendingChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channels/pending';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/pending';
     options.qs = req.query;
     request(options).then((body) => {
         if (!body.total_limbo_balance) {
@@ -98,7 +98,7 @@ export const getClosedChannels = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channels/closed';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/closed';
     options.qs = req.query;
     request(options).then((body) => {
         if (body.channels && body.channels.length > 0) {
@@ -123,26 +123,27 @@ export const getClosedChannels = (req, res, next) => {
     });
 };
 export const postChannel = (req, res, next) => {
+    const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, trans_type, trans_type_value, commitment_type } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channels';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
     options.form = {
-        node_pubkey_string: req.body.node_pubkey,
-        local_funding_amount: req.body.local_funding_amount,
-        private: req.body.private,
-        spend_unconfirmed: req.body.spend_unconfirmed
+        node_pubkey_string: node_pubkey,
+        local_funding_amount: local_funding_amount,
+        private: privateChannel,
+        spend_unconfirmed: spend_unconfirmed
     };
-    if (req.body.trans_type === '1') {
-        options.form.target_conf = req.body.trans_type_value;
+    if (trans_type === '1') {
+        options.form.target_conf = trans_type_value;
     }
-    else if (req.body.trans_type === '2') {
-        options.form.sat_per_byte = req.body.trans_type_value;
+    else if (trans_type === '2') {
+        options.form.sat_per_byte = trans_type_value;
     }
-    if (req.body.commitment_type) {
-        options.form.commitment_type = req.body.commitment_type;
+    if (commitment_type) {
+        options.form.commitment_type = commitment_type;
     }
     options.form = JSON.stringify(options.form);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channel Open Options', data: options.form });
@@ -155,27 +156,28 @@ export const postChannel = (req, res, next) => {
     });
 };
 export const postTransactions = (req, res, next) => {
+    const { paymentReq, paymentAmount, feeLimit, outgoingChannel, allowSelfPayment, lastHopPubkey } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sending Payment..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/channels/transaction-stream';
-    options.form = { payment_request: req.body.paymentReq };
-    if (req.body.paymentAmount) {
-        options.form.amt = req.body.paymentAmount;
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/transaction-stream';
+    options.form = { payment_request: paymentReq };
+    if (paymentAmount) {
+        options.form.amt = paymentAmount;
     }
-    if (req.body.feeLimit) {
-        options.form.fee_limit = req.body.feeLimit;
+    if (feeLimit) {
+        options.form.fee_limit = feeLimit;
     }
-    if (req.body.outgoingChannel) {
-        options.form.outgoing_chan_id = req.body.outgoingChannel;
+    if (outgoingChannel) {
+        options.form.outgoing_chan_id = outgoingChannel;
     }
-    if (req.body.allowSelfPayment) {
-        options.form.allow_self_payment = req.body.allowSelfPayment;
+    if (allowSelfPayment) {
+        options.form.allow_self_payment = allowSelfPayment;
     }
-    if (req.body.lastHopPubkey) {
-        options.form.last_hop_pubkey = Buffer.from(req.body.lastHopPubkey, 'hex').toString('base64');
+    if (lastHopPubkey) {
+        options.form.last_hop_pubkey = Buffer.from(lastHopPubkey, 'hex').toString('base64');
     }
     options.form = JSON.stringify(options.form);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options', data: options.form });
@@ -206,7 +208,7 @@ export const closeChannel = (req, res, next) => {
             return res.status(options.statusCode).json({ message: options.message, error: options.error });
         }
         const channelpoint = req.params.channelPoint?.replace(':', '/');
-        options.url = req.session.selectedNode.ln_server_url + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
         if (req.query.target_conf) {
             options.url = options.url + '&target_conf=' + req.query.target_conf;
         }
@@ -224,35 +226,36 @@ export const closeChannel = (req, res, next) => {
     }
 };
 export const postChanPolicy = (req, res, next) => {
+    const { chanPoint, baseFeeMsat, feeRate, timeLockDelta, max_htlc_msat, min_htlc_msat } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Policy..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/chanpolicy';
-    if (req.body.chanPoint === 'all') {
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/chanpolicy';
+    if (chanPoint === 'all') {
         options.form = JSON.stringify({
             global: true,
-            base_fee_msat: req.body.baseFeeMsat,
-            fee_rate: parseFloat((req.body.feeRate / 1000000).toString()),
-            time_lock_delta: parseInt(req.body.timeLockDelta)
+            base_fee_msat: baseFeeMsat,
+            fee_rate: parseFloat((feeRate / 1000000).toString()),
+            time_lock_delta: parseInt(timeLockDelta)
         });
     }
     else {
-        const breakPoint = req.body.chanPoint.indexOf(':');
-        const txid_str = req.body.chanPoint.substring(0, breakPoint);
-        const output_idx = req.body.chanPoint.substring(breakPoint + 1, req.body.chanPoint.length);
+        const breakPoint = chanPoint.indexOf(':');
+        const txid_str = chanPoint.substring(0, breakPoint);
+        const output_idx = chanPoint.substring(breakPoint + 1, chanPoint.length);
         const optionsBody = {
-            base_fee_msat: req.body.baseFeeMsat,
-            fee_rate: parseFloat((req.body.feeRate / 1000000).toString()),
-            time_lock_delta: parseInt(req.body.timeLockDelta),
+            base_fee_msat: baseFeeMsat,
+            fee_rate: parseFloat((feeRate / 1000000).toString()),
+            time_lock_delta: parseInt(timeLockDelta),
             chan_point: { funding_txid_str: txid_str, output_index: parseInt(output_idx) }
         };
-        if (req.body.max_htlc_msat) {
-            optionsBody['max_htlc_msat'] = req.body.max_htlc_msat;
+        if (max_htlc_msat) {
+            optionsBody['max_htlc_msat'] = max_htlc_msat;
         }
-        if (req.body.min_htlc_msat) {
-            optionsBody['min_htlc_msat'] = req.body.min_htlc_msat;
+        if (min_htlc_msat) {
+            optionsBody['min_htlc_msat'] = min_htlc_msat;
             optionsBody['min_htlc_msat_specified'] = true;
         }
         options.form = JSON.stringify(optionsBody);

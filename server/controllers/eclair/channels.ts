@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-import { CommonSelectedNode } from '../../models/config.model.js';
+import { SelectedNode } from '../../models/config.model.js';
 import { createInvoiceRequestCall, listPendingInvoicesRequestCall } from './invoices.js';
 import { findRouteBetweenNodesRequestCall } from './network.js';
 import { getSentInfoFromPaymentRequest, sendPaymentToRouteRequestCall } from './payments.js';
@@ -10,7 +10,7 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
-export const simplifyAllChannels = (selNode: CommonSelectedNode, channels) => {
+export const simplifyAllChannels = (selNode: SelectedNode, channels) => {
   let channelNodeIds = '';
   const simplifiedChannels = [];
   channels.forEach((channel) => {
@@ -30,7 +30,7 @@ export const simplifyAllChannels = (selNode: CommonSelectedNode, channels) => {
     });
   });
   channelNodeIds = channelNodeIds.substring(1);
-  options.url = selNode.ln_server_url + '/nodes';
+  options.url = selNode.settings.lnServerUrl + '/nodes';
   options.form = { nodeIds: channelNodeIds };
   logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
   return request.post(options).then((nodes) => {
@@ -49,7 +49,7 @@ export const getChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'List Channels..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/channels';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/channels';
   options.form = {};
   if (req.query && req.query.nodeId) {
     options.form = req.query;
@@ -57,7 +57,7 @@ export const getChannels = (req, res, next) => {
   }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
   if (common.read_dummy_data) {
-    common.getDummyData('Channels', req.session.selectedNode.ln_implementation).then((data) => { res.status(200).json(data); });
+    common.getDummyData('Channels', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
   } else {
     request.post(options).then((body) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
@@ -82,7 +82,7 @@ export const getChannelStats = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel States..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/channelstats';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/channelstats';
   const today = new Date(Date.now());
   const tillToday = (Math.round(today.getTime() / 1000)).toString();
   const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
@@ -103,7 +103,7 @@ export const openChannel = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/open';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/open';
   options.form = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
   request.post(options).then((body) => {
@@ -119,7 +119,7 @@ export const updateChannelRelayFee = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Relay Fee..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/updaterelayfee';
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/updaterelayfee';
   options.form = req.query;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Params', data: options.form });
   request.post(options).then((body) => {
@@ -136,10 +136,10 @@ export const closeChannel = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.query.force !== 'true') {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });
-    options.url = req.session.selectedNode.ln_server_url + '/close';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/close';
   } else {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Force Closing Channel..' });
-    options.url = req.session.selectedNode.ln_server_url + '/forceclose';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/forceclose';
   }
   options.form = { channelId: req.query.channelId };
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close URL', data: options.url });
@@ -154,7 +154,8 @@ export const closeChannel = (req, res, next) => {
 };
 
 export const circularRebalance = (req, res, next) => {
-  const crInvDescription = 'Circular rebalancing invoice for ' + (req.body.amountMsat / 1000) + ' Sats';
+  const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
+  const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.form = req.body;
@@ -162,22 +163,22 @@ export const circularRebalance = (req, res, next) => {
   const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
   // Check if unpaid Invoice exists already
   listPendingInvoicesRequestCall(req.session.selectedNode).then((callRes: any[]) => {
-    const foundExistingInvoice = callRes.find((inv) => inv.description.includes(crInvDescription) && inv.amount === req.body.amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
+    const foundExistingInvoice = callRes.find((inv) => inv.description.includes(crInvDescription) && inv.amount === amountMsat && inv.expiry && inv.timestamp && ((inv.expiry + inv.timestamp) >= tillToday));
     // Create new invoice if doesn't exist already
     const requestCalls = foundExistingInvoice && foundExistingInvoice.serialized ?
-      [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format)] :
-      [findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format), createInvoiceRequestCall(req.session.selectedNode, crInvDescription, req.body.amountMsat)];
+      [findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format)] :
+      [findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format), createInvoiceRequestCall(req.session.selectedNode, crInvDescription, amountMsat)];
     Promise.all(requestCalls).then((values: any[]) => {
       // eslint-disable-next-line arrow-body-style
       const routes = values[0]?.routes?.filter((route) => {
-        return !((route.shortChannelIds[0] === req.body.sourceShortChannelId && route.shortChannelIds[1] === req.body.targetShortChannelId) ||
-        (route.shortChannelIds[1] === req.body.sourceShortChannelId && route.shortChannelIds[0] === req.body.targetShortChannelId));
+        return !((route.shortChannelIds[0] === sourceShortChannelId && route.shortChannelIds[1] === targetShortChannelId) ||
+        (route.shortChannelIds[1] === sourceShortChannelId && route.shortChannelIds[0] === targetShortChannelId));
       });
       const firstRoute = routes[0].shortChannelIds.join() || '';
-      const shortChannelIds = req.body.sourceShortChannelId + ',' + firstRoute + ',' + req.body.targetShortChannelId;
+      const shortChannelIds = sourceShortChannelId + ',' + firstRoute + ',' + targetShortChannelId;
       const invoice = (foundExistingInvoice && foundExistingInvoice.serialized ? foundExistingInvoice.serialized : (values[1] ? values[1].serialized : '')) || '';
       const paymentHash = (foundExistingInvoice && foundExistingInvoice.paymentHash ? foundExistingInvoice.paymentHash : (values[1] ? values[1].paymentHash : '') || '');
-      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, req.body.amountMsat).then((payToRouteCallRes) => {
+      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((payToRouteCallRes) => {
         // eslint-disable-next-line arrow-body-style
         setTimeout(() => {
           return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash).then((sentInfoCallRes) => {

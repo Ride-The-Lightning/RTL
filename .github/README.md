@@ -55,7 +55,7 @@ To download from master (*not recommended*):
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 #### Or: Update existing dependencies
 ```
@@ -63,7 +63,7 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Error on npm install
@@ -95,7 +95,7 @@ Example RTL-Config.json:
       "index": 1,
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "<Complete path of the folder containing LND admin.macaroon for the node>",
         "runePath": "<Complete path including filename for CLN rune for the node, rune format 'LIGHTNING_RUNE="your-rune"'>",
         "lnApiPassword": "<Can be used to provide password in ECL implementation>",
@@ -103,7 +103,7 @@ Example RTL-Config.json:
         "boltzMacaroonPath": "<Complete path of the folder containing Boltz admin.macaroon for the node>",
         "configPath": "<Optional:Path of the .conf if present locally or empty>",
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",
@@ -114,7 +114,8 @@ Example RTL-Config.json:
         "unannouncedChannels": false,
         "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080>",
         "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://127.0.0.1:8081>",
-        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://127.0.0.1:9003>"
+        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://127.0.0.1:9003>",
+        "blockExplorerUrl": "<url for local or centralized block explorer. e.g. https://mempool.space>"
       }
     }
   ]

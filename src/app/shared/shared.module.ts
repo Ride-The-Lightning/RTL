@@ -68,6 +68,7 @@ import { ServicesSettingsComponent } from './components/node-config/services-set
 import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
 import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
 import { PeerswapServiceSettingsComponent } from './components/node-config/services-settings/peerswap-service-settings/peerswap-service-settings.component';
+import { NoServiceFoundComponent } from './components/node-config/services-settings/no-service-found/no-service-found.component';
 import { ExperimentalSettingsComponent } from './components/node-config/experimental-settings/experimental-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
@@ -256,6 +257,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
     PeerswapServiceSettingsComponent,
+    NoServiceFoundComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -296,6 +298,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoopServiceSettingsComponent,
     BoltzServiceSettingsComponent,
     PeerswapServiceSettingsComponent,
+    NoServiceFoundComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,

@@ -5,16 +5,19 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo, SaveChannel } from '../../../../shared/models/eclModels';
 import { APICallStatusEnum, ECLActions } from '../../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/ecl.actions';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { eclNodeSettings } from '../../../store/ecl.selector';
+import { Node } from '../../../../shared/models/RTLconfig';
+import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { DataService } from '../../../../shared/services/data.service';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -24,9 +27,10 @@ import { eclNodeSettings } from '../../../store/ecl.selector';
 export class ECLOpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public alertTitle: string;
   public peer: Peer | null;
   public peers: Peer[];
@@ -40,9 +44,12 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRate: number | null = null;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>, private actions: Actions) { }
+  constructor(private logger: LoggerService, public dialogRef: MatDialogRef<ECLOpenChannelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<RTLState>,
+    private actions: Actions, private dataService: DataService) { }
 
   ngOnInit() {
     if (this.data.message) {
@@ -57,10 +64,10 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -119,7 +126,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.feeRate = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();
@@ -131,17 +138,30 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
       if (this.feeRate && this.feeRate > 0) {
         this.advancedTitle = this.advancedTitle + ' | Fee (Sats/vByte): ' + this.feeRate;
       }
+    } else {
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
     }
   }
 
   onOpenChannel(): boolean | void {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) {
+    if (
+      (!this.peer && !this.selectedPubkey) ||
+      (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0)) ||
+      (this.feeRate && this.recommendedFee.minimumFee > this.feeRate)
+    ) {
       return true;
     }
     const saveChannelPayload: SaveChannel = { nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate };
     if (this.feeRate) { saveChannelPayload['feeRate'] = this.feeRate; }
     this.store.dispatch(saveNewChannel({ payload: saveChannelPayload }));
   }
+
 
   ngOnDestroy() {
     this.unSubs.forEach((completeSub) => {

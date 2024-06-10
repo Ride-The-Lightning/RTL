@@ -39,6 +39,14 @@ export class DataService implements OnDestroy {
     this.lnImplementationUpdated.next(this.lnImplementation);
   }
 
+  getRecommendedFeeRates() {
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerFeesRecommended');
+  }
+
+  getBlockExplorerTransaction(txid: string) {
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerTransaction/' + txid);
+  }
+
   getFiatRates() {
     return this.httpClient.get(API_END_POINTS.CONF_API + '/rates');
   }
@@ -198,7 +206,7 @@ export class DataService implements OnDestroy {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LABEL_UTXO }));
           return res;
         }), catchError((err) => {
-          this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LABEL_UTXO, err);
+          this.handleErrorWithoutAlert('Label UTXO', UI_MESSAGES.LABEL_UTXO, err);
           return throwError(() => new Error(this.extractErrorMessage(err)));
         })
       );
@@ -410,8 +418,7 @@ export class DataService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       this.store.dispatch(updateRootAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.extractErrorMessage(err) } }));
@@ -423,8 +430,7 @@ export class DataService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(closeAllDialogs());
-      this.store.dispatch(logout());
-      this.store.dispatch(openSnackBar({ payload: 'Authentication Failed. Redirecting to Login.' }));
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
       const errMsg = this.extractErrorMessage(err);

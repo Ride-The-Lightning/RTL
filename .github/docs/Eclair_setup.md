@@ -28,7 +28,7 @@ To download from master (*not recommended*) follow the below instructions:
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
 $ cd RTL
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 #### Or: Update existing build
 ```
@@ -36,7 +36,7 @@ $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install --omit=dev
+$ npm install --omit=dev --legacy-peer-deps
 ```
 
 #### Error on npm install
@@ -71,11 +71,11 @@ Ensure that the follow values are correct per your config:
       "index": 1,
       "lnNode": "Eclair Testnet # 1",
       "lnImplementation": "ECL",
-      "Authentication": {
+      "authentication": {
         "configPath": "<Optional - Config file path, including .conf file>",
         "lnApiPassword": "<Mandatory if the configPath is missing - Password used for API authentication>",
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",
@@ -83,7 +83,8 @@ Ensure that the follow values are correct per your config:
         "logLevel": "INFO",
         "fiatConversion": false,
         "unannouncedChannels": false,
-        "lnServerUrl": "http://<eclair api server ip address>:port"
+        "lnServerUrl": "http://<eclair api server ip address>:port",
+        "blockExplorerUrl": "<Default: https://mempool.space>"
       }
     }
   ]

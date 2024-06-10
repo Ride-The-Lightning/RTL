@@ -34,7 +34,7 @@
           <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" fxFlex="100" [tabPanel]="tabPanel">
             <div *ngFor="let link of links" tabindex="5" mat-tab-link class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
           </nav>
-          <mat-tab-nav-panel #tabPanel />    
+          <mat-tab-nav-panel #tabPanel />
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
           <router-outlet />

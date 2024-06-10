@@ -5,7 +5,7 @@ let options = null;
 const logger = Logger;
 const common = Common;
 export const getSentInfoFromPaymentRequest = (selNode, payment) => {
-    options.url = selNode.ln_server_url + '/getsentinfo';
+    options.url = selNode.settings.lnServerUrl + '/getsentinfo';
     options.form = { paymentHash: payment };
     return request.post(options).then((body) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received', data: body });
@@ -21,7 +21,7 @@ export const getSentInfoFromPaymentRequest = (selNode, payment) => {
     }).catch((err) => err);
 };
 export const getQueryNodes = (selNode, nodeIds) => {
-    options.url = selNode.ln_server_url + '/nodes';
+    options.url = selNode.settings.lnServerUrl + '/nodes';
     options.form = { nodeIds: nodeIds?.reduce((acc, curr) => acc + ',' + curr) };
     return request.post(options).then((nodes) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
@@ -34,7 +34,7 @@ export const decodePayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/parseinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/parseinvoice';
     options.form = { invoice: req.params.invoice };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded', data: body });
@@ -53,7 +53,7 @@ export const postPayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/payinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/payinvoice';
     options.form = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
     request.post(options).then((body) => {
@@ -70,7 +70,7 @@ export const queryPaymentRoute = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/findroutetonode';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/findroutetonode';
     options.form = {
         nodeId: req.query.nodeId,
         amountMsat: req.query.amountMsat
@@ -104,13 +104,14 @@ export const queryPaymentRoute = (req, res, next) => {
     });
 };
 export const getSentPaymentsInformation = (req, res, next) => {
+    const { payments } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Getting Sent Payment Information..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    if (req.body.payments) {
-        const paymentsArr = req.body.payments.split(',');
+    if (payments) {
+        const paymentsArr = payments.split(',');
         return Promise.all(paymentsArr?.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
@@ -128,8 +129,8 @@ export const getSentPaymentsInformation = (req, res, next) => {
 };
 export const sendPaymentToRouteRequestCall = (selectedNode, shortChannelIds, invoice, amountMsat) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/sendtoroute';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/sendtoroute';
     options.form = { shortChannelIds: shortChannelIds, amountMsat: amountMsat, invoice: invoice };
     return new Promise((resolve, reject) => {
         logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment To Route Options', data: options.form });
@@ -142,12 +143,13 @@ export const sendPaymentToRouteRequestCall = (selectedNode, shortChannelIds, inv
     });
 };
 export const sendPaymentToRoute = (req, res, next) => {
+    const { shortChannelIds, invoice, amountMsat } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment To Route..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    sendPaymentToRouteRequestCall(req.session.selectedNode, req.body.shortChannelIds, req.body.invoice, req.body.amountMsat).then((callRes) => {
+    sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((callRes) => {
         res.status(200).json(callRes);
     }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

@@ -7,11 +7,12 @@ import { Store } from '@ngrx/store';
 import { ECLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, ChannelsStatus, GetInfo, LightningBalance, OnChainBalance, Peer } from '../../../../shared/models/eclModels';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { allChannelsInfo, eclNodeInformation, eclNodeSettings, onchainBalance, peers } from '../../../store/ecl.selector';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { allChannelsInfo, eclNodeInformation, onchainBalance, peers } from '../../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -24,7 +25,7 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public numOfOpenChannels = 0;
   public numOfPendingChannels = 0;
   public numOfInactiveChannels = 0;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public totalBalance = 0;
@@ -49,8 +50,8 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
         this.numOfInactiveChannels = (allChannelsSelector.channelsStatus && allChannelsSelector.channelsStatus.inactive && allChannelsSelector.channelsStatus.inactive.channels) ? allChannelsSelector.channelsStatus.inactive.channels : 0;
         this.logger.info(allChannelsSelector);
       });
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[2])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
       });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[3])).

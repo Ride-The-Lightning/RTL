@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
@@ -19,7 +20,7 @@ import { clnPageSettings, forwardingHistory } from '../../store/cln.selector';
 import { getForwardingHistory } from '../../store/cln.actions';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-forwarding-history',
@@ -128,7 +129,7 @@ export class CLNForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
-    const reorderedFHEvent = [
+    const reorderedFHEvent: MessageDataField[][] = [
       [{ key: 'status', value: 'Settled', title: 'Status', width: 50, type: DataTypeEnum.STRING },
       { key: 'fee', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },

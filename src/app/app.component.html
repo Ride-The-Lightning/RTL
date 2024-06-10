@@ -1,4 +1,4 @@
-<div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[settings.themeColor | lowercase, settings.themeMode | lowercase]">
+<div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[selNode.settings.themeColor | lowercase, selNode.settings.themeMode | lowercase]">
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="bg-primary rtl-top-toolbar">
     <div>
       <button *ngIf="flgLoggedIn" mat-icon-button matTooltipPosition="right" [matTooltip]="flgSideNavOpened ? 'Hide Navigation Menu' : 'Show Navigation Menu'" [matTooltipDisabled]="smallScreen" (click)="sideNavToggle()">
@@ -19,7 +19,7 @@
       <rtl-top-menu />
     </div>
   </mat-toolbar>
-  <mat-sidenav-container>
+  <mat-sidenav-container (backdropClick)="backdropClicked()">
     <mat-sidenav #sideNavigation class="sidenav mat-elevation-z6" [perfectScrollbar] [opened]="flgSideNavOpened && flgLoggedIn" [mode]="(flgSidenavPinned && !smallScreen) ? 'side' : 'over'">
       <rtl-side-navigation fxFlex="100" (ChildNavClicked)="onNavigationClicked($event)" />
     </mat-sidenav>
@@ -27,9 +27,9 @@
       <div class="inner-sidenav-content" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
         <router-outlet #outlet="outlet" />
       </div>
-    </mat-sidenav-content>>
+    </mat-sidenav-content>
   </mat-sidenav-container>
-  <div *ngIf="!settings.themeColor" class="rtl-spinner">
+  <div *ngIf="!selNode.settings.themeColor" class="rtl-spinner">
     <mat-spinner color="accent" />
     <h4>Loading RTL...</h4>
   </div>

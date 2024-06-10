@@ -8,7 +8,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
 import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import { RTLConfiguration, ConfigSettingsNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
+import { RTLConfiguration, Node, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -34,8 +34,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEye = faEye;
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
-  public selNode: ConfigSettingsNode | any;
-  public settings: Settings | null;
+  public selNode: Node | any;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
@@ -73,7 +72,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.appConfig = appConfig;
     });
     this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
-      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: ConfigSettingsNode | null }) => {
+      subscribe((rootData: { nodeDate: GetInfoRoot, selNode: Node | null }) => {
         this.information = rootData.nodeDate;
         if (this.information.identity_pubkey) {
           if (this.information.chains && typeof this.information.chains[0] === 'string') {
@@ -93,7 +92,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.smallScreen = true;
         }
         this.selNode = rootData.selNode;
-        this.settings = this.selNode?.settings || null;
         this.selConfigNodeIndex = +(rootData.selNode?.index || 0);
         if (this.selNode && this.selNode.lnImplementation) {
           this.filterSideMenuNodes();
@@ -130,7 +128,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.showLogout = false;
-            this.store.dispatch(logout());
+            this.store.dispatch(logout({ payload: '' }));
           }
         });
     }
@@ -162,12 +160,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
-          (navMenuChild.link === '/services/loop' && this.settings?.swapServerUrl && this.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/services/boltz' && this.settings?.boltzServerUrl && this.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+          (navMenuChild.link === '/services/loop' && this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '') ||
+          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;
     });
   }
 
@@ -176,11 +174,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings?.userPersona) && navMenuChild.link !== '/services/peerswap') ||
-        (navMenuChild.link === '/services/peerswap' && this.settings?.enablePeerswap));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/peerswap') ||
+          (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
+          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
-      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings?.userPersona;
+      return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;
     });
   }
 

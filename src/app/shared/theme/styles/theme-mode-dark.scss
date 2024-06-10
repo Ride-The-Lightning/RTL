@@ -55,14 +55,16 @@
       color: $primary-darker;
       & .tab-badge .mat-badge-content {
         background: $primary-darker;
-      }          
+      }
     }
     & .tab-badge .mat-badge-content {
       color: $dark-card-background-color;
       background: $foreground-secondary-text;
-    }  
+    }
   }
-  
+  .currency-icon path, .currency-icon polygon {
+    fill: $foreground-text;
+  }
   .rtl-snack-bar.mat-mdc-snack-bar-container {
     max-width: 90vw !important;
     font-weight: 700;
@@ -220,8 +222,11 @@
     & .ng-fa-icon, & .mat-icon {
       color: $primary-darker;
     }
-    & .sidenav-img svg {
+    & .sidenav-img svg, & .boltz-icon-fill {
       fill: $primary-darker;
+    }
+    & .boltz-icon {
+      stroke: $primary-darker;
     }
   }
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,

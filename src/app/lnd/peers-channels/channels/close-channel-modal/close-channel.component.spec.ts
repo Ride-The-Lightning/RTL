@@ -9,10 +9,11 @@ import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { CloseChannelComponent } from './close-channel.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
+import { mockDataService, mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../shared/services/data.service';
 
 describe('CloseChannelComponent', () => {
   let component: CloseChannelComponent;
@@ -30,7 +31,8 @@ describe('CloseChannelComponent', () => {
       providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { channel: {} } }
+        { provide: MAT_DIALOG_DATA, useValue: { channel: {} } },
+        { provide: DataService, useClass: mockDataService }
       ]
     }).
       compileComponents();

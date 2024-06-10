@@ -1,18 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { CLNOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Balance, Channel, GetInfo, LocalRemoteBalance, Peer, UTXO } from '../../../../shared/models/clnModels';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
-import { channels, nodeInfoAndNodeSettingsAndBalance, peers, utxoBalances } from '../../../store/cln.selector';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { channels, nodeInfoAndBalance, peers, utxoBalances } from '../../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
@@ -25,7 +26,7 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
   public openChannels = 0;
   public pendingChannels = 0;
   public activeHTLCs = 0;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public utxos: UTXO[] = [];
@@ -44,12 +45,13 @@ export class CLNChannelsTablesComponent implements OnInit, OnDestroy {
           this.activeLink = this.links.findIndex((link) => link.link === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
         }
       });
-    this.store.select(nodeInfoAndNodeSettingsAndBalance).pipe(takeUntil(this.unSubs[1])).
-      subscribe((infoSettingsBalSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, balance: Balance }) => {
-        this.selNode = infoSettingsBalSelector.nodeSettings;
-        this.information = infoSettingsBalSelector.information;
-        this.totalBalance = infoSettingsBalSelector.balance.totalBalance || 0;
-        this.logger.info(infoSettingsBalSelector);
+    this.store.select(nodeInfoAndBalance).pipe(takeUntil(this.unSubs[1]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoBalSelector, nodeSettings]: [{ information: GetInfo, balance: Balance }, (Node | null)]) => {
+        this.selNode = nodeSettings;
+        this.information = infoBalSelector.information;
+        this.totalBalance = infoBalSelector.balance.totalBalance || 0;
+        this.logger.info(infoBalSelector);
       });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {

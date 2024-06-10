@@ -5,20 +5,23 @@ import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+
 import { Channel, GetInfo, PendingChannels, PendingClosingChannel, PendingForceClosingChannel, PendingOpenChannel, WaitingCloseChannel } from '../../../../../shared/models/lndModels';
 import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, getPaginatorLabel, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
+import { Node } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import { openAlert } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
-import { lndNodeInformation, lndNodeSettings, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
+import { lndNodeInformation, lndPageSettings, pendingChannels } from '../../../../store/lnd.selector';
 import { PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -37,7 +40,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public forceClosingTableSetting: TableSetting = { tableId: 'pending_force_closing', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
   public closingTableSetting: TableSetting = { tableId: 'pending_closing', recordsPerPage: PAGE_SIZE, sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING };
   public waitingCloseTableSetting: TableSetting = { tableId: 'pending_waiting_close', recordsPerPage: PAGE_SIZE, sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
   public displayedOpenColumns: any[] = [];
@@ -64,7 +67,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit() {
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[2])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
@@ -153,8 +156,8 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
-      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
+    const reorderedChannel: MessageDataField[][] = [
+      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
@@ -192,9 +195,9 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
       { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
@@ -221,9 +224,9 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
       { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },
@@ -247,9 +250,9 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     const fcChannelObj3 = JSON.parse(JSON.stringify(selChannel.commitments, ['local_txid'], 2));
     const preOrderedChannel: any = {};
     Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2, fcChannelObj3);
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'local_txid', value: preOrderedChannel.local_txid, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING }],
-      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING }],
+      [{ key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING, explorerLink: 'tx' }],
       [{ key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING },
       { key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING }],
       [{ key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 25, type: DataTypeEnum.NUMBER },

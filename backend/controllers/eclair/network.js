@@ -10,7 +10,7 @@ export const getNodes = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/nodes';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/nodes';
     options.form = { nodeIds: req.params.id };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished', data: body });
@@ -22,8 +22,8 @@ export const getNodes = (req, res, next) => {
 };
 export const findRouteBetweenNodesRequestCall = (selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds = [], format = 'shortChannelId') => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Network', msg: 'Find Route Between Nodes..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/findroutebetweennodes';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/findroutebetweennodes';
     options.form = { amountMsat: amountMsat, sourceNodeId: sourceNodeId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
     return new Promise((resolve, reject) => {
         request.post(options).then((body) => {
@@ -35,11 +35,12 @@ export const findRouteBetweenNodesRequestCall = (selectedNode, amountMsat, sourc
     });
 };
 export const findRouteBetweenNodes = (req, res, next) => {
+    const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format } = req.body;
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    findRouteBetweenNodesRequestCall(req.session.selectedNode, req.body.amountMsat, req.body.sourceNodeId, req.body.targetNodeId, req.body.ignoreNodeIds, req.body.format).then((callRes) => {
+    findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format).then((callRes) => {
         res.status(200).json(callRes);
     }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

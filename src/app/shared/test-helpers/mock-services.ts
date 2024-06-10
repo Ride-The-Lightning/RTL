@@ -22,7 +22,7 @@ export class mockLoggerService {
 export class mockHttpClient {
 
   post(url: string) {
-    return of(new HttpResponse(mockResponseData.setSelectedNodeSuccess));
+    return of(new HttpResponse({ status: 200, body: mockResponseData.setSelectedNodeSuccess }));
   }
 
 }
@@ -50,6 +50,14 @@ export class mockDataService {
   setLnImplementation(lnImplementation: string) {
     this.lnImplementation = lnImplementation.toLowerCase();
     this.lnImplementationUpdated.next(this.lnImplementation);
+  }
+
+  getRecommendedFeeRates() {
+    return of(mockResponseData.blockExplorerRecommendedFee);
+  }
+
+  getBlockExplorerTransaction(txid: string) {
+    return of(mockResponseData.blockExplorerTransaction);
   }
 
   getFiatRates() {
@@ -174,6 +182,8 @@ export class mockLoopService {
 export class mockBoltzService {
 
   public swapsChanged = new BehaviorSubject<any[]>([]);
+  public boltzInfoChanged = new BehaviorSubject<any>({});
+  getBoltzInfo() { };
   getSwapsList() { };
   listSwaps() { };
   swapInfo(id: string) { };

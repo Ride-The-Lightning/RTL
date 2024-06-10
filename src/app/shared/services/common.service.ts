@@ -1,11 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
-import { of, Observable, throwError, BehaviorSubject } from 'rxjs';
-import { take, map, catchError } from 'rxjs/operators';
+import { Subject, of, Observable, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
-import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS } from './consts-enums-functions';
+import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS, getSelectedCurrency } from './consts-enums-functions';
 
 @Injectable()
 export class CommonService implements OnDestroy {
@@ -17,8 +18,9 @@ export class CommonService implements OnDestroy {
   private screenSize = ScreenSizeEnum.MD;
   private containerSize = { width: 0, height: 0 };
   public containerSizeUpdated: BehaviorSubject<any> = new BehaviorSubject(this.containerSize);
+  private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(public dataService: DataService, private logger: LoggerService, private datePipe: DatePipe) { }
+  constructor(public dataService: DataService, private logger: LoggerService, private datePipe: DatePipe, public sanitizer: DomSanitizer) { }
 
   getScreenSize() {
     return this.screenSize;
@@ -91,26 +93,36 @@ export class CommonService implements OnDestroy {
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     const latest_date = new Date().valueOf();
-    if (fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
-      if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
-        return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+    try {
+      if (fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
+        if (this.ratesAPIStatus !== APICallStatusEnum.INITIATED) {
+          if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
+            return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+          } else {
+            this.ratesAPIStatus = APICallStatusEnum.INITIATED;
+            return this.dataService.getFiatRates().pipe(takeUntil(this.unSubs[0]),
+              switchMap((data) => {
+                this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
+                this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
+                this.conversionData.last_fetched = latest_date;
+                return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+              }),
+              catchError((err) => {
+                this.ratesAPIStatus = APICallStatusEnum.ERROR;
+                return throwError(() => 'Currency Conversion Error.');
+              })
+            );
+          }
+        } else if (this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched + 300000))) {
+          return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+        } else {
+          return of(this.convertWithoutFiat(value, from));
+        }
       } else {
-        this.ratesAPIStatus = APICallStatusEnum.INITIATED;
-        return this.dataService.getFiatRates().pipe(take(1),
-          map((data: any) => {
-            this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
-            this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
-            this.conversionData.last_fetched = latest_date;
-            return this.convertWithFiat(value, from, otherCurrencyUnit);
-          }),
-          catchError((err) => {
-            this.ratesAPIStatus = APICallStatusEnum.ERROR;
-            return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
-          })
-        );
+        return of(this.convertWithoutFiat(value, from));
       }
-    } else {
-      return of(this.convertWithoutFiat(value, from));
+    } catch (error) {
+      return throwError(() => 'Currency Conversion Error.');
     }
   }
 
@@ -134,7 +146,16 @@ export class CommonService implements OnDestroy {
   }
 
   convertWithFiat(value: number, from: string, otherCurrencyUnit: string) {
-    const returnValue = { unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol };
+    const returnValue = { unit: otherCurrencyUnit, iconType: 'FA', symbol: null };
+    if (otherCurrencyUnit) {
+      const selCurrency = getSelectedCurrency(this.conversionData.data[otherCurrencyUnit].symbol);
+      returnValue.iconType = selCurrency.iconType;
+      if (selCurrency && selCurrency.iconType === 'SVG' && selCurrency.symbol && typeof selCurrency.symbol === 'string') {
+        returnValue.symbol = this.sanitizer.bypassSecurityTrustHtml(selCurrency.symbol);
+      } else {
+        returnValue.symbol = selCurrency.symbol;
+      }
+    }
     returnValue[CurrencyUnitEnum.SATS] = 0;
     returnValue[CurrencyUnitEnum.BTC] = 0;
     returnValue[CurrencyUnitEnum.OTHER] = 0;

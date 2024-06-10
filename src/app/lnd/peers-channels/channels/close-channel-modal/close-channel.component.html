@@ -5,7 +5,7 @@
         <span class="page-title">{{channelToClose.active ? 'Close Channel' : 'Force Close Channel'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
-    </mat-card-header>    
+    </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box mb-1 p-2">
@@ -22,9 +22,22 @@
               <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
               <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
-            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+            <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+              <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+              <span fxLayout="column" fxFlex="100">
+                <div>Fee rates recommended by mempool (sat/vByte):</div>
+                <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                  <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                  <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                  <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                  <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                  <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                </span>
+              </span>
+            </div>
+            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-form-field fxLayout="column" fxFlex.gt-sm="48">
-                <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType">
+                <mat-select tabindex="1" [disabled]="!channelToClose.active" [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}
                   </mat-option>
@@ -47,7 +60,7 @@
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>
             </div>
-          </div>        
+          </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
           <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-button color="primary" type="reset" class="mr-1" tabindex="3" default (click)="resetData()">Clear</button>

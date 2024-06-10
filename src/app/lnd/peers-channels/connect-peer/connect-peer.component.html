@@ -5,13 +5,13 @@
         <span class="page-title">Connect to a new peer</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
-    </mat-card-header>    
+    </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
         <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="peerFormGroup">
-              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>  
+              <ng-template matStepLabel>{{peerFormLabel}}</ng-template>
               <mat-form-field fxLayout="column" fxFlex="100">
                 <mat-label>Lightning Address (pubkey OR pubkey&#64;ip:port)</mat-label>
                 <input autoFocus matInput formControlName="peerAddress" tabindex="1" required>
@@ -30,6 +30,19 @@
             <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mb-1" [formGroup]="channelFormGroup">
               <ng-template matStepLabel disabled="true">{{channelFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                  <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                  <span fxLayout="column" fxFlex="100">
+                    <div>Fee rates recommended by mempool (sat/vByte):</div>
+                    <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                      <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                      <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                      <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                      <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                      <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                    </span>
+                  </span>
+                </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
@@ -45,9 +58,9 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                  <mat-form-field fxLayout="column" fxFlex="50" fxLayoutAlign="start end">
+                  <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start end">
                     <mat-label>Transaction Type</mat-label>
-                    <mat-select tabindex="3" formControlName="selTransType">
+                    <mat-select tabindex="3" formControlName="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
                       <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                         {{transType.name}}
                       </mat-option>
@@ -55,8 +68,10 @@
                   </mat-form-field>
                   <mat-form-field fxLayout="column" fxFlex="50">
                     <mat-label>{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
-                    <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [step]="1" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                    <input matInput formControlName="transTypeValue" type="number" name="transTypeValue" tabindex="4" [step]="1" [min]="channelFormGroup.controls.selTransType.value === '2' ? recommendedFee.minimumFee : 0" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                    <mat-hint *ngIf="channelFormGroup.controls.selTransType.value === '2'">Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
                     <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}} is required.</mat-error>
+                    <mat-error *ngIf="channelFormGroup.controls.transTypeValue.value && channelFormGroup.controls.transTypeValue.errors?.minimum">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                   </mat-form-field>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
@@ -78,7 +93,7 @@
             </form>
           </mat-step>
         </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
           <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{newlyAddedPeer?.pub_key ? 'Do It Later' : 'Close'}}</button>
         </div>
       </div>

@@ -26,13 +26,13 @@ If your running RTL and LND on different devices on your local LAN, certain conf
       "index": 1,
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
-      "Authentication": {
+      "authentication": {
         "macaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
         "swapMacaroonPath": "<Path of the folder containing 'loop.macaroon' on the device running RTL>",
         "boltzMacaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
         "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
-      "Settings": {
+      "settings": {
         "userPersona": "OPERATOR",
         "themeMode": "DAY",
         "themeColor": "PURPLE",
@@ -43,7 +43,8 @@ If your running RTL and LND on different devices on your local LAN, certain conf
         "unannouncedChannels": false,
         "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080; e.g. https://192.168.0.1:8080>",
         "swapServerUrl": "<https://<localhost>:8081>",
-        "boltzServerUrl": "<https://<localhost>:9003>"
+        "boltzServerUrl": "<https://<localhost>:9003>",
+        "blockExplorerUrl": "<Default: https://mempool.space>"
       }
     }
   ]

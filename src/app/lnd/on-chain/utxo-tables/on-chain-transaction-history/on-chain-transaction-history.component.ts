@@ -8,18 +8,19 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
 import { Transaction } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
-
 import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 import { lndPageSettings, transactions } from '../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-on-chain-transaction-history',
@@ -98,9 +99,9 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   }
 
   onTransactionClick(selTransaction: Transaction) {
-    const reorderedTransactions = [
-      [{ key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100 }],
-      [{ key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100 }],
+    const reorderedTransactions: MessageDataField[][] = [
+      [{ key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100, explorerLink: 'block' }],
+      [{ key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100, explorerLink: 'tx' }],
       [{ key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER }],

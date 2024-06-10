@@ -18,6 +18,8 @@ export interface MessageDataField {
   title: string;
   width: number;
   type?: DataTypeEnum;
+  digitsInfo?: string;
+  explorerLink?: string;
 }
 
 export interface InputData {
@@ -139,12 +141,14 @@ export interface ECLPaymentInformation {
 
 export interface ChannelInformation {
   channel: Channel;
+  selNode?: Node | any;
   showCopy?: boolean;
   component?: any;
 }
 
 export interface CLNChannelInformation {
   channel: ChannelCLN;
+  selNode?: Node | any;
   showCopy?: boolean;
   component?: any;
 }
@@ -155,8 +159,9 @@ export interface ECLChannelInformation {
   component?: any;
 }
 
-export interface PendingOpenChannelInformation {
-  pendingChannel: PendingOpenChannel;
+export interface BumpFeeInformation {
+  pendingChannel?: PendingOpenChannel;
+  selUTXO?: UTXO;
   component?: any;
 }
 
@@ -240,6 +245,6 @@ export interface DialogConfig {
   minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
-  PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
+  BumpFeeInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

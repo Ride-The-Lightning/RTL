@@ -1,13 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faInfoCircle, faExclamationTriangle, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { PendingOpenChannel } from '../../../../shared/models/lndModels';
-import { PendingOpenChannelInformation } from '../../../../shared/models/alertData';
+import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { Node } from '../../../../shared/models/RTLconfig';
+import { RecommendedFeeRates, BlockExplorerTransaction } from '../../../../shared/models/rtlModels';
+import { BumpFeeInformation } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -20,44 +23,77 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 export class BumpFeeComponent implements OnInit, OnDestroy {
 
   private outputIdx: NgModel;
-  @ViewChild('outputIdx') set payReq(outIdx: NgModel) {
+  @ViewChild('outputIdx') set outputIndx(outIdx: NgModel) {
     if (outIdx) {
       this.outputIdx = outIdx;
     }
   }
-  public bumpFeeChannel: PendingOpenChannel;
+  public faUpRightFromSquare = faUpRightFromSquare;
+  public txid: string = '';
+  public outputIndex: number | null = null;
   public transTypes = [...TRANS_TYPES];
   public selTransType = '2';
   public blocks: number | null = null;
   public fees: number | null = null;
-  public outputIndex: number | null = null;
   public faCopy = faCopy;
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public bumpFeeError = '';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  public flgShowDustWarning = false;
+  public dustOutputValue = 0;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
+  public selNode: Node;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: BumpFeeInformation, private logger: LoggerService, private dataService: DataService, private store: Store<RTLState>) { }
 
   ngOnInit() {
     this.transTypes = this.transTypes.splice(1);
-    this.bumpFeeChannel = this.data.pendingChannel;
-    const channelPointArr = this.bumpFeeChannel.channel?.channel_point?.split(':') || [];
-    if (this.bumpFeeChannel && this.bumpFeeChannel.channel) {
-      this.bumpFeeChannel.channel.txid_str = channelPointArr[0] || (this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.channel_point ? this.bumpFeeChannel.channel.channel_point : '');
-      this.bumpFeeChannel.channel.output_index = +channelPointArr[1] || null;
+    if (this.data.pendingChannel && this.data.pendingChannel.channel) {
+      const channelPointArr = this.data.pendingChannel.channel?.channel_point?.split(':') || [];
+      this.txid = channelPointArr[0] || (this.data.pendingChannel.channel && this.data.pendingChannel.channel.channel_point ? this.data.pendingChannel.channel.channel_point : '');
+      this.outputIndex = channelPointArr[1] && channelPointArr[1] !== '' && +channelPointArr[1] === 0 ? 1 : 0;
+    } else if (this.data.selUTXO && this.data.selUTXO.outpoint) {
+      this.txid = this.data.selUTXO.outpoint.txid_str || '';
+      this.outputIndex = this.data.selUTXO.outpoint.output_index || 0;
     }
+    this.logger.info(this.txid, this.outputIndex);
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((selNode) => {
+        this.selNode = selNode;
+        this.logger.info(this.selNode);
+      });
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[1])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
+    this.dataService.getBlockExplorerTransaction(this.txid).
+      pipe(takeUntil(this.unSubs[2])).subscribe({
+        next: (txRes: BlockExplorerTransaction) => {
+          this.dustOutputValue = txRes.vout[this.outputIndex].value;
+          this.flgShowDustWarning = this.dustOutputValue < 1000;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
   }
 
   onBumpFee(): boolean | void {
-    if (this.outputIndex === this.bumpFeeChannel.channel?.output_index) {
-      this.outputIdx.control.setErrors({ pendingChannelOutputIndex: true });
-      return true;
+    if (this.data.pendingChannel && this.data.pendingChannel.channel) {
+      const channelPointArr = this.data.pendingChannel.channel?.channel_point?.split(':') || [];
+      const chanIdx = channelPointArr.length > 1 && channelPointArr[1] && channelPointArr[1] !== '' ? +channelPointArr[1] : null;
+      if (chanIdx && this.outputIndex === chanIdx) {
+        this.outputIdx.control.setErrors({ pendingChannelOutputIndex: true });
+        return true;
+      }
     }
     if ((!this.outputIndex && this.outputIndex !== 0) || (this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) {
       return true;
     }
-    this.dataService.bumpFee((this.bumpFeeChannel && this.bumpFeeChannel.channel && this.bumpFeeChannel.channel.txid_str ? this.bumpFeeChannel.channel.txid_str : ''), this.outputIndex, (this.blocks || null), (this.fees || null)).pipe(takeUntil(this.unSubs[0])).
+    this.dataService.bumpFee(this.txid, this.outputIndex, (this.blocks || null), (this.fees || null)).pipe(takeUntil(this.unSubs[3])).
       subscribe({
         next: (res) => {
           this.dialogRef.close(false);
@@ -68,8 +104,8 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
       });
   }
 
-  onCopyID(payload: string) {
-    this.snackBar.open('Transaction ID copied.');
+  onExplorerClicked() {
+    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.txid, '_blank');
   }
 
   resetData() {

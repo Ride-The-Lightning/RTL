@@ -11,10 +11,11 @@ import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus, LightningBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { allChannelsInfo, eclNodeSettings, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { allChannelsInfo, fees, nodeInfoStatus, onchainBalance } from '../store/ecl.selector';
 
 export interface Tile {
   id: string;
@@ -43,7 +44,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = { localBalance: 0, remoteBalance: 0, balancedness: 0 };
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public fees: Fees;
   public information: GetInfo = {};
   public channels: Channel[] = [];
@@ -117,7 +118,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(eclNodeSettings).pipe(takeUntil(this.unSubs[0])).
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });

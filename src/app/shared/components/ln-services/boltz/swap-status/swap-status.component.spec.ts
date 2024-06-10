@@ -1,6 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SharedModule } from '../../../../shared.module';
 
+import { DataService } from '../../../../services/data.service';
+import { CommonService } from '../../../../services/common.service';
+import { mockDataService } from '../../../../test-helpers/mock-services';
 import { SwapStatusComponent } from './swap-status.component';
 
 describe('SwapStatusComponent', () => {
@@ -10,7 +13,11 @@ describe('SwapStatusComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SwapStatusComponent],
-      imports: [SharedModule]
+      imports: [SharedModule],
+      providers: [
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
+      ]
     }).
       compileComponents();
   }));

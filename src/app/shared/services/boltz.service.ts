@@ -8,7 +8,7 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 import { CommonService } from './common.service';
 import { LoggerService } from './logger.service';
 import { API_URL, API_END_POINTS, AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
-import { ListSwaps } from '../models/boltzModels';
+import { ListSwaps, BoltzInfo } from '../models/boltzModels';
 import { closeSpinner, logout, openAlert, openSpinner } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
@@ -18,8 +18,10 @@ export class BoltzService implements OnDestroy {
 
   private swapUrl = '';
   private swaps: ListSwaps = {};
+  private boltzInfo: BoltzInfo = null;
+  public boltzInfoChanged = new BehaviorSubject<BoltzInfo>(null);
   public swapsChanged = new BehaviorSubject<ListSwaps>({});
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) { }
 
@@ -46,11 +48,29 @@ export class BoltzService implements OnDestroy {
     return this.httpClient.get(this.swapUrl).pipe(catchError((err) => of(this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err))));
   }
 
+  getBoltzInfo() {
+    this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_BOLTZ_INFO }));
+    this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/info';
+    this.httpClient.get(this.swapUrl).
+      pipe(takeUntil(this.unSubs[1])).
+      subscribe({
+        next: (res: BoltzInfo) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_BOLTZ_INFO }));
+          this.boltzInfo = res;
+          this.boltzInfoChanged.next(this.boltzInfo);
+        }, error: (err) => {
+          this.boltzInfo = { version: '2.0.0' };
+          this.boltzInfoChanged.next(this.boltzInfo);
+          return of(this.handleErrorWithoutAlert(UI_MESSAGES.GET_BOLTZ_INFO, this.swapUrl, err));
+        }
+      });
+  }
+
   serviceInfo() {
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
     this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/serviceInfo';
     return this.httpClient.get(this.swapUrl).pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       map((res) => {
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_SERVICE_INFO }));
         return res;
@@ -59,14 +79,14 @@ export class BoltzService implements OnDestroy {
     );
   }
 
-  swapOut(amount: number, address: string) {
-    const requestBody = { amount: amount, address: address };
+  swapOut(amount: number, address: string, acceptZeroConf: boolean) {
+    const requestBody = { amount: amount, address: address, acceptZeroConf: acceptZeroConf };
     this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createreverseswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }
 
-  swapIn(amount: number) {
-    const requestBody = { amount: amount };
+  swapIn(amount: number, sendFromInternal: boolean) {
+    const requestBody = { amount: amount, sendFromInternal: sendFromInternal };
     this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
   }
@@ -78,7 +98,7 @@ export class BoltzService implements OnDestroy {
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
       this.store.dispatch(openAlert({
@@ -101,14 +121,14 @@ export class BoltzService implements OnDestroy {
     let errMsg = '';
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     }
     this.logger.error(err);
     this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout());
+      this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
       errMsg = 'Unable to Connect to Boltz Server.';
       setTimeout(() => {

@@ -90,7 +90,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.showLogout = false;
-          this.store.dispatch(logout());
+          this.store.dispatch(logout({ payload: '' }));
         }
       });
   }

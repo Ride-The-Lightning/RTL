@@ -39,7 +39,7 @@ export const getInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/getinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/getinvoice';
     options.form = { paymentHash: req.params.paymentHash };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Found', data: body });
@@ -53,11 +53,18 @@ export const getInvoice = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-export const listPendingInvoicesRequestCall = (selectedNode) => {
+export const listPendingInvoicesRequestCall = (selectedNode, count, skip) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/listpendinginvoices';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
+    // Limit the number of invoices till provided count
+    if (count) {
+        options.form.count = count;
+    }
+    if (skip) {
+        options.form.skip = skip;
+    }
     return new Promise((resolve, reject) => {
         request.post(options).then((pendingInvoicesResponse) => {
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Pending Invoices List ', data: pendingInvoicesResponse });
@@ -74,29 +81,33 @@ export const listInvoices = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
-    options.form = { from: 0, to: tillToday };
     const options1 = JSON.parse(JSON.stringify(options));
-    options1.url = req.session.selectedNode.ln_server_url + '/listinvoices';
+    options1.url = req.session.selectedNode.settings.lnServerUrl + '/listinvoices';
     options1.form = { from: 0, to: tillToday };
+    if (req.query.count) {
+        options1.form.count = req.query.count;
+    }
+    if (req.query.skip) {
+        options1.form.skip = req.query.skip;
+    }
     const options2 = JSON.parse(JSON.stringify(options));
-    options2.url = req.session.selectedNode.ln_server_url + '/listpendinginvoices';
+    options2.url = req.session.selectedNode.settings.lnServerUrl + '/listpendinginvoices';
     options2.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
-        return common.getDummyData('Invoices', req.session.selectedNode.ln_implementation).then((body) => {
-            const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
-            pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-            return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+        return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then(([invoices, pendingInvoicesRes]) => {
+            pendingInvoices = pendingInvoicesRes;
+            return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                 then((values) => res.status(200).json(invoices));
         });
     }
     else {
         return Promise.all([request(options1), request(options2)]).
-            then((body) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
-            const invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
-            pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
+            then(([invoices, pendingInvoicesRes]) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: invoices });
+            // pendingInvoices will be used to get the status (paid/unpaid) of the invoice via getReceivedPaymentInfo
+            pendingInvoices = pendingInvoicesRes;
             if (invoices && invoices.length > 0) {
-                return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.ln_server_url, invoice))).
+                return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                     then((values) => {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
                     return res.status(200).json(invoices);
@@ -119,8 +130,8 @@ export const listInvoices = (req, res, next) => {
 };
 export const createInvoiceRequestCall = (selectedNode, description, amount) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = selectedNode.options;
-    options.url = selectedNode.ln_server_url + '/createinvoice';
+    options = selectedNode.authentication.options;
+    options.url = selectedNode.settings.lnServerUrl + '/createinvoice';
     options.form = { description: description, amountMsat: amount };
     return new Promise((resolve, reject) => {
         request.post(options).then((invResponse) => {
@@ -135,12 +146,13 @@ export const createInvoiceRequestCall = (selectedNode, description, amount) => {
     });
 };
 export const createInvoice = (req, res, next) => {
+    const { description, amountMsat } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
     options = common.getOptions(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    createInvoiceRequestCall(req.session.selectedNode, req.body.description, req.body.amountMsat).then((invRes) => {
+    createInvoiceRequestCall(req.session.selectedNode, description, amountMsat).then((invRes) => {
         res.status(201).json(invRes);
     }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

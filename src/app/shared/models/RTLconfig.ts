@@ -18,6 +18,7 @@ export class Settings {
     public unannouncedChannels: boolean,
     public fiatConversion: boolean,
     public currencyUnits: Array<string>,
+    public selCurrencyUnit?: string,
     public bitcoindConfigPath?: string,
     public logLevel?: string,
     public lnServerUrl?: string,
@@ -26,7 +27,8 @@ export class Settings {
     public channelBackupPath?: string,
     public currencyUnit?: string,
     public enableOffers?: boolean,
-    public enablePeerswap?: boolean
+    public enablePeerswap?: boolean,
+    public blockExplorerUrl?: string
   ) { }
 
 }
@@ -41,7 +43,21 @@ export class Authentication {
 
 }
 
-export class ConfigSettingsNode {
+export class RTLConfiguration {
+
+  constructor(
+    public defaultNodeIndex: number,
+    public selectedNodeIndex: number,
+    public SSO: SSO,
+    public enable2FA: boolean,
+    public secret2FA: string,
+    public allowPasswordUpdate: boolean,
+    public nodes: Node[]
+  ) { }
+
+}
+
+export class Node {
 
   constructor(
     public settings: Settings,
@@ -49,19 +65,6 @@ export class ConfigSettingsNode {
     public index?: number,
     public lnNode?: string,
     public lnImplementation?: string
-  ) { }
-
-}
-
-export class RTLConfiguration {
-
-  constructor(
-    public defaultNodeIndex: number,
-    public selectedNodeIndex: number,
-    public sso: SSO,
-    public enable2FA: boolean,
-    public allowPasswordUpdate: boolean,
-    public nodes: ConfigSettingsNode[]
   ) { }
 
 }
@@ -74,20 +77,6 @@ export interface GetInfoRoot {
   uris?: string[];
   version?: string;
   api_version?: string;
-}
-
-export interface SelNodeChild {
-  userPersona?: string;
-  channelBackupPath?: string;
-  selCurrencyUnit?: string;
-  currencyUnits?: string[];
-  fiatConversion?: boolean;
-  unannouncedChannels?: boolean;
-  lnImplementation?: string;
-  swapServerUrl?: string;
-  boltzServerUrl?: string;
-  enableOffers?: boolean;
-  enablePeerswap?: boolean;
 }
 
 export class HelpTopic {

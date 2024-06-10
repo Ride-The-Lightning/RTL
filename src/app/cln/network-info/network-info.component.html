@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="space-between stretch" class="mb-4">
-  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR" cols="6" rowHeight="100px">
+  <mat-grid-list *ngIf="selNode.settings.userPersona === userPersonaEnum.OPERATOR" cols="6" rowHeight="100px">
     <mat-grid-tile *ngFor="let card of nodeCardsOperator" class="node-grid-tile" [colspan]="card.cols" [rowspan]="card.rows">
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
@@ -36,11 +36,11 @@
               </div>
             </mat-card-content>
           </mat-card>
-        </div>          
+        </div>
       </div>
     </mat-grid-tile>
   </mat-grid-list>
-  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.MERCHANT" cols="6" rowHeight="100px">
+  <mat-grid-list *ngIf="selNode.settings.userPersona === userPersonaEnum.MERCHANT" cols="6" rowHeight="100px">
     <mat-grid-tile *ngFor="let card of nodeCardsMerchant" class="node-grid-tile" [colspan]="card.cols" [rowspan]="card.rows">
       <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
         <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
@@ -77,7 +77,7 @@
               </div>
             </mat-card-content>
           </mat-card>
-        </div>          
+        </div>
       </div>
     </mat-grid-tile>
   </mat-grid-list>

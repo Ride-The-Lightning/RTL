@@ -4,6 +4,27 @@
       <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
         <mat-expansion-panel-header>
           <mat-panel-title>
+            <fa-icon class="page-title-img mr-1" [icon]="faBarsStaggered" />
+            <span class="page-title">Block Explorer</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="column" fxLayoutAlign="start stretch">
+          <div fxFlex="100" class="alert alert-warn">
+            <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
+            <span>Configure your own blockchain explorer url or <strong><a href="https://mempool.space/" target="blank">mempool.space</a></strong> will be used.</span>
+          </div>
+          <div fxLayout="row wrap" fxLayoutAlign="start center">
+            <mat-form-field fxLayout="column" fxFlex="100">
+              <mat-label>Block Explorer URL</mat-label>
+              <input matInput name="blockExplorerUrl" [(ngModel)]="selNode.settings.blockExplorerUrl">
+              <mat-hint>Blockchain explorer URL, eg. https://mempool.space or https://blockstream.info</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel fxLayout="column" class="flat-expansion-panel mt-1">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
             <fa-icon class="page-title-img mr-1" [icon]="faEyeSlash" />
             <span class="page-title">Open Unannounced Channels</span>
           </mat-panel-title>
@@ -31,12 +52,14 @@
             <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
-            <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" class="mr-2" [(ngModel)]="selNode.settings.fiatConversion" (change)="!selNode.settings.currencyUnit">Enable Fiat Conversion</mat-slide-toggle>
-            <mat-form-field>
+            <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" class="mr-2" [(ngModel)]="selNode.settings.fiatConversion" (change)="onFiatConversionChange($event)">Enable Fiat Conversion</mat-slide-toggle>
+            <mat-form-field fxFlex="25">
               <mat-label>Fiat Currency</mat-label>
-              <mat-select #currencyUnit="ngModel" autoFocus tabindex="3" name="currencyUnit" [disabled]="!selNode.settings.fiatConversion" [required]="selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)">
+              <mat-select #currencyUnit="ngModel" autoFocus tabindex="3" name="currencyUnit" [disabled]="!selNode.settings.fiatConversion" [required]="selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit">
                 <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
-                  {{currencyUnit.id}}
+                  <span *ngIf="currencyUnit && currencyUnit.iconType === 'FA'" class="mr-1"><fa-icon [icon]="currencyUnit.symbol" /></span>
+                  <span *ngIf="currencyUnit && currencyUnit.iconType === 'SVG'" class="mr-1"><span fxLayoutAlign="center center" [innerHTML]="currencyUnit.symbol"></span></span>
+                  {{currencyUnit.name}} ({{currencyUnit.id}})
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="selNode.settings.fiatConversion && !selNode.settings.currencyUnit">Currency unit is required.</mat-error>
@@ -91,7 +114,7 @@
   <div fxLayout="column" fxLayoutAlign="start start" class="mt-1">
     <div fxLayout="row">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="10" (click)="onResetSettings()">Reset</button>
-      <button mat-flat-button color="primary" tabindex="11" (click)="onUpdateSettings()">Update</button>
+      <button mat-flat-button color="primary" tabindex="11" (click)="onUpdateNodeSettings()">Update</button>
     </div>
   </div>
 </div>

@@ -125,17 +125,13 @@
     color: $background-color;
   }
 
-  .mdc-tab__text-label {
-    &.mdc-tab__text-label-active {
-      color: $primary-color;
-      & .tab-badge .mat-badge-content {
-        background: $primary-color;
-      }          
-    }
-    & .tab-badge .mat-badge-content {
-      background: $foreground-secondary-text;
-    }  
-  }
+  // .mdc-tab__text-label {
+  //   color: $primary-color;
+  //   .mat-badge-content.mat-badge-active {
+  //     background: $primary-color;
+  //   }
+  // }
+
   .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
     color: $foreground-secondary-text;
   }
@@ -230,6 +226,15 @@
   }
   .mat-expansion-panel.flat-expansion-panel {
     border: 1px solid $foreground-divider;
+  }
+  .mat-mdc-form-field-hint {
+    color: $primary-color;
+    .currency-icon path, .currency-icon polygon, fa-icon svg path {
+      fill: $primary-color;
+    }
+  }
+  .currency-icon path, .currency-icon polygon {
+    fill: $foreground-secondary-text;
   }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }

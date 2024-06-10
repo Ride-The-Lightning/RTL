@@ -2,7 +2,7 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{swapDirectionCaption}}</span></div>
-      <div fxLayoutAlign="space-between end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+      <div fxLayoutAlign="end end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
         <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>
@@ -16,7 +16,7 @@
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <rtl-boltz-service-info [serviceInfo]="serviceInfo" [direction]="direction" />
               </div>
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">  
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
                 <mat-form-field fxLayout="column" fxFlex="48">
                   <mat-label>Amount</mat-label>
                   <input autoFocus matInput type="number" tabindex="1" formControlName="amount" required [step]="1000">
@@ -26,6 +26,18 @@
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.min">Amount must be greater than or equal to {{serviceInfo?.limits?.minimal | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup?.controls?.amount?.errors?.max">Amount must be less than or equal to {{serviceInfo?.limits?.maximal | number}}.</mat-error>
                 </mat-form-field>
+                <div *ngIf="direction === swapTypeEnum.SWAP_OUT" fxLayout="column" fxFlex="48" fxLayoutAlign="start stretch">
+                  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-slide-toggle fxLayoutAlign="start center" tabindex="2" color="primary" formControlName="acceptZeroConf" name="acceptZeroConf">Accept Zero Conf</mat-slide-toggle>
+                    <mat-icon matTooltip="Only recommended for smaller payments, involves trust in Boltz" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
+                  </div>
+                </div>
+                <div *ngIf="direction === swapTypeEnum.SWAP_IN && isSendFromInternalCompatible" fxLayout="column" fxFlex="48" fxLayoutAlign="start stretch">
+                  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-slide-toggle fxLayoutAlign="start center" tabindex="2" color="primary" formControlName="sendFromInternal" name="sendFromInternal">Send from Internal Wallet</mat-slide-toggle>
+                    <mat-icon matTooltip="Pay from the node's onchain wallet" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
+                  </div>
+                </div>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="direction === swapTypeEnum.SWAP_OUT" mat-button color="primary" tabindex="2" type="button" matStepperNext>Next</button>
@@ -73,7 +85,7 @@
             </form>
           </mat-step>
         </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">
           <button mat-button color="primary" tabindex="14" type="button" default [mat-dialog-close]="false">Close</button>
         </div>
       </div>
@@ -81,7 +93,7 @@
   </div>
 </div>
 <ng-template #swapStatusBlock>
-  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [direction]="direction" />
+  <rtl-boltz-swap-status fxLayout="column" [swapStatus]="swapStatus" [direction]="direction" [acceptZeroConf]="inputFormGroup?.controls?.acceptZeroConf.value" [sendFromInternal]="inputFormGroup?.controls?.sendFromInternal.value" />
 </ng-template>
 <div *ngIf="flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="info-graphics-container" [@opacityAnimation]>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">

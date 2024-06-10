@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { faBullhorn, faExclamationTriangle, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -18,11 +19,11 @@ import { openAlert, openConfirmation } from '../../../store/rtl.actions';
 import { RTLState } from '../../../store/rtl.state';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { CLNOpenLiquidityChannelComponent } from '../open-liquidity-channel-modal/open-liquidity-channel-modal.component';
-import { clnPageSettings, nodeInfoAndNodeSettingsAndBalance } from '../../store/cln.selector';
+import { clnPageSettings, nodeInfoAndBalance } from '../../store/cln.selector';
 import { DatePipe } from '@angular/common';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cln-liquidity-ads-list',
@@ -93,12 +94,12 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    combineLatest([this.store.select(nodeInfoAndNodeSettingsAndBalance), this.dataService.listNetworkNodes({ liquidity_ads: true })]).pipe(takeUntil(this.unSubs[1])).
+    combineLatest([this.store.select(nodeInfoAndBalance), this.dataService.listNetworkNodes({ liquidity_ads: true })]).pipe(takeUntil(this.unSubs[1])).
       subscribe({
-        next: ([infoSettingsBalSelector, nodeListRes]) => {
-          this.information = infoSettingsBalSelector.information;
-          this.totalBalance = infoSettingsBalSelector.balance.totalBalance || 0;
-          this.logger.info(infoSettingsBalSelector);
+        next: ([infoBalSelector, nodeListRes]) => {
+          this.information = infoBalSelector.information;
+          this.totalBalance = infoBalSelector.balance.totalBalance || 0;
+          this.logger.info(infoBalSelector);
           if (nodeListRes && !(<any[]>nodeListRes).length) { nodeListRes = []; }
           this.logger.info('Received Liquidity Ads Enabled Nodes: ' + JSON.stringify(nodeListRes));
           this.listNodesCallStatus = APICallStatusEnum.COMPLETED;
@@ -237,7 +238,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
         }
       });
     }
-    const reorderedLQNode = [
+    const reorderedLQNode: MessageDataField[][] = [
       [{ key: 'alias', value: lqNode.alias, title: 'Node Alias', width: 50, type: DataTypeEnum.STRING },
       { key: 'last_timestamp', value: lqNode.last_timestamp, title: 'Last Timestamp', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'nodeid', value: lqNode.nodeid, title: 'Node ID', width: 100, type: DataTypeEnum.STRING }],

@@ -38,7 +38,7 @@
               </mat-form-field>
               <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxFlex="48" fxLayoutAlign="end center">
                 <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
+                <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
                 <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
               </mat-form-field>
             </div>
@@ -74,7 +74,7 @@
                 </div>
               </div>
             </div>
-          </mat-expansion-panel>    
+          </mat-expansion-panel>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
         <div *ngIf="sendFundError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
@@ -93,7 +93,7 @@
 <ng-template #sweepAllBlock>
   <div fxLayout="column">
     <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
-      <mat-step *ngIf="!appConfig.sso.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
+      <mat-step *ngIf="!appConfig.SSO.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
         <form fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1" [formGroup]="passwordFormGroup">
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
@@ -129,7 +129,7 @@
                 </mat-form-field>
                 <mat-form-field *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value" fxFlex="48" fxLayoutAlign="end center">
                   <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                  <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0">
+                  <input matInput formControlName="customFeeRate" type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="0">
                   <mat-error *ngIf="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value && !sendFundFormGroup.controls.customFeeRate.value">Fee Rate is required.</mat-error>
                 </mat-form-field>
               </div>

@@ -8,8 +8,7 @@ import { MatStepper } from '@angular/material/stepper';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
-import { updateSelectedNodeOptions } from '../../../store/rtl.actions';
-import { fetchInfoLND, genSeed, initWallet } from '../../store/lnd.actions';
+import { fetchInfoLND, genSeed, initWallet, updateSelectedNodeOptions } from '../../store/lnd.actions';
 
 export function matchedPasswords(control: UntypedFormGroup): ValidationErrors | null {
   const initWalletPassword = control.get('initWalletPassword');

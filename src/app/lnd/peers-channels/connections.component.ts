@@ -5,11 +5,12 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { blockchainBalance, channels, lndNodeSettings, peers } from '../store/lnd.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { blockchainBalance, channels, peers } from '../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { BlockchainBalance, Channel, ChannelsSummary, LightningBalance, Peer } from '../../shared/models/lndModels';
 
@@ -20,7 +21,7 @@ import { BlockchainBalance, Channel, ChannelsSummary, LightningBalance, Peer } f
 })
 export class ConnectionsComponent implements OnInit, OnDestroy {
 
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public activePeers = 0;
   public activeChannels = 0;
   public faUsers = faUsers;
@@ -40,7 +41,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
           this.activeLink = this.links.findIndex((link) => link.link === (<ResolveEnd>value).urlAfterRedirects.substring((<ResolveEnd>value).urlAfterRedirects.lastIndexOf('/') + 1));
         }
       });
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
       subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.activePeers = (peersSelector.peers && peersSelector.peers.length) ? peersSelector.peers.length : 0;

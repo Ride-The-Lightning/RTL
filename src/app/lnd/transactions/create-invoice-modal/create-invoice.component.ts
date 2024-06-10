@@ -9,13 +9,15 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
 import { LNDActions, TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES, DEFAULT_INVOICE_EXPIRY } from '../../../shared/services/consts-enums-functions';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { RTLState } from '../../../store/rtl.state';
+import { rootSelectedNode } from '../../../store/rtl.selector';
 import { saveNewInvoice } from '../../store/lnd.actions';
-import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
+import { lndNodeInformation } from '../../store/lnd.selector';
+import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-create-invoices',
@@ -25,7 +27,8 @@ import { lndNodeInformation, lndNodeSettings } from '../../store/lnd.selector';
 export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   public faExclamationTriangle = faExclamationTriangle;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
+  public convertedCurrency: ConvertedCurrency = null;
   public memo = '';
   public expiry: number | null;
   public isAmp = false;
@@ -46,7 +49,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: SelNodeChild | null) => { this.selNode = nodeSettings; });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[1])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.actions.pipe(takeUntil(this.unSubs[2]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)).
@@ -94,13 +97,14 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if (this.selNode && this.selNode.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
+    if (this.selNode && this.selNode.settings.fiatConversion && this.invoiceValue && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.currencyUnits && this.selNode.currencyUnits.length > 2 ? this.selNode.currencyUnits[2] : ''), this.selNode.fiatConversion).
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, (this.selNode.settings.currencyUnits && this.selNode.settings.currencyUnits.length > 2 ? this.selNode.settings.currencyUnits[2] : ''), this.selNode.settings.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
-            this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+            this.convertedCurrency = data;
+            this.invoiceValueHint = this.decimalPipe.transform(this.convertedCurrency.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + this.convertedCurrency.unit;
           }, error: (err) => {
             this.invoiceValueHint = 'Conversion Error: ' + err;
           }

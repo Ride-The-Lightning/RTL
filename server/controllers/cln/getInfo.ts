@@ -16,8 +16,8 @@ export const getInfo = (req, res, next) => {
   common.setOptions(req);
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.ln_server_url + '/v1/getinfo';
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.ln_node });
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/getinfo';
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.lnNode });
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Core Lightning server url ' + options.url });
   if (!options.headers || !options.headers.rune) {
     const errMsg = 'Core lightning get info failed due to missing rune!';
@@ -45,7 +45,7 @@ export const getInfo = (req, res, next) => {
           body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
         });
       }
-      req.session.selectedNode.ln_version = body.version || '';
+      req.session.selectedNode.lnVersion = body.version || '';
       req.session.selectedNode.api_version = body.api_version || '';
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Core Lightning\'s Websocket Server.' });
       clWsClient.updateSelectedNode(req.session.selectedNode);

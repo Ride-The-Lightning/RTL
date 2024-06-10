@@ -12,9 +12,9 @@
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel ID</h4>
-            <span tabindex="4" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink()" >
+            <span tabindex="4" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink('1', channel.chan_id)" >
               {{channel.chan_id}}
-            </span>            
+            </span>
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Alias</h4>
@@ -25,14 +25,19 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Channel Point</h4>
-            <span class="foreground-secondary-text">{{channel.channel_point}}</span>
+            <span tabindex="5" class="foreground-secondary-text">
+              {{channel.channel_point}}
+              <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>              
+            </span>
           </div>
         </div>
         <mat-divider class="my-1" [inset]="true" />
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Peer Public Key</h4>
-            <span class="foreground-secondary-text">{{channel.remote_pubkey}}</span>
+            <span tabindex="6" class="foreground-secondary-text go-to-link" matTooltip="Go To Graph Lookup" (click)="onGoToLink('0', channel.remote_pubkey)">
+              {{channel.remote_pubkey}}
+            </span>
           </div>
         </div>
         <mat-divider class="my-1" [inset]="true" />

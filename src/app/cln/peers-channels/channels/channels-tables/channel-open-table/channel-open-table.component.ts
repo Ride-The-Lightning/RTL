@@ -7,6 +7,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
+
 import { Channel, GetInfo, ChannelEdge, Balance, LookupChannelEdge } from '../../../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -23,7 +25,8 @@ import { channelLookup, closeChannel, updateChannel } from '../../../../store/cl
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
   selector: 'rtl-cln-channel-open-table',
@@ -56,6 +59,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public selFilter = '';
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public selNode: Node | null;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
@@ -111,6 +115,11 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }
         this.logger.info(channelsSeletor);
       });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[3])).
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
+
   }
 
   ngAfterViewInit() {
@@ -131,7 +140,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       } else {
         remoteNode = resLookup.channels[1];
       }
-      const reorderedChannelPolicy = [
+      const reorderedChannelPolicy: MessageDataField[][] = [
         [{ key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER },
         { key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER },
         { key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
@@ -174,7 +183,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
           }
         }
       }));
-      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[3])).subscribe((confirmRes) => {
+      this.rtlEffects.closeConfirm.pipe(takeUntil(this.unSubs[4])).subscribe((confirmRes) => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
@@ -182,43 +191,29 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         }
       });
     } else {
-      this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
-      this.store.dispatch(channelLookup({ payload: { uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false } }));
-      this.clnEffects.setLookupCL.pipe(take(1)).subscribe((resLookup: ChannelEdge) => {
-        if (resLookup.channels && resLookup.channels.length > 0 && resLookup.channels[0].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup.channels[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[0].fee_per_millionth };
-        } else if (resLookup.channels.length > 1 && resLookup.channels[1].source === this.information.id) {
-          this.myChanPolicy = { fee_base_msat: resLookup.channels[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup.channels[1].fee_per_millionth };
-        } else {
-          this.myChanPolicy = { fee_base_msat: 0, fee_rate_milli_msat: 0 };
+      const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ?
+        channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias +
+      ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
+      const confirmationMsg = [];
+      this.store.dispatch(openConfirmation({
+        payload: {
+          data: {
+            type: AlertTypeEnum.CONFIRM,
+            alertTitle: 'Update Fee Policy',
+            noBtnText: 'Cancel',
+            yesBtnText: 'Update',
+            message: confirmationMsg,
+            titleMessage: titleMsg,
+            flgShowInput: true,
+            getInputs: [
+              { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: (channelToUpdate.fee_base_msat === '') ? 0 : channelToUpdate.fee_base_msat, step: 100, width: 48 },
+              { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: channelToUpdate.fee_proportional_millionths, min: 1, width: 48, hintFunction: this.percentHintFunction }
+            ]
+          }
         }
-        this.logger.info(this.myChanPolicy);
-        const titleMsg = 'Update fee policy for Channel: ' + ((!channelToUpdate.alias && !channelToUpdate.short_channel_id) ?
-          channelToUpdate.channel_id : (channelToUpdate.alias && channelToUpdate.short_channel_id) ? channelToUpdate.alias +
-        ' (' + channelToUpdate.short_channel_id + ')' : channelToUpdate.alias ? channelToUpdate.alias : channelToUpdate.short_channel_id);
-        const confirmationMsg = [];
-        setTimeout(() => {
-          this.store.dispatch(openConfirmation({
-            payload: {
-              data: {
-                type: AlertTypeEnum.CONFIRM,
-                alertTitle: 'Update Fee Policy',
-                noBtnText: 'Cancel',
-                yesBtnText: 'Update',
-                message: confirmationMsg,
-                titleMessage: titleMsg,
-                flgShowInput: true,
-                getInputs: [
-                  { placeholder: 'Base Fee (mSats)', inputType: DataTypeEnum.NUMBER, inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, step: 100, width: 48 },
-                  { placeholder: 'Fee Rate (mili mSats)', inputType: DataTypeEnum.NUMBER, inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction }
-                ]
-              }
-            }
-          }));
-        }, 0);
-      });
+      }));
       this.rtlEffects.closeConfirm.
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe((confirmRes) => {
           if (confirmRes) {
             const base_fee = confirmRes[0].inputValue;
@@ -249,7 +244,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     }));
     this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[5])).
+      pipe(takeUntil(this.unSubs[6])).
       subscribe((confirmRes) => {
         if (confirmRes) {
           this.store.dispatch(closeChannel({ payload: { id: channelToClose.id || '', channelId: channelToClose.channel_id || '', force: false } }));
@@ -262,6 +257,7 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       payload: {
         data: {
           channel: selChannel,
+          selNode: this.selNode,
           showCopy: true,
           component: CLNChannelInformationComponent
         }

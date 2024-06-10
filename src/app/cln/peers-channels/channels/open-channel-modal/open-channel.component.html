@@ -41,23 +41,38 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+              <div *ngIf="recommendedFee.minimumFee" fxFlex="100" class="alert alert-info">
+                <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
+                <span fxLayout="column" fxFlex="100">
+                  <div>Fee rates recommended by mempool (sat/vByte):</div>
+                  <span class="pr-2" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+                    <span>- High: {{recommendedFee.fastestFee || 'Unknown'}}</span>
+                    <span>- Medium: {{recommendedFee.halfHourFee || 'Unknown'}}</span>
+                    <span>- Low: {{recommendedFee.hourFee || 'Unknown'}}</span>
+                    <span>- Economy: {{recommendedFee.economyFee || 'Unknown'}}</span>
+                    <span>- Minimum: {{recommendedFee.minimumFee || 'Unknown'}}</span>
+                  </span>
+                </span>
+              </div>
               <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
-                <div fxFlex="54" fxLayout="row" fxLayoutAlign="space-between center">
-                  <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'">
+                <div fxFlex="64" fxLayout="row" fxLayoutAlign="space-between center">
+                  <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '40' : '100'">
                     <mat-label>Fee Rate</mat-label>
-                    <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null">
+                    <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="onSelFeeRateChanged($event)">
                       <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
                         {{feeRateType.feeRateType}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxLayout="column" fxFlex="48" fxLayoutAlign="end center">
+                  <mat-form-field *ngIf="selFeeRate === 'customperkb' && !flgMinConf" fxLayout="column" fxFlex="58" fxLayoutAlign="end center">
                     <mat-label>Fee Rate (Sats/vByte)</mat-label>
-                    <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="0.1" [min]="0" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
+                    <input #custFeeRate="ngModel" matInput type="number" name="custFeeRate" tabindex="4" [step]="1" [min]="recommendedFee.minimumFee" [required]="selFeeRate === 'customperkb' && !flgMinConf" [(ngModel)]="customFeeRate">
+                    <mat-hint>Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
                     <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && !customFeeRate">Fee Rate is required.</mat-error>
+                    <mat-error *ngIf="selFeeRate === 'customperkb' && !flgMinConf && customFeeRate && customFeeRate < recommendedFee.minimumFee">Lower than min feerate {{recommendedFee.minimumFee}} in the mempool.</mat-error>
                   </mat-form-field>
                 </div>
-                <div fxFlex="42" fxLayout="row" fxLayoutAlign="start center">
+                <div fxFlex="32" fxLayout="row" fxLayoutAlign="start center">
                   <mat-checkbox fxFlex="7" tabindex="5" color="primary" name="flgMinConf" fxLayoutAlign="stretch start" [ngClass]="{'mr-6': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mr-2': screenSize === screenSizeEnum.MD || screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" />
                   <mat-form-field fxLayout="column" fxFlex="93">
                     <mat-label>Min Confirmation Blocks</mat-label>
@@ -80,7 +95,7 @@
                 <mat-icon matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="before" class="info-icon">info_outline</mat-icon>
               </div>
             </div>
-          </mat-expansion-panel>    
+          </mat-expansion-panel>
         </div>
         <div *ngIf="channelConnectionError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />

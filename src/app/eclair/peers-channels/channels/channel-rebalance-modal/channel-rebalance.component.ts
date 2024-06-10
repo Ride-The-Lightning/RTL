@@ -15,7 +15,7 @@ import { opacityAnimation } from '../../../../shared/animation/opacity-animation
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { RTLState } from '../../../../store/rtl.state';
-import { fetchChannels, fetchInvoices } from '../../../store/ecl.actions';
+import { fetchChannels } from '../../../store/ecl.actions';
 
 @Component({
   selector: 'rtl-ecl-channel-rebalance',
@@ -124,8 +124,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
           this.logger.info(rebalanceRes);
           this.rebalanceStatus = rebalanceRes;
           this.flgEditable = true;
-          this.store.dispatch(fetchInvoices());
-          this.store.dispatch(fetchChannels({ payload: { fetchPayments: true } }));
+          this.store.dispatch(fetchChannels());
         }, error: (error) => {
           this.logger.error(error);
           this.rebalanceStatus = error;

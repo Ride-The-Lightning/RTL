@@ -18,10 +18,11 @@ export const listOfferBookmarks = (req, res, next) => {
     });
 };
 export const deleteOfferBookmark = (req, res, next) => {
+    const { offer_str } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Deleting Offer Bookmark..' });
-    databaseService.remove(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, req.body.offer_str).then((deleteRes) => {
+    databaseService.remove(req.session.selectedNode, CollectionsEnum.OFFERS, CollectionFieldsEnum.BOLT12, offer_str).then((deleteRes) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmark Deleted', data: deleteRes });
-        res.status(204).json(req.body.offer_str);
+        res.status(204).json(offer_str);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Offers', 'Offer Bookmark Delete Error', req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
@@ -33,7 +34,7 @@ export const listOffers = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/listoffers';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listoffers';
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });
@@ -49,7 +50,7 @@ export const createOffer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/offer';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/offer';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Created', data: body });
@@ -65,7 +66,7 @@ export const fetchOfferInvoice = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/fetchinvoice';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/fetchinvoice';
     options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Invoice Body', data: options.body });
     request.post(options).then((body) => {
@@ -82,7 +83,7 @@ export const disableOffer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.ln_server_url + '/v1/disableOffer';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/disableOffer';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled', data: body });

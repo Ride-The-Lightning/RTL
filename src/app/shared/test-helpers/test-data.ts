@@ -191,6 +191,62 @@ export const mockResponseData = {
       symbol: 'TWD'
     }
   },
+  blockExplorerRecommendedFee: {
+    fastestFee: 19,
+    halfHourFee: 19,
+    hourFee: 19,
+    economyFee: 19,
+    minimumFee: 10
+  },
+  blockExplorerTransaction: {
+    txid: '44a33c87c35fb21da5140286b91b56489b9ffaf7f62bcd0cce30ab568a0129ae',
+    version: 1,
+    locktime: 0,
+    vin: [
+      {
+        txid: 'a41831699ce28f98e75b333268c6f2b1703a77748c49d1aa914a3c2d538077cb',
+        vout: 0,
+        prevout: {
+          scriptpubkey: '0014378b753631273729605c694452ff89735dca7c19',
+          scriptpubkey_asm: 'OP_0 OP_PUSHBYTES_20 378b753631273729605c694452ff89735dca7c19',
+          scriptpubkey_type: 'v0_p2wpkh',
+          scriptpubkey_address: 'bc1qx79h2d33yumjjczud9z99lufwdwu5lqephsey4',
+          value: 1436617
+        },
+        scriptsig: '',
+        scriptsig_asm: '',
+        witness: [
+          '3045022100936bf7c13a6b349f59b7824f98da84f271c16d4eb8c8cf4933ce8921ba45ab00022015daa05a9430a2647d7deb86e13f71e7534538e3f7b6e8af70ffaec6a7b74dda01',
+          '0227b8e44fb3deac91671c648707b575ce761dc35905d09a4ac1be31198ad23eef'
+        ],
+        is_coinbase: false,
+        sequence: 4294967293
+      }
+    ],
+    vout: [
+      {
+        scriptpubkey: '0014f8ec16db533ed1147d638e9425ad330d4d0cb1ce',
+        scriptpubkey_asm: 'OP_0 OP_PUSHBYTES_20 f8ec16db533ed1147d638e9425ad330d4d0cb1ce',
+        scriptpubkey_type: 'v0_p2wpkh',
+        scriptpubkey_address: 'bc1qlrkpdk6n8mg3gltr362zttfnp4xsevww8qc8md',
+        value: 1350761
+      },
+      {
+        scriptpubkey: '76a9145af54c7385fe38521bddf13cd78486a344fcae1c88ac',
+        scriptpubkey_asm: 'OP_DUP OP_HASH160 OP_PUSHBYTES_20 5af54c7385fe38521bddf13cd78486a344fcae1c OP_EQUALVERIFY OP_CHECKSIG',
+        scriptpubkey_type: 'p2pkh',
+        scriptpubkey_address: '19HwfuwwZUMTgvUEmoic2teLh7RU7L1HHf',
+        value: 84128
+      }
+    ],
+    size: 226,
+    weight: 574,
+    sigops: 5,
+    fee: 1728,
+    status: {
+      confirmed: false
+    }
+  },
   decodePayment: {
     destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2',
     payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07',
@@ -724,9 +780,31 @@ export const mockResponseData = {
     }
   ],
   setSelectedNodeSuccess: {
-    status: 200,
-    body: {
-      status: 'Selected Node Updated To: LN Node Name!'
+    index: 1,
+    lnNode: 'Node 1',
+    lnImplementation: 'LND',
+    authentication: {
+      configPath: '/user/.lnd/lnd.conf',
+      swapMacaroonPath: '/user/.loop',
+      boltzMacaroonPath: '/user/.boltz'
+    },
+    settings: {
+      blockExplorerUrl: 'https://mempool.space/',
+      lnServerUrl: 'https://localhost:8080',
+      userPersona: 'MERCHANT',
+      themeMode: 'NIGHT',
+      themeColor: 'TEAL',
+      unannouncedChannels: true,
+      logLevel: 'DEBUG',
+      fiatConversion: true,
+      currencyUnit: 'CAD',
+      swapServerUrl: 'https://localhost:8081',
+      boltzServerUrl: 'https://localhost:9003',
+      enableOffers: false,
+      enablePeerswap: false,
+      bitcoindConfigPath: '',
+      channelBackupPath: '/user/RTL/channels-backup/node-1',
+      logFile: '/user/RTL/logs/RTL-Node-1.log'
     }
   },
   error401: {
@@ -749,8 +827,8 @@ export const mockActionsData = {
       unannouncedChannels: false,
       fiatConversion: true,
       currencyUnits: [
+        'Sats',
         'BTC',
-        'SATS',
         'USD'
       ],
       bitcoindConfigPath: '',
@@ -761,6 +839,7 @@ export const mockActionsData = {
       channelBackupPath: '',
       currencyUnit: '',
       enableOffers: false,
+      blockExplorerUrl: 'https://mempool.space',
       enablePeerswap: false
     },
     authentication: {
@@ -772,52 +851,38 @@ export const mockActionsData = {
     lnNode: 'LN Node Name',
     lnImplementation: 'LND'
   },
-  resetChildrenStores: {
-    userPersona: 'MERCHANT',
-    channelBackupPath: '',
-    unannouncedChannels: false,
-    fiatConversion: true,
-    selCurrencyUnit: '',
-    currencyUnits: [
-      'Sats',
-      'BTC'
-    ],
-    lnImplementation: 'LND',
-    swapServerUrl: '',
-    boltzServerUrl: '',
-    enableOffers: false,
-    enablePeerswap: false
-  },
   setSelectedNode: {
+    index: 1,
+    lnNode: 'Node 1',
+    lnImplementation: 'LND',
+    authentication: {
+      configPath: '/user/.lnd/lnd.conf',
+      swapMacaroonPath: '/user/.loop',
+      boltzMacaroonPath: '/user/.boltz'
+    },
     settings: {
+      blockExplorerUrl: 'https://mempool.space/',
+      lnServerUrl: 'https://localhost:8080',
       userPersona: 'MERCHANT',
       themeMode: 'NIGHT',
       themeColor: 'TEAL',
-      unannouncedChannels: false,
+      unannouncedChannels: true,
+      logLevel: 'DEBUG',
       fiatConversion: true,
-      currencyUnits: [
-        'BTC',
-        'SATS',
-        'USD'
-      ],
-      bitcoindConfigPath: '',
-      enableLogging: true,
-      lnServerUrl: '',
-      swapServerUrl: '',
-      boltzServerUrl: '',
-      channelBackupPath: '',
-      currencyUnit: '',
+      currencyUnit: 'CAD',
+      swapServerUrl: 'https://localhost:8081',
+      boltzServerUrl: 'https://localhost:9003',
       enableOffers: false,
-      enablePeerswap: false
-    },
-    authentication: {
-      swapMacaroonPath: '',
-      boltzMacaroonPath: '',
-      configPath: ''
-    },
-    index: 1,
-    lnNode: 'LN Node Name',
-    lnImplementation: 'LND'
+      enablePeerswap: false,
+      bitcoindConfigPath: '',
+      channelBackupPath: '/user/RTL/channels-backup/node-1',
+      logFile: '/user/RTL/logs/RTL-Node-1.log',
+      currencyUnits: [
+        'Sats',
+        'BTC',
+        'CAD'
+      ]
+    }
   },
   errorSendPaymentStatus: {
     action: 'SendPayment',
@@ -879,7 +944,8 @@ export const mockRTLStoreState = {
           'Sats',
           'BTC',
           'USD'
-        ]
+        ],
+        blockExplorerUrl: 'https://mempool.space'
       },
       authentication: {
         configPath: '../AppData/Local/Lnd/lnd.conf',
@@ -917,7 +983,8 @@ export const mockRTLStoreState = {
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../AppData/Local/Lnd/lnd.conf',
@@ -946,7 +1013,8 @@ export const mockRTLStoreState = {
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../Nodes/cln/config',
@@ -969,13 +1037,14 @@ export const mockRTLStoreState = {
             lnServerUrl: 'http://127.0.0.1:9090',
             swapServerUrl: '',
             boltzServerUrl: '',
-            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-3',
+            channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
               'Sats',
               'BTC',
               'USD'
-            ]
+            ],
+            blockExplorerUrl: 'https://mempool.space'
           },
           authentication: {
             configPath: '../.eclair/eclair.conf',
@@ -1002,21 +1071,6 @@ export const mockRTLStoreState = {
     }
   },
   lnd: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {
       version: '0.12.1-beta commit=v0.12.1-beta',
       commit_hash: 'd233f61383f2f950aa06f5b09da5b0e78e784fae',
@@ -48640,21 +48694,6 @@ export const mockRTLStoreState = {
     }
   },
   cln: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {},
     fees: {},
     feeRatesPerKB: {},
@@ -48674,21 +48713,6 @@ export const mockRTLStoreState = {
     utxos: []
   },
   ecl: {
-    nodeSettings: {
-      userPersona: 'OPERATOR',
-      channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
-      unannouncedChannels: false,
-      fiatConversion: true,
-      selCurrencyUnit: 'USD',
-      currencyUnits: [
-        'Sats',
-        'BTC',
-        'USD'
-      ],
-      lnImplementation: 'LND',
-      swapServerUrl: 'https://127.0.0.1:8081',
-      boltzServerUrl: 'https://127.0.0.1:9003'
-    },
     information: {},
     fees: {},
     activeChannels: [],

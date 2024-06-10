@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
@@ -10,9 +11,9 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLConnectPeerComponent } from './connect-peer.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
+import { DataService } from '../../../shared/services/data.service';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLConnectPeerComponent', () => {
   let component: ECLConnectPeerComponent;
@@ -30,7 +31,8 @@ describe('ECLConnectPeerComponent', () => {
       providers: [
         LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { message: {} } }
+        { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
+        { provide: DataService, useClass: mockDataService }
       ]
     }).
       compileComponents();

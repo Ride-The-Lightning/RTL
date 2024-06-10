@@ -24,7 +24,7 @@
             <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">  
+        <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
           <mat-form-field fxLayout="column" fxFlex="48">
             <mat-select tabindex="4" [(value)]="selTransType">
               <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
@@ -60,7 +60,7 @@
 <ng-template #sweepAllBlock>
   <div fxLayout="column">
     <mat-vertical-stepper #stepper [linear]="true" (selectionChange)="stepSelectionChanged($event)">
-      <mat-step *ngIf="!appConfig.sso.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
+      <mat-step *ngIf="!appConfig.SSO.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
         <form fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1" [formGroup]="passwordFormGroup">
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
@@ -126,7 +126,7 @@
         </form>
       </mat-step>
     </mat-vertical-stepper>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
       <button mat-button color="primary" tabindex="12" type="button" default [mat-dialog-close]="false">{{flgValidated ? 'Close' : 'Cancel'}}</button>
     </div>
   </div>

@@ -6,17 +6,20 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { DataService } from '../../../../shared/services/data.service';
 import { CommonService } from '../../../../shared/services/common.service';
-import { Peer, GetInfo, UTXO } from '../../../../shared/models/clnModels';
+import { Peer, GetInfo, UTXO, SaveChannel } from '../../../../shared/models/clnModels';
 import { CLNOpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
+import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewChannel } from '../../../store/cln.actions';
-import { clnNodeSettings } from '../../../store/cln.selector';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { Node } from '../../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cln-open-channel',
@@ -28,8 +31,9 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public alertTitle: string;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public peer: Peer | null;
   public peers: Peer[];
   public sortedPeers: Peer[];
@@ -52,9 +56,13 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   public minConfValue = null;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLNOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+  constructor(private logger: LoggerService, public dialogRef: MatDialogRef<CLNOpenChannelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CLNOpenChannelAlert, private store: Store<RTLState>,
+    private actions: Actions, private decimalPipe: DecimalPipe, private commonService: CommonService,
+    private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -73,10 +81,10 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       this.peers = [];
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(clnNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -136,7 +144,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
     this.minConfValue = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
     this.form.resetForm();
@@ -185,16 +193,33 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue)) || (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)) {
+    if ((!this.peer && !this.selectedPubkey) ||
+      (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) ||
+      (this.flgMinConf && !this.minConfValue)) ||
+      (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate) ||
+      (this.selFeeRate === 'customperkb' && this.recommendedFee.minimumFee > this.customFeeRate)) {
       return true;
     }
-    const newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), amount: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, minconf: this.flgMinConf ? this.minConfValue : null };
-    newChannel['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
+    const newChannel: SaveChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), amount: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, minconf: this.flgMinConf ? this.minConfValue : null };
+    newChannel.feeRate = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach((utxo: UTXO) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
+  }
+
+  onSelFeeRateChanged(event) {
+    this.customFeeRate = null;
+    if (event.value === 'customperkb') {
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
+    }
   }
 
   ngOnDestroy() {

@@ -4,7 +4,7 @@ import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired, faLink } from '@fortawesome/free-solid-svg-icons';
 
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, ChannelsStatus, FeeRates, LocalRemoteBalance, Channel, ListForwards, UTXO, Balance } from '../../shared/models/clnModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
@@ -12,7 +12,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import { RTLState } from '../../store/rtl.state';
-import { channels, feeRatesPerKB, feeRatesPerKW, forwardingHistory, utxoBalances, nodeInfoAndNodeSettingsAndAPIsStatus } from '../store/cln.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
+import { channels, feeRatesPerKB, feeRatesPerKW, forwardingHistory, utxoBalances, nodeInfoAndAPIsStatus } from '../store/cln.selector';
 
 @Component({
   selector: 'rtl-cln-network-info',
@@ -25,7 +26,7 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;
   public faLink = faLink;
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = { active: {}, pending: {}, inactive: {} };
@@ -80,14 +81,15 @@ export class CLNNetworkInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndNodeSettingsAndAPIsStatus).pipe(takeUntil(this.unSubs[0])).
-      subscribe((infoSettingsStatusSelector: { information: GetInfo, nodeSettings: SelNodeChild | null, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }) => {
+    this.store.select(nodeInfoAndAPIsStatus).pipe(takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode))).
+      subscribe(([infoSettingsStatusSelector, nodeSettings]: [{ information: GetInfo, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }, (Node | null)]) => {
         this.errorMessages[0] = '';
         this.apiCallStatusNodeInfo = infoSettingsStatusSelector.apisCallStatus[0];
         if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
           this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
         }
-        this.selNode = infoSettingsStatusSelector.nodeSettings;
+        this.selNode = nodeSettings;
         this.information = infoSettingsStatusSelector.information;
         this.fees = infoSettingsStatusSelector.fees;
         this.logger.info(infoSettingsStatusSelector);

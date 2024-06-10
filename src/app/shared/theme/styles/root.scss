@@ -48,7 +48,7 @@ body {
 }
 
 .sidenav {
-  width: $regular-sidenav-width;
+  width: $regular-sidenav-width !important;
   height: 100%;
   overflow: hidden !important;
 }  
@@ -1127,6 +1127,28 @@ mat-card-content.mat-mdc-card-content:first-child {
   border-radius: 2px;
 }
 
+.currency-icon {
+  &.currency-icon-small {
+    max-width: $gap * 1.675;
+    max-height: $gap * 1.675;
+  }
+
+  &.currency-icon-medium {
+    max-width: $gap * 2;
+    max-height: $gap * 2;
+  }
+
+  &.currency-icon-large {
+    max-width: $gap * 2.25;
+    max-height: $gap * 2.25;
+  }
+
+  &.currency-icon-x-large {
+    max-width: $gap * 2.5;
+    max-height: $gap * 2.5;
+  }
+}
+
 .fa-icon-small, .top-icon-small {
   min-width: $fa-icon-small-size;
   svg {
@@ -1449,6 +1471,10 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
 
 .mat-vertical-stepper-header {
   padding: ($gap*1.25)  ($gap*1.25)  ($gap*1.25) $gap !important;
+}
+
+.mat-vertical-stepper-content {
+  margin: 0 $gap;  
 }
 
 .ellipsis-child {

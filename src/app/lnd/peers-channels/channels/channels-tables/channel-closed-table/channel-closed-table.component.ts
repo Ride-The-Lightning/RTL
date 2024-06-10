@@ -7,6 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
@@ -18,7 +19,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { closedChannels, lndPageSettings } from '../../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-channel-closed-table',
@@ -132,7 +133,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {
-    const reorderedChannel = [
+    const reorderedChannel: MessageDataField[][] = [
       [{ key: 'close_type', value: this.channelClosureType[selChannel.close_type].name, title: 'Close Type', width: 30, type: DataTypeEnum.STRING },
       { key: 'settled_balance', value: selChannel.settled_balance, title: 'Settled Balance', width: 30, type: DataTypeEnum.NUMBER },
       { key: 'time_locked_balance', value: selChannel.time_locked_balance, title: 'Time Locked Balance', width: 40, type: DataTypeEnum.NUMBER }],

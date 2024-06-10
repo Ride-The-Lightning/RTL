@@ -2,7 +2,6 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { LNDState } from './lnd.state';
 
 export const lndState = createFeatureSelector<LNDState>('lnd');
-export const lndNodeSettings = createSelector(lndState, (state: LNDState) => state.nodeSettings);
 export const lndPageSettings = createSelector(lndState, (state: LNDState) => ({ pageSettings: state.pageSettings, apiCallStatus: state.apisCallStatus.FetchPageSettings }));
 export const lndNodeInformation = createSelector(lndState, (state: LNDState) => state.information);
 export const nodeInfoStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));
@@ -23,4 +22,4 @@ export const utxos = createSelector(lndState, (state: LNDState) => ({ utxos: sta
 export const networkInfo = createSelector(lndState, (state: LNDState) => ({ networkInfo: state.networkInfo, apiCallStatus: state.apisCallStatus.FetchNetwork }));
 export const allLightningTransactions = createSelector(lndState, (state: LNDState) => ({ allLightningTransactions: state.allLightningTransactions, apiCallStatus: state.apisCallStatus.FetchLightningTransactions }));
 export const allChannels = createSelector(lndState, (state: LNDState) => ({ channels: state.channels, pendingChannels: state.pendingChannels, closedChannels: state.closedChannels }));
-export const nodeInfoAndNodeSettingsAndAPIStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, nodeSettings: state.nodeSettings, apiCallStatus: state.apisCallStatus.FetchInfo }));
+export const nodeInfoAndAPIStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));

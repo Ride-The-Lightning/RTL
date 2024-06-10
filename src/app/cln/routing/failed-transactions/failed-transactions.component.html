@@ -47,13 +47,13 @@
       <ng-container matColumnDef="out_channel">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Out Channel ID</th>
         <td *matCellDef="let fhEvent" mat-cell>{{fhEvent?.out_channel}}</td>
-      </ng-container>      
+      </ng-container>
       <ng-container matColumnDef="out_channel_alias">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Out Channel</th>
         <td *matCellDef="let fhEvent" mat-cell>
           <span fxLayout.gt-xs="row" class="ellipsis-parent" [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">
             <span class="ellipsis-child">{{fhEvent?.out_channel_alias}}</span>
-          </span>          
+          </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="in_msatoshi">
@@ -93,7 +93,7 @@
           </div>
        </th>
         <td *matCellDef="let fhEvent" mat-cell fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onFailedEventClick(fhEvent)">View Info</button>          
+          <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onFailedEventClick(fhEvent)">View Info</button>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_event">

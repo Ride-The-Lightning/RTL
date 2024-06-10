@@ -16,6 +16,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { forwardingHistory, lndPageSettings } from '../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -107,7 +108,7 @@ export class RoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       alertTitle = 'Outgoing' + alertTitle;
     }
-    const reorderedRoutingPeer = [
+    const reorderedRoutingPeer: MessageDataField[][] = [
       [{ key: 'chan_id', value: selRPeer.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING },
       { key: 'alias', value: selRPeer.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
       [{ key: 'events', value: selRPeer.events, title: 'Events', width: 50, type: DataTypeEnum.NUMBER },

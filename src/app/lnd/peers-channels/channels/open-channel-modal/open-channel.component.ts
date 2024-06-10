@@ -5,17 +5,20 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
+import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
+import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { lndNodeSettings } from '../../../store/lnd.selector';
-import { CommonService } from 'src/app/shared/services/common.service';
+import { Node } from '../../../../shared/models/RTLconfig';
+import { CommonService } from '../../../../shared/services/common.service';
+import { DataService } from '../../../../shared/services/data.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-open-channel',
@@ -26,9 +29,10 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new UntypedFormControl();
-  public selNode: SelNodeChild | null = {};
+  public selNode: Node | null;
   public amount = new UntypedFormControl();
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public alertTitle: string;
   public peer: Peer | null;
   public peers: Peer[];
@@ -47,9 +51,12 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public spendUnconfirmed = false;
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService) { }
+  constructor(private logger: LoggerService, public dialogRef: MatDialogRef<OpenChannelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>,
+    private actions: Actions, private commonService: CommonService, private dataService: DataService) { }
 
   ngOnInit() {
     if (this.data.message) {
@@ -66,10 +73,10 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.isTaprootAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
-    this.store.select(lndNodeSettings).pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeSettings: SelNodeChild | null) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
+      subscribe((nodeSettings: Node | null) => {
         this.selNode = nodeSettings;
-        this.isPrivate = !!nodeSettings?.unannouncedChannels;
+        this.isPrivate = !!nodeSettings?.settings.unannouncedChannels;
       });
     this.actions.pipe(
       takeUntil(this.unSubs[1]),
@@ -127,7 +134,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   resetData() {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
-    this.isPrivate = !!this.selNode?.unannouncedChannels;
+    this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.taprootChannel = false;
     this.spendUnconfirmed = false;
     this.selTransType = '0';
@@ -138,7 +145,12 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(): boolean | void {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) {
+    if (
+      (!this.peer && !this.selectedPubkey) ||
+      (!this.fundingAmount ||
+      ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue)) ||
+      (this.selTransType === '2' && this.recommendedFee.minimumFee > +this.transTypeValue)
+    ) {
       return true;
     }
     // Taproot channel's commitment type is 5
@@ -157,6 +169,19 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
         ' | Taproot Channel: ' + (this.taprootChannel ? 'Yes' : 'No') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
     } else {
       this.advancedTitle = 'Advanced Options';
+    }
+  }
+
+  onSelTransTypeChanged(event) {
+    this.transTypeValue = '';
+    if (event.value === this.transTypes[2].id) {
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
     }
   }
 
