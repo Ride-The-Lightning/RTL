@@ -23,6 +23,8 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
+        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
         "@angular-eslint/consistent-component-styles": "off",
         "@angular-eslint/prefer-on-push-component-change-detection": "off",
         "@angular-eslint/prefer-standalone": "off",
@@ -190,8 +192,6 @@
       ],
       "rules": {
         "@angular-eslint/arrow-body-style": "off",
-        "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
-        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
         "@angular-eslint/template/accessibility-elements-content": "off",
         "@angular-eslint/template/accessibility-interactive-supports-focus": "off",
         "@angular-eslint/template/button-has-type": "off",

@@ -1,5 +1,4 @@
 import request from 'request-promise';
-import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { LNDWSClient, LNDWebSocketClient } from './webSocketClient.js';
@@ -8,7 +7,6 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const lndWsClient: LNDWebSocketClient = LNDWSClient;
-const databaseService: DatabaseService = Database;
 
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });

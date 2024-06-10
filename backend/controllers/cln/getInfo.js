@@ -1,5 +1,4 @@
 import request from 'request-promise';
-import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { CLWSClient } from './webSocketClient.js';
@@ -7,7 +6,6 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const clWsClient = CLWSClient;
-const databaseService = Database;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Core Lightning Node Information..' });
     common.logEnvVariables(req);

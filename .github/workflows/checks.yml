@@ -59,11 +59,8 @@ jobs:
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
-      - name: Lint Scripts
+      - name: Lint Src and Server
         run: npm run lint
-
-      - name: Lint Server Script
-        run: npm run lintServer
 
   test:
     name: Test
