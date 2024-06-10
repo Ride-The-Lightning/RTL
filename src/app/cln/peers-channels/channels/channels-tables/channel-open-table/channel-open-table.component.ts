@@ -119,7 +119,6 @@ export class CLNChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
-
   }
 
   ngAfterViewInit() {
