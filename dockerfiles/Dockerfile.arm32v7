@@ -26,7 +26,7 @@ RUN npm run buildfrontend
 RUN npm run buildbackend
 
 # Remove non production necessary modules
-RUN npm prune --production
+RUN npm prune --omit=dev --legacy-peer-deps
 
 # ---------------
 # Release App
