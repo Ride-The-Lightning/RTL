@@ -47,7 +47,7 @@
     "stream-browserify": "^3.0.0",
     "tslib": "^2.6.2",
     "vm-browserify": "^1.1.2",
-    "ws": "^8.17.0",
+    "ws": "^8.17.1",
     "zone.js": "^0.14.6"
   },
   "devDependencies": {
