@@ -47,11 +47,13 @@ export class CommonService {
   };
 
   public removeAuthSecureData = (node: SelectedNode) => {
-    delete node.authentication.macaroonPath;
-    delete node.authentication.runePath;
-    delete node.authentication.runeValue;
-    delete node.authentication.lnApiPassword;
-    delete node.authentication.options;
+    if (node.authentication) {
+      delete node.authentication.macaroonPath;
+      delete node.authentication.runePath;
+      delete node.authentication.runeValue;
+      delete node.authentication.lnApiPassword;
+      delete node.authentication.options;
+    }
     return node;
   };
 
