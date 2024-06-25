@@ -1,4 +1,6 @@
-FROM node:18-alpine as base
+ARG BASE_DISTRO="node:alpine"
+
+FROM --platform=${BUILDPLATFORM} ${BASE_DISTRO} as builder
 
 WORKDIR /RTL
 
@@ -18,58 +20,17 @@ RUN npm run buildbackend
 # Remove non production necessary modules
 RUN npm prune --omit=dev --legacy-peer-deps
 
-FROM arm32v7/node:18-alpine as runner-arm32v7
-
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel /tini
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-armel.asc /tini.asc
-RUN chmod +x /tini
-
-WORKDIR /RTL
-
-COPY --from=base /RTL/rtl.js ./rtl.js
-COPY --from=base /RTL/package.json ./package.json
-COPY --from=base /RTL/frontend ./frontend
-COPY --from=base /RTL/backend ./backend
-COPY --from=base /RTL/node_modules/ ./node_modules
-COPY --from=base /tini /sbin/tini
-
-EXPOSE 3000
-
-ENTRYPOINT ["/sbin/tini", "-g", "--"]
-
-CMD ["node", "rtl"]
-
-FROM arm64v8/node:18-alpine as runner-arm64v8
-
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-arm64 /tini
-RUN chmod +x /tini
-
-WORKDIR /RTL
-
-COPY --from=base /RTL/rtl.js ./rtl.js
-COPY --from=base /RTL/package.json ./package.json
-COPY --from=base /RTL/frontend ./frontend
-COPY --from=base /RTL/backend ./backend
-COPY --from=base /RTL/node_modules/ ./node_modules
-COPY --from=base /tini /sbin/tini
-
-EXPOSE 3000
-
-ENTRYPOINT ["/sbin/tini", "-g", "--"]
-
-CMD ["node", "rtl"]
-
-FROM node:18-alpine as runner-amd64
+FROM --platform=$BUILDPLATFORM ${BASE_DISTRO} as runner
 
 RUN apk add --no-cache tini
 
 WORKDIR /RTL
 
-COPY --from=base /RTL/rtl.js ./rtl.js
-COPY --from=base /RTL/package.json ./package.json
-COPY --from=base /RTL/frontend ./frontend
-COPY --from=base /RTL/backend ./backend
-COPY --from=base /RTL/node_modules/ ./node_modules
+COPY --from=builder /RTL/rtl.js ./rtl.js
+COPY --from=builder /RTL/package.json ./package.json
+COPY --from=builder /RTL/frontend ./frontend
+COPY --from=builder /RTL/backend ./backend
+COPY --from=builder /RTL/node_modules/ ./node_modules
 
 EXPOSE 3000
 

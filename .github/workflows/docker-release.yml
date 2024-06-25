@@ -42,7 +42,7 @@ jobs:
           exit 1
         fi
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -50,4 +50,4 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64,linux/arm/v7
         tags: |
-          shahanafarooqui/rtl:$VERSION
+          shahanafarooqui/rtl:${{ env.VERSION }}
