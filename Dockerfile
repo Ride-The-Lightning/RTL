@@ -1,10 +1,6 @@
-# ---------------
-# Install Dependencies
-# ---------------
-FROM node:18-alpine as builder
+ARG BASE_DISTRO="node:alpine"
 
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-arm64 /tini
-RUN chmod +x /tini
+FROM --platform=${BUILDPLATFORM} ${BASE_DISTRO} as builder
 
 WORKDIR /RTL
 
@@ -13,9 +9,6 @@ COPY package-lock.json /RTL/package-lock.json
 
 RUN npm install --legacy-peer-deps
 
-# ---------------
-# Build App
-# ---------------
 COPY . .
 
 # Build the Angular application
@@ -27,10 +20,9 @@ RUN npm run buildbackend
 # Remove non production necessary modules
 RUN npm prune --omit=dev --legacy-peer-deps
 
-# ---------------
-# Release App
-# ---------------
-FROM arm64v8/node:18-alpine as runner
+FROM --platform=$BUILDPLATFORM ${BASE_DISTRO} as runner
+
+RUN apk add --no-cache tini
 
 WORKDIR /RTL
 
@@ -39,7 +31,6 @@ COPY --from=builder /RTL/package.json ./package.json
 COPY --from=builder /RTL/frontend ./frontend
 COPY --from=builder /RTL/backend ./backend
 COPY --from=builder /RTL/node_modules/ ./node_modules
-COPY --from=builder "/tini" /sbin/tini
 
 EXPOSE 3000
 
