@@ -2,8 +2,7 @@ name: Build docker images
 
 on:
   push:
-    tags:
-      - '^v[0-9]{2}\.[0-9]{2}(\.[0-9]{1,2})?$'
+    tags: [ 'v*' ]
   workflow_dispatch:
     inputs:
       version:
