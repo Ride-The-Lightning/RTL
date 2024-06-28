@@ -20,7 +20,7 @@ RUN npm run buildbackend
 # Remove non production necessary modules
 RUN npm prune --omit=dev --legacy-peer-deps
 
-FROM --platform=$BUILDPLATFORM ${BASE_DISTRO} as runner
+FROM --platform=${TARGETPLATFORM} ${BASE_DISTRO} as runner
 
 RUN apk add --no-cache tini
 
