@@ -83,7 +83,7 @@ export const disableOffer = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/disableOffer';
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/disableoffer';
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled', data: body });
