@@ -413,7 +413,8 @@ export class CommonService {
     });
   };
 
-  public readCookie = () => {
+  public readCookie = (config) => {
+    this.appConfig.SSO = config.SSO;
     const exists = fs.existsSync(this.appConfig.SSO.rtlCookiePath);
     if (exists) {
       try {

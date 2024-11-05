@@ -321,7 +321,7 @@ export class ConfigService {
       if (!config.SSO.rtlCookiePath || config.SSO.rtlCookiePath.trim() === '') {
         this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
       } else {
-        this.common.readCookie();
+        this.common.readCookie(config);
       }
     }
   };

@@ -343,7 +343,7 @@ export class ConfigService {
                     this.errMsg = 'Please set rtlCookiePath value for single sign on option!';
                 }
                 else {
-                    this.common.readCookie();
+                    this.common.readCookie(config);
                 }
             }
         };
