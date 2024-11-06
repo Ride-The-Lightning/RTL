@@ -323,6 +323,10 @@
       &.info-icon-text {
         color: $foreground-secondary-text;
       }
+      &.arrow-downward, &.arrow-upward {
+        font-size: 150%;
+        color: $background-color;
+      }
     }
   }
 
