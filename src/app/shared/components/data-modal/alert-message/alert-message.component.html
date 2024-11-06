@@ -21,8 +21,8 @@
     </ng-container>
     <div *ngIf="data.scrollable && shouldScroll" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container padding-gap-x-large">
       <button mat-mini-fab aria-label="Scroll" fxLayoutAlign="center center" (click)="onScroll()">
-        <mat-icon *ngIf="scrollDirection === 'DOWN'" fxLayoutAlign="center center">arrow_downward</mat-icon>
-        <mat-icon *ngIf="scrollDirection === 'UP'" fxLayoutAlign="center center">arrow_upward</mat-icon>
+        <mat-icon *ngIf="scrollDirection === 'DOWN'" class="arrow-downward" fxLayoutAlign="center center">arrow_downward</mat-icon>
+        <mat-icon *ngIf="scrollDirection === 'UP'" class="arrow-upward" fxLayoutAlign="center center">arrow_upward</mat-icon>
       </button>
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" class="padding-gap-x-large padding-gap-bottom-large">
@@ -50,7 +50,9 @@
               <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                 <span class="foreground-secondary-text" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" [ngSwitch]="obj.type">
                   <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
-                    <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>
+                    <span fxLayout="column" fxFlex="100">
+                      <span *ngFor="let arrayObj of obj.value" class="display-block w-100" [innerHTML]="arrayObj"></span>
+                    </span>
                   </ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.DATE_TIME">{{(obj.value * 1000) | date:'dd/MMM/y HH:mm'}}</ng-container>
                   <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number: obj.digitsInfo ? obj.digitsInfo : '1.0-3'}}</ng-container>
