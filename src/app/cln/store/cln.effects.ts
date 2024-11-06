@@ -114,8 +114,8 @@ export class CLNEffects implements OnDestroy {
           }),
           catchError((err) => {
             const code = this.commonService.extractErrorCode(err);
-            const msg = (code === 'ETIMEDOUT') ? 'Unable to Connect to Core Lightning Server.' : this.commonService.extractErrorMessage(err);
-            this.router.navigate(['/login'], { state: { logoutReason: JSON.stringify(msg) } });
+            const msg = (code === 503) ? 'Unable to Connect to Core Lightning Server.' : this.commonService.extractErrorMessage(err);
+            this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg } });
             this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', { status: code, error: msg });
             return of({ type: RTLActions.VOID });
           })
