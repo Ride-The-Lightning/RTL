@@ -14,7 +14,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLNInvoiceInformationComponent } from '../transactions/invoices/invoice-information-modal/invoice-information.component';
 import { GetInfo, Payment, FeeRates, ListInvoices, Invoice, Peer, OnChain, QueryRoutes, SaveChannel, GetNewAddress, DetachPeer, UpdateChannel, CloseChannel, SendPayment, GetQueryRoutes, ChannelLookup, Channel, OfferInvoice, Offer } from '../../shared/models/clnModels';
-import { API_URL, API_END_POINTS, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
+import { API_URL, API_END_POINTS, SECS_IN_YEAR, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES, CLNWSEventTypeEnum, CLNActions, RTLActions, CLNForwardingEventsStatusEnum } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 
 import { RTLState } from '../../store/rtl.state';
@@ -608,12 +608,13 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.DELETE_EXPIRED_INVOICE_CLN),
     mergeMap((action: { type: string, payload: number }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_INVOICE }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/delete', { maxexpiry: action.payload }).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/delete', { 'subsystem': 'expiredinvoices', 'age': SECS_IN_YEAR }).
         pipe(
           map((postRes: any) => {
+            console.warn(postRes);
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_INVOICE }));
-            this.store.dispatch(openSnackBar({ payload: 'Invoices Deleted Successfully!' }));
+            this.store.dispatch(openSnackBar({ payload: postRes.status }));
             return { type: CLNActions.FETCH_INVOICES_CLN };
           }),
           catchError((err: any) => {
