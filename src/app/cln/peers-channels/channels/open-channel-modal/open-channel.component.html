@@ -58,7 +58,7 @@
                 <div fxFlex="64" fxLayout="row" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '40' : '100'">
                     <mat-label>Fee Rate</mat-label>
-                    <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="onSelFeeRateChanged($event)">
+                    <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate">
                       <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
                         {{feeRateType.feeRateType}}
                       </mat-option>
