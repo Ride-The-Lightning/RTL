@@ -146,7 +146,7 @@ export class ConfigService {
                     this.common.nodes[idx] = { settings: { blockExplorerUrl: '' }, authentication: {} };
                     this.common.nodes[idx].index = node.index;
                     this.common.nodes[idx].lnNode = node.lnNode;
-                    this.common.nodes[idx].lnImplementation = (process?.env?.lnImplementation) ? process?.env?.lnImplementation : node.lnImplementation ? node.lnImplementation : 'LND';
+                    this.common.nodes[idx].lnImplementation = (process?.env?.LN_IMPLEMENTATION) ? process?.env?.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
                     if (this.common.nodes[idx].lnImplementation === 'CLT') {
                         this.common.nodes[idx].lnImplementation = 'CLN';
                     }

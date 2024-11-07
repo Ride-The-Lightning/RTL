@@ -74,6 +74,7 @@ docker build -t rtl:${RTL_VERSION} -f dockerfiles/Dockerfile .
 Create an environment file with your required configurations. Sample .env:
 ```
 RTL_CONFIG_PATH=/RTLConfig
+LN_IMPLEMENTATION=LND
 MACAROON_PATH=/LNDMacaroon
 LN_SERVER_URL=https://host.docker.internal:8080
 
