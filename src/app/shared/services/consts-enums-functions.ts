@@ -12,6 +12,7 @@ export function getPaginatorLabel(field: string) {
 }
 
 export const HOUR_SECONDS = 3600;
+export const SECS_IN_YEAR = 31536000;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
