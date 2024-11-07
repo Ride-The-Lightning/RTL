@@ -18,15 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
@@ -37,7 +37,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Cache build frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-build-frontend
         with:
           path: frontend
@@ -47,7 +47,7 @@ jobs:
         run: npm run buildfrontend
 
       - name: Cache build backend
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-build-backend
         with:
           path: backend
@@ -61,17 +61,17 @@ jobs:
     needs: build
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Cache build frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-build-frontend
         with:
           path: frontend
           key: ${{ runner.os }}-frontend-${{ github.sha }}
 
       - name: Cache build backend
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-build-backend
         with:
           path: backend
@@ -80,7 +80,7 @@ jobs:
       - name: Compress files
         run: tar -czf /tmp/rtlbuild.tar.gz frontend backend rtl.js package.json package-lock.json
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: rtl-build-${{ github.event.release.tag_name }}
           path: /tmp/rtlbuild.tar.gz
