@@ -2,17 +2,15 @@ name: Artifact
 
 on:
   push:
-    branches: [ master, 'Release-*' ]
     tags: [ 'v*' ]
   release:
     types: [released]
-  # Triggers the workflow only when merging pull request to the branches.
-  pull_request:
-    types: [closed]
-    branches: [ master, 'Release-*' ]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,9 +76,15 @@ jobs:
           key: ${{ runner.os }}-backend-${{ github.sha }}
 
       - name: Compress files
-        run: tar -czf /tmp/rtlbuild.tar.gz frontend backend rtl.js package.json package-lock.json
-
+        env:
+          VERSION: "${{ github.event.release.tag_name || github.event.inputs.version || '' }}"
+        run: |
+          tar -czf /tmp/rtl-build-$VERSION.tar.gz frontend backend rtl.js package.json package-lock.json
+          zip -r /tmp/rtl-build-$VERSION.zip frontend backend rtl.js package.json package-lock.json
+      
       - uses: actions/upload-artifact@v3
         with:
-          name: rtl-build-${{ github.event.release.tag_name }}
-          path: /tmp/rtlbuild.tar.gz
+          name: rtl-build-${{ github.event.release.tag_name || github.event.inputs.version || '' }}
+          path: |
+            /tmp/rtl-build-${{ github.event.release.tag_name || github.event.inputs.version || '' }}.tar.gz
+            /tmp/rtl-build-${{ github.event.release.tag_name || github.event.inputs.version || '' }}.zip
