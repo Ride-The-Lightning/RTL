@@ -608,10 +608,9 @@ export class CLNEffects implements OnDestroy {
     ofType(CLNActions.DELETE_EXPIRED_INVOICE_CLN),
     mergeMap((action: { type: string, payload: number }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DELETE_INVOICE }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/delete', { 'subsystem': 'expiredinvoices', 'age': SECS_IN_YEAR }).
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/delete', { subsystem: 'expiredinvoices', age: SECS_IN_YEAR }).
         pipe(
           map((postRes: any) => {
-            console.warn(postRes);
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DELETE_INVOICE }));
             this.store.dispatch(openSnackBar({ payload: postRes.status }));

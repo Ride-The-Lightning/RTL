@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
@@ -17,6 +17,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { openSnackBar } from '../../../store/rtl.actions';
 import { sendOnchainFunds } from '../../store/ecl.actions';
 import { rootSelectedNode } from '../../../store/rtl.selector';
+import { DataService } from 'src/app/shared/services/data.service';
+import { RecommendedFeeRates } from 'src/app/shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-ecl-on-chain-send-modal',
@@ -27,6 +29,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public selNode: Node | null;
   public addressTypes = [];
   public selectedAddress = ADDRESS_TYPES[1];
@@ -41,19 +44,27 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public currConvertorRate = {};
   public unitConversionValue = 0;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   public amountError = 'Amount is Required.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private dataService: DataService, private store: Store<RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) { }
 
   ngOnInit() {
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[0])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.fiatConversion = selNode.settings.fiatConversion;
       this.amountUnits = selNode.settings.currencyUnits;
       this.logger.info(selNode);
     });
     this.actions.pipe(
-      takeUntil(this.unSubs[1]),
+      takeUntil(this.unSubs[2]),
       filter((action) => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL)
     ).
       subscribe((action: any) => {
@@ -74,7 +85,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     this.sendFundError = '';
     if (this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[2])).
+        pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (data) => {
             this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
@@ -107,7 +118,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if (this.transaction.amount && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[3])).
+        pipe(takeUntil(this.unSubs[4])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;
