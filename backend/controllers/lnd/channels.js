@@ -155,47 +155,6 @@ export const postChannel = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
-export const postTransactions = (req, res, next) => {
-    const { paymentReq, paymentAmount, feeLimit, outgoingChannel, allowSelfPayment, lastHopPubkey } = req.body;
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sending Payment..' });
-    options = common.getOptions(req);
-    if (options.error) {
-        return res.status(options.statusCode).json({ message: options.message, error: options.error });
-    }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/transaction-stream';
-    options.form = { payment_request: paymentReq };
-    if (paymentAmount) {
-        options.form.amt = paymentAmount;
-    }
-    if (feeLimit) {
-        options.form.fee_limit = feeLimit;
-    }
-    if (outgoingChannel) {
-        options.form.outgoing_chan_id = outgoingChannel;
-    }
-    if (allowSelfPayment) {
-        options.form.allow_self_payment = allowSelfPayment;
-    }
-    if (lastHopPubkey) {
-        options.form.last_hop_pubkey = Buffer.from(lastHopPubkey, 'hex').toString('base64');
-    }
-    options.form = JSON.stringify(options.form);
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options', data: options.form });
-    request.post(options).then((body) => {
-        body = body.result ? body.result : body;
-        if (body.payment_error) {
-            const err = common.handleError(body.payment_error, 'Channels', 'Send Payment Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ message: err.message, error: err.error });
-        }
-        else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Payment Sent', data: body });
-            res.status(201).json(body);
-        }
-    }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Channels', 'Send Payment Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
-    });
-};
 export const closeChannel = (req, res, next) => {
     try {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closing Channel..' });

@@ -12,8 +12,8 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChannelRebalanceAlert } from '../../../../shared/models/alertData';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
-import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
-import { DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, ScreenSizeEnum, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { Channel, QueryRoutes, ListInvoices, SendPayment } from '../../../../shared/models/lndModels';
+import { DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, LNDActions, PAGE_SIZE, ScreenSizeEnum, UI_MESSAGES, getFeeLimitSat } from '../../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../../store/rtl.state';
 import { saveNewInvoice, sendPayment } from '../../../store/lnd.actions';
@@ -239,13 +239,29 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
     if (this.feeFormGroup.controls.selFeeLimitType.value.id === 'percent' && !(+this.feeFormGroup.controls.feeLimit.value % 1 === 0)) {
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel,
-        feeLimitType: 'fixed', feeLimit: Math.ceil((+this.feeFormGroup.controls.feeLimit.value * +this.inputFormGroup.controls.rebalanceAmount.value) / 100),
-        allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+      const payload: SendPayment = {
+        uiMessage: UI_MESSAGES.NO_SPINNER,
+        payment_request: payReq,
+        amp: false,
+        outgoing_chan_ids: this.selChannel?.chan_id ? [this.selChannel?.chan_id] : undefined,
+        fee_limit_sat: Math.ceil(getFeeLimitSat('fixed', this.feeFormGroup.controls.feeLimit.value, (this.inputFormGroup.controls.rebalanceAmount.value || 0))),
+        allow_self_payment: true,
+        last_hop_pubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey,
+        fromDialog: true
+      };
+      this.store.dispatch(sendPayment({ payload }));
     } else {
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, paymentReq: payReq, outgoingChannel: this.selChannel,
-        feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value.id, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true,
-        lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true } }));
+      const payload: SendPayment = {
+        uiMessage: UI_MESSAGES.NO_SPINNER,
+        payment_request: payReq,
+        amp: false,
+        outgoing_chan_ids: this.selChannel?.chan_id ? [this.selChannel?.chan_id] : undefined,
+        fee_limit_sat: getFeeLimitSat(this.feeFormGroup.controls.selFeeLimitType.value.id, this.feeFormGroup.controls.feeLimit.value, (this.inputFormGroup.controls.rebalanceAmount.value || 0)),
+        allow_self_payment: true,
+        last_hop_pubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey,
+        fromDialog: true
+      };
+      this.store.dispatch(sendPayment({ payload }));
     }
   }
 

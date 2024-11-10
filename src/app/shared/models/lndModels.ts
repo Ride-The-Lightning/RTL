@@ -552,13 +552,13 @@ export interface FetchPayments {
 export interface SendPayment {
   uiMessage: string;
   fromDialog: boolean;
-  paymentReq: string;
-  paymentAmount?: number;
-  outgoingChannel?: Channel | null;
-  feeLimitType?: string;
-  feeLimit?: number | null;
-  allowSelfPayment?: boolean;
-  lastHopPubkey?: string;
+  payment_request: string;
+  amp: boolean;
+  amt?: number;
+  outgoing_chan_ids?: string[] | [];
+  fee_limit_sat?: number | null;
+  allow_self_payment?: boolean;
+  last_hop_pubkey?: string;
 }
 
 export interface GetNewAddress {
