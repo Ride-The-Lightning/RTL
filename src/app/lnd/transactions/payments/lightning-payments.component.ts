@@ -195,7 +195,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, amt: confirmRes[0].inputValue, fromDialog: false } }));
             this.resetData();
           }
         });
@@ -224,7 +224,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, fromDialog: false } }));
             this.resetData();
           }
         });

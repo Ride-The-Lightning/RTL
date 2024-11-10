@@ -96,3 +96,32 @@ export const paymentLookup = (req, res, next) => {
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   });
 };
+
+export const sendPayment = (req, res, next) => {
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Payment..' });
+  options = common.getOptions(req);
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/router/send';
+  if (req.body.last_hop_pubkey) {
+    req.body.last_hop_pubkey = Buffer.from(req.body.last_hop_pubkey, 'hex').toString('base64');
+  }
+  req.body.amp = req.body.amp ?? false;
+  req.body.timeout_seconds = req.body.timeout_seconds || 600;
+  options.form = JSON.stringify(req.body);
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
+  request.post(options).then((body) => {
+    const results = body.split('\n').filter(Boolean).map((jsonString) => JSON.parse(jsonString));
+    body = results.length > 0 ? results[results.length - 1] : { result: { status: 'UNKNOWN' } };
+    if (body.result.status === 'FAILED') {
+      const err = common.handleError(common.titleCase(body.result.failure_reason.replace(/_/g, ' ').replace('FAILURE REASON ', '')), 'Payments', 'Send Payment Error', req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    }
+    if (body.result.status === 'SUCCEEDED') {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body.result });
+      res.status(201).json(body.result);
+    }
+  }).catch((errRes) => {
+    const err = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
