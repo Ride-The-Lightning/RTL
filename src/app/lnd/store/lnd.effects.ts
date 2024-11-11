@@ -691,31 +691,16 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SendPayment }) => {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.INITIATED } }));
-      const queryHeaders = {};
-      queryHeaders['paymentReq'] = action.payload.paymentReq;
-      if (action.payload.paymentAmount) {
-        queryHeaders['paymentAmount'] = action.payload.paymentAmount;
-      }
-      if (action.payload.outgoingChannel) {
-        queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id;
-      }
-      if (action.payload.allowSelfPayment) {
-        queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment;
-      } // Channel Rebalancing
-      if (action.payload.lastHopPubkey) {
-        queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey;
-      }
-      if (action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0].id) {
-        queryHeaders['feeLimit'] = {};
-        queryHeaders['feeLimit'][action.payload.feeLimitType] = action.payload.feeLimit;
-      }
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/transactions', queryHeaders).pipe(
+      const queryParams = JSON.parse(JSON.stringify(action.payload));
+      delete queryParams.uiMessage;
+      delete queryParams.fromDialog;
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/send', queryParams).pipe(
         map((sendRes: any) => {
           this.logger.info(sendRes);
           this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
           if (sendRes.payment_error) {
-            if (action.payload.allowSelfPayment) {
+            if (action.payload.allow_self_payment) {
               this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSettings?.recordsPerPage, reversed: true } }));
               return {
                 type: LNDActions.SEND_PAYMENT_STATUS_LND,
@@ -734,7 +719,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.COMPLETED } }));
             this.store.dispatch(fetchChannels());
             this.store.dispatch(fetchPayments({ payload: { max_payments: this.paymentsPageSettings?.recordsPerPage, reversed: true } }));
-            if (action.payload.allowSelfPayment) {
+            if (action.payload.allow_self_payment) {
               this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSettings?.recordsPerPage, reversed: true } }));
             } else {
               let msg = 'Payment Sent Successfully.';
@@ -751,7 +736,7 @@ export class LNDEffects implements OnDestroy {
         }),
         catchError((err: any) => {
           this.logger.error('Error: ' + JSON.stringify(err));
-          if (action.payload.allowSelfPayment) {
+          if (action.payload.allow_self_payment) {
             this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
             this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSettings?.recordsPerPage, reversed: true } }));
             return of({

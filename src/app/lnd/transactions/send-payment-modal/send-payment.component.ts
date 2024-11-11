@@ -9,8 +9,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Node } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel, ChannelsSummary, LightningBalance } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { PayRequest, Channel, ChannelsSummary, LightningBalance, SendPayment } from '../../../shared/models/lndModels';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES, getFeeLimitSat } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -43,6 +43,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public activeChannels: Channel[] = [];
   public filteredMinAmtActvChannels: Channel[] = [];
   public selectedChannelCtrl = new UntypedFormControl();
+  public isAmp = false;
   public feeLimit: number | null = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
@@ -142,10 +143,27 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' || this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount?.toString() || '';
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: this.paymentAmount || 0, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
+      const payload: SendPayment = {
+        uiMessage: UI_MESSAGES.SEND_PAYMENT,
+        payment_request: this.paymentRequest,
+        amp: this.isAmp,
+        amt: this.paymentAmount || 0,
+        outgoing_chan_ids: this.selectedChannelCtrl.value?.chan_id ? [this.selectedChannelCtrl.value.chan_id] : undefined,
+        fee_limit_sat: getFeeLimitSat(this.selFeeLimitType.id, this.feeLimit, (this.paymentAmount || 0)),
+        fromDialog: true
+      };
+      this.store.dispatch(sendPayment({ payload }));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selectedChannelCtrl.value, feeLimitType: this.selFeeLimitType.id, feeLimit: this.feeLimit, fromDialog: true } }));
+      const payload: SendPayment = {
+        uiMessage: UI_MESSAGES.SEND_PAYMENT,
+        payment_request: this.paymentRequest,
+        amp: this.isAmp,
+        outgoing_chan_ids: this.selectedChannelCtrl.value?.chan_id ? [this.selectedChannelCtrl.value.chan_id] : undefined,
+        fee_limit_sat: getFeeLimitSat(this.selFeeLimitType.id, this.feeLimit, (+this.paymentDecoded.num_satoshis || 0)),
+        fromDialog: true
+      };
+      this.store.dispatch(sendPayment({ payload }));
     }
   }
 
@@ -231,6 +249,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
+    this.isAmp = false;
     this.selectedChannelCtrl.setValue(null);
     this.filteredMinAmtActvChannels = this.activeChannels;
     if (this.filteredMinAmtActvChannels.length && this.filteredMinAmtActvChannels.length > 0) {

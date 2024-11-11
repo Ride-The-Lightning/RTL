@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
 import { Node, RTLConfiguration } from '../../../shared/models/RTLconfig';
@@ -25,6 +25,8 @@ import { setChannelTransaction } from '../../store/cln.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
 import { clnNodeInformation, utxoBalances } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
+import { DataService } from 'src/app/shared/services/data.service';
+import { RecommendedFeeRates } from 'src/app/shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-cln-on-chain-send-modal',
@@ -37,6 +39,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public sweepAll = false;
   public selNode: Node | null;
   public appConfig: RTLConfiguration;
@@ -65,6 +68,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public advancedTitle = 'Advanced Options';
   public flgValidated = false;
   public flgEditable = true;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   public passwordFormLabel = 'Authenticate with your RTL password';
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
@@ -74,12 +78,13 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   confirmFormGroup: UntypedFormGroup;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
     public dialogRef: MatDialogRef<CLNOnChainSendModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CLNOnChainSendFunds,
     private logger: LoggerService,
+    private dataService: DataService,
     private store: Store<RTLState>,
     private commonService: CommonService,
     private decimalPipe: DecimalPipe,
@@ -91,6 +96,13 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[0])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
     this.sweepAll = this.data.sweepAll;
     this.passwordFormGroup = this.formBuilder.group({
       hiddenPassword: ['', [Validators.required]],
@@ -104,7 +116,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       minConfValue: [{ value: null, disabled: true }]
     });
     this.confirmFormGroup = this.formBuilder.group({});
-    this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((flg) => {
+    this.sendFundFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((flg) => {
       if (flg) {
         this.sendFundFormGroup.controls.selFeeRate.disable();
         this.sendFundFormGroup.controls.selFeeRate.setValue(null);
@@ -121,7 +133,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.minConfValue.setErrors(null);
       }
     });
-    this.sendFundFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((feeRate) => {
+    this.sendFundFormGroup.controls.selFeeRate.valueChanges.pipe(takeUntil(this.unSubs[2])).subscribe((feeRate) => {
       this.sendFundFormGroup.controls.customFeeRate.setValue(null);
       this.sendFundFormGroup.controls.customFeeRate.reset();
       if (feeRate === 'customperkb' && !this.sendFundFormGroup.controls.flgMinConf.value) {
@@ -130,23 +142,23 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.customFeeRate.setValidators(null);
       }
     });
-    combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[1])).
+    combineLatest([this.store.select(rootSelectedNode), this.store.select(rootAppConfig)]).pipe(takeUntil(this.unSubs[3])).
       subscribe(([selNode, appConfig]) => {
         this.fiatConversion = selNode.settings.fiatConversion;
         this.amountUnits = selNode.settings.currencyUnits;
         this.appConfig = appConfig;
       });
-    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[2])).
+    this.store.select(clnNodeInformation).pipe(takeUntil(this.unSubs[4])).
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;
       });
-    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
+    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[5])).
       subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.utxos = this.commonService.sortAscByKey(utxoBalancesSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');
         this.logger.info(utxoBalancesSeletor);
       });
     this.actions.pipe(
-      takeUntil(this.unSubs[4]),
+      takeUntil(this.unSubs[6]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN)).
       subscribe((action: any) => {
         if (action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN) {
@@ -219,7 +231,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       }
       if (this.transaction.satoshi && this.transaction.satoshi !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshi, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-          pipe(takeUntil(this.unSubs[5])).
+          pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (data) => {
               this.transaction.satoshi = data[CurrencyUnitEnum.SATS];
@@ -307,7 +319,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if (this.transaction.satoshi && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(+this.transaction.satoshi, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[6])).
+        pipe(takeUntil(this.unSubs[8])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;

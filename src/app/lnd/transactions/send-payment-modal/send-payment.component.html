@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Send Payment</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
+      <button tabindex="11" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #sendPaymentForm="ngForm" fxLayoutAlign="space-between stretch" fxLayout="column">
@@ -56,6 +56,7 @@
               </mat-autocomplete>
               <mat-error *ngIf="selectedChannelCtrl.errors?.notfound">Channel not found in the list.</mat-error>
             </mat-form-field>
+            <mat-slide-toggle fxFlex="25" tabindex="8" color="primary" name="isAmp" [(ngModel)]="isAmp">AMP Payment</mat-slide-toggle>
           </div>
         </mat-expansion-panel>
         <div *ngIf="paymentError !== ''" fxFlex="100" class="alert alert-danger mt-1">
@@ -63,8 +64,8 @@
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Fields</button>
-          <button mat-button id="sendBtn" color="primary" tabindex="3" (click)="onSendPayment()">Send Payment</button>
+          <button class="mr-1" mat-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Fields</button>
+          <button mat-button id="sendBtn" color="primary" tabindex="10" (click)="onSendPayment()">Send Payment</button>
         </div>
       </form>
     </mat-card-content>

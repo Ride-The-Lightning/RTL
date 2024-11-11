@@ -168,6 +168,13 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       }
     } else {
       this.advancedTitle = 'Advanced Options';
+      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
+        next: (rfRes: RecommendedFeeRates) => {
+          this.recommendedFee = rfRes;
+        }, error: (err) => {
+          this.logger.error(err);
+        }
+      });
     }
   }
 
@@ -207,19 +214,6 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       this.selUTXOs.forEach((utxo: UTXO) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
-  }
-
-  onSelFeeRateChanged(event) {
-    this.customFeeRate = null;
-    if (event.value === 'customperkb') {
-      this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[3])).subscribe({
-        next: (rfRes: RecommendedFeeRates) => {
-          this.recommendedFee = rfRes;
-        }, error: (err) => {
-          this.logger.error(err);
-        }
-      });
-    }
   }
 
   ngOnDestroy() {

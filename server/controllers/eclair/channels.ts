@@ -31,7 +31,7 @@ export const simplifyAllChannels = (selNode: SelectedNode, channels) => {
   });
   channelNodeIds = channelNodeIds.substring(1);
   options.url = selNode.settings.lnServerUrl + '/nodes';
-  options.form = { nodeIds: channelNodeIds };
+  options.form = channelNodeIds;
   logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
   return request.post(options).then((nodes) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes Received', data: nodes });

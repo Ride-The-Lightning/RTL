@@ -116,7 +116,6 @@
         "no-label-var": "error",
         "no-restricted-globals": "error",
         "no-undef-init": "error",
-        "no-undefined": "error",
         "block-spacing": "error",
         "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
         "comma-style": "error",

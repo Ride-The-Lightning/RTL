@@ -90,8 +90,8 @@ describe('LightningSendPaymentsComponent', () => {
     const sendButton = fixture.debugElement.nativeElement.querySelector('#sendBtn');
     sendButton.click();
     const expectedSendPaymentPayload: SendPayment = {
-      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoingChannel: null, feeLimitType: 'none', feeLimit: null, fromDialog: true,
-      paymentReq: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq' +
+      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoing_chan_ids: undefined, fee_limit_sat: 1000000, fromDialog: true, amp: false,
+      payment_request: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq' +
       '6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5c' +
       'qqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq' +
       '38j0s3hrgpv4eel3'

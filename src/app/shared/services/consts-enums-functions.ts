@@ -12,10 +12,11 @@ export function getPaginatorLabel(field: string) {
 }
 
 export const HOUR_SECONDS = 3600;
+export const SECS_IN_YEAR = 31536000;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.15.2-beta';
+export const VERSION = '0.15.3-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -69,7 +70,7 @@ export const TRANS_TYPES = [
 export const FEE_LIMIT_TYPES = [
   { id: 'none', name: 'No Fee Limit', placeholder: 'No Limit' },
   { id: 'fixed', name: 'Fixed Limit (Sats)', placeholder: 'Fixed Limit in Sats' },
-  { id: 'percent', name: 'Percentage of Payment Amount', placeholder: 'Percentage Limit' }
+  { id: 'percent', name: 'Percentage of Amount', placeholder: 'Percentage Limit' }
 ];
 
 export const FEE_RATE_TYPES = [
@@ -1395,4 +1396,15 @@ export function getSelectedCurrency(currencyID: string) {
     foundCurrency.symbol = foundCurrency.symbol.replace('<svg class="currency-icon"', '<svg class= "currency-icon ' + foundCurrency.class + '"');
   }
   return foundCurrency;
+}
+
+
+export function getFeeLimitSat(selFeeLimitTypeID: string, feeLimit: number, amount?: number) {
+  if (selFeeLimitTypeID === 'fixed') {
+    return feeLimit;
+  }
+  if (selFeeLimitTypeID === 'percent') {
+    return Math.ceil(((amount || 0) * feeLimit) / 100);
+  }
+  return 1000000;
 }

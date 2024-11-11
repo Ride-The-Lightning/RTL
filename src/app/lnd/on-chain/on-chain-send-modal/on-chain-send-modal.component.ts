@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { Node, RTLConfiguration } from '../../../shared/models/RTLconfig';
@@ -23,6 +23,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 import { setChannelTransaction } from '../../store/lnd.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
+import { DataService } from 'src/app/shared/services/data.service';
+import { RecommendedFeeRates } from 'src/app/shared/models/rtlModels';
 
 @Component({
   selector: 'rtl-on-chain-send-modal',
@@ -35,6 +37,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
+  public faInfoCircle = faInfoCircle;
   public sweepAll = false;
   public selNode: Node | null;
   public appConfig: RTLConfiguration;
@@ -58,6 +61,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundError = '';
   public flgValidated = false;
   public flgEditable = true;
+  public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   public passwordFormLabel = 'Authenticate with your RTL password';
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
@@ -65,12 +69,13 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   passwordFormGroup: UntypedFormGroup;
   sendFundFormGroup: UntypedFormGroup;
   confirmFormGroup: UntypedFormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
     public dialogRef: MatDialogRef<OnChainSendModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds,
     private logger: LoggerService,
+    private dataService: DataService,
     private store: Store<RTLState>,
     private rtlEffects: RTLEffects,
     private commonService: CommonService,
@@ -80,6 +85,13 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     private formBuilder: UntypedFormBuilder) { }
 
   ngOnInit() {
+    this.dataService.getRecommendedFeeRates().pipe(takeUntil(this.unSubs[0])).subscribe({
+      next: (rfRes: RecommendedFeeRates) => {
+        this.recommendedFee = rfRes;
+      }, error: (err) => {
+        this.logger.error(err);
+      }
+    });
     this.sweepAll = this.data.sweepAll;
     this.passwordFormGroup = this.formBuilder.group({
       hiddenPassword: ['', [Validators.required]],
@@ -92,7 +104,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       selTransType: ['1', Validators.required]
     });
     this.confirmFormGroup = this.formBuilder.group({});
-    this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe((transType) => {
+    this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === '1') {
         this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
         this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
@@ -105,16 +117,16 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFees.setValue(null);
       }
     });
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => {
       this.appConfig = appConfig;
     });
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[3])).subscribe((selNode) => {
       this.fiatConversion = selNode.settings.fiatConversion;
       this.amountUnits = selNode.settings.currencyUnits;
       this.logger.info(selNode);
     });
     this.actions.pipe(
-      takeUntil(this.unSubs[3]),
+      takeUntil(this.unSubs[4]),
       filter((action) => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND)).
       subscribe((action: any) => {
         if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
@@ -173,7 +185,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     }
     if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[4])).
+        pipe(takeUntil(this.unSubs[5])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = CurrencyUnitEnum.SATS;
@@ -254,7 +266,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     if (this.transactionAmount && this.selAmountUnit !== event.value) {
       const amount = this.transactionAmount ? this.transactionAmount : 0;
       this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[5])).
+        pipe(takeUntil(this.unSubs[6])).
         subscribe({
           next: (data) => {
             this.selAmountUnit = event.value;

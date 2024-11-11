@@ -402,7 +402,7 @@
       &.info-icon-primary {
         color: $primary-darker;
       }
-      &.info-icon-text {
+      &.info-icon-text, &.arrow-downward, &.arrow-upward {
         color: $foreground-text;
       }
     }
