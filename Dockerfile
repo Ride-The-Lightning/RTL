@@ -1,6 +1,6 @@
-ARG BASE_DISTRO="node:alpine"
+ARG BASE_DISTRO="node:20-alpine"
 
-FROM --platform=${BUILDPLATFORM} ${BASE_DISTRO} as builder
+FROM --platform=${BUILDPLATFORM} ${BASE_DISTRO} AS builder
 
 WORKDIR /RTL
 
@@ -20,7 +20,7 @@ RUN npm run buildbackend
 # Remove non production necessary modules
 RUN npm prune --omit=dev --legacy-peer-deps
 
-FROM --platform=${TARGETPLATFORM} ${BASE_DISTRO} as runner
+FROM --platform=${TARGETPLATFORM} ${BASE_DISTRO} AS runner
 
 RUN apk add --no-cache tini
 
