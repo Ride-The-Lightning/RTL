@@ -8,7 +8,7 @@ import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { Authentication, SSO } from '../../models/config.model.js';
+import { Authentication } from '../../models/config.model.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
@@ -114,7 +114,9 @@ export const getApplicationSettings = (req, res, next) => {
                 if (err) {
                     // Delete unnecessary data for initial response (without security token)
                     const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
-                    appConfData.SSO = new SSO();
+                    delete appConfData.SSO.rtlCookiePath;
+                    delete appConfData.SSO.cookieValue;
+                    delete appConfData.SSO.logoutRedirectLink;
                     appConfData.secret2FA = '';
                     appConfData.dbDirectoryPath = '';
                     appConfData.nodes[selNodeIdx].authentication = new Authentication();
