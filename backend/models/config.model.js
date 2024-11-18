@@ -1,6 +1,6 @@
 export class SSO {
-    constructor(rtlSso, rtlCookiePath, logoutRedirectLink, cookieValue) {
-        this.rtlSso = rtlSso;
+    constructor(rtlSSO, rtlCookiePath, logoutRedirectLink, cookieValue) {
+        this.rtlSSO = rtlSSO;
         this.rtlCookiePath = rtlCookiePath;
         this.logoutRedirectLink = logoutRedirectLink;
         this.cookieValue = cookieValue;

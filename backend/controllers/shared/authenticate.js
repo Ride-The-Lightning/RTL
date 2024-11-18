@@ -48,7 +48,7 @@ export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && comm
 export const authenticateUser = (req, res, next) => {
     const { authenticateWith, authenticationValue, twoFAToken } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
-    if (+common.appConfig.SSO.rtlSso) {
+    if (+common.appConfig.SSO.rtlSSO) {
         if (authenticateWith === 'JWT' && jwt.verify(authenticationValue, common.secret_key)) {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
             res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
@@ -103,7 +103,7 @@ export const authenticateUser = (req, res, next) => {
 export const resetPassword = (req, res, next) => {
     const { currPassword, newPassword } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..' });
-    if (+common.appConfig.SSO.rtlSso) {
+    if (+common.appConfig.SSO.rtlSSO) {
         const errMsg = 'Password cannot be reset for SSO authentication';
         const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });

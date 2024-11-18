@@ -44,7 +44,7 @@ jobs:
         echo "GITHUB REF TYPE: ${{ github.ref_type }}"
         echo "GITHUB REF NAME: ${{ github.ref_name }}"
         echo "EVENT INPUT VERSION: ${{ github.event.inputs.version }}"
-        echo "ENV VERSION: ${{ env.VERSION }}"
+        echo "ENV VERSION: $VERSION"
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
