@@ -1,7 +1,7 @@
 export class SSO {
 
   constructor(
-    public rtlSso?: number,
+    public rtlSSO?: number,
     public rtlCookiePath?: string,
     public logoutRedirectLink?: string,
     public cookieValue?: string
