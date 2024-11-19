@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.15.3-beta",
+  "version": "0.15.4-beta",
   "license": "MIT",
   "type": "module",
   "scripts": {

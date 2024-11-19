@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.actions.pipe(
       takeUntil(this.unSubs[4]),
-      filter((action) => action.type === RTLActions.FETCH_APPLICATION_SETTINGS || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
+      filter((action) => action.type === RTLActions.SET_APPLICATION_SETTINGS || action.type === RTLActions.LOGIN || action.type === RTLActions.LOGOUT)).
       subscribe((action: (any)) => {
         if (action.type === RTLActions.SET_APPLICATION_SETTINGS) {
           if (!this.sessionService.getItem('token')) {

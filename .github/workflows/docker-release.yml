@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -41,6 +41,10 @@ jobs:
           exit 1
         fi
         echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "GITHUB REF TYPE: ${{ github.ref_type }}"
+        echo "GITHUB REF NAME: ${{ github.ref_name }}"
+        echo "EVENT INPUT VERSION: ${{ github.event.inputs.version }}"
+        echo "ENV VERSION: $VERSION"
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
