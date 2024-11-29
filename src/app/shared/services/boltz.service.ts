@@ -61,7 +61,7 @@ export class BoltzService implements OnDestroy {
         }, error: (err) => {
           this.boltzInfo = { version: '2.0.0' };
           this.boltzInfoChanged.next(this.boltzInfo);
-          return of(this.handleErrorWithoutAlert(UI_MESSAGES.GET_BOLTZ_INFO, this.swapUrl, err));
+          return of(this.handleErrorWithoutAlert(this.swapUrl, UI_MESSAGES.GET_BOLTZ_INFO, err));
         }
       });
   }
@@ -99,18 +99,6 @@ export class BoltzService implements OnDestroy {
       errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(logout({ payload: errMsg }));
-    } else if (err.status === 503) {
-      errMsg = 'Unable to Connect to Boltz Server.';
-      this.store.dispatch(openAlert({
-        payload: {
-          data: {
-            type: 'ERROR',
-            alertTitle: 'Boltz Not Connected',
-            message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: actionName },
-            component: ErrorMessageComponent
-          }
-        }
-      }));
     } else {
       errMsg = this.commonService.extractErrorMessage(err);
     }
@@ -119,10 +107,6 @@ export class BoltzService implements OnDestroy {
 
   handleErrorWithAlert(uiMessage: string, errURL: string, err: any) {
     let errMsg = '';
-    if (err.status === 401) {
-      this.logger.info('Redirecting to Login');
-      this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
-    }
     this.logger.error(err);
     this.store.dispatch(closeSpinner({ payload: uiMessage }));
     if (err.status === 401) {
@@ -130,14 +114,13 @@ export class BoltzService implements OnDestroy {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(logout({ payload: errMsg }));
     } else if (err.status === 503) {
-      errMsg = 'Unable to Connect to Boltz Server.';
       setTimeout(() => {
         this.store.dispatch(openAlert({
           payload: {
             data: {
               type: 'ERROR',
-              alertTitle: 'Boltz Not Connected',
-              message: { code: err.status, message: 'Unable to Connect to Boltz Server', URL: errURL },
+              alertTitle: 'Error from Boltz',
+              message: { code: err.status, message: this.commonService.extractErrorMessage(err), URL: errURL },
               component: ErrorMessageComponent
             }
           }
