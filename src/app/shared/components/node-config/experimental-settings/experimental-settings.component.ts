@@ -47,7 +47,7 @@ export class ExperimentalSettingsComponent implements OnInit, OnDestroy {
     this.dataService.listConfigs().pipe(takeUntil(this.unSubs[0])).subscribe({
       next: (res: any) => {
         this.logger.info('Received List Configs: ' + JSON.stringify(res));
-        this.features[1].enabled = !!res['experimental-dual-fund'];
+        this.features[1].enabled = !!res['configs']['experimental-dual-fund']['set'];
       }, error: (err) => {
         this.logger.error('List Configs Error: ' + JSON.stringify(err));
         this.features[1].enabled = false;
