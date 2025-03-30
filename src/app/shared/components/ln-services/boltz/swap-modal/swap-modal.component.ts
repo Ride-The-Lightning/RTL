@@ -56,7 +56,8 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.serviceInfo.limits?.minimal, [Validators.required, Validators.min(this.serviceInfo.limits?.minimal || 0), Validators.max(this.serviceInfo.limits?.maximal || 0)]],
       acceptZeroConf: [false],
-      sendFromInternal: [true]
+      sendFromInternal: [true],
+      refundAddress: [{ value: '', disabled: true }]
     });
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
@@ -89,6 +90,25 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addressFormGroup.setErrors({ Invalid: true });
       });
     }
+    if (this.direction === SwapTypeEnum.SWAP_IN) {
+      this.inputFormGroup.controls.sendFromInternal.valueChanges.
+        pipe(takeUntil(this.unSubs[4])).
+        subscribe(() => {
+          this.onSendFromInternalChange();
+        });
+    }
+  }
+
+  onSendFromInternalChange() {
+    if (!this.inputFormGroup.controls.sendFromInternal.value) {
+      this.inputFormGroup.controls.refundAddress.enable();
+      this.inputFormGroup.controls.refundAddress.setValidators([Validators.required]);
+      this.inputFormGroup.controls.refundAddress.updateValueAndValidity();
+    } else {
+      this.inputFormGroup.controls.refundAddress.disable();
+      this.inputFormGroup.controls.refundAddress.clearValidators();
+      this.inputFormGroup.controls.refundAddress.updateValueAndValidity();
+    }
   }
 
   onAddressTypeChange(event: any) {
@@ -115,7 +135,22 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === SwapTypeEnum.SWAP_IN) {
-      this.boltzService.swapIn(this.inputFormGroup.controls.amount.value, this.isSendFromInternalCompatible ? this.inputFormGroup.controls.sendFromInternal.value : null).pipe(takeUntil(this.unSubs[2])).
+      const refundAddress = this.inputFormGroup.controls.sendFromInternal.value ?
+        null : this.inputFormGroup.controls.refundAddress.value;
+
+      const sendFromInternal = this.isSendFromInternalCompatible ? this.inputFormGroup.controls.sendFromInternal.value : null;
+
+      if (!sendFromInternal && !refundAddress) {
+        this.stepper.selected?.stepControl.setErrors({ Invalid: true });
+        this.flgEditable = true;
+        return;
+      }
+
+      this.boltzService.swapIn(
+        this.inputFormGroup.controls.amount.value,
+        sendFromInternal,
+        refundAddress
+      ).pipe(takeUntil(this.unSubs[2])).
         subscribe({
           next: (swapStatus: CreateSwapResponse) => {
             this.swapStatus = swapStatus;
@@ -156,7 +191,11 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 1:
         if (this.inputFormGroup.controls.amount.value) {
           if (this.direction === SwapTypeEnum.SWAP_IN) {
-            this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Send from Internal Wallet: ' + (this.inputFormGroup.controls.sendFromInternal.value ? 'Yes' : 'No');
+            let summary = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Send from Internal Wallet: ' + (this.inputFormGroup.controls.sendFromInternal.value ? 'Yes' : 'No');
+            if (!this.inputFormGroup.controls.sendFromInternal.value && this.inputFormGroup.controls.refundAddress.value) {
+              summary += ' | Refund Address: ' + this.inputFormGroup.controls.refundAddress.value;
+            }
+            this.inputFormLabel = summary;
           } else {
             this.inputFormLabel = this.swapDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Zero Conf: ' + (this.inputFormGroup.controls.acceptZeroConf.value ? 'Yes' : 'No');
           }
@@ -201,7 +240,12 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onRestart() {
     this.stepper.reset();
     this.flgEditable = true;
-    this.inputFormGroup.reset({ amount: this.serviceInfo.limits?.minimal, acceptZeroConf: false, sendFromInternal: true });
+    this.inputFormGroup.reset({
+      amount: this.serviceInfo.limits?.minimal,
+      acceptZeroConf: false,
+      sendFromInternal: true,
+      refundAddress: ''
+    });
     this.statusFormGroup.reset();
     this.addressFormGroup.reset({ addressType: 'local', address: '' });
     this.addressFormGroup.controls.address.disable();
