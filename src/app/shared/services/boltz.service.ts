@@ -85,8 +85,8 @@ export class BoltzService implements OnDestroy {
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }
 
-  swapIn(amount: number, sendFromInternal: boolean) {
-    const requestBody = { amount: amount, sendFromInternal: sendFromInternal };
+  swapIn(amount: number, sendFromInternal: boolean, refundAddress?: string) {
+    const requestBody = { amount: amount, sendFromInternal: sendFromInternal, refundAddress };
     this.swapUrl = API_URL + API_END_POINTS.BOLTZ_API + '/createswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
   }
