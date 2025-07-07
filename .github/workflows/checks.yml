@@ -17,15 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
@@ -41,15 +41,15 @@ jobs:
     needs: prepare
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
@@ -70,15 +70,15 @@ jobs:
       CI: true
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
