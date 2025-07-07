@@ -38,6 +38,16 @@
                     <mat-icon matTooltip="Pay from the node's onchain wallet" matTooltipPosition="above" class="info-icon mt-2">info_outline</mat-icon>
                   </div>
                 </div>
+                <div disabled="direction === swapTypeEnum.SWAP_IN && isSendFromInternalCompatible && !inputFormGroup?.controls?.sendFromInternal.value" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="mt-1">
+                  <mat-form-field fxLayout="column" fxFlex="100">
+                    <mat-label>Refund Address</mat-label>
+                    <input matInput type="text" tabindex="3" formControlName="refundAddress" [required]="!inputFormGroup?.controls?.sendFromInternal.value">
+                    <mat-hint>The address where funds will be returned in case of a failed swap</mat-hint>
+                    <mat-error *ngIf="inputFormGroup?.controls?.refundAddress?.errors?.required">
+                      Refund address is required when not using internal wallet.
+                    </mat-error>
+                  </mat-form-field>
+                </div>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="direction === swapTypeEnum.SWAP_OUT" mat-button color="primary" tabindex="2" type="button" matStepperNext>Next</button>
