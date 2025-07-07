@@ -82,7 +82,7 @@ jobs:
           tar -czf /tmp/rtl-build-$VERSION.tar.gz frontend backend rtl.js package.json package-lock.json
           zip -r /tmp/rtl-build-$VERSION.zip frontend backend rtl.js package.json package-lock.json
       
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: rtl-build-${{ github.event.release.tag_name || github.event.inputs.version || '' }}
           path: |
