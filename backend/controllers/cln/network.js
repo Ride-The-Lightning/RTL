@@ -4,6 +4,7 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+const aliasCache = new Map();
 export const getRoute = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Getting Network Routes..' });
     options = common.getOptions(req);
@@ -80,20 +81,28 @@ export const listNodes = (req, res, next) => {
     });
 };
 export const getAlias = (selNode, peer, id) => {
-    options.url = selNode.settings.lnServerUrl + '/v1/listnodes';
-    if (!peer[id]) {
+    const peerId = peer[id];
+    if (!peerId) {
         logger.log({ selectedNode: selNode, level: 'ERROR', fileName: 'Network', msg: 'Empty Peer ID' });
         peer.alias = '';
-        return peer;
+        return Promise.resolve(peer);
     }
-    options.body = { id: peer[id] };
+    if (aliasCache.has(peerId)) {
+        peer.alias = aliasCache.get(peerId);
+        return Promise.resolve(peer);
+    }
+    options.url = selNode.settings.lnServerUrl + '/v1/listnodes';
+    options.body = { id: peerId };
     return request.post(options).then((body) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
-        peer.alias = body.nodes[0] && body.nodes[0].alias ? body.nodes[0].alias : peer[id].substring(0, 20);
+        const alias = body.nodes?.[0]?.alias || peerId.substring(0, 20);
+        aliasCache.set(peerId, alias);
+        peer.alias = alias;
         return peer;
     }).catch((errRes) => {
         common.handleError(errRes, 'Network', 'Peer Alias Error', selNode);
-        peer.alias = peer[id].substring(0, 20);
+        const alias = peerId.substring(0, 20);
+        peer.alias = alias;
         return peer;
     });
 };
