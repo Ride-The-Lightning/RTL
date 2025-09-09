@@ -14,11 +14,12 @@ export const listPeerChannels = (req, res, next) => {
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listpeerchannels';
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body.channels });
-    return Promise.all(body.channels?.map((channel) => {
+    const getPeerAliasesTasks = body.channels.map((channel) => () => {
       channel.to_them_msat = channel.total_msat - channel.to_us_msat;
-      channel.balancedness = (channel.total_msat === 0) ? 1 : (1 - Math.abs((channel.to_us_msat - (channel.total_msat - channel.to_us_msat)) / channel.total_msat)).toFixed(3);
+      channel.balancedness = (channel.total_msat === 0) ? 1 : (1 - Math.abs((channel.to_us_msat - channel.to_them_msat) / channel.total_msat)).toFixed(3);
       return getAlias(req.session.selectedNode, channel, 'peer_id');
-    })).then((values) => {
+    });
+    common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List With Aliases Received', data: body.channels });
       return res.status(200).json(body.channels || []);
     });

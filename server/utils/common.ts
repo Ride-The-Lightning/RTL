@@ -581,6 +581,45 @@ export class CommonService {
     return JSON.parse(dataStr);
   };
 
+  public runWithConcurrencyLimit = (tasks, limit, done) => {
+    const results = new Array(tasks.length);
+    let nextIndex = 0;
+    let activeCount = 0;
+
+    const runNext = () => {
+      if (nextIndex >= tasks.length) {
+        if (activeCount === 0) {
+          done(results); // all tasks are finished
+        }
+        return;
+      }
+
+      const currentIndex = nextIndex++;
+      activeCount++;
+
+      const task = tasks[currentIndex];
+      if (typeof task !== 'function') {
+        results[currentIndex] = { error: new Error('Invalid task at index ' + currentIndex) };
+        activeCount--;
+        runNext();
+        return;
+      }
+
+      Promise.resolve().then(() => task()).then((result) => {
+        results[currentIndex] = result;
+      }).catch((err) => {
+        results[currentIndex] = { error: err };
+      }).finally(() => {
+        activeCount--;
+        runNext();
+      });
+    };
+
+    for (let i = 0; i < limit && i < tasks.length; i++) {
+      runNext();
+    }
+  };
+
 }
 
 export const Common = new CommonService();

@@ -16,7 +16,7 @@ export const SECS_IN_YEAR = 31536000;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.15.5-beta';
+export const VERSION = '0.15.6-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 

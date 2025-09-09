@@ -305,7 +305,6 @@
   .tab-badge {
     & .mat-badge-content {
       font-size: 90%;
-      padding-bottom: 2px;
       &.mat-badge-active {
         background: $primary-color;
       }
@@ -313,8 +312,9 @@
   }
 
   .mat-badge-medium.mat-badge-after .mat-badge-content {
-    right: unset;
     margin-left: $gap !important;
+    width: fit-content;
+    padding: 0 $gap;
     @include for_screensize(phone) {
       margin-left: 0 !important;
     }
