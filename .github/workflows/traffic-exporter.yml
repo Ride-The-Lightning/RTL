@@ -34,4 +34,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ steps.write_creds.outputs.filePath }}
-        run: python export_traffic.py
+        run: python .github/scripts/export_traffic.py
