@@ -35,5 +35,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           # Point the environment variable to the file path created in the previous step
-          GOOGLE_SHEEETS_CREDENTIALS: ${{ steps.write_creds.outputs.filePath }}
+          GOOGLE_SHEETS_CREDENTIALS: ${{ steps.write_creds.outputs.filePath }}
         run: python .github/scripts/export_traffic.py
