@@ -6,7 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 # --- CONFIGURATION ---
 # GitHub repository details
-GITHUB_REPO = "YOUR_USERNAME/YOUR_REPO_NAME" # e.g., "google/gemini"
+GITHUB_REPO = "Ride-The-Lightning/RTL" # e.g., "google/gemini"
 
 # Get credentials from environment variables (for GitHub Actions)
 # For local testing, you can temporarily hardcode these or set them in your terminal
