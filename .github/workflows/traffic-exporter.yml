@@ -2,9 +2,8 @@ name: Export Repo Traffic to Google Sheets
 
 on:
   schedule:
-    # Runs at 02:00 UTC every day
     - cron: '0 2 * * *'
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,6 +22,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install gspread oauth2client requests
 
+      # --- NEW STEP TO DECODE THE SECRET ---
       - name: Write Google credentials to a file
         id: write_creds
         uses: timheuer/base64-to-file@v1.2
@@ -30,8 +30,10 @@ jobs:
           fileName: 'google-credentials.json'
           encodedString: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
 
+      # --- MODIFIED STEP TO RUN THE SCRIPT ---
       - name: Run the Python script
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GOOGLE_SHEETS_CREDENTIALS: ${{ steps.write_creds.outputs.filePath }}
-        run: python .github/scripts/export_traffic.py
+          # Point the environment variable to the file path created in the previous step
+          GOOGLE_SHEEETS_CREDENTIALS: ${{ steps.write_creds.outputs.filePath }}
+        run: python export_traffic.py
