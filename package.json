@@ -39,7 +39,7 @@
     "otplib": "12.0.1",
     "pdfmake": "0.2.10",
     "process": "0.11.10",
-    "request": "2.88.2",
+    "request": "npm:@cypress/request@3.0.9",
     "request-promise": "4.2.6",
     "rxjs": "7.8.1",
     "sha256": "0.2.0",
@@ -103,7 +103,8 @@
     "color-convert": "2.0.1",
     "color-name": "1.1.4",
     "is-core-module": "2.13.0",
+    "request": "npm:@cypress/request@3.0.9",
     "error-ex": "1.3.2",
     "has-ansi": "2.1.1"
-  }  
+  }
 }
