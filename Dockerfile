@@ -17,9 +17,6 @@ RUN npm run buildfrontend
 # Build the Backend from typescript server
 RUN npm run buildbackend
 
-# Remove non production necessary modules
-RUN npm prune --omit=dev --legacy-peer-deps
-
 FROM --platform=${TARGETPLATFORM} ${BASE_DISTRO} AS runner
 
 RUN apk add --no-cache tini
@@ -28,9 +25,13 @@ WORKDIR /RTL
 
 COPY --from=builder /RTL/rtl.js ./rtl.js
 COPY --from=builder /RTL/package.json ./package.json
+COPY --from=builder /RTL/package-lock.json ./package-lock.json
 COPY --from=builder /RTL/frontend ./frontend
 COPY --from=builder /RTL/backend ./backend
-COPY --from=builder /RTL/node_modules/ ./node_modules
+
+# Runtime dependency installation
+RUN npm ci --omit=dev --legacy-peer-deps --ignore-scripts \
+  && npm prune --omit=dev --legacy-peer-deps
 
 EXPOSE 3000
 
