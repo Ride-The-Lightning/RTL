@@ -4,6 +4,7 @@
 .github/
 .settings/
 .vscode/
+src/app/shared/test-helpers/
 frontend/
 backend/
 backup/
