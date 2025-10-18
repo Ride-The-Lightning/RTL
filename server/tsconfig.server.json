@@ -1,4 +1,5 @@
-{
+RTL online élő 
+TV2 online élő {
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "../",
