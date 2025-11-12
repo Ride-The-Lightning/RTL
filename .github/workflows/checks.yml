@@ -15,6 +15,14 @@ on:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - '18.x'
+          - '20.x'
+          - '22.x'
+          - '24.x'
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -22,14 +30,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
@@ -39,6 +47,14 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - '18.x'
+          - '20.x'
+          - '22.x'
+          - '24.x'
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -46,14 +62,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
@@ -75,14 +91,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
