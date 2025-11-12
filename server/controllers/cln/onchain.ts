@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -7,11 +7,12 @@ const common: CommonService = Common;
 
 export const getNewAddress = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/newaddr';
   options.body = req.body;
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -22,12 +23,13 @@ export const getNewAddress = (req, res, next) => {
 
 export const onChainWithdraw = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Withdrawing from On Chain..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/withdraw';
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body });
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Withdraw Finished', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
@@ -38,10 +40,11 @@ export const onChainWithdraw = (req, res, next) => {
 
 export const getUTXOs = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Listing Funds..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listfunds';
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'OnChain', msg: 'Funds List Received', data: body });
     // Local Remote Balance Calculation
     let lrBalance = { localBalance: 0, remoteBalance: 0, inactiveBalance: 0, pendingBalance: 0 };

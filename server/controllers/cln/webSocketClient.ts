@@ -112,7 +112,7 @@ export class CLWebSocketClient {
     const clientIdx = this.webSocketClients.findIndex((wsc) => +wsc.selectedNode.index === +newSelectedNode.index);
     let newClient = this.webSocketClients[clientIdx];
     if (!newClient) { newClient = { selectedNode: null, reConnect: true, webSocketClient: null }; }
-    newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
+    newClient.selectedNode = newSelectedNode;
     this.webSocketClients[clientIdx] = newClient;
   };
 

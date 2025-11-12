@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -9,7 +9,8 @@ const common: CommonService = Common;
 export const getAliasForChannel = (selNode: SelectedNode, channel) => {
   const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
   options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
-  return request(options).then((aliasBody) => {
+  return axios(options).then((aliasBody: any) => {
+    aliasBody = aliasBody.data;
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
     channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
     return channel;
@@ -21,14 +22,15 @@ export const getAliasForChannel = (selNode: SelectedNode, channel) => {
 
 export const getAllChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channels..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
-  options.qs = req.query;
+  options.params = req.query;
   let local = 0;
   let remote = 0;
   let total = 0;
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
     if (body.channels) {
       return Promise.all(
@@ -59,11 +61,12 @@ export const getAllChannels = (req, res, next) => {
 
 export const getPendingChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Pending Channels..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/pending';
-  options.qs = req.query;
-  request(options).then((body) => {
+  options.params = req.query;
+  axios(options).then((body: any) => {
+    body = body.data;
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
     }
@@ -96,11 +99,12 @@ export const getPendingChannels = (req, res, next) => {
 
 export const getClosedChannels = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Closed Channels..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/closed';
-  options.qs = req.query;
-  request(options).then((body) => {
+  options.params = req.query;
+  axios(options).then((body: any) => {
+    body = body.data;
     if (body.channels && body.channels.length > 0) {
       return Promise.all(
         body.channels?.map((channel) => {
@@ -127,7 +131,7 @@ export const getClosedChannels = (req, res, next) => {
 export const postChannel = (req, res, next) => {
   const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, trans_type, trans_type_value, commitment_type } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
   options.form = {
@@ -146,7 +150,8 @@ export const postChannel = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channel Open Options', data: options.form });
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
@@ -162,14 +167,14 @@ export const closeChannel = (req, res, next) => {
       const err = common.handleError({ message: 'Session Expired after a day\'s inactivity.', statusCode: 401 }, 'Session Expired', 'Session Expiry Error', null);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
     const channelpoint = req.params.channelPoint?.replace(':', '/');
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
     if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
     if (req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
-    request.delete(options);
+    axios.delete(options);
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Close Requested' });
     res.status(202).json({ message: 'Close channel request has been submitted.' });
   } catch (error: any) {
@@ -181,7 +186,7 @@ export const closeChannel = (req, res, next) => {
 export const postChanPolicy = (req, res, next) => {
   const { chanPoint, baseFeeMsat, feeRate, timeLockDelta, max_htlc_msat, min_htlc_msat } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Policy..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/chanpolicy';
   if (chanPoint === 'all') {
@@ -212,7 +217,8 @@ export const postChanPolicy = (req, res, next) => {
   }
 
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options', data: options.form });
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Policy Updated', data: body });
     if (body.failed_updates && body.failed_updates.length && body.failed_updates[0].update_error) {
       const err = common.handleError({ error: body.failed_updates[0].update_error }, 'Channels', 'Update Channel Policy Error', req.session.selectedNode);

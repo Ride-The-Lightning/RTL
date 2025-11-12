@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 let options = null;
@@ -7,7 +7,7 @@ const common = Common;
 export const signMessage = (req, res, next) => {
     const { message } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Signing Message..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -15,7 +15,8 @@ export const signMessage = (req, res, next) => {
     options.form = JSON.stringify({
         msg: Buffer.from(message).toString('base64')
     });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Signed', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -26,7 +27,7 @@ export const signMessage = (req, res, next) => {
 export const verifyMessage = (req, res, next) => {
     const { message, signature } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Verifying Message..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -35,7 +36,8 @@ export const verifyMessage = (req, res, next) => {
         msg: Buffer.from(message).toString('base64'),
         signature: signature
     });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {

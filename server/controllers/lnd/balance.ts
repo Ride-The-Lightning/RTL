@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -7,13 +7,14 @@ const common: CommonService = Common;
 
 export const getBlockchainBalance = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Balance', msg: 'Getting Balance..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/balance/blockchain';
-  options.qs = req.query;
+  options.params = req.query;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: 'Request params', data: req.params });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Balance', msg: 'Request Query', data: req.query });
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     if (body) {
       if (!body.total_balance) { body.total_balance = 0; }
       if (!body.confirmed_balance) { body.confirmed_balance = 0; }

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -7,10 +7,11 @@ const common: CommonService = Common;
 
 export const getTransactions = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Getting Transactions..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Transactions', msg: 'Transactions List Received', data: body });
     res.status(200).json(body.transactions);
   }).catch((errRes) => {
@@ -22,7 +23,7 @@ export const getTransactions = (req, res, next) => {
 export const postTransactions = (req, res, next) => {
   const { amount, address, fees, blocks, sendAll } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Sending Transaction..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/transactions';
   options.form = {
@@ -33,7 +34,8 @@ export const postTransactions = (req, res, next) => {
   };
   if (sendAll) { options.form.send_all = sendAll; }
   options.form = JSON.stringify(options.form);
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Transactions', msg: 'Transaction Sent', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {

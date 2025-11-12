@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { LNDWSClient, LNDWebSocketClient } from './webSocketClient.js';
@@ -11,8 +11,8 @@ const lndWsClient: LNDWebSocketClient = LNDWSClient;
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
   common.logEnvVariables(req);
-  common.setOptions(req);
-  options = common.getOptions(req);
+  common.setAxiosConfig(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/getinfo';
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.lnNode });
@@ -28,7 +28,8 @@ export const getInfo = (req, res, next) => {
       }
       return node;
     });
-    return request(options).then((body) => {
+    return axios(options).then((body: any) => {
+      body = body.data;
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if (!body || search_idx > -1 || body.error) {

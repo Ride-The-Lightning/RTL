@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { Database } from '../../utils/database.js';
@@ -10,6 +10,7 @@ const databaseService = Database;
 export const listOfferBookmarks = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Bookmarks..' });
     databaseService.find(req.session.selectedNode, CollectionsEnum.OFFERS).then((offers) => {
+        offers = offers.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Bookmarks Received', data: offers });
         res.status(200).json(offers);
     }).catch((errRes) => {
@@ -30,13 +31,14 @@ export const deleteOfferBookmark = (req, res, next) => {
 };
 export const listOffers = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offers..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listoffers';
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offers List URL', data: options.url });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offers List Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -46,13 +48,14 @@ export const listOffers = (req, res, next) => {
 };
 export const createOffer = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Creating Offer..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/offer';
     options.body = req.body;
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Created', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -62,14 +65,15 @@ export const createOffer = (req, res, next) => {
 };
 export const fetchOfferInvoice = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Getting Offer Invoice..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/fetchinvoice';
     options.body = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Offers', msg: 'Offer Invoice Body', data: options.body });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Invoice Received', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -79,13 +83,14 @@ export const fetchOfferInvoice = (req, res, next) => {
 };
 export const disableOffer = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Disabling Offer..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/disableoffer';
     options.body = req.body;
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Offers', msg: 'Offer Disabled', data: body });
         res.status(202).json(body);
     }).catch((errRes) => {

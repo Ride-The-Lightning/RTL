@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { ECLWSClient } from './webSocketClient.js';
@@ -9,8 +9,8 @@ const eclWsClient = ECLWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
     common.logEnvVariables(req);
-    common.setOptions(req);
-    options = common.getOptions(req);
+    common.setAxiosConfig(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -31,7 +31,8 @@ export const getInfo = (req, res, next) => {
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
         else {
-            return request.post(options).then((body) => {
+            return axios.post(options).then((body) => {
+                body = body.data;
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
                 body.lnImplementation = 'Eclair';
                 req.session.selectedNode.lnVersion = body.version.split('-')[0] || '';

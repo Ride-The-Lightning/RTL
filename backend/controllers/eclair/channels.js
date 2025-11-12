@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { createInvoiceRequestCall, listPendingInvoicesRequestCall } from './invoices.js';
@@ -30,7 +30,8 @@ export const simplifyAllChannels = (selNode, channels) => {
     options.url = selNode.settings.lnServerUrl + '/nodes';
     options.form = channelNodeIds;
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
-    return request.post(options).then((nodes) => {
+    return axios.post(options).then((nodes) => {
+        nodes = nodes.data;
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes Received', data: nodes });
         let foundPeer = null;
         simplifiedChannels?.map((channel) => {
@@ -43,7 +44,7 @@ export const simplifyAllChannels = (selNode, channels) => {
 };
 export const getChannels = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'List Channels..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -58,17 +59,18 @@ export const getChannels = (req, res, next) => {
         common.getDummyData('Channels', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
     }
     else {
-        request.post(options).then((body) => {
+        axios.post(options).then((body) => {
+            body = body.data;
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
             if (body && body.length) {
                 return simplifyAllChannels(req.session.selectedNode, body).then((simplifiedChannels) => {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Simplified Channels with Alias Received', data: simplifiedChannels });
-                    res.status(200).json(simplifiedChannels);
+                    return res.status(200).json(simplifiedChannels);
                 });
             }
             else {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Empty Channels List Received' });
-                res.status(200).json([]);
+                return res.status(200).json([]);
             }
         }).
             catch((errRes) => {
@@ -79,7 +81,7 @@ export const getChannels = (req, res, next) => {
 };
 export const getChannelStats = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel States..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -91,7 +93,8 @@ export const getChannelStats = (req, res, next) => {
         from: fromLastMonth,
         to: tillToday
     };
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel States Received', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -101,14 +104,15 @@ export const getChannelStats = (req, res, next) => {
 };
 export const openChannel = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/open';
     options.form = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -118,14 +122,15 @@ export const openChannel = (req, res, next) => {
 };
 export const updateChannelRelayFee = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Relay Fee..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/updaterelayfee';
     options.form = req.query;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Params', data: options.form });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Relay Fee Updated', data: body });
         res.status(201).json(body);
     }).catch((errRes) => {
@@ -134,7 +139,7 @@ export const updateChannelRelayFee = (req, res, next) => {
     });
 };
 export const closeChannel = (req, res, next) => {
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -149,7 +154,8 @@ export const closeChannel = (req, res, next) => {
     options.form = { channelId: req.query.channelId };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close URL', data: options.url });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Close Params', data: options.form });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Closed', data: body });
         res.status(204).json(body);
     }).catch((errRes) => {
@@ -160,7 +166,7 @@ export const closeChannel = (req, res, next) => {
 export const circularRebalance = (req, res, next) => {
     const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
     const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }

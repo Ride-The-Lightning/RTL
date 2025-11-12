@@ -105,7 +105,7 @@ export class ECLWebSocketClient {
             if (!newClient) {
                 newClient = { selectedNode: null, reConnect: true, webSocketClient: null };
             }
-            newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
+            newClient.selectedNode = newSelectedNode;
             this.webSocketClients[clientIdx] = newClient;
         };
         this.heartbeat = (eclWsClt) => {

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { ECLWSClient, ECLWebSocketClient } from './webSocketClient.js';
@@ -11,8 +11,8 @@ const eclWsClient: ECLWebSocketClient = ECLWSClient;
 export const getInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information..' });
   common.logEnvVariables(req);
-  common.setOptions(req);
-  options = common.getOptions(req);
+  common.setAxiosConfig(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/getinfo';
   options.form = {};
@@ -29,7 +29,8 @@ export const getInfo = (req, res, next) => {
       const err = common.handleError({ statusCode: 502, message: 'Missing or Wrong Password', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });
     } else {
-      return request.post(options).then((body) => {
+      return axios.post(options).then((body: any) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
         body.lnImplementation = 'Eclair';
         req.session.selectedNode.lnVersion = body.version.split('-')[0] || '';

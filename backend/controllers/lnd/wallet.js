@@ -1,5 +1,5 @@
 import atob from 'atob';
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 let options = null;
@@ -7,7 +7,7 @@ const logger = Logger;
 const common = Common;
 export const genSeed = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -17,7 +17,8 @@ export const genSeed = (req, res, next) => {
     else {
         options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed';
     }
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -28,7 +29,7 @@ export const genSeed = (req, res, next) => {
 export const operateWallet = (req, res, next) => {
     const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic } = req.body;
     let err_message = '';
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -59,7 +60,8 @@ export const operateWallet = (req, res, next) => {
         }
         err_message = 'Initializing wallet failed!';
     }
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         const body_str = (!body) ? '' : JSON.stringify(body);
         const search_idx = (!body) ? -1 : body_str.search('Not Found');
         if (!body) {
@@ -95,12 +97,12 @@ export const operateWallet = (req, res, next) => {
     });
 };
 export const updateSelNodeOptions = (req, res, next) => {
-    const response = common.updateSelectedNodeOptions(req);
+    const response = common.updateSelectedNodeAxiosConfig(req);
     res.status(response.status).json({ updateMessage: response.message });
 };
 export const getUTXOs = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Getting UTXOs..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -111,7 +113,8 @@ export const getUTXOs = (req, res, next) => {
     else {
         options.url = options.url + '?max_confs=' + req.query.max_confs;
     }
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXOs List Received', data: body });
         res.status(200).json(body.utxos ? body.utxos : []);
     }).catch((errRes) => {
@@ -122,7 +125,7 @@ export const getUTXOs = (req, res, next) => {
 export const bumpFee = (req, res, next) => {
     const { txid, outputIndex, targetConf, satPerByte } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -139,7 +142,8 @@ export const bumpFee = (req, res, next) => {
         options.form.sat_per_byte = satPerByte;
     }
     options.form = JSON.stringify(options.form);
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Fee Bumped', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -149,14 +153,15 @@ export const bumpFee = (req, res, next) => {
 };
 export const labelTransaction = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Labelling Transaction..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/tx/label';
     options.form = JSON.stringify(req.body);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Options', data: options.form });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -167,7 +172,7 @@ export const labelTransaction = (req, res, next) => {
 export const leaseUTXO = (req, res, next) => {
     const { txid, outputIndex } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Leasing UTXO..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -180,7 +185,8 @@ export const leaseUTXO = (req, res, next) => {
     };
     options.form = JSON.stringify(options.form);
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Options', data: options.form });
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Leased', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -191,7 +197,7 @@ export const leaseUTXO = (req, res, next) => {
 export const releaseUTXO = (req, res, next) => {
     const { txid, outputIndex } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Releasing UTXO..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -203,7 +209,8 @@ export const releaseUTXO = (req, res, next) => {
         output_index: outputIndex
     };
     options.form = JSON.stringify(options.form);
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXO Released', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {

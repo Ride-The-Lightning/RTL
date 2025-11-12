@@ -1,29 +1,30 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { CLWSClient } from './webSocketClient.js';
-let options = null;
 const logger = Logger;
 const common = Common;
 const clWsClient = CLWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting Core Lightning Node Information..' });
     common.logEnvVariables(req);
-    common.setOptions(req);
-    options = common.getOptions(req);
-    if (options.error) {
-        return res.status(options.statusCode).json({ message: options.message, error: options.error });
-    }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/getinfo';
+    common.setAxiosConfig(req);
+    const axiosConfig = common.getAxiosConfig(req);
+    const url = req.session.selectedNode.settings.lnServerUrl + '/v1/getinfo';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Selected Node ' + req.session.selectedNode.lnNode });
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Core Lightning server url ' + options.url });
-    if (!options.headers || !options.headers.rune) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Calling Info from Core Lightning server url ' + url });
+    if (!axiosConfig.headers || !axiosConfig.headers?.rune) {
         const errMsg = 'Core lightning get info failed due to missing rune!';
         const err = common.handleError({ statusCode: 502, message: 'Bad rune', error: errMsg }, 'GetInfo', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
     else {
-        return request.post(options).then((body) => {
+        return axios.post(url, null, axiosConfig).then((body) => {
+            body = body.data;
+            body = body.data;
+            body = body.data;
+            body = body.data;
+            body = body.data;
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'GetInfo', msg: 'Node Information Before Update', data: body });
             body.lnImplementation = 'Core Lightning';
             const chainObj = { chain: '', network: '' };

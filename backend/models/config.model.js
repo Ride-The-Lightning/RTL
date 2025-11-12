@@ -27,8 +27,7 @@ export class Settings {
     }
 }
 export class Authentication {
-    constructor(options, configPath, macaroonPath, macaroonValue, runePath, runeValue, lnApiPassword, swapMacaroonPath, boltzMacaroonPath) {
-        this.options = options;
+    constructor(configPath, macaroonPath, macaroonValue, runePath, runeValue, lnApiPassword, swapMacaroonPath, boltzMacaroonPath) {
         this.configPath = configPath;
         this.macaroonPath = macaroonPath;
         this.macaroonValue = macaroonValue;
@@ -56,7 +55,7 @@ export class ApplicationConfig {
     }
 }
 export class SelectedNode {
-    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, settings, authentication) {
+    constructor(logLevel, logFile, index, lnNode, lnImplementation, lnVersion, settings, authentication, axiosConfig) {
         this.logLevel = logLevel;
         this.logFile = logFile;
         this.index = index;
@@ -65,6 +64,7 @@ export class SelectedNode {
         this.lnVersion = lnVersion;
         this.settings = settings;
         this.authentication = authentication;
+        this.axiosConfig = axiosConfig;
     }
 }
 export class LogJSONObj {

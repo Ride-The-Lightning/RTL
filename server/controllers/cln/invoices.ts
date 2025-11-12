@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -7,11 +7,12 @@ const common: CommonService = Common;
 
 export const deleteExpiredInvoice = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Deleting Expired Invoices..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/autoclean-once';
   options.body = req.body;
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoices Deleted', data: body });
     res.status(201).json({ status: 'Cleaned Invoices: ' + body.autoclean.expiredinvoices.cleaned + ', Uncleaned Invoices: ' + body.autoclean.expiredinvoices.uncleaned });
   }).catch((errRes) => {
@@ -22,12 +23,13 @@ export const deleteExpiredInvoice = (req, res, next) => {
 
 export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Getting Invoices..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listinvoices';
   options.body = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List URL', data: options.url });
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -38,11 +40,12 @@ export const listInvoices = (req, res, next) => {
 
 export const addInvoice = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoice';
   options.body = req.body;
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {

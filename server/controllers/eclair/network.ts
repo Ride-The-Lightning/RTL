@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from 'server/models/config.model.js';
@@ -8,11 +8,12 @@ const common: CommonService = Common;
 
 export const getNodes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Node Lookup..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/nodes';
   options.form = { nodeIds: req.params.id };
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -23,11 +24,10 @@ export const getNodes = (req, res, next) => {
 
 export const findRouteBetweenNodesRequestCall = (selectedNode: SelectedNode, amountMsat: number, sourceNodeId: string, targetNodeId: string, ignoreNodeIds: string[] = [], format: string = 'shortChannelId') => {
   logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Network', msg: 'Find Route Between Nodes..' });
-  options = selectedNode.authentication.options;
-  options.url = selectedNode.settings.lnServerUrl + '/findroutebetweennodes';
-  options.form = { amountMsat: amountMsat, sourceNodeId: sourceNodeId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+  const form = { amountMsat: amountMsat, sourceNodeId: sourceNodeId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
   return new Promise((resolve, reject) => {
-    request.post(options).then((body) => {
+    axios.post(selectedNode.settings.lnServerUrl + '/findroutebetweennodes', form, selectedNode.axiosConfig).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Network', msg: 'Route Lookup Between Nodes Finished', data: body });
       resolve(body);
     }).catch((errRes) => {
@@ -38,7 +38,7 @@ export const findRouteBetweenNodesRequestCall = (selectedNode: SelectedNode, amo
 
 export const findRouteBetweenNodes = (req, res, next) => {
   const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format } = req.body;
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   findRouteBetweenNodesRequestCall(req.session.selectedNode, amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format).then((callRes) => {
     res.status(200).json(callRes);

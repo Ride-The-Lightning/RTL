@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { sep } from 'path';
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -34,7 +34,7 @@ function getFilesList(channelBackupPath, callback) {
 
 export const getBackup = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Getting Channel Backup..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   let channel_backup_file = '';
   let message = '';
@@ -60,7 +60,8 @@ export const getBackup = (req, res, next) => {
       }
     }
   }
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelsBackup', msg: 'Channel Backup Received', data: body });
     fs.writeFile(channel_backup_file, JSON.stringify(body), (errRes) => {
       if (errRes) {
@@ -79,7 +80,7 @@ export const getBackup = (req, res, next) => {
 
 export const postBackupVerify = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Verifying Channel Backup..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup/verify';
   let channel_verify_file = '';
@@ -121,7 +122,8 @@ export const postBackupVerify = (req, res, next) => {
     }
   }
   if (verify_backup !== '') {
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Verified', data: body });
       res.status(201).json({ message: message });
     }).
@@ -134,7 +136,7 @@ export const postBackupVerify = (req, res, next) => {
 
 export const postRestore = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Restoring Channel Backup..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup/restore';
   let channel_restore_file = '';
@@ -186,7 +188,8 @@ export const postRestore = (req, res, next) => {
     }
   }
   if (restore_backup !== '') {
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelBackup', msg: 'Channel Restored', data: body });
       if (req.params.channelPoint === 'ALL') { channel_restore_file = channel_restore_file + 'channel-all.bak'; }
       fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 let options = null;
@@ -24,7 +24,7 @@ export const getAllForwardingEvents = (req, start, end, offset, caller, callback
   if (!req.session.selectedNode) {
     const err = common.handleError({ message: 'Session Expired after a day\'s inactivity.', statusCode: 401 }, 'Balance', 'Get Balance Error', req.session.selectedNode);
     return callback({ message: err.message, error: err.error, statusCode: err.statusCode });
-  } options = common.getOptions(req);
+  } const axiosConfig = common.getAxiosConfig(req);
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/switch';
   options.form = {};
   if (start) { options.form.start_time = start; }
@@ -33,7 +33,8 @@ export const getAllForwardingEvents = (req, start, end, offset, caller, callback
   options.form.index_offset = offset;
   options.form = JSON.stringify(options.form);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding Events Params', data: options.form });
-  return request.post(options).then((body) => {
+  return axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received', data: body });
     if (body.forwarding_events) {
       responseData[caller].forwarding_events.push(...body.forwarding_events);

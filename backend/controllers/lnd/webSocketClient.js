@@ -1,4 +1,5 @@
-import request from 'request-promise';
+import axios, { AxiosHeaders } from 'axios';
+import https from 'https';
 import * as fs from 'fs';
 import { join } from 'path';
 import { Logger } from '../../utils/logger.js';
@@ -24,9 +25,9 @@ export class LNDWebSocketClient {
         };
         this.fetchUnpaidInvoices = (selectedNode) => {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Getting Unpaid Invoices..' });
-            const options = this.setOptionsForSelNode(selectedNode);
-            options.url = selectedNode.settings.lnServerUrl + '/v1/invoices?pending_only=true';
-            return request(options).then((body) => {
+            const options = this.setAxiosConfigForSelNode(selectedNode);
+            return axios(selectedNode.settings.lnServerUrl + '/v1/invoices?pending_only=true', options).then((body) => {
+                body = body.data;
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Unpaid Invoices Received', data: body });
                 if (body.invoices && body.invoices.length > 0) {
                     body.invoices.forEach((invoice) => {
@@ -45,7 +46,8 @@ export class LNDWebSocketClient {
             rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
             options.url = selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash;
-            request(options).then((msg) => {
+            axios(options).then((msg) => {
+                msg = msg.data;
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
                 if (typeof msg === 'string') {
                     const results = msg.split('\n');
@@ -68,7 +70,8 @@ export class LNDWebSocketClient {
         this.subscribeToPayment = (options, selectedNode, paymentHash) => {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Payment ' + paymentHash + ' ..' });
             options.url = selectedNode.settings.lnServerUrl + '/v2/router/track/' + paymentHash;
-            request(options).then((msg) => {
+            axios(options).then((msg) => {
+                msg = msg.data;
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Payment Information Received for ' + paymentHash });
                 msg['type'] = 'payment';
                 msg['source'] = 'LND';
@@ -81,10 +84,16 @@ export class LNDWebSocketClient {
                 this.wsServer.sendErrorToAllLNClients(errStr, selectedNode);
             });
         };
-        this.setOptionsForSelNode = (selectedNode) => {
-            const options = { url: '', rejectUnauthorized: false, json: true, form: null };
+        this.setAxiosConfigForSelNode = (selectedNode) => {
+            const headers = new AxiosHeaders();
+            const options = {
+                baseURL: selectedNode.settings.lnServerUrl,
+                headers,
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
+            };
             try {
-                options['headers'] = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                options['headers'] = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex'));
             }
             catch (err) {
                 this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: 'WebSocketClient', msg: 'Set Options Error', error: JSON.stringify(err) });
@@ -105,7 +114,7 @@ export class LNDWebSocketClient {
             if (!newClient) {
                 newClient = { selectedNode: null };
             }
-            newClient.selectedNode = JSON.parse(JSON.stringify(newSelectedNode));
+            newClient.selectedNode = newSelectedNode;
             this.webSocketClients[clientIdx] = newClient;
             if (this.webSocketClients[clientIdx].selectedNode.lnVersion === '' || !this.webSocketClients[clientIdx].selectedNode.lnVersion || this.common.isVersionCompatible(this.webSocketClients[clientIdx].selectedNode.lnVersion, '0.11.0')) {
                 this.fetchUnpaidInvoices(this.webSocketClients[clientIdx].selectedNode);

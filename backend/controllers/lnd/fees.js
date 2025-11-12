@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { getAllForwardingEvents } from './switch.js';
@@ -7,12 +7,13 @@ const logger = Logger;
 const common = Common;
 export const getFees = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/fees';
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: body });
         const today = new Date(Date.now());
         const start_date = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0);

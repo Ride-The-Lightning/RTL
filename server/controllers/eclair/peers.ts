@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -9,7 +9,7 @@ const common: CommonService = Common;
 export const getFilteredNodes = (selNode: SelectedNode, peersNodeIds) => {
   options.url = selNode.settings.lnServerUrl + '/nodes';
   options.form = { nodeIds: peersNodeIds };
-  return request.post(options).then((nodes) => {
+  return axios.post(options).then((nodes) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Filtered Nodes Received', data: nodes });
     return nodes;
   }).catch((err) => []);
@@ -17,20 +17,21 @@ export const getFilteredNodes = (selNode: SelectedNode, peersNodeIds) => {
 
 export const getPeers = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Getting Peers..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/peers';
   options.form = {};
   if (common.read_dummy_data) {
     common.getDummyData('Peers', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
   } else {
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
       if (body && body.length) {
         let peersNodeIds = '';
         body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
         peersNodeIds = peersNodeIds.substring(1);
-        return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
+        return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias: any) => {
           let foundPeer = null;
           body?.map((peer) => {
             foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -42,7 +43,7 @@ export const getPeers = (req, res, next) => {
         });
       } else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Empty Peers Received' });
-        res.status(200).json([]);
+        return res.status(200).json([]);
       }
     }).
       catch((errRes) => {
@@ -54,7 +55,7 @@ export const getPeers = (req, res, next) => {
 
 export const connectPeer = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Conneting Peer..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/connect';
   options.form = {};
@@ -62,7 +63,8 @@ export const connectPeer = (req, res, next) => {
     options.form = req.query;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Connect Peer Params', data: options.form });
   }
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
     if (typeof body === 'string' && body.includes('already connected')) {
       const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body, req.session.selectedNode);
@@ -73,13 +75,14 @@ export const connectPeer = (req, res, next) => {
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/peers';
     options.form = {};
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List after Connect', data: body });
       if (body && body.length) {
         let peersNodeIds = '';
         body.forEach((peer) => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
         peersNodeIds = peersNodeIds.substring(1);
-        return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias) => {
+        return getFilteredNodes(req.session.selectedNode, peersNodeIds).then((peersWithAlias: any) => {
           let foundPeer = null;
           body?.map((peer) => {
             foundPeer = peersWithAlias.find((peerWithAlias) => peer.nodeId === peerWithAlias.nodeId);
@@ -88,10 +91,10 @@ export const connectPeer = (req, res, next) => {
           });
           const peers = common.newestOnTop(body || [], 'nodeId', req.query.nodeId ? req.query.nodeId : req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : '');
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
-          res.status(201).json(peers);
+          return res.status(201).json(peers);
         });
       } else {
-        res.status(201).json([]);
+        return res.status(201).json([]);
       }
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
@@ -105,7 +108,7 @@ export const connectPeer = (req, res, next) => {
 
 export const deletePeer = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Disconneting Peer..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/disconnect';
   options.form = {};
@@ -113,7 +116,8 @@ export const deletePeer = (req, res, next) => {
     options.form = { nodeId: req.params.nodeId };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Disconnect Peer Params', data: options.form });
   }
-  request.post(options).then((body) => {
+  axios.post(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnected', data: body });
     res.status(204).json(body);
   }).catch((errRes) => {

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { Database } from '../../utils/database.js';
@@ -10,7 +10,8 @@ const databaseService = Database;
 export const getMemo = (selNode, payment) => {
     options.url = selNode.settings.lnServerUrl + '/v1/decode';
     options.body = { string: payment.bolt11 };
-    return request.post(options).then((res) => {
+    return axios.post(options).then((res) => {
+        res = res.data;
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
         payment.memo = res.description || '';
         return payment;
@@ -77,12 +78,13 @@ function groupBy(payments) {
 }
 export const listPayments = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'List Payments..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listsendpays';
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
         return Promise.all(body.payments?.map((payment) => ((payment.bolt11) ? getMemo(req.session.selectedNode, payment) : (payment.memo = '')))).then((values) => {
@@ -96,7 +98,7 @@ export const listPayments = (req, res, next) => {
 };
 export const postPayment = (req, res, next) => {
     const { paymentType, saveToDB, bolt12, zeroAmtOffer, amount_msat, title, issuer, description } = req.body;
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -146,7 +148,8 @@ export const postPayment = (req, res, next) => {
         options.body = options_body;
         options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/pay';
     }
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
         if (paymentType === 'OFFER') {
             if (saveToDB && bolt12) {

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { LNDWSClient } from './webSocketClient.js';
@@ -9,8 +9,8 @@ const lndWsClient = LNDWSClient;
 export const getInfo = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information..' });
     common.logEnvVariables(req);
-    common.setOptions(req);
-    options = common.getOptions(req);
+    common.setAxiosConfig(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -29,7 +29,8 @@ export const getInfo = (req, res, next) => {
             }
             return node;
         });
-        return request(options).then((body) => {
+        return axios(options).then((body) => {
+            body = body.data;
             const body_str = (!body) ? '' : JSON.stringify(body);
             const search_idx = (!body) ? -1 : body_str.search('Not Found');
             if (!body || search_idx > -1 || body.error) {

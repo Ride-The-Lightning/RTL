@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -82,7 +82,7 @@ export const arrangePayments = (selNode: SelectedNode, body) => {
 
 export const getFees = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/audit';
   const today = new Date(Date.now());
@@ -96,7 +96,8 @@ export const getFees = (req, res, next) => {
   if (common.read_dummy_data) {
     common.getDummyData('Fees', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(arrangeFees(req.session.selectedNode, data, Math.round((new Date().getTime())))); });
   } else {
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Fee Received', data: body });
       res.status(200).json(arrangeFees(req.session.selectedNode, body, Math.round((new Date().getTime()))));
     }).catch((errRes) => {
@@ -108,7 +109,7 @@ export const getFees = (req, res, next) => {
 
 export const getPayments = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/audit';
   const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
@@ -118,7 +119,8 @@ export const getPayments = (req, res, next) => {
   if (common.read_dummy_data) {
     common.getDummyData('Payments', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(arrangePayments(req.session.selectedNode, data)); });
   } else {
-    request.post(options).then((body) => {
+    axios.post(options).then((body: any) => {
+      body = body.data;
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Fees', msg: 'Payments Received', data: body });
       res.status(200).json(arrangePayments(req.session.selectedNode, body));
     }).

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 let options = null;
@@ -15,7 +15,8 @@ export const getReceivedPaymentInfo = (lnServerUrl, invoice) => {
     if (idx < 0) {
         options.url = lnServerUrl + '/getreceivedinfo';
         options.form = { paymentHash: invoice.paymentHash };
-        return request(options).then((response) => {
+        return axios(options).then((response) => {
+            response = response.data;
             invoice.status = response.status.type;
             if (response.status && response.status.type === 'received') {
                 invoice.amountSettled = response.status.amount ? Math.round(response.status.amount / 1000) : 0;
@@ -35,13 +36,14 @@ export const getReceivedPaymentInfo = (lnServerUrl, invoice) => {
 };
 export const getInvoice = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Invoice..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/getinvoice';
     options.form = { paymentHash: req.params.paymentHash };
-    request.post(options).then((body) => {
+    axios.post(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Found', data: body });
         const current_time = (Math.round(new Date(Date.now()).getTime() / 1000));
         body.amount = body.amount ? body.amount / 1000 : 0;
@@ -55,18 +57,17 @@ export const getInvoice = (req, res, next) => {
 };
 export const listPendingInvoicesRequestCall = (selectedNode, count, skip) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
-    options = selectedNode.authentication.options;
-    options.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
-    options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
+    const form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
     // Limit the number of invoices till provided count
     if (count) {
-        options.form.count = count;
+        form.count = count;
     }
     if (skip) {
-        options.form.skip = skip;
+        form.skip = skip;
     }
     return new Promise((resolve, reject) => {
-        request.post(options).then((pendingInvoicesResponse) => {
+        axios.post(selectedNode.settings.lnServerUrl + '/listpendinginvoices', form, selectedNode.axiosConfig).then((pendingInvoicesResponse) => {
+            pendingInvoicesResponse = pendingInvoicesResponse.data;
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Pending Invoices List ', data: pendingInvoicesResponse });
             resolve(pendingInvoicesResponse);
         }).catch((errRes) => {
@@ -76,7 +77,7 @@ export const listPendingInvoicesRequestCall = (selectedNode, count, skip) => {
 };
 export const listInvoices = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Getting List Invoices..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
@@ -95,13 +96,14 @@ export const listInvoices = (req, res, next) => {
     options2.form = { from: 0, to: tillToday };
     if (common.read_dummy_data) {
         return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then(([invoices, pendingInvoicesRes]) => {
-            pendingInvoices = pendingInvoicesRes;
+            invoices = invoices.data;
+            pendingInvoices = pendingInvoicesRes.data;
             return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
                 then((values) => res.status(200).json(invoices));
         });
     }
     else {
-        return Promise.all([request(options1), request(options2)]).
+        return Promise.all([axios(options1), axios(options2)]).
             then(([invoices, pendingInvoicesRes]) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: invoices });
             // pendingInvoices will be used to get the status (paid/unpaid) of the invoice via getReceivedPaymentInfo
@@ -130,11 +132,10 @@ export const listInvoices = (req, res, next) => {
 };
 export const createInvoiceRequestCall = (selectedNode, description, amount) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = selectedNode.authentication.options;
-    options.url = selectedNode.settings.lnServerUrl + '/createinvoice';
-    options.form = { description: description, amountMsat: amount };
+    const form = { description: description, amountMsat: amount };
     return new Promise((resolve, reject) => {
-        request.post(options).then((invResponse) => {
+        axios.post(selectedNode.settings.lnServerUrl + '/createinvoice', form, selectedNode.axiosConfig).then((invResponse) => {
+            invResponse = invResponse.data;
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: invResponse });
             if (invResponse.amount) {
                 invResponse.amount = Math.round(invResponse.amount / 1000);
@@ -148,7 +149,7 @@ export const createInvoiceRequestCall = (selectedNode, description, amount) => {
 export const createInvoice = (req, res, next) => {
     const { description, amountMsat } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = common.getOptions(req);
+    const axiosConfig = common.getAxiosConfig(req);
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }

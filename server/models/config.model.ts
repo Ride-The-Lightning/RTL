@@ -35,7 +35,6 @@ export class Settings {
 export class Authentication {
 
   constructor(
-    public options?: any,
     public configPath?: string,
     public macaroonPath?: string,
     public macaroonValue?: string,
@@ -77,7 +76,8 @@ export class SelectedNode {
     public lnImplementation?: string,
     public lnVersion?: string,
     public settings?: Settings,
-    public authentication?: Authentication
+    public authentication?: Authentication,
+    public axiosConfig?: any
   ) { }
 
 }

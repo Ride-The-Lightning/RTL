@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
-import request from 'request-promise';
+import axios, { AxiosHeaders } from 'axios';
+import https from 'https';
 import { Logger } from './logger.js';
 export class CommonService {
     constructor() {
@@ -41,11 +42,8 @@ export class CommonService {
         };
         this.removeAuthSecureData = (node) => {
             if (node.authentication) {
-                delete node.authentication.macaroonPath;
-                delete node.authentication.runePath;
-                delete node.authentication.runeValue;
-                delete node.authentication.lnApiPassword;
-                delete node.authentication.options;
+                const { configPath } = node.authentication;
+                node.authentication = { configPath };
             }
             return node;
         };
@@ -85,62 +83,54 @@ export class CommonService {
             });
             return config;
         };
-        this.setSwapServerOptions = (req) => {
-            const swapOptions = {
-                baseUrl: req.session.selectedNode.settings.swapServerUrl,
-                uri: '',
-                rejectUnauthorized: false,
-                json: true,
-                headers: { 'Grpc-Metadata-macaroon': '' }
+        this.getSwapServerConfig = (req) => {
+            const headers = new AxiosHeaders();
+            const swapConfig = {
+                baseURL: req.session.selectedNode.settings.swapServerUrl,
+                headers,
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
             };
             if (req.session.selectedNode.authentication.swapMacaroonPath) {
                 try {
-                    swapOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.swapMacaroonPath, 'loop.macaroon')).toString('hex') };
+                    swapConfig.headers = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(req.session.selectedNode.authentication.swapMacaroonPath, 'loop.macaroon')).toString('hex'));
                 }
                 catch (err) {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options', data: swapOptions });
-            return swapOptions;
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Axios Config', data: swapConfig });
+            return swapConfig;
         };
-        this.getBoltzServerOptions = (req) => {
-            const boltzOptions = {
-                url: req.session.selectedNode.settings.boltzServerUrl,
-                rejectUnauthorized: false,
-                json: true,
-                headers: { 'Grpc-Metadata-macaroon': '' }
+        this.getBoltzServerConfig = (req) => {
+            const headers = new AxiosHeaders();
+            const boltzConfig = {
+                baseURL: req.session.selectedNode.settings.swapServerUrl,
+                headers,
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
             };
             if (req.session.selectedNode.authentication.boltzMacaroonPath) {
                 try {
-                    boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.boltzMacaroonPath, 'admin.macaroon')).toString('hex') };
+                    boltzConfig.headers = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(req.session.selectedNode.authentication.boltzMacaroonPath, 'admin.macaroon')).toString('hex'));
                 }
                 catch (err) {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options', data: boltzOptions });
-            return boltzOptions;
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Axios Config', data: boltzConfig });
+            return boltzConfig;
         };
-        this.getOptions = (req) => {
-            if (req.session.selectedNode && req.session.selectedNode.authentication.options) {
-                req.session.selectedNode.authentication.options.method = (req.session.selectedNode.lnImplementation && req.session.selectedNode.lnImplementation.toUpperCase() === 'LND') ? 'GET' : 'POST';
-                delete req.session.selectedNode.authentication.options.form;
-                delete req.session.selectedNode.authentication.options.body;
-                req.session.selectedNode.authentication.options.qs = {};
-                return req.session.selectedNode.authentication.options;
-            }
-            return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity' }, 'Session Expired', 'Session Expiry Error', this.selectedNode);
-        };
-        this.updateSelectedNodeOptions = (req) => {
+        this.updateSelectedNodeAxiosConfig = (req) => {
             if (!req.session.selectedNode) {
                 req.session.selectedNode = {};
             }
-            req.session.selectedNode.authentication.options = {
-                url: '',
-                rejectUnauthorized: false,
-                json: true,
-                form: null
+            const headers = new AxiosHeaders();
+            req.session.selectedNode.axiosConfig = {
+                baseURL: '',
+                headers,
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
             };
             try {
                 if (req.session.selectedNode && req.session.selectedNode.lnImplementation) {
@@ -150,31 +140,31 @@ export class CommonService {
                                 if (!req.session.selectedNode.authentication.runeValue) {
                                     req.session.selectedNode.authentication.runeValue = this.getRuneValue(req.session.selectedNode.authentication.runePath);
                                 }
-                                req.session.selectedNode.authentication.options.headers = { rune: req.session.selectedNode.authentication.runeValue };
+                                req.session.selectedNode.axiosConfig.headers = headers.set('rune', req.session.selectedNode.authentication.runeValue);
                             }
                             catch (err) {
                                 throw new Error(err);
                             }
                             break;
                         case 'ECL':
-                            req.session.selectedNode.authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + req.session.selectedNode.authentication.lnApiPassword).toString('base64') };
+                            req.session.selectedNode.axiosConfig.headers = headers.set('authorization', 'Basic ' + Buffer.from(':' + req.session.selectedNode.authentication.lnApiPassword).toString('base64'));
                             break;
                         default:
-                            req.session.selectedNode.authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                            req.session.selectedNode.axiosConfig.headers = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(req.session.selectedNode.authentication.macaroonPath, 'admin.macaroon')).toString('hex'));
                             break;
                     }
                 }
                 if (req.session.selectedNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.axiosConfig });
                 }
                 return { status: 200, message: 'Updated Successfully' };
             }
             catch (err) {
-                req.session.selectedNode.authentication.options = {
-                    url: '',
-                    rejectUnauthorized: false,
-                    json: true,
-                    form: null
+                req.session.selectedNode.axiosConfig = {
+                    baseURL: '',
+                    headers: new AxiosHeaders(),
+                    params: {},
+                    httpsAgent: new https.Agent({ rejectUnauthorized: false })
                 };
                 this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Update Selected Node Options Error', error: err });
                 return { status: 502, message: err };
@@ -191,17 +181,52 @@ export class CommonService {
                 throw new Error('Rune not found in the file.');
             }
         };
-        this.setOptions = (req) => {
-            if (this.nodes[0].authentication.options && this.nodes[0].authentication.options.headers) {
+        this.getAxiosConfig = (req) => {
+            if (!req.session.selectedNode) {
+                return this.handleError({ statusCode: 401, message: 'Session expired after a day\'s inactivity' }, 'Session Expired', 'Session Expiry Error', this.selectedNode);
+            }
+            return this.generateAxiosConfig(req.session.selectedNode);
+        };
+        this.generateAxiosConfig = (node) => {
+            const headers = new AxiosHeaders();
+            const axiosConfig = {
+                baseURL: node.settings.lnServerUrl,
+                headers,
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
+            };
+            try {
+                if (node.lnImplementation) {
+                    switch (node.lnImplementation.toUpperCase()) {
+                        case 'CLN':
+                            axiosConfig.headers = headers.set('rune', node.authentication.runeValue);
+                            break;
+                        case 'ECL':
+                            axiosConfig.headers = headers.set('authorization', 'Basic ' + Buffer.from(':' + node.authentication.lnApiPassword).toString('base64'));
+                            break;
+                        default:
+                            axiosConfig.headers = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(node.authentication.macaroonPath, 'admin.macaroon')).toString('hex'));
+                            break;
+                    }
+                }
+                return axiosConfig;
+            }
+            catch (err) {
+                return this.handleError({ statusCode: 502, message: err.message }, 'Common', 'Config Generation Error', node);
+            }
+        };
+        this.setAxiosConfig = (req) => {
+            if (this.nodes[0].axiosConfig && this.nodes[0].axiosConfig.headers) {
                 return;
             }
             if (this.nodes && this.nodes.length > 0) {
                 this.nodes.forEach((node) => {
-                    node.authentication.options = {
-                        url: '',
-                        rejectUnauthorized: false,
-                        json: true,
-                        form: null
+                    const headers = new AxiosHeaders();
+                    node.axiosConfig = {
+                        baseURL: node.settings.lnServerUrl,
+                        headers,
+                        params: {},
+                        httpsAgent: new https.Agent({ rejectUnauthorized: false })
                     };
                     try {
                         if (node.lnImplementation) {
@@ -211,33 +236,33 @@ export class CommonService {
                                         if (!node.authentication.runeValue) {
                                             node.authentication.runeValue = this.getRuneValue(node.authentication.runePath);
                                         }
-                                        node.authentication.options.headers = { rune: node.authentication.runeValue };
+                                        node.axiosConfig.headers = headers.set('rune', node.authentication.runeValue);
                                     }
                                     catch (err) {
                                         throw new Error(err);
                                     }
                                     break;
                                 case 'ECL':
-                                    node.authentication.options.headers = { authorization: 'Basic ' + Buffer.from(':' + node.authentication.lnApiPassword).toString('base64') };
+                                    node.axiosConfig.headers = headers.set('authorization', 'Basic ' + Buffer.from(':' + node.authentication.lnApiPassword).toString('base64'));
                                     break;
                                 default:
-                                    node.authentication.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(node.authentication.macaroonPath, 'admin.macaroon')).toString('hex') };
+                                    node.axiosConfig.headers = headers.set('Grpc-Metadata-macaroon', fs.readFileSync(join(node.authentication.macaroonPath, 'admin.macaroon')).toString('hex'));
                                     break;
                             }
                         }
                     }
                     catch (err) {
                         this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Common Set Options Error', error: err });
-                        node.authentication.options = {
-                            url: '',
-                            rejectUnauthorized: false,
-                            json: true,
-                            form: ''
+                        node.axiosConfig = {
+                            baseURL: '',
+                            headers: new AxiosHeaders(),
+                            params: {},
+                            httpsAgent: new https.Agent({ rejectUnauthorized: false })
                         };
                     }
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.axiosConfig });
                 });
-                this.updateSelectedNodeOptions(req);
+                this.updateSelectedNodeAxiosConfig(req);
             }
         };
         this.findNode = (selNodeIndex) => this.nodes.find((node) => node.index === selNodeIndex);
@@ -305,7 +330,26 @@ export class CommonService {
             }
         };
         this.handleError = (errRes, fileName, errMsg, selectedNode) => {
-            const err = JSON.parse(JSON.stringify(errRes));
+            let err;
+            if (errRes.isAxiosError || errRes.response) {
+                err = {
+                    statusCode: errRes.response?.status || 500,
+                    message: errRes.message,
+                    error: errRes.response?.data || errRes.message,
+                    options: errRes.config ? {
+                        headers: errRes.config.headers,
+                        url: errRes.config.url
+                    } : {},
+                    response: errRes.response ? {
+                        request: {
+                            headers: errRes.response.config?.headers
+                        }
+                    } : {}
+                };
+            }
+            else {
+                err = JSON.parse(JSON.stringify(errRes));
+            }
             if (!selectedNode) {
                 selectedNode = this.selectedNode;
             }
@@ -469,14 +513,16 @@ export class CommonService {
         };
         this.getAllNodeAllChannelBackup = (node) => {
             const channel_backup_file = node.settings.channelBackupPath + sep + 'channel-all.bak';
+            const headers = new AxiosHeaders();
             const options = {
-                url: node.settings.lnServerUrl + '/v1/channels/backup',
-                rejectUnauthorized: false,
-                json: true,
-                headers: { 'Grpc-Metadata-macaroon': fs.readFileSync(node.authentication.macaroonPath + '/admin.macaroon').toString('hex') }
+                baseURL: node.settings.lnServerUrl,
+                headers: headers.set('Grpc-Metadata-macaroon', fs.readFileSync(node.authentication.macaroonPath + '/admin.macaroon').toString('hex')),
+                params: {},
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
             };
             this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Getting Channel Backup for Node ' + node.lnNode + '..' });
-            request(options).then((body) => {
+            axios('/v1/channels/backup', options).then((body) => {
+                body = body.data;
                 fs.writeFile(channel_backup_file, JSON.stringify(body), (err) => {
                     if (err) {
                         if (node.lnNode) {

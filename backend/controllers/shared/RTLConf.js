@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { sep } from 'path';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
-import request from 'request-promise';
+import axios from 'axios';
 import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
@@ -23,14 +23,16 @@ export const getExplorerFeesRecommended = (req, res, next) => {
     options.url = (blockExplorerUrl === '') ?
         req.session.selectedNode.settings.blockExplorerUrl + '/api/v1/fees/recommended' :
         blockExplorerUrl + '/api/v1/fees/recommended';
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
         res.status(200).json(JSON.parse(body));
     }).catch((errRes) => {
         blockExplorerUrl = 'https://mempool.space';
         options.url = blockExplorerUrl + '/api/v1/fees/recommended';
-        return request(options).then((body) => {
+        return axios(options).then((body) => {
+            body = body.data;
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
             res.status(200).json(JSON.parse(body));
         }).catch((errRes) => {
@@ -45,14 +47,16 @@ export const getExplorerTransaction = (req, res, next) => {
     options.url = (blockExplorerUrl === '') ?
         req.session.selectedNode.settings.blockExplorerUrl + '/api/tx/' + req.params.txid :
         blockExplorerUrl + '/api/tx/' + req.params.txid;
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
         res.status(200).json(JSON.parse(body));
     }).catch((errRes) => {
         blockExplorerUrl = 'https://mempool.space';
         options.url = blockExplorerUrl + '/api/tx/' + req.params.txid;
-        return request(options).then((body) => {
+        return axios(options).then((body) => {
+            body = body.data;
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
             res.status(200).json(JSON.parse(body));
         }).catch((errRes) => {
@@ -65,7 +69,8 @@ export const getExplorerTransaction = (req, res, next) => {
 export const getCurrencyRates = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..' });
     options.url = 'https://blockchain.info/ticker';
-    request(options).then((body) => {
+    axios(options).then((body) => {
+        body = body.data;
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received', data: body });
         res.status(200).json(JSON.parse(body));
     }).catch((errRes) => {

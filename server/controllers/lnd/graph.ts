@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import axios from 'axios';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -8,7 +8,8 @@ const common: CommonService = Common;
 
 export const getAliasFromPubkey = (selNode: SelectedNode, pubkey) => {
   options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
-  return request(options).then((res) => {
+  return axios(options).then((res: any) => {
+    res = res.data;
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Graph', msg: 'Alias Received', data: res.node.alias });
     return res.node.alias;
   }).
@@ -17,10 +18,11 @@ export const getAliasFromPubkey = (selNode: SelectedNode, pubkey) => {
 
 export const getDescribeGraph = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Network Graph..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph';
-  request.get(options).then((body) => {
+  axios.get(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Network Graph Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -31,10 +33,11 @@ export const getDescribeGraph = (req, res, next) => {
 
 export const getGraphInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Information..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/info';
-  request.get(options).then((body) => {
+  axios.get(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Information Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -45,10 +48,11 @@ export const getGraphInfo = (req, res, next) => {
 
 export const getGraphNode = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Node Information..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/node/' + req.params.pubKey;
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Node Information Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -59,10 +63,11 @@ export const getGraphNode = (req, res, next) => {
 
 export const getGraphEdge = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Edge Information..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + req.params.chanid;
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Edge Information Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -73,14 +78,15 @@ export const getGraphEdge = (req, res, next) => {
 
 export const getQueryRoutes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
   if (req.query.outgoing_chan_id) {
     options.url = options.url + '?outgoing_chan_id=' + req.query.outgoing_chan_id;
   }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
     if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
       return Promise.all(body.routes[0].hops?.map((hop) => getAliasFromPubkey(req.session.selectedNode, hop.pub_key))).
@@ -109,10 +115,11 @@ export const getQueryRoutes = (req, res, next) => {
 
 export const getRemoteFeePolicy = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Remote Fee Policy..' });
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + req.params.chanid;
-  request(options).then((body) => {
+  axios(options).then((body: any) => {
+    body = body.data;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
     let remoteNodeFee = {};
     if (body.node1_pub === req.params.localPubkey) {
@@ -137,7 +144,7 @@ export const getRemoteFeePolicy = (req, res, next) => {
 };
 
 export const getAliasesForPubkeys = (req, res, next) => {
-  options = common.getOptions(req);
+  const axiosConfig = common.getAxiosConfig(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.query.pubkeys) {
     const pubkeyArr = req.query.pubkeys.split(',');
