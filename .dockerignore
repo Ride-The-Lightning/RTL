@@ -4,6 +4,7 @@
 .github/
 .settings/
 .vscode/
+src/app/shared/test-helpers/
 frontend/
 backend/
 backup/
@@ -12,6 +13,7 @@ coverage/
 dist/
 docker/
 dockerfiles/
+Dockerfile
 logs/
 node_modules/
 node_modules_old/
