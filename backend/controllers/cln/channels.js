@@ -14,6 +14,10 @@ export const listPeerChannels = (req, res, next) => {
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listpeerchannels';
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Peer Channels List Received', data: body.channels });
+        if (!body.channels || body.channels.length === 0) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'No Channels to Process' });
+            return res.status(200).json([]);
+        }
         const getPeerAliasesTasks = body.channels.map((channel) => () => {
             channel.to_them_msat = channel.total_msat - channel.to_us_msat;
             channel.balancedness = (channel.total_msat === 0) ? 1 : (1 - Math.abs((channel.to_us_msat - channel.to_them_msat) / channel.total_msat)).toFixed(3);
