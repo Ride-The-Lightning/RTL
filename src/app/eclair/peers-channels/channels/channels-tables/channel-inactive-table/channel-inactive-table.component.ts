@@ -24,6 +24,7 @@ import { CamelCaseWithSpacesPipe } from '../../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-inactive-table',
   templateUrl: './channel-inactive-table.component.html',
   styleUrls: ['./channel-inactive-table.component.scss'],

@@ -25,6 +25,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-connect-peer',
   templateUrl: './connect-peer.component.html',
   styleUrls: ['./connect-peer.component.scss']

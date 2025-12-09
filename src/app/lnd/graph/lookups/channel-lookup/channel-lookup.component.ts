@@ -8,6 +8,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { lndNodeInformation } from '../../../store/lnd.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-lookup',
   templateUrl: './channel-lookup.component.html',
   styleUrls: ['./channel-lookup.component.scss']

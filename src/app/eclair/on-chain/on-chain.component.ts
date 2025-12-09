@@ -15,6 +15,7 @@ import { OnChainBalance } from '../../shared/models/eclModels';
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-on-chain',
   templateUrl: './on-chain.component.html',
   styleUrls: ['./on-chain.component.scss']

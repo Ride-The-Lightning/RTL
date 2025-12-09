@@ -26,6 +26,7 @@ import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-liquidity-ads-list',
   templateUrl: './liquidity-ads-list.component.html',
   styleUrls: ['./liquidity-ads-list.component.scss'],

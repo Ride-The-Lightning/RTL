@@ -14,6 +14,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { invoiceLookup, paymentLookup } from '../../store/lnd.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-lookup-transactions',
   templateUrl: './lookup-transactions.component.html',
   styleUrls: ['./lookup-transactions.component.scss']

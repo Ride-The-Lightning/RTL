@@ -3,6 +3,7 @@ import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStar
 import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-root',
   templateUrl: './cln-root.component.html',
   styleUrls: ['./cln-root.component.scss'],

@@ -28,6 +28,7 @@ export interface Tile {
 }
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']

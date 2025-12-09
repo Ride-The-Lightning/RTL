@@ -2,6 +2,7 @@ import { Directive, Input } from '@angular/core';
 import { NG_VALIDATORS, Validator, Validators, AbstractControl } from '@angular/forms';
 
 @Directive({
+  standalone: false,
   selector: 'input[max]',
   providers: [{ provide: NG_VALIDATORS, useExisting: MaxValidator, multi: true }]
 })

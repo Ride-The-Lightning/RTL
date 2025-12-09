@@ -6,6 +6,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { closeAlert } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-login-token',
   templateUrl: './login-2fa-token.component.html',
   styleUrls: ['./login-2fa-token.component.scss']

@@ -33,6 +33,7 @@ import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-offers-table',
   templateUrl: './offers-table.component.html',
   styleUrls: ['./offers-table.component.scss'],

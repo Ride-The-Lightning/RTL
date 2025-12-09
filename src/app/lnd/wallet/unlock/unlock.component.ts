@@ -5,6 +5,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { unlockWallet } from '../../store/lnd.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-unlock-wallet',
   templateUrl: './unlock.component.html',
   styleUrls: ['./unlock.component.scss']

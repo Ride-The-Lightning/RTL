@@ -17,6 +17,7 @@ import { Balance, FunderPolicy, LocalRemoteBalance, UTXO } from '../../../models
 import { ApiCallStatusPayload } from '../../../models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-experimental-settings',
   templateUrl: './experimental-settings.component.html',
   styleUrls: ['./experimental-settings.component.scss']

@@ -5,6 +5,7 @@ import { LoggerService } from '../../../services/logger.service';
 import { ErrorData } from '../../../models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-error-message',
   templateUrl: './error-message.component.html',
   styleUrls: ['./error-message.component.scss']

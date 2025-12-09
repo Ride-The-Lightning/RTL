@@ -3,6 +3,7 @@ import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-node-info',
   templateUrl: './node-info.component.html',
   styleUrls: ['./node-info.component.scss']

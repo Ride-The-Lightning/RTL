@@ -9,6 +9,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-services-settings',
   templateUrl: './services-settings.component.html',
   styleUrls: ['./services-settings.component.scss']

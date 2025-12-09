@@ -14,6 +14,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel } from '../../store/cln.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-open-liquidity-channel',
   templateUrl: './open-liquidity-channel-modal.component.html',
   styleUrls: ['./open-liquidity-channel-modal.component.scss']

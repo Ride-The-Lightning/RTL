@@ -5,6 +5,7 @@ import { PaymentSent } from '../../../shared/models/eclModels';
 import { ECLPaymentInformation } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-payment-information',
   templateUrl: './payment-information.component.html',
   styleUrls: ['./payment-information.component.scss']

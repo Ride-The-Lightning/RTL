@@ -25,6 +25,7 @@ import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-channel-pending-table',
   templateUrl: './channel-pending-table.component.html',
   styleUrls: ['./channel-pending-table.component.scss'],

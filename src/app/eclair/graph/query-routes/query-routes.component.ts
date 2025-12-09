@@ -16,6 +16,7 @@ import { getQueryRoutes } from '../../store/ecl.actions';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-query-routes',
   templateUrl: './query-routes.component.html',
   styleUrls: ['./query-routes.component.scss']

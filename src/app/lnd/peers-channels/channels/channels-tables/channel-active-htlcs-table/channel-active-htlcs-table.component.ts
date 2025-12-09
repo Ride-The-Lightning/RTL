@@ -22,6 +22,7 @@ import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-active-htlcs-table',
   templateUrl: './channel-active-htlcs-table.component.html',
   styleUrls: ['./channel-active-htlcs-table.component.scss'],

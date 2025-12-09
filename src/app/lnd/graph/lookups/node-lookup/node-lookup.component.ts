@@ -14,6 +14,7 @@ import { blockchainBalance, lndNodeInformation } from '../../../store/lnd.select
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-node-lookup',
   templateUrl: './node-lookup.component.html',
   styleUrls: ['./node-lookup.component.scss']

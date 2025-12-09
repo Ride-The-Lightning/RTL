@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-backup',
   templateUrl: './backup.component.html',
   styleUrls: ['./backup.component.scss']

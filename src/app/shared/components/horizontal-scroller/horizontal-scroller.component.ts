@@ -5,6 +5,7 @@ import { SCROLL_RANGES } from '../../services/consts-enums-functions';
 import { LoggerService } from '../../services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-horizontal-scroller',
   templateUrl: './horizontal-scroller.component.html',
   styleUrls: ['./horizontal-scroller.component.scss'],

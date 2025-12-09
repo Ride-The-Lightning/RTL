@@ -13,6 +13,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-boltz-root',
   templateUrl: './boltz-root.component.html',
   styleUrls: ['./boltz-root.component.scss']

@@ -15,6 +15,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-transactions-report',
   templateUrl: './transactions-report.component.html',
   styleUrls: ['./transactions-report.component.scss'],

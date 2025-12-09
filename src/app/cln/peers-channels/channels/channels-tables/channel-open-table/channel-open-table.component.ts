@@ -29,6 +29,7 @@ import { MessageDataField } from '../../../../../shared/models/alertData';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-channel-open-table',
   templateUrl: './channel-open-table.component.html',
   styleUrls: ['./channel-open-table.component.scss'],

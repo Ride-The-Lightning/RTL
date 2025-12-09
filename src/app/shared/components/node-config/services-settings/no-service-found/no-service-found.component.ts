@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'rtl-no-service-found',
   templateUrl: './no-service-found.component.html'
 })

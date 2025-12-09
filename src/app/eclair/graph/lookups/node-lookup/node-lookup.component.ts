@@ -17,6 +17,7 @@ import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload'
 import { openAlert } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-node-lookup',
   templateUrl: './node-lookup.component.html',
   styleUrls: ['./node-lookup.component.scss']

@@ -9,6 +9,7 @@ import { OnChainAddressInformation } from '../../../models/alertData';
 import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-generated-address',
   templateUrl: './on-chain-generated-address.component.html',
   styleUrls: ['./on-chain-generated-address.component.scss']

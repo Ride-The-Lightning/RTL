@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
 import { Platform } from '@angular/cdk/platform';
 
@@ -147,7 +146,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    FlexLayoutModule,
     LayoutModule,
     MatDialogModule,
     MatButtonModule,
@@ -191,7 +189,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    FlexLayoutModule,
     LayoutModule,
     MatDialogModule,
     MatButtonModule,
