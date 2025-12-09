@@ -12,6 +12,7 @@ import { Channel } from '../../../../shared/models/clnModels';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-channel-information',
   templateUrl: './channel-information.component.html',
   styleUrls: ['./channel-information.component.scss']

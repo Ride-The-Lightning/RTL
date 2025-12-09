@@ -24,7 +24,7 @@ body {
   overflow: hidden;
 }
 
-.rtl-container{
+.rtl-container {
   position:absolute;
   width: 100%;
   height: 100%;
@@ -1713,4 +1713,31 @@ mat-cell:last-of-type, .mdc-data-table__header-cell:last-of-type, mat-footer-cel
       }
     }
   }
+}
+
+/* Flex Layout Replacements */
+.flex-9 { flex: 1 1 9%; }
+.flex-17 { flex: 1 1 17%; }
+.flex-20 { flex: 1 1 20%; }
+.flex-25 { flex: 1 1 25%; }
+.flex-30 { flex: 1 1 30%; }
+.flex-35 { flex: 1 1 35%; }
+.flex-40 { flex: 1 1 40%; }
+.flex-48 { flex: 1 1 48%; }
+.flex-50 { flex: 1 1 50%; }
+.flex-70 { flex: 1 1 70%; }
+.flex-83 { flex: 1 1 83%; }
+.flex-91 { flex: 1 1 91%; }
+.flex-100 { flex: 1 1 100%; }
+
+.align-center-start {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.align-center-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

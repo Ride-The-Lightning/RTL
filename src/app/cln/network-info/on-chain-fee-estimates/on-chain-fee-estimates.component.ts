@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { FeeRates } from '../../../shared/models/clnModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-onchain-fee-estimates',
   templateUrl: './on-chain-fee-estimates.component.html',
   styleUrls: ['./on-chain-fee-estimates.component.scss']

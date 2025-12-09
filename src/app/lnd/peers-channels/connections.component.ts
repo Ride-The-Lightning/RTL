@@ -15,6 +15,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { BlockchainBalance, Channel, ChannelsSummary, LightningBalance, Peer } from '../../shared/models/lndModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-connections',
   templateUrl: './connections.component.html',
   styleUrls: ['./connections.component.scss']

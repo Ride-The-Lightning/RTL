@@ -3,6 +3,7 @@ import { GetInfo } from '../../../shared/models/clnModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-node-info',
   templateUrl: './node-info.component.html',
   styleUrls: ['./node-info.component.scss']

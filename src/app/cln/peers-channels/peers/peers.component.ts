@@ -28,6 +28,7 @@ import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],

@@ -17,6 +17,7 @@ import { AlertData, MessageDataField } from '../../../models/alertData';
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopStateEnum } from '../../../services/consts-enums-functions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-alert-message',
   templateUrl: './alert-message.component.html',
   styleUrls: ['./alert-message.component.scss']

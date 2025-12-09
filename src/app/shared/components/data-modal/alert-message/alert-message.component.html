@@ -2,7 +2,7 @@
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large ml-1" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="200" [errorCorrectionLevel]="'L'" />
   </div>
-  <div [fxFlex]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '100' : '70'">
+  <div [ngClass]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-100' : 'flex-70'">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>

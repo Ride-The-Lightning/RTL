@@ -16,6 +16,7 @@ import { rootSelectedNode } from 'src/app/store/rtl.selector';
 import { channels, fees, networkInfo, pendingChannels, nodeInfoAndAPIStatus } from '../store/lnd.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-network-info',
   templateUrl: './network-info.component.html',
   styleUrls: ['./network-info.component.scss']

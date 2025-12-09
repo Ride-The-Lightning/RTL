@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ChannelsStatus } from '../../../shared/models/eclModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-status-info',
   templateUrl: './channel-status-info.component.html',
   styleUrls: ['./channel-status-info.component.scss']

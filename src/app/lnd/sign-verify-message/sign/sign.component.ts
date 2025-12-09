@@ -7,6 +7,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-sign',
   templateUrl: './sign.component.html',
   styleUrls: ['./sign.component.scss']

@@ -22,6 +22,7 @@ import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../
 import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-side-navigation',
   templateUrl: './side-navigation.component.html',
   styleUrls: ['./side-navigation.component.scss']

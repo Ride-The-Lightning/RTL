@@ -6,6 +6,7 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-liquidity-info',
   templateUrl: './channel-liquidity-info.component.html',
   styleUrls: ['./channel-liquidity-info.component.scss']

@@ -187,7 +187,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)" />
+      <mat-paginator class="mb-1" [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" (page)="onPageChange($event)" />
     </div>
   </div>
 </div>

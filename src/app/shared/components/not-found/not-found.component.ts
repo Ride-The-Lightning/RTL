@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-not-found',
   templateUrl: './not-found.component.html'
 })

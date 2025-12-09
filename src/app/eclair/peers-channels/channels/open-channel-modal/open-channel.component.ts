@@ -20,6 +20,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { DataService } from '../../../../shared/services/data.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-open-channel',
   templateUrl: './open-channel.component.html',
   styleUrls: ['./open-channel.component.scss']

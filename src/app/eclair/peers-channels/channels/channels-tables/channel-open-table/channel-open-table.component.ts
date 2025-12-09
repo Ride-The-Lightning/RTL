@@ -26,6 +26,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { ECLChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-open-table',
   templateUrl: './channel-open-table.component.html',
   styleUrls: ['./channel-open-table.component.scss'],

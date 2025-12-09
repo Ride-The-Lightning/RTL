@@ -21,6 +21,7 @@ import { eclPageSettings } from '../../../../eclair/store/ecl.selector';
 import { savePageSettings as savePageSettingsECL } from '../../../../eclair/store/ecl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-page-settings',
   templateUrl: './page-settings.component.html',
   styleUrls: ['./page-settings.component.scss']

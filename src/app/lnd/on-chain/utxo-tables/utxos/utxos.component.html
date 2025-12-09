@@ -105,7 +105,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>

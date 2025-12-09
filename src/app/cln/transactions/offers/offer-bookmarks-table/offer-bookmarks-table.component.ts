@@ -26,6 +26,7 @@ import { DatePipe } from '@angular/common';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-offer-bookmarks-table',
   templateUrl: './offer-bookmarks-table.component.html',
   styleUrls: ['./offer-bookmarks-table.component.scss'],

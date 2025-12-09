@@ -24,6 +24,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-pending-table',
   templateUrl: './channel-pending-table.component.html',
   styleUrls: ['./channel-pending-table.component.scss'],

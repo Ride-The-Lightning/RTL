@@ -1,6 +1,7 @@
 import { NgModule, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
+  standalone: false,
   name: 'removeleadingzeros'
 })
 export class RemoveLeadingZerosPipe implements PipeTransform {
@@ -12,6 +13,7 @@ export class RemoveLeadingZerosPipe implements PipeTransform {
 }
 
 @Pipe({
+  standalone: false,
   name: 'camelcase'
 })
 export class CamelCasePipe implements PipeTransform {
@@ -23,6 +25,7 @@ export class CamelCasePipe implements PipeTransform {
 }
 
 @Pipe({
+  standalone: false,
   name: 'camelCaseWithSpaces'
 })
 export class CamelCaseWithSpacesPipe implements PipeTransform {
@@ -34,6 +37,7 @@ export class CamelCaseWithSpacesPipe implements PipeTransform {
 }
 
 @Pipe({
+  standalone: false,
   name: 'camelcaseWithReplace'
 })
 export class CamelCaseWithReplacePipe implements PipeTransform {

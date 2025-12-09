@@ -16,6 +16,7 @@ import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-bump-fee',
   templateUrl: './bump-fee.component.html',
   styleUrls: ['./bump-fee.component.scss']

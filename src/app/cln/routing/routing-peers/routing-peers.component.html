@@ -51,7 +51,7 @@
           <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </table>
       </div>
-      <mat-paginator #paginatorIn class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+      <mat-paginator #paginatorIn class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="end stretch">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
@@ -112,7 +112,7 @@
           <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
           <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </table>
-        <mat-paginator #paginatorOut class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+        <mat-paginator #paginatorOut class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
       </div>
     </div>
   </div>

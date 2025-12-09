@@ -17,6 +17,7 @@ import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { DataService } from '../../../../shared/services/data.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-close-channel',
   templateUrl: './close-channel.component.html',
   styleUrls: ['./close-channel.component.scss']

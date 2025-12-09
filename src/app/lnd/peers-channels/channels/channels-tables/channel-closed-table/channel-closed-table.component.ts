@@ -22,6 +22,7 @@ import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-closed-table',
   templateUrl: './channel-closed-table.component.html',
   styleUrls: ['./channel-closed-table.component.scss'],

@@ -23,6 +23,7 @@ import { channels } from '../../../../../lnd/store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../../models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-loop-modal',
   templateUrl: './loop-modal.component.html',
   styleUrls: ['./loop-modal.component.scss'],

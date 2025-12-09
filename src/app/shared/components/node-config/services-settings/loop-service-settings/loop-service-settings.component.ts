@@ -11,6 +11,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-loop-service-settings',
   templateUrl: './loop-service-settings.component.html',
   styleUrls: ['./loop-service-settings.component.scss']

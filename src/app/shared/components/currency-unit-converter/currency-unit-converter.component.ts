@@ -10,6 +10,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-currency-unit-converter',
   templateUrl: './currency-unit-converter.component.html',
   styleUrls: ['./currency-unit-converter.component.scss']

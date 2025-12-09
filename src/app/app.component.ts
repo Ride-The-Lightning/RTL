@@ -21,6 +21,7 @@ import { routeAnimation } from './shared/animation/route-animation';
 import { RTLState } from './store/rtl.state';
 
 @Component({
+  standalone: false,
   selector: 'rtl-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],

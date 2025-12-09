@@ -11,6 +11,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-boltz-service-settings',
   templateUrl: './boltz-service-settings.component.html',
   styleUrls: ['./boltz-service-settings.component.scss']

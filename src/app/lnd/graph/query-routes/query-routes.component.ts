@@ -21,6 +21,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-query-routes',
   templateUrl: './query-routes.component.html',
   styleUrls: ['./query-routes.component.scss']

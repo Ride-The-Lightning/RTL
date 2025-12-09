@@ -15,6 +15,7 @@ import { Balance, LocalRemoteBalance, UTXO } from '../../shared/models/clnModels
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-on-chain',
   templateUrl: './on-chain.component.html',
   styleUrls: ['./on-chain.component.scss']

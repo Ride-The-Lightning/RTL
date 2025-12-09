@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-routing',
   templateUrl: './routing.component.html',
   styleUrls: ['./routing.component.scss']

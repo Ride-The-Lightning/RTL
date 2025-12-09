@@ -31,6 +31,7 @@ import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-lightning-invoices-table',
   templateUrl: './lightning-invoices-table.component.html',
   styleUrls: ['./lightning-invoices-table.component.scss'],
