@@ -15,7 +15,7 @@
             <span fxFlex="10" class="mb-2">{{table.tableId | camelcaseWithReplace:'_'}}:</span>
             <mat-form-field fxLayout="column" fxFlex="10">
               <mat-label>Records/Page</mat-label>
-              <mat-select tabindex="2" required [disabled]="nodePageDefs[page.pageId][table.tableId].disablePageSize" name="{{page.pageId}}{{table.tableId}}-page-size-options" [(ngModel)]="table.recordsPerPage">
+              <mat-select name="{{page.pageId}}{{table.tableId}}-page-size-options" tabindex="2" required [disabled]="nodePageDefs[page.pageId][table.tableId].disablePageSize" [(ngModel)]="table.recordsPerPage">
                 <mat-option *ngFor="let pageSizeOption of pageSizeOptions" [value]="pageSizeOption">
                   {{pageSizeOption}}
                 </mat-option>
@@ -23,7 +23,7 @@
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="10">
               <mat-label>Sort By</mat-label>
-              <mat-select tabindex="3" required name="{{page.pageId}}{{table.tableId}}-sort-by" [(ngModel)]="table.sortBy">
+              <mat-select name="{{page.pageId}}{{table.tableId}}-sort-by" tabindex="3" required [(ngModel)]="table.sortBy">
                 <mat-option *ngFor="let field of table.columnSelection" [value]="field">
                   {{selNode.lnImplementation === 'ECL' ? (field | camelCaseWithSpaces) : (field | camelcaseWithReplace:'_')}}
                 </mat-option>
@@ -31,7 +31,7 @@
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="10">
               <mat-label>Sort Order</mat-label>
-              <mat-select tabindex="4" required name="{{page.pageId}}{{table.tableId}}-sort-order" [(ngModel)]="table.sortOrder">
+              <mat-select name="{{page.pageId}}{{table.tableId}}-sort-order" tabindex="4" required [(ngModel)]="table.sortOrder">
                 <mat-option *ngFor="let so of sortOrders" [value]="so">
                   {{so === 'desc' ? 'Descending' : 'Ascending'}}
                 </mat-option>
@@ -39,7 +39,7 @@
             </mat-form-field>
             <mat-form-field *ngIf="screenSize !== screenSizeEnum.XS" fxFlex="35" matTooltip="Select a minimum of 2 columns">
               <mat-label>Column selection (Desktop Resolution)</mat-label>
-              <mat-select tabindex="6" multiple required name="{{page.pageId}}{{table.tableId}}-columns-selection" [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)">
+              <mat-select name="{{page.pageId}}{{table.tableId}}-columns-selection" tabindex="6" multiple required [(ngModel)]="table.columnSelection" (selectionChange)="oncolumnSelectionChange(table)">
                 <mat-option *ngFor="let field of nodePageDefs[page.pageId][table.tableId].allowedColumns" [value]="field.column" [disabled]="(table.columnSelection.length <= 2 && table.columnSelection.includes(field.column))">
                   {{field.label ? field.label : (selNode.lnImplementation === 'ECL' ? (field.column | camelCaseWithSpaces) : (field.column | camelcaseWithReplace:'_'))}}
                 </mat-option>
@@ -47,7 +47,7 @@
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="15" matTooltip="Select between 1 and 3 columns">
               <mat-label>Column Selection (Mobile Resolution)</mat-label>
-              <mat-select tabindex="5" multiple required name="{{page.pageId}}{{table.tableId}}-columns-selection-sm" [(ngModel)]="table.columnSelectionSM">
+              <mat-select name="{{page.pageId}}{{table.tableId}}-columns-selection-sm" tabindex="5" multiple required [(ngModel)]="table.columnSelectionSM">
                 <mat-option *ngFor="let field of nodePageDefs[page.pageId][table.tableId].allowedColumns" [value]="field.column" [disabled]="(table.columnSelectionSM.length <= 1 && table.columnSelectionSM.includes(field.column)) || (table.columnSelectionSM.length >= 3 && !table.columnSelectionSM.includes(field.column))">
                   {{field.label ? field.label : (selNode.lnImplementation === 'ECL' ? (field.column | camelCaseWithSpaces) : (field.column | camelcaseWithReplace:'_'))}}
                 </mat-option>

@@ -3,9 +3,14 @@
   "compilerOptions": {
     "baseUrl": "../",
     "outDir": "../backend",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "types": ["node"]
   },
-  "include": [
-    "./**/*"
-  ]
+  "include": ["./**/*"]
 }
-  

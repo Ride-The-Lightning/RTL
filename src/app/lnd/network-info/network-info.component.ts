@@ -12,7 +12,7 @@ import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 
 import { RTLState } from '../../store/rtl.state';
-import { rootSelectedNode } from 'src/app/store/rtl.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
 import { channels, fees, networkInfo, pendingChannels, nodeInfoAndAPIStatus } from '../store/lnd.selector';
 
 @Component({

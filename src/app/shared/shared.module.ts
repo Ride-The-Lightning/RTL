@@ -40,6 +40,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatChipsModule } from '@angular/material/chips';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QrCodeModule } from 'ng-qrcode';
@@ -164,6 +165,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatProgressSpinnerModule,
     MatRadioModule,
     MatTreeModule,
+    FlexLayoutModule,
     MatChipsModule,
     MatSelectModule,
     MatSidenavModule,
@@ -207,6 +209,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatProgressSpinnerModule,
     MatRadioModule,
     MatTreeModule,
+    FlexLayoutModule,
     MatChipsModule,
     MatSelectModule,
     MatSidenavModule,

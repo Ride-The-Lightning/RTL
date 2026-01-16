@@ -76,7 +76,7 @@
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel?.balancedness || 0 | number}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel.toLocal && channel.toLocal > 0 ? ((+channel.toLocal/((+channel.toLocal)+(+channel.toRemote)))*100) : 0}}" />
+          <mat-progress-bar value="{{channel.toLocal && channel.toLocal > 0 ? ((+channel.toLocal/((+channel.toLocal)+(+channel.toRemote)))*100) : 0}}" mode="determinate" />
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

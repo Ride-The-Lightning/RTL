@@ -1,4 +1,4 @@
-@import "../../../../../shared/theme/styles/constants.scss";
+@use '../../../../../shared/theme/styles/constants.scss' as *;
 
 .mat-column-amount {
   .htlc-row-span:not(:first-of-type) {

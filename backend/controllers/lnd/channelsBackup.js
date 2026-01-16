@@ -9,10 +9,10 @@ const common = Common;
 function getFilesList(channelBackupPath, callback) {
     const files_list = [];
     let all_restore_exists = false;
-    let response = { all_restore_exists: false, files: [] } || { message: '', error: {}, statusCode: 500 };
+    let response = { all_restore_exists: false, files: [] };
     fs.readdir(channelBackupPath + sep + 'restore', (err, files) => {
         if (err && err.code !== 'ENOENT' && err.errno !== -4058) {
-            response = { message: 'Channels Restore List Failed!', error: err, statusCode: 500 };
+            response = Object.assign({ message: 'Channels Restore List Failed!', error: err, statusCode: 500 });
         }
         if (files && files.length > 0) {
             files.forEach((file) => {

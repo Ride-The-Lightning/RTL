@@ -23,7 +23,7 @@
             </div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content fxLayout="column" fxFlex="{{card.id === 'capacity' ? 90 : 70}}"
+        <mat-card-content fxFlex="{{card.id === 'capacity' ? 90 : 70}}" fxLayout="column"
           [ngClass]="{'dashboard-card-content': true, 
           'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'balance' && apiCallStatusBalances.status === apiCallStatusEnum.ERROR) ||
@@ -74,7 +74,7 @@
             </div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content fxLayout="column" fxLayoutAlign="start stretch" fxFlex="{{card.id === 'transactions' ? 100 : card.id === 'balance' ? 70: 90}}"
+        <mat-card-content fxFlex="{{card.id === 'transactions' ? 100 : card.id === 'balance' ? 70: 90}}" fxLayout="column" fxLayoutAlign="start stretch"
           [ngClass]="{'dashboard-card-content': true, 
           'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'balance' && apiCallStatusBalances.status === apiCallStatusEnum.ERROR) ||
@@ -87,12 +87,12 @@
           <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
             <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" />
             <rtl-cln-balances-info *ngSwitchCase="'balance'" fxFlex="100" [balances]="balances" [errorMessage]="errorMessages[1]" />
-            <rtl-cln-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [activeChannels]="allInboundChannels" [errorMessage]="errorMessages[2]" />
-            <rtl-cln-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]" />
+            <rtl-cln-channel-liquidity-info *ngSwitchCase="'inboundLiq'" fxFlex="100" direction="In" [totalLiquidity]="totalInboundLiquidity" [activeChannels]="allInboundChannels" [errorMessage]="errorMessages[2]" />
+            <rtl-cln-channel-liquidity-info *ngSwitchCase="'outboundLiq'" fxFlex="100" direction="Out" [totalLiquidity]="totalOutboundLiquidity" [activeChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]" />
             <span *ngSwitchCase="'transactions'" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" fxLayout="column" class="dashboard-tabs-group">
-                <mat-tab label="Receive"><rtl-cln-lightning-invoices-table class="h-100" [calledFrom]="'home'" /></mat-tab>
-                <mat-tab label="Pay"><rtl-cln-lightning-payments [calledFrom]="'home'" /></mat-tab>
+                <mat-tab label="Receive"><rtl-cln-lightning-invoices-table class="h-100" calledFrom="home" /></mat-tab>
+                <mat-tab label="Pay"><rtl-cln-lightning-payments calledFrom="home" /></mat-tab>
               </mat-tab-group>
               <div class="underline">
                 <button mat-icon-button class="more-button" aria-label="Toggle menu" [matMenuTriggerFor]="menuTransactions">
