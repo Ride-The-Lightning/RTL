@@ -20,7 +20,7 @@
         <div *ngIf="messageObjs?.length>0">
           <div *ngFor="let objs of messageObjs; index as i;">
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-              <div *ngFor="let obj of objs; index as j;" fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}">
+              <div *ngFor="let obj of objs; index as j;" fxFlex.gt-md="{{obj.width}}" fxLayout="column" fxFlex="100">
                 <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                 <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                   <span class="foreground-secondary-text" [ngSwitch]="obj.type">
@@ -47,7 +47,7 @@
             <ng-container *ngFor="let getInput of getInputs; index as i">
               <mat-form-field *ngIf="!getInput.advancedField || showAdvanced" [ngClass]="getInput.width">
                 <mat-label>{{getInput.placeholder}}</mat-label>
-                <input matInput required [autoFocus]="i === 0" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [tabindex]="i+1" [(ngModel)]="getInput.inputValue">
+                <input name="input{{i}}" matInput required [autoFocus]="i === 0" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [tabindex]="i+1" [(ngModel)]="getInput.inputValue">
                 <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
                 <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>
               </mat-form-field>

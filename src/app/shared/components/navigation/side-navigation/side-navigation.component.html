@@ -9,7 +9,7 @@
     </mat-select>
     <mat-divider class="w-100" />
     <mat-tree *ngIf="selNode.settings?.lnServerUrl" #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
+      <mat-tree-node *matTreeNodeDef="let node" routerLink="{{node.link}}" matTreeNodeToggle routerLinkActive="active-link">
         <div tabindex="2" (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
             <span *ngIf="node.iconType === 'SVG'" class="fa-icon-small mr-2" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><ng-container [ngTemplateOutlet]="node.icon === 'boltzIconBlock' ? boltzIconBlock : null" /></span>
@@ -40,8 +40,8 @@
     <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onShowData(node)">
         <span *ngIf="node.iconType === 'SVG'" class="fa-icon-small mr-2"><ng-container [ngTemplateOutlet]="node.icon" /></span>
-        <fa-icon *ngIf="node.iconType === 'FA'" class="fa-icon-small mr-2" matTooltipPosition="right" [icon]="node.icon" matTooltip="{{node.name}}" />
-        <mat-icon *ngIf="!node.iconType" class="mat-icon-36" matTooltipPosition="right" matTooltip="{{node.name}}">{{node.icon}}</mat-icon>
+        <fa-icon *ngIf="node.iconType === 'FA'" matTooltip="{{node.name}}" class="fa-icon-small mr-2" matTooltipPosition="right" [icon]="node.icon" />
+        <mat-icon *ngIf="!node.iconType" matTooltip="{{node.name}}" class="mat-icon-36" matTooltipPosition="right">{{node.icon}}</mat-icon>
         <span>{{node.name}}</span>
       </mat-tree-node>
     </mat-tree>
@@ -50,7 +50,7 @@
     <mat-tree *ngIf="showLogout" [dataSource]="navMenusLogout" [treeControl]="treeControlLogout">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
         <span *ngIf="node.iconType === 'SVG'" class="mr-2"><ng-container [ngTemplateOutlet]="node.icon" /></span>
-        <fa-icon *ngIf="node.iconType === 'FA'" class="fa-icon-small mr-2" matTooltipPosition="right" [icon]="node.icon" matTooltip="{{node.name}}" />
+        <fa-icon *ngIf="node.iconType === 'FA'" matTooltip="{{node.name}}" class="fa-icon-small mr-2" matTooltipPosition="right" [icon]="node.icon" />
         <span>{{node.name}}</span>
       </mat-tree-node>
     </mat-tree>

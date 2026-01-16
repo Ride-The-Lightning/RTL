@@ -1,25 +1,26 @@
 @use '@angular/material' as mat;
-@import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/white.swatch.scss';
+@use './color-swatches/pink-primary.swatch.scss' as *;
+@use './color-swatches/red-warn.swatch.scss' as *;
+@use './color-swatches/white.swatch.scss' as *;
+@use './color-swatches/gray.swatch.scss' as *;
 
-$pink-primary: mat.define-palette(mat.$pink-palette, 500, 300, A200);
-$pink-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$pink-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
-$pink-warn: mat.define-palette($red-warn, 500);
-$pink-warn-night: mat.define-palette($red-warn, A700);
+$pink-primary: mat.m2-define-palette($pink-primary-palette, 500, 300, A200);
+$day-accent: mat.m2-define-palette($gray-palette, 800, 600, 900);
+$night-accent: mat.m2-define-palette($white-palette, 300, 600, 900);
+$red-warn: mat.m2-define-palette($red-warn-palette, 500, 300, 200);
 
-$pink-night-theme: mat.define-dark-theme((
-    color: (
-        primary: $pink-primary,
-        accent: $pink-accent-night,
-        warn: $pink-warn-night
-    )
+$pink-night-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $pink-primary,
+    accent: $night-accent,
+    warn: $red-warn,
+  )
 ));
 
-$pink-day-theme: mat.define-light-theme((
-    color: (
-        primary: $pink-primary,
-        accent: $pink-accent,
-        warn: $pink-warn
-    )
+$pink-day-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $pink-primary,
+    accent: $day-accent,
+    warn: $red-warn,
+  )
 ));

@@ -42,7 +42,7 @@
   <mat-step label="Cipher" state="cipher" [stepControl]="cipherFormGroup">
     <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1" [formGroup]="cipherFormGroup">
       <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
-        <mat-slide-toggle fxFlex="20" tabindex="8" color="primary" class="chkbox-wallet" formControlName="existingCipher" name="existingCipher" [labelPosition]="'before'">Existing Cipher</mat-slide-toggle>
+        <mat-slide-toggle labelPosition="before" fxFlex="20" tabindex="8" color="primary" class="chkbox-wallet" formControlName="existingCipher" name="existingCipher">Existing Cipher</mat-slide-toggle>
         <mat-form-field fxLayout="column" fxFlex="75" fxLayoutAlign="start" class="my-1">
           <mat-label>Comma separated array of 24 words cipher seed</mat-label>
           <input autofocus matInput type="input" name="cipherSeed" formControlName="cipherSeed" tabindex="9" required>
@@ -60,7 +60,7 @@
   <mat-step label="Passphrase" state="passphrase" [stepControl]="passphraseFormGroup">
     <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1" [formGroup]="passphraseFormGroup">
       <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
-        <mat-slide-toggle fxFlex="20" tabindex="10" color="primary" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase" [labelPosition]="'before'">Existing Passphrase</mat-slide-toggle>
+        <mat-slide-toggle labelPosition="before" fxFlex="20" tabindex="10" color="primary" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase">Existing Passphrase</mat-slide-toggle>
         <mat-form-field fxLayout="column" fxFlex="75" fxLayoutAlign="start">
           <mat-label>Passphrase</mat-label>
           <input matInput type="password" name="passphrase" formControlName="passphrase" tabindex="12" required>

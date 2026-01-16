@@ -19,12 +19,12 @@
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
-            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activeChannels}}">Channels</span>
+            <span matBadge="{{activeChannels}}" matBadgeOverlap="false" class="tab-badge">Channels</span>
           </ng-template>
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>
-            <span matBadgeOverlap="false" class="tab-badge" matBadge="{{activePeers}}">Peers</span>
+            <span matBadge="{{activePeers}}" matBadgeOverlap="false" class="tab-badge">Peers</span>
           </ng-template>
         </mat-tab>
       </mat-tab-group>

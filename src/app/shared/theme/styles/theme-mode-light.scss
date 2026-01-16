@@ -1,23 +1,24 @@
 @use '@angular/material' as mat;
-@import "constants";
+@use 'sass:map' as map;
+@use 'constants' as *;
 
 @mixin theme-mode-light($theme) {
-  $primary: map-get($theme, primary);
-  $primary-color: mat.get-color-from-palette($primary);
-  $primary-lighter: mat.get-color-from-palette($primary, lighter);
-  $primary-darker: mat.get-color-from-palette($primary, darker);
-  $accent: map-get($theme, accent);
-  $accent-color: mat.get-color-from-palette($accent);
-  $warn: map-get($theme, warn);
-  $warn-color: mat.get-color-from-palette($warn);
-  $foreground: map-get($theme, foreground);
-  $foreground-base: mat.get-color-from-palette($foreground, base); // 1
-  $foreground-text: mat.get-color-from-palette($foreground, text); //.87
-  $foreground-secondary-text: mat.get-color-from-palette($foreground, secondary-text); // .54
-  $foreground-disabled: mat.get-color-from-palette($foreground, disabled); // .38
-  $foreground-divider: mat.get-color-from-palette($foreground, divider); // .12
-  $background: map-get($theme, background);
-  $background-color: mat.get-color-from-palette($background, card);
+  $primary: map.get($theme, primary);
+  $primary-color: map.get($primary, 500);
+  $primary-lighter: map.get($primary, lighter);
+  $primary-darker: map.get($primary, darker);
+  $accent: map.get($theme, accent);
+  $accent-color: map.get($accent, 500);
+  $warn: map.get($theme, warn);
+  $warn-color: map.get($warn, 500);
+  $foreground: map.get($theme, foreground);
+  $foreground-base: map.get($foreground, base); // 1
+  $foreground-text: map.get($foreground, text); //.87
+  $foreground-secondary-text: map.get($foreground, secondary-text); // .54
+  $foreground-disabled: map.get($foreground, disabled); // .38
+  $foreground-divider: map.get($foreground, divider); // .12
+  $background: map.get($theme, background);
+  $background-color: map.get($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
 
@@ -33,10 +34,10 @@
     }
   }
   .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
-    background-color: mat.get-color-from-palette($accent, 700);
+    background-color: map.get($accent, 700);
   }
   .mat-progress-bar.this-channel-bar .mat-progress-bar-buffer {
-    background-color: mat.get-color-from-palette($accent, 200);
+    background-color: map.get($accent, 200);
   }
   .rtl-top-toolbar {
     border-bottom: 1px solid white;
@@ -191,7 +192,7 @@
     fill:  $foreground-text;
   }
   .mat-progress-bar-fill::after {
-    background-color: mat.get-color-from-palette($primary, 900);
+    background-color: map.get($primary, 900);
   }
   .modal-qr-code-container {
     background: $foreground-divider;
@@ -342,10 +343,10 @@
     }
     &.two-color {
       & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
-        fill: mat.get-color-from-palette($primary, 900);
+        fill: map.get($primary, 900);
       }
       & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
-        fill: mat.get-color-from-palette($primary, 200);
+        fill: map.get($primary, 200);
       }
     }
   }

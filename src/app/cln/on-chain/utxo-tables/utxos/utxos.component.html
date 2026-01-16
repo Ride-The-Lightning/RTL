@@ -30,7 +30,7 @@
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Status"></th>
           <td *matCellDef="let utxo" mat-cell>
             <span *ngIf="utxo.status === 'confirmed'" class="dot green" matTooltip="Confirmed" matTooltipPosition="right"></span>
-            <span *ngIf="utxo.status !== 'confirmed'" class="dot yellow" matTooltipPosition="right" matTooltip="{{utxo.status | titlecase}}"></span>
+            <span *ngIf="utxo.status !== 'confirmed'" matTooltip="{{utxo.status | titlecase}}" class="dot yellow" matTooltipPosition="right"></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="txid">

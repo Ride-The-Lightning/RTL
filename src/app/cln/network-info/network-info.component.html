@@ -30,8 +30,8 @@
                 <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
                 <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[1]" />
                 <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2] + ' ' + errorMessages[3]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[4]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[5]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" feeRateStyle="KB" [feeRates]="feeRatesPerKB" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" feeRateStyle="KW" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[5]" />
                 <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[4]" />
               </div>
             </mat-card-content>
@@ -71,8 +71,8 @@
                 <rtl-cln-node-info *ngSwitchCase="'node'" fxFlex="100" [information]="information" [showColorFieldSeparately]="false" />
                 <rtl-cln-channel-status-info *ngSwitchCase="'status'" fxFlex="100" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[1]" />
                 <rtl-cln-fee-info *ngSwitchCase="'fee'" fxFlex="100" [fees]="fees" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2] + ' ' + errorMessages[3]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" [errorMessage]="errorMessages[4]" />
-                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKB'" class="h-100" feeRateStyle="KB" [feeRates]="feeRatesPerKB" [errorMessage]="errorMessages[4]" />
+                <rtl-cln-fee-rates *ngSwitchCase="'feeRatesKW'" class="h-100" feeRateStyle="KW" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[4]" />
                 <rtl-cln-onchain-fee-estimates *ngSwitchCase="'onChainFeeEstimates'" class="h-100" [feeRates]="feeRatesPerKW" [errorMessage]="errorMessages[4]" />
               </div>
             </mat-card-content>

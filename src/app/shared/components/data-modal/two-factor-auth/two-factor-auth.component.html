@@ -26,7 +26,7 @@
             <form fxLayout="column" class="my-1 pr-1" [formGroup]="secretFormGroup">
               <ng-template matStepLabel disabled="true">{{secretFormLabel}}</ng-template>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="start">
-                <qr-code *ngIf="otpauth" [value]="otpauth" [size]="180" [errorCorrectionLevel]="'L'" />
+                <qr-code *ngIf="otpauth" errorCorrectionLevel="L" [value]="otpauth" [size]="180" />
               </div>
               <div fxFlex="100" class="w-100 alert alert-info">
                 <fa-icon class="mt-1 mr-1 alert-icon" [icon]="faInfoCircle" />

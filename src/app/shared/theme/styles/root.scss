@@ -1,6 +1,6 @@
 @use 'sass:math' as math;
-@import 'constants';
-@import 'mixins';
+@use 'constants' as *;
+@use 'mixins' as *;
 
 html {
   width: 100%;

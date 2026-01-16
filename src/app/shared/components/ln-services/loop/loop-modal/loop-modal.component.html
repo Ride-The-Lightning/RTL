@@ -19,8 +19,8 @@
             <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true" />
-                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true" />
+                <rtl-loop-quote termCaption="min" [quote]="minQuote" [panelExpanded]="false" [showPanel]="true" />
+                <rtl-loop-quote termCaption="max" [quote]="maxQuote" [panelExpanded]="false" [showPanel]="true" />
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
                 <mat-form-field [ngClass]="direction === LoopTypeEnum.LOOP_OUT ? 'flex-35' : 'flex-48'">

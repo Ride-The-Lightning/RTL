@@ -1,26 +1,26 @@
 @use '@angular/material' as mat;
-@import './color-swatches/purple-primary.swatch.scss';
-@import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/white.swatch.scss';
+@use './color-swatches/purple-primary.swatch.scss' as *;
+@use './color-swatches/red-warn.swatch' as *;
+@use './color-swatches/white.swatch.scss' as *;
+@use './color-swatches/gray.swatch.scss' as *;
 
-$purple-primary: mat.define-palette($purple-primary, 500, 300, A200);
-$purple-accent: mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$purple-accent-night: mat.define-palette($mat-white, 300, 600, 900);
-$purple-warn: mat.define-palette($red-warn, 500);
-$purple-warn-night: mat.define-palette($red-warn, A700);
+$purple-primary: mat.m2-define-palette($purple-primary-palette, 500, 300, A200);
+$day-accent: mat.m2-define-palette($gray-palette, 800, 600, 900);
+$night-accent: mat.m2-define-palette($white-palette, 300, 600, 900);
+$red-warn: mat.m2-define-palette($red-warn-palette, 500, 300, 200);
 
-$purple-night-theme: mat.define-dark-theme((
-    color: (
-        primary: $purple-primary,
-        accent: $purple-accent-night,
-        warn: $purple-warn-night
-    )
+$purple-night-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $purple-primary,
+    accent: $night-accent,
+    warn: $red-warn,
+  )
 ));
 
-$purple-day-theme: mat.define-light-theme((
-    color: (
-        primary: $purple-primary,
-        accent: $purple-accent,
-        warn: $purple-warn
-    )
+$purple-day-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $purple-primary,
+    accent: $day-accent,
+    warn: $red-warn,
+  )
 ));

@@ -2,7 +2,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./backend",
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
@@ -17,10 +16,10 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
+    "moduleResolution": "bundler",
     "target": "ES2022",
     "module": "ES2022",
+    "importHelpers": true,
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",

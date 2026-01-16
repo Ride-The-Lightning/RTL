@@ -1,26 +1,26 @@
 @use '@angular/material' as mat;
-@import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/yellow-primary.swatch.scss';
-@import './color-swatches/white.swatch.scss';
+@use './color-swatches/yellow-primary.swatch.scss' as *;
+@use './color-swatches/red-warn.swatch.scss' as *;
+@use './color-swatches/white.swatch.scss' as *;
+@use './color-swatches/gray.swatch.scss' as *;
 
-$yellow-primary: mat.define-palette($yellow-primary, 500, 300, A200);
-$yellow-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$yellow-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
-$yellow-warn: mat.define-palette($red-warn, 500);
-$yellow-warn-night: mat.define-palette($red-warn, A700);
+$yellow-primary: mat.m2-define-palette($yellow-primary-palette, 500, 300, A200);
+$day-accent: mat.m2-define-palette($gray-palette, 800, 600, 900);
+$night-accent: mat.m2-define-palette($white-palette, 300, 600, 900);
+$red-warn: mat.m2-define-palette($red-warn-palette, 500, 300, 200);
 
-$yellow-night-theme: mat.define-dark-theme((
-    color: (
-        primary: $yellow-primary,
-        accent: $yellow-accent-night,
-        warn: $yellow-warn-night
-    )
+$yellow-night-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $yellow-primary,
+    accent: $night-accent,
+    warn: $red-warn,
+  )
 ));
 
-$yellow-day-theme: mat.define-light-theme((
-    color: (
-        primary: $yellow-primary,
-        accent: $yellow-accent,
-        warn: $yellow-warn
-    )
-))
+$yellow-day-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $yellow-primary,
+    accent: $day-accent,
+    warn: $red-warn,
+  )
+));

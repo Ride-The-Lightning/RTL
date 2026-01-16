@@ -23,8 +23,8 @@ import { RTLState } from '../../../store/rtl.state';
 import { isAuthorized, openSnackBar } from '../../../store/rtl.actions';
 import { setChannelTransaction } from '../../store/lnd.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
-import { DataService } from 'src/app/shared/services/data.service';
-import { RecommendedFeeRates } from 'src/app/shared/models/rtlModels';
+import { DataService } from '../../../shared/services/data.service';
+import { RecommendedFeeRates } from '../../../shared/models/rtlModels';
 
 @Component({
   standalone: false,
