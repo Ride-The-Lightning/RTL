@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, withLatestFrom, map, shareReplay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
@@ -64,10 +64,10 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '62px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', ''];
-  public apiCallStatusNodeInfo: ApiCallStatusPayload | null = null;
-  public apiCallStatusBalances: ApiCallStatusPayload | null = null;
-  public apiCallStatusChannels: ApiCallStatusPayload | null = null;
-  public apiCallStatusFHistory: ApiCallStatusPayload | null = null;
+  public apiCallStatusNodeInfo$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusBalances$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusChannels$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusFHistory$: Observable<ApiCallStatusPayload>;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -119,67 +119,86 @@ export class CLNHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(nodeInfoAndAPIsStatus).pipe(takeUntil(this.unSubs[0]),
-      withLatestFrom(this.store.select(rootSelectedNode))).
-      subscribe(([infoFeeStatusSelector, nodeSettings]: [{ information: GetInfo, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }, Node | null]) => {
-        this.errorMessages[0] = '';
-        this.errorMessages[3] = '';
-        this.apiCallStatusNodeInfo = infoFeeStatusSelector.apisCallStatus[0];
-        this.apiCallStatusFHistory = infoFeeStatusSelector.apisCallStatus[1];
-        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = !this.apiCallStatusNodeInfo.message ? '' : (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message;
-        }
-        if (this.apiCallStatusFHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = !this.apiCallStatusFHistory.message ? '' : (typeof (this.apiCallStatusFHistory.message) === 'object') ? JSON.stringify(this.apiCallStatusFHistory.message) : this.apiCallStatusFHistory.message;
-        }
-        this.selNode = nodeSettings;
-        this.information = infoFeeStatusSelector.information;
-        this.fees = infoFeeStatusSelector.fees;
-      });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
-      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[2] = '';
-        this.apiCallStatusChannels = channelsSeletor.apiCallStatus;
-        if (this.apiCallStatusChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = !this.apiCallStatusChannels.message ? '' : (typeof (this.apiCallStatusChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusChannels.message) : this.apiCallStatusChannels.message;
-        }
-        this.totalInboundLiquidity = 0;
-        this.totalOutboundLiquidity = 0;
-        this.activeChannels = channelsSeletor.activeChannels;
-        this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.to_them_msat ? channel.to_them_msat > 0 : false)), 'to_them_msat'))) || [];
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.to_us_msat ? channel.to_us_msat > 0 : false)), 'to_us_msat'))) || [];
-        this.activeChannels.forEach((channel) => {
-          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil((channel.to_them_msat || 0) / 1000);
-          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor((channel.to_us_msat || 0) / 1000);
-        });
-        this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
-        this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
-        this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
-        this.logger.info(channelsSeletor);
-      });
-    this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
-      subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[1] = '';
-        this.apiCallStatusBalances = utxoBalancesSeletor.apiCallStatus;
-        if (this.apiCallStatusBalances.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = !this.apiCallStatusBalances.message ? '' : (typeof (this.apiCallStatusBalances.message) === 'object') ? JSON.stringify(this.apiCallStatusBalances.message) : this.apiCallStatusBalances.message;
-        }
-        this.totalBalance = utxoBalancesSeletor.balance;
-        this.balances.onchain = utxoBalancesSeletor.balance.totalBalance || 0;
-        this.balances.lightning = utxoBalancesSeletor.localRemoteBalance.localBalance;
-        this.balances.total = this.balances.lightning + this.balances.onchain;
-        this.balances = Object.assign({}, this.balances);
+    const nodeInfoSelector$ = this.store.select(nodeInfoAndAPIsStatus).pipe(
+      takeUntil(this.unSubs[0]),
+      withLatestFrom(this.store.select(rootSelectedNode)),
+      shareReplay(1)
+    );
 
-        const local = (utxoBalancesSeletor.localRemoteBalance.localBalance) ? +utxoBalancesSeletor.localRemoteBalance.localBalance : 0;
-        const remote = (utxoBalancesSeletor.localRemoteBalance.remoteBalance) ? +utxoBalancesSeletor.localRemoteBalance.remoteBalance : 0;
-        const total = local + remote;
-        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.channelsStatus.active.capacity = utxoBalancesSeletor.localRemoteBalance.localBalance || 0;
-        this.channelsStatus.pending.capacity = utxoBalancesSeletor.localRemoteBalance.pendingBalance || 0;
-        this.channelsStatus.inactive.capacity = utxoBalancesSeletor.localRemoteBalance.inactiveBalance || 0;
-        this.logger.info(utxoBalancesSeletor);
+    nodeInfoSelector$.subscribe(([infoFeeStatusSelector, nodeSettings]: [{ information: GetInfo, fees: Fees, apisCallStatus: ApiCallStatusPayload[] }, Node | null]) => {
+      this.errorMessages[0] = '';
+      this.errorMessages[3] = '';
+      if (infoFeeStatusSelector.apisCallStatus[0].status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = !infoFeeStatusSelector.apisCallStatus[0].message ? '' : (typeof (infoFeeStatusSelector.apisCallStatus[0].message) === 'object') ? JSON.stringify(infoFeeStatusSelector.apisCallStatus[0].message) : infoFeeStatusSelector.apisCallStatus[0].message;
+      }
+      if (infoFeeStatusSelector.apisCallStatus[1].status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = !infoFeeStatusSelector.apisCallStatus[1].message ? '' : (typeof (infoFeeStatusSelector.apisCallStatus[1].message) === 'object') ? JSON.stringify(infoFeeStatusSelector.apisCallStatus[1].message) : infoFeeStatusSelector.apisCallStatus[1].message;
+      }
+      this.selNode = nodeSettings;
+      this.information = infoFeeStatusSelector.information;
+      this.fees = infoFeeStatusSelector.fees;
+    });
+
+    this.apiCallStatusNodeInfo$ = nodeInfoSelector$.pipe(
+      map(([infoFeeStatusSelector]) => infoFeeStatusSelector.apisCallStatus[0])
+    );
+
+    this.apiCallStatusFHistory$ = nodeInfoSelector$.pipe(
+      map(([infoFeeStatusSelector]) => infoFeeStatusSelector.apisCallStatus[1])
+    );
+
+    const channelsSelector$ = this.store.select(channels).pipe(
+      takeUntil(this.unSubs[2]),
+      shareReplay(1)
+    );
+
+    channelsSelector$.subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessages[2] = '';
+      if (channelsSeletor.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = !channelsSeletor.apiCallStatus.message ? '' : (typeof (channelsSeletor.apiCallStatus.message) === 'object') ? JSON.stringify(channelsSeletor.apiCallStatus.message) : channelsSeletor.apiCallStatus.message;
+      }
+      this.totalInboundLiquidity = 0;
+      this.totalOutboundLiquidity = 0;
+      this.activeChannels = channelsSeletor.activeChannels;
+      this.activeChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels, 'balancedness'))) || [];
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.to_them_msat ? channel.to_them_msat > 0 : false)), 'to_them_msat'))) || [];
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.activeChannels?.filter((channel) => (channel.to_us_msat ? channel.to_us_msat > 0 : false)), 'to_us_msat'))) || [];
+      this.activeChannels.forEach((channel) => {
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil((channel.to_them_msat || 0) / 1000);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor((channel.to_us_msat || 0) / 1000);
       });
+      this.channelsStatus.active.channels = channelsSeletor.activeChannels.length || 0;
+      this.channelsStatus.pending.channels = channelsSeletor.pendingChannels.length || 0;
+      this.channelsStatus.inactive.channels = channelsSeletor.inactiveChannels.length || 0;
+      this.logger.info(channelsSeletor);
+    });
+
+    this.apiCallStatusChannels$ = channelsSelector$.pipe(map((cs) => cs.apiCallStatus));
+
+    const utxoBalancesSelector$ = this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+
+    utxoBalancesSelector$.subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessages[1] = '';
+      if (utxoBalancesSeletor.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = !utxoBalancesSeletor.apiCallStatus.message ? '' : (typeof (utxoBalancesSeletor.apiCallStatus.message) === 'object') ? JSON.stringify(utxoBalancesSeletor.apiCallStatus.message) : utxoBalancesSeletor.apiCallStatus.message;
+      }
+      this.totalBalance = utxoBalancesSeletor.balance;
+      this.balances.onchain = utxoBalancesSeletor.balance.totalBalance || 0;
+      this.balances.lightning = utxoBalancesSeletor.localRemoteBalance.localBalance;
+      this.balances.total = this.balances.lightning + this.balances.onchain;
+      this.balances = Object.assign({}, this.balances);
+
+      const local = (utxoBalancesSeletor.localRemoteBalance.localBalance) ? +utxoBalancesSeletor.localRemoteBalance.localBalance : 0;
+      const remote = (utxoBalancesSeletor.localRemoteBalance.remoteBalance) ? +utxoBalancesSeletor.localRemoteBalance.remoteBalance : 0;
+      const total = local + remote;
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
+      this.channelsStatus.active.capacity = utxoBalancesSeletor.localRemoteBalance.localBalance || 0;
+      this.channelsStatus.pending.capacity = utxoBalancesSeletor.localRemoteBalance.pendingBalance || 0;
+      this.channelsStatus.inactive.capacity = utxoBalancesSeletor.localRemoteBalance.inactiveBalance || 0;
+      this.logger.info(utxoBalancesSeletor);
+    });
+
+    this.apiCallStatusBalances$ = utxoBalancesSelector$.pipe(map((ubs) => ubs.apiCallStatus));
   }
 
   onNavigateTo(link: string) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -17,7 +17,6 @@ import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { VERSION, AlertTypeEnum, RTLActions, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
-import { CommonService } from '../../../services/common.service';
 import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../../store/rtl.actions';
 import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';
 
@@ -35,7 +34,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEye = faEye;
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
-  public selNode: Node | any;
+  public selNode: Node | any = null;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
@@ -55,7 +54,14 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
+  constructor(
+    private logger: LoggerService,
+    private sessionService: SessionService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private rtlEffects: RTLEffects,
+    private cdr: ChangeDetectorRef
+  ) {
     this.version = VERSION;
     if (MENU_DATA.LNDChildren && MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -71,6 +77,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.flgLoading = !!token;
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
       this.appConfig = appConfig;
+      this.cdr.detectChanges();
     });
     this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
       subscribe((rootData: { nodeDate: GetInfoRoot, selNode: Node | null }) => {
@@ -98,18 +105,21 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.filterSideMenuNodes();
         }
         this.logger.info(rootData);
+        this.cdr.detectChanges();
       });
     this.sessionService.watchSession().
       pipe(takeUntil(this.unSubs[2])).
       subscribe((session) => {
         this.showLogout = !!session.token;
         this.flgLoading = !!session.token;
+        this.cdr.detectChanges();
       });
     this.actions.pipe(
       takeUntil(this.unSubs[3]),
       filter((action) => action.type === RTLActions.LOGOUT)).
       subscribe((action: any) => {
         this.showLogout = false;
+        this.cdr.detectChanges();
       });
   }
 
@@ -161,9 +171,11 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona)) &&
+        (!navMenuChild.link.includes('/services') ||
           (navMenuChild.link === '/services/loop' && this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
+          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '')
+        ));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;
@@ -175,9 +187,11 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/peerswap') ||
-          (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
-          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona)) &&
+          (!navMenuChild.link.includes('/services') ||
+            (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
+            (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '')
+          ));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;

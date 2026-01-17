@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -45,8 +45,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
-    private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions,
-    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private userIdle: UserIdleService,
+    private router: Router,
+    private sessionService: SessionService,
+    private breakpointObserver: BreakpointObserver,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -87,12 +94,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.startWatching();
       }
       this.selNode = selNode;
+      this.cdr.detectChanges();
     });
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => { this.appConfig = appConfig; });
+    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[2])).subscribe((appConfig) => {
+      this.appConfig = appConfig;
+      this.cdr.detectChanges();
+    });
     this.store.select(rootNodeData).pipe(takeUntil(this.unSubs[3])).subscribe((nodeData) => {
       this.information = nodeData;
       this.flgLoading[0] = !(this.information.identity_pubkey);
       this.logger.info(this.information);
+      this.cdr.detectChanges();
     });
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;
@@ -118,6 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.flgLoggedIn = true;
           this.userIdle.startWatching();
           this.userIdle.resetTimer();
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
           }, 1000);
@@ -126,6 +139,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.flgLoggedIn = false;
           this.userIdle.stopWatching();
           this.userIdle.stopTimer();
+          this.cdr.detectChanges();
         }
       });
     this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[5])).subscribe((count) => {
