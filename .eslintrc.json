@@ -24,7 +24,7 @@
       ],
       "rules": {
         "@angular-eslint/component-selector": ["error", { "prefix": "rtl", "style": "kebab-case", "type": "element" }],
-        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute" }],
+        "@angular-eslint/directive-selector": ["error", { "style": "camelCase", "type": "attribute", "prefix": [] }],
         "@angular-eslint/consistent-component-styles": "off",
         "@angular-eslint/prefer-on-push-component-change-detection": "off",
         "@angular-eslint/prefer-standalone": "off",
