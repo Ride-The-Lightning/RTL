@@ -6,6 +6,22 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const lndWsClient = LNDWSClient;
+const KEYSEND_MESSAGE_TLV_TYPE = '34349334';
+const extractKeysendMessage = (invoice) => {
+    if (invoice.is_keysend && (!invoice.memo || invoice.memo === '') && invoice.htlcs && invoice.htlcs.length > 0) {
+        for (const htlc of invoice.htlcs) {
+            if (htlc.custom_records && htlc.custom_records[KEYSEND_MESSAGE_TLV_TYPE]) {
+                try {
+                    return Buffer.from(htlc.custom_records[KEYSEND_MESSAGE_TLV_TYPE], 'base64').toString('utf8');
+                }
+                catch (err) {
+                    return '';
+                }
+            }
+        }
+    }
+    return '';
+};
 export const invoiceLookup = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
     options = common.getOptions(req);
@@ -23,6 +39,7 @@ export const invoiceLookup = (req, res, next) => {
         body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
         body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
         body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;
+        body.memo = extractKeysendMessage(body);
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Information Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
@@ -45,6 +62,7 @@ export const listInvoices = (req, res, next) => {
                 invoice.r_preimage = invoice.r_preimage ? Buffer.from(invoice.r_preimage, 'base64').toString('hex') : '';
                 invoice.r_hash = invoice.r_hash ? Buffer.from(invoice.r_hash, 'base64').toString('hex') : '';
                 invoice.description_hash = invoice.description_hash ? Buffer.from(invoice.description_hash, 'base64').toString('hex') : null;
+                invoice.memo = extractKeysendMessage(invoice) || '';
             });
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Sorted Invoices List Received', data: body });
