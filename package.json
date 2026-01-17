@@ -12,7 +12,7 @@
     "buildfrontendtest": "ng test --watch=false && ng build",
     "buildfrontend": "ng build --configuration production",
     "buildbackend": "npx tsc --project ./server/tsconfig.server.json",
-    "watchbackend": "tsc --project ./server/tsconfig.server.json --watch",
+    "watchbackend": "npx tsc --project ./server/tsconfig.server.json --watch",
     "server": "set NODE_ENV=development&&nodemon --watch backend --watch server ./rtl.js",
     "serverUbuntu": "NODE_ENV=development nodemon --watch backend --watch server ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
