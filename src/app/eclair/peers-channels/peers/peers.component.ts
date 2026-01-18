@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -61,6 +61,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
@@ -92,8 +93,9 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info(this.displayedColumns);
       });
 
-    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
-      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+    const peersSelector$ = this.store.select(peers).pipe(takeUntil(this.unSubs[2]), shareReplay(1));
+    this.apiCallStatus$ = peersSelector$.pipe(map((peersSelector) => peersSelector.apiCallStatus));
+    peersSelector$.subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = peersSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

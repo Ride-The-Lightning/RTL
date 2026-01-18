@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faInfoCircle, faExclamationTriangle, faArchive } from '@fortawesome/free-solid-svg-icons';
@@ -54,6 +54,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private actions: Actions, private commonService: CommonService) {
@@ -62,19 +63,20 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
 
   ngOnInit() {
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((nodeSettings: Node | null) => { this.selNode = nodeSettings; });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((channelsSeletor: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = channelsSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.channelsData = channelsSeletor.channels;
-        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadBackupTable(this.channelsData);
-        }
-        this.logger.info(channelsSeletor);
-      });
+    const channelsSelector$ = this.store.select(channels).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = channelsSelector$.pipe(map((channelsSelector) => channelsSelector.apiCallStatus));
+    channelsSelector$.subscribe((channelsSeletor: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = channelsSeletor.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.channelsData = channelsSeletor.channels;
+      if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadBackupTable(this.channelsData);
+      }
+      this.logger.info(channelsSeletor);
+    });
     this.actions.pipe(takeUntil(this.unSubs[2]), filter((action) => action.type === LNDActions.SET_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)).subscribe((action: any) => {
       if (action.type === LNDActions.SET_CHANNELS_LND) {
         this.selectedChannel = null;

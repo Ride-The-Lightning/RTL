@@ -17,7 +17,7 @@
       </div>
     </div>
     <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+      <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="nonRoutingPeers">
         <ng-container matColumnDef="chan_id">
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Channel ID</th>
@@ -119,9 +119,9 @@
         </ng-container>
         <ng-container matColumnDef="no_non_routing_event">
           <td *matFooterCellDef  mat-footer-cell colspan="4">
-            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">All peers are routing.</p>
-            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting non routing peers...</p>
-            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">All peers are routing.</p>
+            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting non routing peers...</p>
+            <p *ngIf="(!nonRoutingPeers?.data || nonRoutingPeers?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr *matFooterRowDef="['no_non_routing_event']" mat-footer-row [ngClass]="{'display-none': nonRoutingPeers?.data?.length>0}"></tr>

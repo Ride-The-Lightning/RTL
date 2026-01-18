@@ -45,7 +45,7 @@
       </div>
     </div>
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+      <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="invoices" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="state">
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="State"></th>
@@ -178,9 +178,9 @@
         </ng-container>
         <ng-container matColumnDef="no_invoice">
           <td *matFooterCellDef  mat-footer-cell colspan="6">
-            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
-            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
-            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr *matFooterRowDef="['no_invoice']" mat-footer-row [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>

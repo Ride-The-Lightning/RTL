@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, take, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
@@ -73,6 +73,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   public totalRecords = 0;
   public flgInit = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -117,8 +118,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[3])).
-      subscribe((paymentsSeletor: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+    const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+    this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
+    paymentsSelector$.subscribe((paymentsSeletor: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSeletor.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

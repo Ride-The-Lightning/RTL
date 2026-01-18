@@ -1,13 +1,13 @@
 <div fxLayout="column" class="mb-2">
   <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} Sats</span>
   <mat-accordion displayMode="flat" class="mt-1">
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Open ({{pendingOpenChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+        <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
         <table #table mat-table fxFlex="100" matSort [matSortActive]="openTableSetting.sortBy" [matSortDirection]="openTableSetting.sortOrder" [dataSource]="pendingOpenChannels" [ngClass]="{'error-border bordered-box': errorMessage !== '','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <th *matHeaderCellDef mat-header-cell mat-sort-header>Peer</th>
@@ -85,9 +85,9 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_open">
             <td *matFooterCellDef  mat-footer-cell colspan="4">
-              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
-              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
-              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
+              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
+              <p *ngIf="(!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr *matFooterRowDef="['no_pending_open']" mat-footer-row fxLayoutAlign="start center" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels?.data && pendingOpenChannels?.data?.length>0}"></tr>
@@ -96,7 +96,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Force Closing ({{pendingForceClosingChannelsLength}})</mat-panel-title>
@@ -181,9 +181,9 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
             <td *matFooterCellDef  mat-footer-cell colspan="4">
-              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
-              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
-              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
+              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
+              <p *ngIf="(!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr *matFooterRowDef="['no_pending_force_closing']" mat-footer-row fxLayoutAlign="start center" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels?.data && pendingForceClosingChannels?.data?.length>0}"></tr>
@@ -192,7 +192,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
@@ -261,9 +261,9 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
             <td *matFooterCellDef  mat-footer-cell colspan="4">
-              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
-              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
-              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
+              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
+              <p *ngIf="(!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr *matFooterRowDef="['no_pending_closing']" mat-footer-row fxLayoutAlign="start center" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels?.data && pendingClosingChannels?.data?.length>0}"></tr>
@@ -272,7 +272,7 @@
         </table>
       </div>
     </mat-expansion-panel>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>
@@ -345,9 +345,9 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">
             <td *matFooterCellDef  mat-footer-cell colspan="4">
-              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
-              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
-              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No pending channel.</p>
+              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting pending channels...</p>
+              <p *ngIf="(!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr *matFooterRowDef="['no_pending_wait_closing']" mat-footer-row fxLayoutAlign="start center" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels?.data && pendingWaitClosingChannels?.data?.length>0}"></tr>

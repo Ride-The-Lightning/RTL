@@ -15,7 +15,7 @@
     </div>
   </div>
   <div fxLayout="column" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="channels" [ngClass]="{'error-border': errorMessage !== ''}">
       <!-- Channel Group Row Start -->
       <ng-container matColumnDef="amount_msat">
@@ -131,9 +131,9 @@
       </ng-container>
       <ng-container matColumnDef="no_channel">
         <td *matFooterCellDef  mat-footer-cell colspan="4">
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
-          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <!-- channel Group Row End -->

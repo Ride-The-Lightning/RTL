@@ -15,7 +15,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
     <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-      <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+      <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
       <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="listUTXOs" [ngClass]="{'error-border': errorMessage !== ''}">
         <ng-container matColumnDef="is_dust">
           <th *matHeaderCellDef mat-header-cell mat-sort-header matTooltip="Dust/Nondust"></th>
@@ -96,9 +96,9 @@
         </ng-container>
         <ng-container matColumnDef="no_utxo">
           <td *matFooterCellDef  mat-footer-cell colspan="4">
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
-            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr *matFooterRowDef="['no_utxo']" mat-footer-row [ngClass]="{'display-none': listUTXOs?.data && listUTXOs?.data?.length>0}"></tr>

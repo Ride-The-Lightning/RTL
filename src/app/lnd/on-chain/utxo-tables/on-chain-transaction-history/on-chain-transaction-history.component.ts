@@ -1,7 +1,7 @@
 import { Component, ViewChild, Input, OnChanges, OnInit, OnDestroy } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
@@ -53,6 +53,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -84,19 +85,20 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(transactions).pipe(takeUntil(this.unSubs[1])).
-      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = transactionsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        if (transactionsSelector.transactions && transactionsSelector.transactions.length > 0) {
-          this.transactions = transactionsSelector.transactions;
-          this.loadTransactionsTable(this.transactions);
-        }
-        this.logger.info(transactionsSelector);
-      });
+    const transactionsSelector$ = this.store.select(transactions).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = transactionsSelector$.pipe(map((transactionsSelector) => transactionsSelector.apiCallStatus));
+    transactionsSelector$.subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = transactionsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      if (transactionsSelector.transactions && transactionsSelector.transactions.length > 0) {
+        this.transactions = transactionsSelector.transactions;
+        this.loadTransactionsTable(this.transactions);
+      }
+      this.logger.info(transactionsSelector);
+    });
   }
 
   onTransactionClick(selTransaction: Transaction) {

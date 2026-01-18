@@ -1,7 +1,7 @@
 import { Component, ViewChild, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
@@ -63,6 +63,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe, private snackBar: MatSnackBar) {
@@ -98,23 +99,24 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(utxos).pipe(takeUntil(this.unSubs[1])).
-      subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = utxosSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+    const utxosSelector$ = this.store.select(utxos).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = utxosSelector$.pipe(map((utxosSelector) => utxosSelector.apiCallStatus));
+    utxosSelector$.subscribe((utxosSelector: { utxos: UTXO[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = utxosSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
+        this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_sat || 0) < this.dustAmount);
+        this.utxos = utxosSelector.utxos;
+        if (this.utxos.length > 0 && this.dustUtxos.length > 0 && !this.isDustUTXO) {
+          this.displayedColumns.unshift('is_dust');
         }
-        if (utxosSelector.utxos && utxosSelector.utxos.length > 0) {
-          this.dustUtxos = utxosSelector.utxos?.filter((utxo) => +(utxo.amount_sat || 0) < this.dustAmount);
-          this.utxos = utxosSelector.utxos;
-          if (this.utxos.length > 0 && this.dustUtxos.length > 0 && !this.isDustUTXO) {
-            this.displayedColumns.unshift('is_dust');
-          }
-          this.loadUTXOsTable((this.isDustUTXO) ? this.dustUtxos : this.utxos);
-        }
-        this.logger.info(utxosSelector);
-      });
+        this.loadUTXOsTable((this.isDustUTXO) ? this.dustUtxos : this.utxos);
+      }
+      this.logger.info(utxosSelector);
+    });
   }
 
   applyFilter() {

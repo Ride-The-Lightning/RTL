@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, take, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
@@ -76,6 +76,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -110,23 +111,24 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[5])).
-      subscribe((paymentsSelector: { listPayments: ListPayments, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = paymentsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.paymentJSONArr = paymentsSelector.listPayments.payments || [];
-        this.totalPayments = this.paymentJSONArr.length;
-        this.firstOffset = +(paymentsSelector.listPayments.first_index_offset || -1);
-        this.lastOffset = +(paymentsSelector.listPayments.last_index_offset || -1);
-        if (this.paymentJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          // this.loadPaymentsTable(this.paymentJSONArr);
-          this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
-        }
-        this.logger.info(paymentsSelector);
-      });
+    const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[5]), shareReplay(1));
+    this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
+    paymentsSelector$.subscribe((paymentsSelector: { listPayments: ListPayments, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = paymentsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.paymentJSONArr = paymentsSelector.listPayments.payments || [];
+      this.totalPayments = this.paymentJSONArr.length;
+      this.firstOffset = +(paymentsSelector.listPayments.first_index_offset || -1);
+      this.lastOffset = +(paymentsSelector.listPayments.last_index_offset || -1);
+      if (this.paymentJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        // this.loadPaymentsTable(this.paymentJSONArr);
+        this.loadPaymentsTable(this.paymentJSONArr.slice(0, this.pageSize));
+      }
+      this.logger.info(paymentsSelector);
+    });
   }
 
   ngAfterViewInit() {

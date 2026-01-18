@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -63,6 +63,7 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -94,19 +95,20 @@ export class CLNPeersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[2])).
-      subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = peersSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.peersData = peersSeletor.peers || [];
-        if (this.peersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadPeersTable(this.peersData);
-        }
-        this.logger.info(peersSeletor);
-      });
+    const peersSelector$ = this.store.select(peers).pipe(takeUntil(this.unSubs[2]), shareReplay(1));
+    this.apiCallStatus$ = peersSelector$.pipe(map((peersSelector) => peersSelector.apiCallStatus));
+    peersSelector$.subscribe((peersSeletor: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = peersSeletor.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.peersData = peersSeletor.peers || [];
+      if (this.peersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadPeersTable(this.peersData);
+      }
+      this.logger.info(peersSeletor);
+    });
     this.store.select(utxoBalances).pipe(takeUntil(this.unSubs[3])).
       subscribe((utxoBalancesSeletor: { utxos: UTXO[], balance: Balance, localRemoteBalance: LocalRemoteBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.utxos = this.commonService.sortAscByKey(utxoBalancesSeletor.utxos?.filter((utxo) => utxo.status === 'confirmed'), 'value');

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
@@ -53,6 +53,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -78,19 +79,20 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(closedChannels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((closedChannelsSelector: { closedChannels: ClosedChannel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = closedChannelsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.closedChannelsData = closedChannelsSelector.closedChannels;
-        if (this.closedChannelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadClosedChannelsTable(this.closedChannelsData);
-        }
-        this.logger.info(closedChannelsSelector);
-      });
+    const closedChannelsSelector$ = this.store.select(closedChannels).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = closedChannelsSelector$.pipe(map((closedChannelsSelector) => closedChannelsSelector.apiCallStatus));
+    closedChannelsSelector$.subscribe((closedChannelsSelector: { closedChannels: ClosedChannel[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = closedChannelsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.closedChannelsData = closedChannelsSelector.closedChannels;
+      if (this.closedChannelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadClosedChannelsTable(this.closedChannelsData);
+      }
+      this.logger.info(closedChannelsSelector);
+    });
   }
 
   ngAfterViewInit() {

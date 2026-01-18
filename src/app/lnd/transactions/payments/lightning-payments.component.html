@@ -42,7 +42,7 @@
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
       <div fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container" [perfectScrollbar]>
-        <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+        <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
         <table #table mat-table fxFlex="100" matSort [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="payments" [ngClass]="{'error-border': errorMessage !== ''}">
           <ng-container matColumnDef="status">
             <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Status"></th>
@@ -134,9 +134,9 @@
           </ng-container>
           <ng-container matColumnDef="no_payment">
             <td *matFooterCellDef  mat-footer-cell colspan="4">
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
-              <p *ngIf="(!payments?.data || payments?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+              <p *ngIf="(!payments?.data || payments?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
+              <p *ngIf="(!payments?.data || payments?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
+              <p *ngIf="(!payments?.data || payments?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <!-- Payment Group Row Start -->

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { filter, takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory, faEye, faEyeSlash, faBurst, faMoneyBill1, faArrowsTurnToDots, faArrowsTurnRight } from '@fortawesome/free-solid-svg-icons';
@@ -82,6 +82,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe, private actions: Actions, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -110,22 +111,23 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(invoices).pipe(takeUntil(this.unSubs[3])).
-      subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = invoicesSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.totalInvoices = (invoicesSelector.listInvoices.total_invoices || 0);
-        this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
-        this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
-        this.invoicesData = invoicesSelector.listInvoices.invoices || [];
-        if (this.invoicesData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadInvoicesTable(this.invoicesData);
-        }
-        this.logger.info(invoicesSelector);
-      });
+    const invoicesSelector$ = this.store.select(invoices).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+    this.apiCallStatus$ = invoicesSelector$.pipe(map((invoicesSelector) => invoicesSelector.apiCallStatus));
+    invoicesSelector$.subscribe((invoicesSelector: { listInvoices: ListInvoices, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = invoicesSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.totalInvoices = (invoicesSelector.listInvoices.total_invoices || 0);
+      this.firstOffset = +(invoicesSelector.listInvoices.first_index_offset || -1);
+      this.lastOffset = +(invoicesSelector.listInvoices.last_index_offset || -1);
+      this.invoicesData = invoicesSelector.listInvoices.invoices || [];
+      if (this.invoicesData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadInvoicesTable(this.invoicesData);
+      }
+      this.logger.info(invoicesSelector);
+    });
     this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))).
       subscribe((resLookup: any) => {
         if (resLookup.type === LNDActions.SET_LOOKUP_LND) {

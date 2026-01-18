@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
@@ -53,6 +53,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   public totalRecords = 0;
   public flgInit = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -89,8 +90,9 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
           this.logger.info(this.displayedColumns);
         }
       });
-    this.store.select(transactions).pipe(takeUntil(this.unSubs[1])).
-      subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
+    const transactionsSelector$ = this.store.select(transactions).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = transactionsSelector$.pipe(map((transactionsSelector) => transactionsSelector.apiCallStatus));
+    transactionsSelector$.subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = transactionsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

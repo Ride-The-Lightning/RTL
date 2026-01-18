@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -49,6 +49,7 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public timeUnit = 'mins:secs';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute, private decimalPipe: DecimalPipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -74,24 +75,25 @@ export class NonRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
-      subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = fhSelector.apiCallStatus;
-        if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        if (fhSelector.forwardingHistory.forwarding_events) {
-          this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;
-        } else {
-          this.routingPeersData = [];
-        }
-        if (this.routingPeersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadNonRoutingPeersTable(this.routingPeersData);
-        }
-        this.logger.info(fhSelector.apiCallStatus);
-        this.logger.info(fhSelector.forwardingHistory);
-      });
+    const fhSelector$ = this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = fhSelector$.pipe(map((fhSelector) => fhSelector.apiCallStatus));
+    fhSelector$.subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = fhSelector.apiCallStatus;
+      if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      if (fhSelector.forwardingHistory.forwarding_events) {
+        this.routingPeersData = fhSelector.forwardingHistory.forwarding_events;
+      } else {
+        this.routingPeersData = [];
+      }
+      if (this.routingPeersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadNonRoutingPeersTable(this.routingPeersData);
+      }
+      this.logger.info(fhSelector.apiCallStatus);
+      this.logger.info(fhSelector.forwardingHistory);
+    });
     this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
       subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';

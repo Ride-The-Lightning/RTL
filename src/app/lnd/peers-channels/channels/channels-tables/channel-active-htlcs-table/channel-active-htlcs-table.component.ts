@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -52,6 +52,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -77,19 +78,20 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[1])).
-      subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = channelsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.channelsJSONArr = channelsSelector.channels?.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
-        if (this.channelsJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadHTLCsTable(this.channelsJSONArr);
-        }
-        this.logger.info(channelsSelector);
-      });
+    const channelsSelector$ = this.store.select(channels).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = channelsSelector$.pipe(map((channelsSelector) => channelsSelector.apiCallStatus));
+    channelsSelector$.subscribe((channelsSelector: { channels: Channel[], channelsSummary: ChannelsSummary, lightningBalance: LightningBalance, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = channelsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.channelsJSONArr = channelsSelector.channels?.filter((channel) => channel.pending_htlcs && channel.pending_htlcs.length > 0) || [];
+      if (this.channelsJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadHTLCsTable(this.channelsJSONArr);
+      }
+      this.logger.info(channelsSelector);
+    });
   }
 
   ngAfterViewInit() {

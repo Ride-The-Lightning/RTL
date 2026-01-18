@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
@@ -62,6 +62,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private router: Router, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
@@ -92,8 +93,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1])).
-      subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
+    const allChannelsSelector$ = this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = allChannelsSelector$.pipe(map((allChannelsSelector) => allChannelsSelector.apiCallStatus));
+    allChannelsSelector$.subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
         this.errorMessage = '';
         this.apiCallStatus = allChannelsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

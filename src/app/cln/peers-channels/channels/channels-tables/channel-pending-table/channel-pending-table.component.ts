@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -62,6 +62,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -95,20 +96,21 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(channels).pipe(takeUntil(this.unSubs[2])).
-      subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = channelsSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
-        this.channelsData = this.channelsData.sort((a, b) => ((this.CLNChannelPendingState[a.state || ''] >= this.CLNChannelPendingState[b.state || '']) ? 1 : -1));
-        if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadChannelsTable(this.channelsData);
-        }
-        this.logger.info(channelsSeletor);
-      });
+    const channelsSelector$ = this.store.select(channels).pipe(takeUntil(this.unSubs[2]), shareReplay(1));
+    this.apiCallStatus$ = channelsSelector$.pipe(map((channelsSelector) => channelsSelector.apiCallStatus));
+    channelsSelector$.subscribe((channelsSeletor: { activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = channelsSeletor.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.channelsData = [...channelsSeletor.pendingChannels, ...channelsSeletor.inactiveChannels];
+      this.channelsData = this.channelsData.sort((a, b) => ((this.CLNChannelPendingState[a.state || ''] >= this.CLNChannelPendingState[b.state || '']) ? 1 : -1));
+      if (this.channelsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadChannelsTable(this.channelsData);
+      }
+      this.logger.info(channelsSeletor);
+    });
   }
 
   ngAfterViewInit() {

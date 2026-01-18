@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -53,6 +53,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private datePipe: DatePipe, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -94,22 +95,23 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1])).
-      subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
-        if (this.eventsData.length <= 0) {
-          this.errorMessage = '';
-          this.apiCallStatus = fhSelector.apiCallStatus;
-          if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
-            this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-          }
-          this.forwardingHistoryData = fhSelector.forwardingHistory.forwarding_events || [];
-          if (this.forwardingHistoryData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-            this.loadForwardingEventsTable(this.forwardingHistoryData);
-          }
-          this.logger.info(fhSelector.apiCallStatus);
-          this.logger.info(fhSelector.forwardingHistory);
+    const fhSelector$ = this.store.select(forwardingHistory).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = fhSelector$.pipe(map((fhSelector) => fhSelector.apiCallStatus));
+    fhSelector$.subscribe((fhSelector: { forwardingHistory: SwitchRes, apiCallStatus: ApiCallStatusPayload }) => {
+      if (this.eventsData.length <= 0) {
+        this.errorMessage = '';
+        this.apiCallStatus = fhSelector.apiCallStatus;
+        if (fhSelector.apiCallStatus?.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
-      });
+        this.forwardingHistoryData = fhSelector.forwardingHistory.forwarding_events || [];
+        if (this.forwardingHistoryData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+          this.loadForwardingEventsTable(this.forwardingHistoryData);
+        }
+        this.logger.info(fhSelector.apiCallStatus);
+        this.logger.info(fhSelector.forwardingHistory);
+      }
+    });
   }
 
   ngAfterViewInit() {

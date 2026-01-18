@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material/sort';
@@ -61,6 +61,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private commonService: CommonService) {
@@ -113,28 +114,29 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
         this.displayedWaitClosingColumns.push('actions');
         this.logger.info(this.displayedWaitClosingColumns);
       });
-    this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3])).
-      subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = pendingChannelsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.pendingChannels = pendingChannelsSelector.pendingChannels;
-        if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
-          this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
-        }
-        if (this.pendingChannels.pending_force_closing_channels && this.pendingChannels.pending_force_closing_channels.length && this.pendingChannels.pending_force_closing_channels.length > 0) {
-          this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
-        }
-        if (this.pendingChannels.pending_closing_channels && this.pendingChannels.pending_closing_channels.length && this.pendingChannels.pending_closing_channels.length > 0) {
-          this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
-        }
-        if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
-          this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
-        }
-        this.logger.info(pendingChannelsSelector);
-      });
+    const pendingChannelsSelector$ = this.store.select(pendingChannels).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+    this.apiCallStatus$ = pendingChannelsSelector$.pipe(map((pendingChannelsSelector) => pendingChannelsSelector.apiCallStatus));
+    pendingChannelsSelector$.subscribe((pendingChannelsSelector: { pendingChannels: PendingChannels, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = pendingChannelsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.pendingChannels = pendingChannelsSelector.pendingChannels;
+      if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
+        this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
+      }
+      if (this.pendingChannels.pending_force_closing_channels && this.pendingChannels.pending_force_closing_channels.length && this.pendingChannels.pending_force_closing_channels.length > 0) {
+        this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
+      }
+      if (this.pendingChannels.pending_closing_channels && this.pendingChannels.pending_closing_channels.length && this.pendingChannels.pending_closing_channels.length > 0) {
+        this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
+      }
+      if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
+        this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
+      }
+      this.logger.info(pendingChannelsSelector);
+    });
   }
 
   ngAfterViewInit() {

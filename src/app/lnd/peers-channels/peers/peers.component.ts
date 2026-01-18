@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
@@ -58,6 +58,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selFilter = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -68,11 +69,6 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select(lndNodeInformation).pipe(takeUntil(this.unSubs[0])).subscribe((nodeInfo: GetInfo) => { this.information = nodeInfo; });
     this.store.select(lndPageSettings).pipe(takeUntil(this.unSubs[1])).
       subscribe((settings: { pageSettings: PageSettings[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = settings.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = this.apiCallStatus.message || '';
-        }
         this.tableSetting = settings.pageSettings.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId) || LND_DEFAULT_PAGE_SETTINGS.find((page) => page.pageId === this.PAGE_ID)?.tables.find((table) => table.tableId === this.tableSetting.tableId)!;
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.displayedColumns = JSON.parse(JSON.stringify(this.tableSetting.columnSelectionSM));
@@ -88,19 +84,20 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.availableBalance = bcBalanceSelector.blockchainBalance.total_balance || 0;
       });
-    this.store.select(peers).pipe(takeUntil(this.unSubs[3])).
-      subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = peersSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.peersData = peersSelector.peers;
-        if (this.peersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadPeersTable(this.peersData);
-        }
-        this.logger.info(peersSelector);
-      });
+    const peersSelector$ = this.store.select(peers).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+    this.apiCallStatus$ = peersSelector$.pipe(map((peersSelector) => peersSelector.apiCallStatus));
+    peersSelector$.subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessage = '';
+      this.apiCallStatus = peersSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.peersData = peersSelector.peers;
+      if (this.peersData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadPeersTable(this.peersData);
+      }
+      this.logger.info(peersSelector);
+    });
   }
 
   ngAfterViewInit() {

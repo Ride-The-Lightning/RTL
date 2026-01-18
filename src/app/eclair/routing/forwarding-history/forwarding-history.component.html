@@ -16,7 +16,7 @@
     </div>
   </div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container" [perfectScrollbar]>
-    <mat-progress-bar *ngIf="apiCallStatus.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
+    <mat-progress-bar *ngIf="(apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED" mode="indeterminate" />
     <table #table mat-table fxFlex="100" matSort class="overflow-auto" [matSortActive]="tableSetting.sortBy" [matSortDirection]="tableSetting.sortOrder" [dataSource]="forwardingHistoryEvents">
       <ng-container matColumnDef="type">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Type (if not payment relayed)"></th>
@@ -105,9 +105,9 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td *matFooterCellDef  mat-footer-cell colspan="4">
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
-          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apiCallStatus.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && (apiCallStatus$ | async)?.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr *matFooterRowDef="['no_event']" mat-footer-row [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>

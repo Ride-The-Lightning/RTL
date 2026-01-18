@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Payment, Invoice, ListInvoices, ListPayments } from '../../../shared/models/lndModels';
@@ -52,6 +52,7 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>) { }
@@ -72,24 +73,25 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
         this.logger.info(this.displayedColumns);
       });
 
-    this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[1])).
-      subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
-        if (allLTSelector.apiCallStatus.status === APICallStatusEnum.UN_INITIATED) {
-          this.store.dispatch(getAllLightningTransactions());
-        }
-        this.errorMessage = '';
-        this.apiCallStatus = allLTSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.payments = allLTSelector.allLightningTransactions.listPaymentsAll.payments || [];
-        this.invoices = allLTSelector.allLightningTransactions.listInvoicesAll.invoices || [];
-        if (this.payments.length > 0 || this.invoices.length > 0) {
-          this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
-          this.transactionsNonZeroReportData = this.prepareTableData();
-        }
-        this.logger.info(allLTSelector);
-      });
+    const allLTSelector$ = this.store.select(allLightningTransactions).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = allLTSelector$.pipe(map((allLTSelector) => allLTSelector.apiCallStatus));
+    allLTSelector$.subscribe((allLTSelector: { allLightningTransactions: { listPaymentsAll: ListPayments, listInvoicesAll: ListInvoices }, apiCallStatus: ApiCallStatusPayload }) => {
+      if (allLTSelector.apiCallStatus.status === APICallStatusEnum.UN_INITIATED) {
+        this.store.dispatch(getAllLightningTransactions());
+      }
+      this.errorMessage = '';
+      this.apiCallStatus = allLTSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.payments = allLTSelector.allLightningTransactions.listPaymentsAll.payments || [];
+      this.invoices = allLTSelector.allLightningTransactions.listInvoicesAll.invoices || [];
+      if (this.payments.length > 0 || this.invoices.length > 0) {
+        this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
+        this.transactionsNonZeroReportData = this.prepareTableData();
+      }
+      this.logger.info(allLTSelector);
+    });
     this.commonService.containerSizeUpdated.pipe(takeUntil(this.unSubs[2])).subscribe((CONTAINER_SIZE) => {
       switch (this.screenSize) {
         case ScreenSizeEnum.MD:

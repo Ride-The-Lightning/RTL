@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { filter, takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -71,6 +71,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   public totalRecords = 0;
   public flgInit = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -114,8 +115,9 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         }
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(invoices).pipe(takeUntil(this.unSubs[3])).
-      subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
+    const invoicesSelector$ = this.store.select(invoices).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
+    this.apiCallStatus$ = invoicesSelector$.pipe(map((invoicesSelector) => invoicesSelector.apiCallStatus));
+    invoicesSelector$.subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = invoicesSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {

@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material/sort';
@@ -51,6 +51,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
   public filterOut = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public apiCallStatus$: Observable<ApiCallStatusPayload>;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private camelCaseWithSpaces: CamelCaseWithSpacesPipe) {
@@ -75,8 +76,9 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / (this.displayedColumns.length * 2)) / 14) + 'rem' : '20rem';
         this.logger.info(this.displayedColumns);
       });
-    this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
-      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
+    const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
+    paymentsSelector$.subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = paymentsSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
