@@ -118,19 +118,19 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     const invoicesSelector$ = this.store.select(invoices).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
     this.apiCallStatus$ = invoicesSelector$.pipe(map((invoicesSelector) => invoicesSelector.apiCallStatus));
     invoicesSelector$.subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = invoicesSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.invoiceJSONArr = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
-        // Uncomment after paginator api is fixed
-        // this.totalRecords = invoicesSelector.invoices.totalRecords;
-        if (this.invoiceJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadInvoicesTable(this.invoiceJSONArr);
-        }
-        this.logger.info(invoicesSelector);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = invoicesSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.invoiceJSONArr = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
+      // Uncomment after paginator api is fixed
+      // this.totalRecords = invoicesSelector.invoices.totalRecords;
+      if (this.invoiceJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadInvoicesTable(this.invoiceJSONArr);
+      }
+      this.logger.info(invoicesSelector);
+    });
     this.actions.pipe(takeUntil(this.unSubs[4]), filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).
       subscribe((resLookup: any) => {
         if (resLookup.type === ECLActions.SET_LOOKUP_ECL) {

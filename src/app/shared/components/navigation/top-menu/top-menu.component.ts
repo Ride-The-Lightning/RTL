@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -38,7 +38,14 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public showLogout = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
+  constructor(
+    private logger: LoggerService,
+    private sessionService: SessionService,
+    private store: Store<RTLState>,
+    private rtlEffects: RTLEffects,
+    private actions: Actions,
+    private cdr: ChangeDetectorRef
+  ) {
     this.version = VERSION;
   }
 
@@ -82,7 +89,11 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.store.dispatch(openConfirmation({
       payload: {
         data: {
-          type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Logout',
+          titleMessage: 'Logout from this device?',
+          noBtnText: 'Cancel',
+          yesBtnText: 'Logout'
         }
       }
     }));
@@ -92,6 +103,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
         if (confirmRes) {
           this.showLogout = false;
           this.store.dispatch(logout({ payload: '' }));
+          this.cdr.detectChanges();
         }
       });
   }

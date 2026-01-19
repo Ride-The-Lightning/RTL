@@ -93,18 +93,18 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     const transactionsSelector$ = this.store.select(transactions).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
     this.apiCallStatus$ = transactionsSelector$.pipe(map((transactionsSelector) => transactionsSelector.apiCallStatus));
     transactionsSelector$.subscribe((transactionsSelector: { transactions: Transaction[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = transactionsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        // Uncomment after paginator api is fixed
-        // this.totalRecords = transactionsSelector.transactions.totalRecords;
-        if (transactionsSelector.transactions && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadTransactionsTable(transactionsSelector.transactions);
-        }
-        this.logger.info(transactionsSelector);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = transactionsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      // Uncomment after paginator api is fixed
+      // this.totalRecords = transactionsSelector.transactions.totalRecords;
+      if (transactionsSelector.transactions && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadTransactionsTable(transactionsSelector.transactions);
+      }
+      this.logger.info(transactionsSelector);
+    });
   }
 
   applyFilter() {

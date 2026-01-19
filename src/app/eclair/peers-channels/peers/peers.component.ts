@@ -96,15 +96,15 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     const peersSelector$ = this.store.select(peers).pipe(takeUntil(this.unSubs[2]), shareReplay(1));
     this.apiCallStatus$ = peersSelector$.pipe(map((peersSelector) => peersSelector.apiCallStatus));
     peersSelector$.subscribe((peersSelector: { peers: Peer[], apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = peersSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.peersData = peersSelector.peers;
-        this.loadPeersTable(this.peersData);
-        this.logger.info(peersSelector);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = peersSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.peersData = peersSelector.peers;
+      this.loadPeersTable(this.peersData);
+      this.logger.info(peersSelector);
+    });
     this.store.select(onchainBalance).pipe(takeUntil(this.unSubs[3])).
       subscribe((oCBalanceSelector: { onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload }) => {
         this.availableBalance = oCBalanceSelector.onchainBalance.total || 0;

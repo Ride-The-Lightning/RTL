@@ -79,17 +79,17 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
     const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
     this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
     paymentsSelector$.subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = paymentsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.routingPeersData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
-        if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
-          this.loadRoutingPeersTable(this.routingPeersData);
-        }
-        this.logger.info(paymentsSelector);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = paymentsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.routingPeersData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+      if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+        this.loadRoutingPeersTable(this.routingPeersData);
+      }
+      this.logger.info(paymentsSelector);
+    });
   }
 
   ngAfterViewInit() {

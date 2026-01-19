@@ -90,15 +90,15 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     const allChannelsSelector$ = this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
     this.apiCallStatus$ = allChannelsSelector$.pipe(map((allChannelsSelector) => allChannelsSelector.apiCallStatus));
     allChannelsSelector$.subscribe((allChannelsSelector: ({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload })) => {
-        this.errorMessage = '';
-        this.apiCallStatus = allChannelsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.inactiveChannels = allChannelsSelector.inactiveChannels;
-        this.loadChannelsTable();
-        this.logger.info(allChannelsSelector);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = allChannelsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.inactiveChannels = allChannelsSelector.inactiveChannels;
+      this.loadChannelsTable();
+      this.logger.info(allChannelsSelector);
+    });
     this.store.select(eclNodeInformation).pipe(takeUntil(this.unSubs[2])).
       subscribe((nodeInfo: GetInfo) => {
         this.information = nodeInfo;

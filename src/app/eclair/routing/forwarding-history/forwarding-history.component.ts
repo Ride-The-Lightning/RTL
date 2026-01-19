@@ -97,17 +97,17 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
     this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
     paymentsSelector$.subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = paymentsSelector.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
-        if (this.eventsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadForwardingEventsTable(this.eventsData);
-        }
-        this.logger.info(this.eventsData);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = paymentsSelector.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.eventsData = paymentsSelector.payments && paymentsSelector.payments.relayed ? paymentsSelector.payments.relayed : [];
+      if (this.eventsData && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
+      this.logger.info(this.eventsData);
+    });
   }
 
   ngAfterViewInit() {

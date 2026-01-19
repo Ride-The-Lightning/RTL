@@ -121,19 +121,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     const paymentsSelector$ = this.store.select(payments).pipe(takeUntil(this.unSubs[3]), shareReplay(1));
     this.apiCallStatus$ = paymentsSelector$.pipe(map((paymentsSelector) => paymentsSelector.apiCallStatus));
     paymentsSelector$.subscribe((paymentsSeletor: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessage = '';
-        this.apiCallStatus = paymentsSeletor.apiCallStatus;
-        if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
-        }
-        this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.sent && paymentsSeletor.payments.sent.length > 0) ? paymentsSeletor.payments.sent : [];
-        // Uncomment after paginator api is fixed
-        // this.totalRecords = paymentsSeletor.payments.totalRecords;
-        if (this.paymentJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
-          this.loadPaymentsTable(this.paymentJSONArr);
-        }
-        this.logger.info(paymentsSeletor);
-      });
+      this.errorMessage = '';
+      this.apiCallStatus = paymentsSeletor.apiCallStatus;
+      if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
+      }
+      this.paymentJSONArr = (paymentsSeletor.payments && paymentsSeletor.payments.sent && paymentsSeletor.payments.sent.length > 0) ? paymentsSeletor.payments.sent : [];
+      // Uncomment after paginator api is fixed
+      // this.totalRecords = paymentsSeletor.payments.totalRecords;
+      if (this.paymentJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
+        this.loadPaymentsTable(this.paymentJSONArr);
+      }
+      this.logger.info(paymentsSeletor);
+    });
   }
 
   ngAfterViewInit() {
