@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, withLatestFrom, map, shareReplay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
@@ -64,10 +64,10 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '62px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', ''];
-  public apiCallStatusNodeInfo: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
-  public apiCallStatusFees: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
-  public apiCallStatusOCBal: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
-  public apiCallStatusAllChannels: ApiCallStatusPayload = { status: APICallStatusEnum.COMPLETED };
+  public apiCallStatusNodeInfo$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusFees$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusOCBal$: Observable<ApiCallStatusPayload>;
+  public apiCallStatusAllChannels$: Observable<ApiCallStatusPayload>;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -123,61 +123,83 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       subscribe((nodeSettings) => {
         this.selNode = nodeSettings;
       });
-    this.store.select(nodeInfoStatus).pipe(takeUntil(this.unSubs[1])).
-      subscribe((selNodeInfoStatusSelector: { information: GetInfo, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[0] = '';
-        this.apiCallStatusNodeInfo = selNodeInfoStatusSelector.apiCallStatus;
-        if (this.apiCallStatusNodeInfo.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[0] = (typeof (this.apiCallStatusNodeInfo.message) === 'object') ? JSON.stringify(this.apiCallStatusNodeInfo.message) : this.apiCallStatusNodeInfo.message ? this.apiCallStatusNodeInfo.message : '';
-        }
-        this.information = selNodeInfoStatusSelector.information;
-      });
 
-    this.store.select(fees).pipe(takeUntil(this.unSubs[2])).
-      subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
-        this.errorMessages[1] = '';
-        this.apiCallStatusFees = feesSelector.apiCallStatus;
-        if (this.apiCallStatusFees.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[1] = (typeof (this.apiCallStatusFees.message) === 'object') ? JSON.stringify(this.apiCallStatusFees.message) : this.apiCallStatusFees.message ? this.apiCallStatusFees.message : '';
-        }
-        this.fees = feesSelector.fees;
-      });
-    this.store.select(allChannelsInfo).pipe(takeUntil(this.unSubs[3]),
-      withLatestFrom(this.store.select(onchainBalance))).
-      subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }),
+    const nodeInfoSelector$ = this.store.select(nodeInfoStatus).pipe(
+      takeUntil(this.unSubs[1]),
+      shareReplay(1)
+    );
+
+    nodeInfoSelector$.subscribe((selNodeInfoStatusSelector: { information: GetInfo, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessages[0] = '';
+      if (selNodeInfoStatusSelector.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = (typeof (selNodeInfoStatusSelector.apiCallStatus.message) === 'object') ? JSON.stringify(selNodeInfoStatusSelector.apiCallStatus.message) : selNodeInfoStatusSelector.apiCallStatus.message ? selNodeInfoStatusSelector.apiCallStatus.message : '';
+      }
+      this.information = selNodeInfoStatusSelector.information;
+    });
+
+    this.apiCallStatusNodeInfo$ = nodeInfoSelector$.pipe(map((s) => s.apiCallStatus));
+
+    const feesSelector$ = this.store.select(fees).pipe(
+      takeUntil(this.unSubs[2]),
+      shareReplay(1)
+    );
+
+    feesSelector$.subscribe((feesSelector: { fees: Fees, apiCallStatus: ApiCallStatusPayload }) => {
+      this.errorMessages[1] = '';
+      if (feesSelector.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = (typeof (feesSelector.apiCallStatus.message) === 'object') ? JSON.stringify(feesSelector.apiCallStatus.message) : feesSelector.apiCallStatus.message ? feesSelector.apiCallStatus.message : '';
+      }
+      this.fees = feesSelector.fees;
+    });
+
+    this.apiCallStatusFees$ = feesSelector$.pipe(map((fs) => fs.apiCallStatus));
+
+    const allChannelsSelector$ = this.store.select(allChannelsInfo).pipe(
+      takeUntil(this.unSubs[3]),
+      withLatestFrom(this.store.select(onchainBalance)),
+      shareReplay(1)
+    );
+
+    allChannelsSelector$.subscribe(([allChannelsSelector, oCBalanceSelector]: [({ activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalance: LightningBalance, channelsStatus: ChannelsStatus, apiCallStatus: ApiCallStatusPayload }),
         ({ onchainBalance: OnChainBalance, apiCallStatus: ApiCallStatusPayload })]) => {
-        this.errorMessages[2] = '';
-        this.errorMessages[3] = '';
-        this.apiCallStatusAllChannels = allChannelsSelector.apiCallStatus;
-        this.apiCallStatusOCBal = oCBalanceSelector.apiCallStatus;
-        if (this.apiCallStatusAllChannels.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[2] = (typeof (this.apiCallStatusAllChannels.message) === 'object') ? JSON.stringify(this.apiCallStatusAllChannels.message) : this.apiCallStatusAllChannels.message ? this.apiCallStatusAllChannels.message : '';
-        }
-        if (this.apiCallStatusOCBal.status === APICallStatusEnum.ERROR) {
-          this.errorMessages[3] = (typeof (this.apiCallStatusOCBal.message) === 'object') ? JSON.stringify(this.apiCallStatusOCBal.message) : this.apiCallStatusOCBal.message ? this.apiCallStatusOCBal.message : '';
-        }
-        this.channels = allChannelsSelector.activeChannels;
-        this.onchainBalance = oCBalanceSelector.onchainBalance;
-        this.balances.onchain = this.onchainBalance.total || 0;
-        this.balances.lightning = allChannelsSelector.lightningBalance.localBalance;
-        this.balances.total = this.balances.lightning + this.balances.onchain;
-        this.balances = Object.assign({}, this.balances);
-        const local = (allChannelsSelector.lightningBalance.localBalance) ? +allChannelsSelector.lightningBalance.localBalance : 0;
-        const remote = (allChannelsSelector.lightningBalance.remoteBalance) ? +allChannelsSelector.lightningBalance.remoteBalance : 0;
-        const total = local + remote;
-        this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
-        this.channelsStatus = allChannelsSelector.channelsStatus;
-        this.totalInboundLiquidity = 0;
-        this.totalOutboundLiquidity = 0;
-        this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
-        this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toRemote || 0) > 0), 'toRemote')));
-        this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toLocal || 0) > 0), 'toLocal')));
-        this.channels.forEach((channel: Channel) => {
-          this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote || 0);
-          this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal || 0);
-        });
-        this.logger.info(allChannelsSelector);
+      this.errorMessages[2] = '';
+      this.errorMessages[3] = '';
+      if (allChannelsSelector.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof (allChannelsSelector.apiCallStatus.message) === 'object') ? JSON.stringify(allChannelsSelector.apiCallStatus.message) : allChannelsSelector.apiCallStatus.message ? allChannelsSelector.apiCallStatus.message : '';
+      }
+      if (oCBalanceSelector.apiCallStatus.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof (oCBalanceSelector.apiCallStatus.message) === 'object') ? JSON.stringify(oCBalanceSelector.apiCallStatus.message) : oCBalanceSelector.apiCallStatus.message ? oCBalanceSelector.apiCallStatus.message : '';
+      }
+      this.channels = allChannelsSelector.activeChannels;
+      this.onchainBalance = oCBalanceSelector.onchainBalance;
+      this.balances.onchain = this.onchainBalance.total || 0;
+      this.balances.lightning = allChannelsSelector.lightningBalance.localBalance;
+      this.balances.total = this.balances.lightning + this.balances.onchain;
+      this.balances = Object.assign({}, this.balances);
+      const local = (allChannelsSelector.lightningBalance.localBalance) ? +allChannelsSelector.lightningBalance.localBalance : 0;
+      const remote = (allChannelsSelector.lightningBalance.remoteBalance) ? +allChannelsSelector.lightningBalance.remoteBalance : 0;
+      const total = local + remote;
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local - remote) / total)).toFixed(3) };
+      this.channelsStatus = allChannelsSelector.channelsStatus;
+      this.totalInboundLiquidity = 0;
+      this.totalOutboundLiquidity = 0;
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toRemote || 0) > 0), 'toRemote')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels?.filter((channel: Channel) => (channel.toLocal || 0) > 0), 'toLocal')));
+      this.channels.forEach((channel: Channel) => {
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote || 0);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal || 0);
       });
+      this.logger.info(allChannelsSelector);
+    });
+
+    this.apiCallStatusAllChannels$ = allChannelsSelector$.pipe(
+      map(([acs]) => acs.apiCallStatus)
+    );
+
+    this.apiCallStatusOCBal$ = allChannelsSelector$.pipe(
+      map(([, ocbs]) => ocbs.apiCallStatus)
+    );
   }
 
   onNavigateTo(link: string) {

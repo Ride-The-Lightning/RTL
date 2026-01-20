@@ -1,7 +1,7 @@
 <div *ngIf="selNode?.settings.userPersona === userPersonaEnum.OPERATOR;  else merchantDashboard"fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container mb-2">
-    <fa-icon class="page-title-img mr-1" [icon]="apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" />
-    <span class="page-title">{{apiCallStatusNodeInfo.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>
+    <fa-icon class="page-title-img mr-1" [icon]="(apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.ERROR ? faFrown : faSmile" />
+    <span class="page-title">{{(apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.COMPLETED ? 'Welcome ' + information.alias + '! Your node is up and running.' : (apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.INITIATED ? 'Wait! Getting your node information...' : 'Error! Please check the server connection.'}}</span>
   </div>
   <mat-grid-list cols="10" gutterSize="20px" [rowHeight]="operatorCardHeight">
     <mat-grid-tile *ngFor="let card of operatorCards" fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" [colspan]="card.cols" [rowspan]="card.rows">
@@ -27,14 +27,14 @@
         </mat-card-header>
         <mat-card-content fxFlex="{{card.id === 'capacity' ? 90 : 70}}" fxLayout="column"
           [ngClass]="{'dashboard-card-content': true, 
-          'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR || apiCallStatusOCBal.status === apiCallStatusEnum.ERROR)) ||
-                          ((card.id === 'capacity' || card.id === 'status') && apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.ERROR)}">
-          <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusOCBal.status === apiCallStatusEnum.INITIATED)) ||
-            ((card.id === 'capacity' || card.id === 'status') && apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'fee' && apiCallStatusFees.status === apiCallStatusEnum.INITIATED)"
+          'error-border': (card.id === 'node' && (apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'balance' && ((apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.ERROR || (apiCallStatusOCBal$ | async)?.status === apiCallStatusEnum.ERROR)) ||
+                          ((card.id === 'capacity' || card.id === 'status') && (apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'fee' && (apiCallStatusFees$ | async)?.status === apiCallStatusEnum.ERROR)}">
+          <mat-progress-bar *ngIf="(card.id === 'node' && (apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'balance' && ((apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.INITIATED || (apiCallStatusOCBal$ | async)?.status === apiCallStatusEnum.INITIATED)) ||
+            ((card.id === 'capacity' || card.id === 'status') && (apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'fee' && (apiCallStatusFees$ | async)?.status === apiCallStatusEnum.INITIATED)"
             mode="indeterminate"
           />
           <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
@@ -77,12 +77,12 @@
         </mat-card-header>
         <mat-card-content fxFlex="{{card.id === 'transactions' ? 100 : card.id === 'balance' ? 70: 90}}" fxLayout="column" fxLayoutAlign="start stretch"
           [ngClass]="{'dashboard-card-content': true, 
-          'error-border': (card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.ERROR) ||
-                          (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR || apiCallStatusOCBal.status === apiCallStatusEnum.ERROR)) ||
-                          ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusAllChannels.status === apiCallStatusEnum.ERROR)}">
-          <mat-progress-bar *ngIf="(card.id === 'node' && apiCallStatusNodeInfo.status === apiCallStatusEnum.INITIATED) ||
-            (card.id === 'balance' && (apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED || apiCallStatusOCBal.status === apiCallStatusEnum.INITIATED)) ||
-            ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && apiCallStatusAllChannels.status === apiCallStatusEnum.INITIATED)"
+          'error-border': (card.id === 'node' && (apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'balance' && ((apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.ERROR || (apiCallStatusOCBal$ | async)?.status === apiCallStatusEnum.ERROR)) ||
+                          ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && (apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.ERROR)}">
+          <mat-progress-bar *ngIf="(card.id === 'node' && (apiCallStatusNodeInfo$ | async)?.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'balance' && ((apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.INITIATED || (apiCallStatusOCBal$ | async)?.status === apiCallStatusEnum.INITIATED)) ||
+            ((card.id === 'inboundLiq' || card.id === 'outboundLiq') && (apiCallStatusAllChannels$ | async)?.status === apiCallStatusEnum.INITIATED)"
             mode="indeterminate"
           />
           <div fxLayout="column" fxFlex="100" [ngSwitch]="card.id">
