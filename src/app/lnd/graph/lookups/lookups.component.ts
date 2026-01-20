@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -36,7 +36,13 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
+  constructor(
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private cdr: ChangeDetectorRef
+  ) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -52,6 +58,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
           this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
           this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : !!((this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')));
           this.logger.info(this.lookupValue);
+          this.cdr.detectChanges();
         }
         if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
           this.errorMessage = '';
@@ -61,6 +68,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
           if (resLookup.payload.status === APICallStatusEnum.INITIATED) {
             this.errorMessage = UI_MESSAGES.GET_LOOKUP_DETAILS;
           }
+          this.cdr.detectChanges();
         }
       });
   }

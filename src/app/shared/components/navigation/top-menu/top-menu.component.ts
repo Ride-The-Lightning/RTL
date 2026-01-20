@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable, merge, of } from 'rxjs';
+import { takeUntil, filter, map, shareReplay, tap, startWith } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faCodeBranch, faCode, faCog, faQuestion, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
@@ -32,10 +32,8 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public faQuestion = faQuestion;
   public faEject = faEject;
   public version = '';
-  public information: GetInfoRoot = {};
-  public informationChain: GetInfoChain = {};
-  public flgLoading = true;
-  public showLogout = false;
+  public information$: Observable<GetInfoRoot>;
+  public showLogout$: Observable<boolean>;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
@@ -50,39 +48,21 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(rootNodeData).
-      pipe(takeUntil(this.unSubs[0])).
-      subscribe((nodeData: GetInfoRoot) => {
-        this.information = nodeData;
-        this.flgLoading = !(this.information.identity_pubkey);
-        if (this.information.identity_pubkey) {
-          if (this.information.chains && typeof this.information.chains[0] === 'string') {
-            this.informationChain.chain = this.information.chains[0].toString();
-            this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-          } else if (this.information && this.information.chains && this.information.chains.length && this.information.chains.length > 0 && typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-            const getInfoChain = <GetInfoChain>this.information.chains[0];
-            this.informationChain.chain = getInfoChain.chain;
-            this.informationChain.network = getInfoChain.network;
-          }
-        } else {
-          this.informationChain.chain = '';
-          this.informationChain.network = '';
-        }
-        this.logger.info(nodeData);
-      });
-    this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((session) => {
-        this.showLogout = !!session.token;
-        this.flgLoading = !!session.token;
-      });
-    this.actions.
-      pipe(
-        takeUntil(this.unSubs[2]),
-        filter((action) => action.type === RTLActions.LOGOUT)
-      ).subscribe(() => {
-        this.showLogout = false;
-      });
+    this.information$ = this.store.select(rootNodeData).pipe(
+      takeUntil(this.unSubs[0]),
+      tap((nodeData) => this.logger.info(nodeData)),
+      shareReplay(1)
+    );
+    this.showLogout$ = merge(
+      this.sessionService.watchSession().pipe(map((session) => !!session.token)),
+      this.actions.pipe(
+        filter((action) => action.type === RTLActions.LOGOUT),
+        map(() => false)
+      )
+    ).pipe(
+      takeUntil(this.unSubs[1]),
+      shareReplay(1)
+    );
   }
 
   onClick() {
@@ -101,9 +81,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       pipe(takeUntil(this.unSubs[3])).
       subscribe((confirmRes) => {
         if (confirmRes) {
-          this.showLogout = false;
           this.store.dispatch(logout({ payload: '' }));
-          this.cdr.detectChanges();
         }
       });
   }

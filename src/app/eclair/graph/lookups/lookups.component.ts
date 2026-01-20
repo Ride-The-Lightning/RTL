@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -39,7 +39,13 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
+  constructor(
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private cdr: ChangeDetectorRef
+  ) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -67,9 +73,11 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
           this.flgSetLookupValue = true;
           this.logger.info(this.nodeLookupValue);
           this.logger.info(this.channelLookupValue);
+          this.cdr.detectChanges();
         }
         if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
           this.flgLoading[0] = 'error';
+          this.cdr.detectChanges();
         }
       });
     this.lookupKeyCtrl.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((value) => {

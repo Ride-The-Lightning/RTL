@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -37,7 +37,13 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<RTLState>, private actions: Actions) {
+  constructor(
+    private logger: LoggerService,
+    private commonService: CommonService,
+    private store: Store<RTLState>,
+    private actions: Actions,
+    private cdr: ChangeDetectorRef
+  ) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -63,9 +69,11 @@ export class CLNLookupsComponent implements OnInit, OnDestroy {
         this.flgSetLookupValue = true;
         this.logger.info(this.nodeLookupValue);
         this.logger.info(this.channelLookupValue);
+        this.cdr.detectChanges();
       }
       if (resLookup.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,8 +1,8 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" [perfectScrollbar]>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" [perfectScrollbar] *ngIf="{ appConfig: appConfig$ | async, showLogout: showLogout$ | async } as obs">
   <div fxLayout="column" fxFlex="90" fxLayoutAlign="start stretch" class="w-100">
-    <mat-select *ngIf="appConfig?.nodes?.length > 1" class="m-2 multi-node-select" [value]="selConfigNodeIndex" (selectionChange)="onNodeSelectionChange($event.value)">
+    <mat-select *ngIf="obs.appConfig?.nodes?.length > 1" class="m-2 multi-node-select" [value]="selConfigNodeIndex" (selectionChange)="onNodeSelectionChange($event.value)">
       <perfect-scrollbar>
-        <mat-option *ngFor="let node of appConfig.nodes" tabindex="1" [value]="node.index">
+        <mat-option *ngFor="let node of obs.appConfig?.nodes" tabindex="1" [value]="node.index">
           {{node.lnNode}} ({{node.lnImplementation}})
         </mat-option>
       </perfect-scrollbar>
@@ -47,7 +47,7 @@
     </mat-tree>
   </div>
   <div fxLayout="column" fxLayoutAlign="end stretch" class="w-100">
-    <mat-tree *ngIf="showLogout" [dataSource]="navMenusLogout" [treeControl]="treeControlLogout">
+    <mat-tree *ngIf="obs.showLogout" [dataSource]="navMenusLogout" [treeControl]="treeControlLogout">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
         <span *ngIf="node.iconType === 'SVG'" class="mr-2"><ng-container [ngTemplateOutlet]="node.icon" /></span>
         <fa-icon *ngIf="node.iconType === 'FA'" matTooltip="{{node.name}}" class="fa-icon-small mr-2" matTooltipPosition="right" [icon]="node.icon" />

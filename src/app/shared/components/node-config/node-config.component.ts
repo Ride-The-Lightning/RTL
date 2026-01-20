@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, tap, shareReplay, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 import { openAlert } from '../../../store/rtl.actions';
@@ -23,7 +23,7 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public showLnConfig = false;
   public appConfig: RTLConfiguration;
-  public selNode: Node | any;
+  public selNode$: Observable<Node | null>;
   public lnImplementationStr = '';
   public links = [{ link: 'nodesettings', name: 'Node Settings' }, { link: 'pglayout', name: 'Page Layout' }, { link: 'services', name: 'Services' }, { link: 'experimental', name: 'Experimental' }, { link: 'lnconfig', name: this.lnImplementationStr }];
   public activeLink = '';
@@ -44,27 +44,30 @@ export class NodeConfigComponent implements OnInit, OnDestroy {
     this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
       this.appConfig = appConfig;
     });
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
-      this.showLnConfig = false;
-      this.selNode = selNode;
-      switch (this.selNode.lnImplementation?.toUpperCase()) {
-        case 'CLN':
-          this.lnImplementationStr = 'Core Lightning Config';
-          break;
+    this.selNode$ = this.store.select(rootSelectedNode).pipe(
+      takeUntil(this.unSubs[2]),
+      tap((selNode) => {
+        this.showLnConfig = false;
+        switch (selNode?.lnImplementation?.toUpperCase()) {
+          case 'CLN':
+            this.lnImplementationStr = 'Core Lightning Config';
+            break;
 
-        case 'ECL':
-          this.lnImplementationStr = 'Eclair Config';
-          break;
+          case 'ECL':
+            this.lnImplementationStr = 'Eclair Config';
+            break;
 
-        default:
-          this.lnImplementationStr = 'LND Config';
-          break;
-      }
-      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
-        this.links[4].name = this.lnImplementationStr;
-        this.showLnConfig = true;
-      }
-    });
+          default:
+            this.lnImplementationStr = 'LND Config';
+            break;
+        }
+        if (selNode?.authentication && selNode.authentication.configPath && selNode.authentication.configPath.trim() !== '') {
+          this.links[4].name = this.lnImplementationStr;
+          this.showLnConfig = true;
+        }
+      }),
+      shareReplay(1)
+    );
   }
 
   showLnConfigClicked() {

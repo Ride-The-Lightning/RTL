@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable, merge, of } from 'rxjs';
+import { takeUntil, map, shareReplay, tap, startWith } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,29 +20,31 @@ export class HelpComponent implements OnInit, OnDestroy {
 
   public helpTopics: Array<HelpTopic> = [];
   public faQuestion = faQuestion;
-  public selNode: Node | any;
   public LNPLink = '/lnd/';
-  public flgLoggedIn = false;
+  public selNode$: Observable<Node | null>;
+  public flgLoggedIn$: Observable<boolean>;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private sessionService: SessionService) {}
 
   ngOnInit() {
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).subscribe((selNode) => {
-      this.selNode = selNode;
-      if (this.selNode.lnImplementation && this.selNode.lnImplementation.trim() !== '') {
-        this.LNPLink = '/' + this.selNode.lnImplementation.toLowerCase() + '/';
-        this.addHelpTopics();
-      }
-    });
-    this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[1])).
-      subscribe((session) => {
-        this.flgLoggedIn = !!session.token;
-      });
-    if (this.sessionService.getItem('token')) {
-      this.flgLoggedIn = true;
-    }
+    this.selNode$ = this.store.select(rootSelectedNode).pipe(
+      takeUntil(this.unSubs[0]),
+      tap((selNode) => {
+        if (selNode && selNode.lnImplementation && selNode.lnImplementation.trim() !== '') {
+          this.LNPLink = '/' + selNode.lnImplementation.toLowerCase() + '/';
+          this.addHelpTopics();
+        }
+      }),
+      shareReplay(1)
+    );
+    this.flgLoggedIn$ = merge(
+      of(!!this.sessionService.getItem('token')),
+      this.sessionService.watchSession().pipe(map((session) => !!session.token))
+    ).pipe(
+      takeUntil(this.unSubs[1]),
+      shareReplay(1)
+    );
   }
 
   addHelpTopics() {

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd, Event } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, map, shareReplay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUserCog } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,9 +18,8 @@ import { rootSelectedNode, rootAppConfig } from '../../../store/rtl.selector';
 export class SettingsComponent implements OnInit, OnDestroy {
 
   public faUserCog = faUserCog;
-  public showBitcoind = false;
-  public selNode: Node | any;
-  public appConfig: RTLConfiguration;
+  public appConfig$: Observable<RTLConfiguration>;
+  public showBitcoind$: Observable<boolean>;
   public links = [{ link: 'app', name: 'Application' }, { link: 'auth', name: 'Authentication' }, { link: 'bconfig', name: 'BitcoinD Config' }];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -37,16 +36,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
           this.activeLink = linkFound ? linkFound.link : this.links[0].link;
         }
       });
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1])).subscribe((appConfig) => {
-      this.appConfig = appConfig;
-    });
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[2])).subscribe((selNode) => {
-      this.showBitcoind = false;
-      this.selNode = selNode;
-      if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
-        this.showBitcoind = true;
-      }
-    });
+    this.appConfig$ = this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[1]), shareReplay(1));
+    this.showBitcoind$ = this.store.select(rootSelectedNode).pipe(
+      takeUntil(this.unSubs[2]),
+      map((selNode) => !!(selNode?.settings?.bitcoindConfigPath?.trim())),
+      shareReplay(1)
+    );
   }
 
   ngOnDestroy() {

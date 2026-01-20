@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, tap, shareReplay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUserLock, faUserClock, faInfoCircle, faLock } from '@fortawesome/free-solid-svg-icons';
@@ -36,6 +36,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public errorMsg = '';
   public errorConfirmMsg = '';
   public initializeNodeData = false;
+  public appConfig$: Observable<RTLConfiguration>;
   public appConfig: RTLConfiguration;
   public selNode: Node | any;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -44,10 +45,14 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
-      this.appConfig = appConfig;
-      this.logger.info(this.appConfig);
-    });
+    this.appConfig$ = this.store.select(rootAppConfig).pipe(
+      takeUntil(this.unSubs[0]),
+      tap((appConfig) => {
+        this.appConfig = appConfig;
+        this.logger.info(this.appConfig);
+      }),
+      shareReplay(1)
+    );
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
       this.selNode = selNode;
     });

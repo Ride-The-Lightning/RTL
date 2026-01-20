@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable, merge, of } from 'rxjs';
+import { takeUntil, filter, map, shareReplay, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
@@ -32,6 +32,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() readonly ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
   faEye = faEye;
+  public appConfig$: Observable<RTLConfiguration>;
   public appConfig: RTLConfiguration;
   public selConfigNodeIndex: Number;
   public selNode: Node | any = null;
@@ -41,7 +42,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public flgLoading = true;
   public logoutNode = [{ id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject }];
   public showDataNodes = [{ id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye }];
-  public showLogout = false;
+  public showLogout$: Observable<boolean>;
   public numPendingChannels = 0;
   public smallScreen = false;
   public childRootRoute = '';
@@ -73,12 +74,15 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const token = this.sessionService.getItem('token');
-    this.showLogout = !!token;
     this.flgLoading = !!token;
-    this.store.select(rootAppConfig).pipe(takeUntil(this.unSubs[0])).subscribe((appConfig) => {
-      this.appConfig = appConfig;
-      this.cdr.detectChanges();
-    });
+    this.appConfig$ = this.store.select(rootAppConfig).pipe(
+      takeUntil(this.unSubs[0]),
+      tap((appConfig) => {
+        this.appConfig = appConfig;
+        this.cdr.detectChanges();
+      }),
+      shareReplay(1)
+    );
     this.store.select(rootSelNodeAndNodeData).pipe(takeUntil(this.unSubs[1])).
       subscribe((rootData: { nodeDate: GetInfoRoot, selNode: Node | null }) => {
         this.information = rootData.nodeDate;
@@ -107,20 +111,21 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.logger.info(rootData);
         this.cdr.detectChanges();
       });
-    this.sessionService.watchSession().
-      pipe(takeUntil(this.unSubs[2])).
-      subscribe((session) => {
-        this.showLogout = !!session.token;
-        this.flgLoading = !!session.token;
-        this.cdr.detectChanges();
-      });
-    this.actions.pipe(
-      takeUntil(this.unSubs[3]),
-      filter((action) => action.type === RTLActions.LOGOUT)).
-      subscribe((action: any) => {
-        this.showLogout = false;
-        this.cdr.detectChanges();
-      });
+    this.showLogout$ = merge(
+      of(!!token),
+      this.sessionService.watchSession().pipe(
+        tap(() => this.cdr.detectChanges()),
+        map((session) => !!session.token)
+      ),
+      this.actions.pipe(
+        filter((action) => action.type === RTLActions.LOGOUT),
+        tap(() => this.cdr.detectChanges()),
+        map(() => false)
+      )
+    ).pipe(
+      takeUntil(this.unSubs[2]),
+      shareReplay(1)
+    );
   }
 
   hasChild = (_: number, node: MenuChildNode) => !!node.children && node.children.length > 0;
@@ -138,7 +143,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         pipe(takeUntil(this.unSubs[4])).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.showLogout = false;
             this.store.dispatch(logout({ payload: '' }));
           }
         });

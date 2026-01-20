@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd, Event, ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, tap, shareReplay } from 'rxjs/operators';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { Node } from '../../../models/RTLconfig';
 import { Store } from '@ngrx/store';
@@ -20,18 +20,23 @@ export class ServicesSettingsComponent implements OnInit, OnDestroy {
   // public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'peerswap', name: 'Peerswap' }, { link: 'noservice', name: 'No Service' }];
   public links = [{ link: 'loop', name: 'Loop' }, { link: 'boltz', name: 'Boltz' }, { link: 'noservice', name: 'No Service' }];
   public activeLink = '';
-  public selNode: Node | any;
+  public selNode$: Observable<Node | null>;
+  private selNode: Node | any;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<RTLState>, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     this.setActiveLink();
-    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[1])).subscribe((selNode) => {
-      this.selNode = selNode;
-      this.setActiveLink();
-      this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
-    });
+    this.selNode$ = this.store.select(rootSelectedNode).pipe(
+      takeUntil(this.unSubs[1]),
+      tap((selNode) => {
+        this.selNode = selNode;
+        this.setActiveLink();
+        this.router.navigate(['./' + this.activeLink], { relativeTo: this.activatedRoute });
+      }),
+      shareReplay(1)
+    );
   }
 
   setActiveLink(link?: string) {
