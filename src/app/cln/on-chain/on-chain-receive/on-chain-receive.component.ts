@@ -11,6 +11,7 @@ import { openAlert } from '../../../store/rtl.actions';
 import { getNewAddress } from '../../store/cln.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-on-chain-receive',
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']

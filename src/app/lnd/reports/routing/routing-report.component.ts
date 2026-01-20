@@ -14,6 +14,7 @@ import { lndNodeInformation } from '../../store/lnd.selector';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-routing-report',
   templateUrl: './routing-report.component.html',
   styleUrls: ['./routing-report.component.scss'],

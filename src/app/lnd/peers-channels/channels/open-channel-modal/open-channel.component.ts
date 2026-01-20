@@ -21,6 +21,7 @@ import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-open-channel',
   templateUrl: './open-channel.component.html',
   styleUrls: ['./open-channel.component.scss']

@@ -1,4 +1,4 @@
-@import "../../theme/styles/mixins.scss";
+@use '../../theme/styles/mixins.scss' as *;
 
 .login-container {
   height: 60vh;

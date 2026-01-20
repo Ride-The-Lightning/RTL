@@ -22,6 +22,7 @@ import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload'
 import { opacityAnimation } from '../../../../shared/animation/opacity-animation';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-rebalance',
   templateUrl: './channel-rebalance.component.html',
   styleUrls: ['./channel-rebalance.component.scss'],

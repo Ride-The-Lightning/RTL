@@ -10,6 +10,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { openAlert } from '../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-send',
   templateUrl: './on-chain-send.component.html',
   styleUrls: ['./on-chain-send.component.scss']

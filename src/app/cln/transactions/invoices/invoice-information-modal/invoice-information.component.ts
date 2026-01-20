@@ -17,6 +17,7 @@ import { listInvoices } from '../../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-invoice-information',
   templateUrl: './invoice-information.component.html',
   styleUrls: ['./invoice-information.component.scss']

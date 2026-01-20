@@ -13,6 +13,7 @@ import { utxoBalances, channels, peers } from '../store/cln.selector';
 import { Balance, Channel, LocalRemoteBalance, Peer, UTXO } from '../../shared/models/clnModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-connections',
   templateUrl: './connections.component.html',
   styleUrls: ['./connections.component.scss']

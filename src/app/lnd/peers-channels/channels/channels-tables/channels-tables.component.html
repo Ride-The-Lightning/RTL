@@ -6,22 +6,22 @@
     <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numOpenChannels}}">Open</span>
+          <span matBadge="{{numOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numPendingChannels}}">Pending</span>
+          <span matBadge="{{numPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numClosedChannels}}">Closed</span>
+          <span matBadge="{{numClosedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
         </ng-template>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span matBadgeOverlap="false" class="tab-badge" matBadge="{{numActiveHTLCs}}">Active HTLCs</span>
+          <span matBadge="{{numActiveHTLCs}}" matBadgeOverlap="false" class="tab-badge">Active HTLCs</span>
         </ng-template>
       </mat-tab>
     </mat-tab-group>

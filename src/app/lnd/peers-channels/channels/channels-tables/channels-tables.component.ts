@@ -14,6 +14,7 @@ import { blockchainBalance, channels, closedChannels, lndNodeInformation, peers,
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channels-tables',
   templateUrl: './channels-tables.component.html',
   styleUrls: ['./channels-tables.component.scss']

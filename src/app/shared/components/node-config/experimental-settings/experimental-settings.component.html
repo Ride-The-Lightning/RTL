@@ -93,7 +93,7 @@
               </div>
               <h4 *ngIf="flgUpdateCalled" fxLayoutAlign="start stretch" class="font-bold-500 mt-2">
                 <span fxFlex="100" class="alert" [ngClass]="{'alert-danger': !!updateMsg.error, 'alert-info': !!updateMsg.data}">
-                  {{(updateMsg.error && updateMsg.error !== '') ? (('Error: ' + updateMsg.error) || 'Unknown Error') : (updateMsg.data && updateMsg.data !== '') ? updateMsg.data : 'Successfully Updated the Funding Policy!'}}
+                  {{(updateMsg.error && updateMsg.error !== '') ? `Error: ${updateMsg.error || 'Unknown Error'}` : (updateMsg.data && updateMsg.data !== '') ? updateMsg.data : 'Successfully Updated the Funding Policy!'}}
                 </span>
               </h4>
               <div fxLayout="row" class="my-1">

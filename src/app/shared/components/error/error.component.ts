@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-error',
   templateUrl: './error.component.html'
 })

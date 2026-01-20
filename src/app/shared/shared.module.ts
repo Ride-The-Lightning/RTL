@@ -3,11 +3,8 @@ import { CommonModule, DecimalPipe, TitleCasePipe, DatePipe } from '@angular/com
 
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
-import { Platform } from '@angular/cdk/platform';
 
 import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
@@ -41,6 +38,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatChipsModule } from '@angular/material/chips';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QrCodeModule } from 'ng-qrcode';
@@ -106,6 +104,7 @@ import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-form
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe } from './pipes/app.pipe';
+import { HttpClientModule } from '@angular/common/http';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -144,10 +143,10 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
 @NgModule({
   imports: [
     CommonModule,
+    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    FlexLayoutModule,
     LayoutModule,
     MatDialogModule,
     MatButtonModule,
@@ -166,6 +165,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatProgressSpinnerModule,
     MatRadioModule,
     MatTreeModule,
+    FlexLayoutModule,
     MatChipsModule,
     MatSelectModule,
     MatSidenavModule,
@@ -184,14 +184,12 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     NgxChartsModule,
     QrCodeModule,
     RouterModule,
-    HttpClientModule,
     PerfectScrollbarModule
   ],
   exports: [
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    FlexLayoutModule,
     LayoutModule,
     MatDialogModule,
     MatButtonModule,
@@ -210,6 +208,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatProgressSpinnerModule,
     MatRadioModule,
     MatTreeModule,
+    FlexLayoutModule,
     MatChipsModule,
     MatSelectModule,
     MatSidenavModule,

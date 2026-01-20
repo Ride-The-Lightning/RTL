@@ -16,6 +16,7 @@ import { eclNodeInformation, invoices } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-invoice-information',
   templateUrl: './invoice-information.component.html',
   styleUrls: ['./invoice-information.component.scss']

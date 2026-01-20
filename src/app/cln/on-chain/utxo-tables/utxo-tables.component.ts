@@ -11,6 +11,7 @@ import { utxoBalances } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-utxo-tables',
   templateUrl: './utxo-tables.component.html',
   styleUrls: ['./utxo-tables.component.scss']

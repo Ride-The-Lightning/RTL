@@ -5,6 +5,7 @@ import { sliderAnimation } from '../../../../shared/animation/slider-animation';
 import { CommonService } from '../../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-rebalance-infographics',
   templateUrl: './channel-rebalance-infographics.component.html',
   styleUrls: ['./channel-rebalance-infographics.component.scss'],

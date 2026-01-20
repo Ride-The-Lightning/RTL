@@ -15,6 +15,7 @@ import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functio
 import { Offer, OfferRequest } from '../../../../shared/models/clnModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-offer-information',
   templateUrl: './offer-information.component.html',
   styleUrls: ['./offer-information.component.scss']

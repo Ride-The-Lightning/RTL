@@ -18,6 +18,7 @@ import { rootAppConfig, rootSelectedNode } from '../../../../store/rtl.selector'
 import { LoggerService } from '../../../services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-auth-settings',
   templateUrl: './auth-settings.component.html',
   styleUrls: ['./auth-settings.component.scss']

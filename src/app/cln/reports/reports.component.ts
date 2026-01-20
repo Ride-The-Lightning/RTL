@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss']

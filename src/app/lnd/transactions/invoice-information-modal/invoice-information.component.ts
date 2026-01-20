@@ -16,6 +16,7 @@ import { invoices, lndNodeInformation } from '../../store/lnd.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-invoice-information',
   templateUrl: './invoice-information.component.html',
   styleUrls: ['./invoice-information.component.scss']

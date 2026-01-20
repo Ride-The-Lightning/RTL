@@ -29,6 +29,7 @@ import { MessageDataField } from '../../../../shared/models/alertData';
 import { BumpFeeComponent } from '../../../peers-channels/channels/bump-fee-modal/bump-fee.component';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-utxos',
   templateUrl: './utxos.component.html',
   styleUrls: ['./utxos.component.scss'],

@@ -17,6 +17,7 @@ import { Node } from '../../shared/models/RTLconfig';
 import { fetchOffers, fetchOfferBookmarks } from '../store/cln.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss']

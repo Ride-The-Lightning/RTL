@@ -20,6 +20,7 @@ import { eclNodeInformation } from '../../store/ecl.selector';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-create-invoices',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']

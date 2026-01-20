@@ -13,6 +13,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { BlockchainBalance } from '../../shared/models/lndModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain',
   templateUrl: './on-chain.component.html',
   styleUrls: ['./on-chain.component.scss']

@@ -1,8 +1,8 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large ml-1" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="200" [errorCorrectionLevel]="'L'" />
+    <qr-code *ngIf="showQRField !== ''" errorCorrectionLevel="L" [value]="showQRField" [size]="200" />
   </div>
-  <div [fxFlex]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '100' : '70'">
+  <div [ngClass]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-100' : 'flex-70'">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
@@ -38,14 +38,14 @@
 <ng-template #contentBlock>
   <div fxLayout="column">
     <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
-      <qr-code *ngIf="showQRField !== ''" [value]="showQRField" [size]="200" [errorCorrectionLevel]="'L'" />
+      <qr-code *ngIf="showQRField !== ''" errorCorrectionLevel="L" [value]="showQRField" [size]="200" />
     </div>
     <div fxLayout="column" fxFlex="100">
       <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-2">{{data.titleMessage}}</p>
       <div *ngIf="messageObjs?.length>0" fxFlex="100">
         <div *ngFor="let objs of messageObjs; index as i;">
           <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-            <div *ngFor="let obj of objs; index as j;" fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}">
+            <div *ngFor="let obj of objs; index as j;" fxFlex.gt-md="{{obj.width}}" fxLayout="column" fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
               <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                 <span class="foreground-secondary-text" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch" [ngSwitch]="obj.type">
@@ -63,7 +63,7 @@
                       <mat-icon *ngIf="obj.value === LoopStateEnum.FAILED" fxLayoutAlign="end end" class="icon-failed-status">info</mat-icon>
                     </p>
                     <ng-template #noStyleBlock>
-                      <p *ngIf="obj.value === goToFieldValue; else noStyleChild" tabindex="4" fxLayout="row" class="go-to-link" matTooltip="{{'Go To ' + goToName}}" (click)="onGoToLink()" >
+                      <p *ngIf="obj.value === goToFieldValue; else noStyleChild" matTooltip="{{'Go To ' + goToName}}" fxLayout="row" class="go-to-link" tabindex="4" (click)="onGoToLink()" >
                         {{obj.value}}
                       </p>
                       <ng-template #noStyleChild>
@@ -71,7 +71,7 @@
                       </ng-template>
                     </ng-template>
                   </ng-container>
-                  <span><fa-icon *ngIf="obj.explorerLink && obj.explorerLink !== ''" class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(obj)"/></span>
+                  <span><fa-icon *ngIf="obj.explorerLink && obj.explorerLink !== ''" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(obj)"/></span>
                 </span>
               </span>
               <ng-template #emptyField>

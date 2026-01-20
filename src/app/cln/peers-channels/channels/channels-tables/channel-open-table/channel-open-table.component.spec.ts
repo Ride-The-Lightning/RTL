@@ -17,6 +17,8 @@ import { ECLReducer } from '../../../../../eclair/store/ecl.reducers';
 import { CLNEffects } from '../../../../store/cln.effects';
 import { CLNChannelOpenTableComponent } from './channel-open-table.component';
 import { ExtraOptions, Route, Router } from '@angular/router';
+import { HttpClientTestingModule, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CLNChannelOpenTableComponent', () => {
   let component: CLNChannelOpenTableComponent;
@@ -33,6 +35,8 @@ describe('CLNChannelOpenTableComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
         CommonService,
         { provide: Router, useClass: mockRouter },
         { provide: LoggerService, useClass: mockLoggerService },

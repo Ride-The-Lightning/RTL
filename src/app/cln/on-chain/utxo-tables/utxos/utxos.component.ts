@@ -21,6 +21,7 @@ import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-on-chain-utxos',
   templateUrl: './utxos.component.html',
   styleUrls: ['./utxos.component.scss'],

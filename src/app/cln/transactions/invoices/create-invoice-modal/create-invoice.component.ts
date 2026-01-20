@@ -20,6 +20,7 @@ import { saveNewInvoice } from '../../../store/cln.actions';
 import { clnNodeInformation } from '../../../store/cln.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-create-invoices',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']

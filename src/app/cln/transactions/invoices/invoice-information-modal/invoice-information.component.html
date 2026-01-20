@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="35" class="modal-qr-code-container padding-gap-large" [fxLayoutAlign]="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== '')) ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
+    <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" errorCorrectionLevel="L" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" />
     <span *ngIf="!invoice?.bolt11 && !invoice?.bolt12" class="font-size-300">N/A</span>
   </div>
   <div fxFlex="65">
@@ -19,7 +19,7 @@
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxFlex="30" class="modal-qr-code-container padding-gap" [fxLayoutAlign]="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== '')) ? 'center start' : 'center center'" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" [errorCorrectionLevel]="'L'" />
+          <qr-code *ngIf="((invoice?.bolt11 && invoice?.bolt11 !== '') || (invoice?.bolt12 && invoice?.bolt12 !== ''))" errorCorrectionLevel="L" [value]="invoice?.bolt11 || invoice?.bolt12" [size]="qrWidth" />
           <span *ngIf="!invoice?.bolt11 && !invoice?.bolt12" class="font-size-120">QR Code Not Applicable</span>
         </div>
         <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" class="my-1" />

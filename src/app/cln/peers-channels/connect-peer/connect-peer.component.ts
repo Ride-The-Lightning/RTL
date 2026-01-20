@@ -22,6 +22,7 @@ import { rootSelectedNode } from '../../../store/rtl.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-connect-peer',
   templateUrl: './connect-peer.component.html',
   styleUrls: ['./connect-peer.component.scss']

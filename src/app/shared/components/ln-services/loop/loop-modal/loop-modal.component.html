@@ -1,8 +1,8 @@
 <div *ngIf="!flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [@opacityAnimation]>
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
-      <div fxLayoutAlign="space-between end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+      <div fxLayoutAlign="start start" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-83' : 'flex-91'"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
+      <div fxLayoutAlign="space-between end" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-17' : 'flex-9'">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
         <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>
@@ -19,11 +19,11 @@
             <form fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1" [formGroup]="inputFormGroup">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true" />
-                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true" />
+                <rtl-loop-quote termCaption="min" [quote]="minQuote" [panelExpanded]="false" [showPanel]="true" />
+                <rtl-loop-quote termCaption="max" [quote]="maxQuote" [panelExpanded]="false" [showPanel]="true" />
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '35' : '48'">
+                <mat-form-field [ngClass]="direction === LoopTypeEnum.LOOP_OUT ? 'flex-35' : 'flex-48'">
                   <mat-label>Amount</mat-label>
                   <input autoFocus matInput type="number" tabindex="1" formControlName="amount" required [step]="1000">
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
@@ -32,7 +32,7 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
-                <mat-form-field [fxFlex]="direction === LoopTypeEnum.LOOP_OUT ? '30' : '48'">
+                <mat-form-field [ngClass]="direction === LoopTypeEnum.LOOP_OUT ? 'flex-30' : 'flex-48'">
                   <mat-label>Sweep Confirmation Target</mat-label>
                   <input matInput type="number" tabindex="2" formControlName="sweepConfTarget" required [step]="1">
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>

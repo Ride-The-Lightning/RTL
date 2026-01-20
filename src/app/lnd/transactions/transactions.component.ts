@@ -15,6 +15,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
 
 @Component({
+  standalone: false,
   selector: 'rtl-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss']

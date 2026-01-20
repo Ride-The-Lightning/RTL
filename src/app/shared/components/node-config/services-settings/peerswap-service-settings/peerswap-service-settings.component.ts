@@ -11,6 +11,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-peerswap-service-settings',
   templateUrl: './peerswap-service-settings.component.html',
   styleUrls: ['./peerswap-service-settings.component.scss']

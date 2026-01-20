@@ -11,6 +11,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Channel, ChannelsStatus, LightningBalance, OnChainBalance, Peer } from '../../shared/models/eclModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-connections',
   templateUrl: './connections.component.html',
   styleUrls: ['./connections.component.scss']

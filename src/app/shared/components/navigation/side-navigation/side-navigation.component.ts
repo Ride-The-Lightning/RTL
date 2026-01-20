@@ -22,6 +22,7 @@ import { logout, openConfirmation, setSelectedNode, showPubkey } from '../../../
 import { rootAppConfig, rootSelNodeAndNodeData } from '../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-side-navigation',
   templateUrl: './side-navigation.component.html',
   styleUrls: ['./side-navigation.component.scss']
@@ -39,8 +40,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
-  public logoutNode = [{ id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject }];
-  public showDataNodes = [{ id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye }];
+  public logoutNode = [{ id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject, children: [] }];
+  public showDataNodes = [{ id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye, children: [] }];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;
@@ -156,8 +157,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   loadLNDMenu() {
-    let clonedMenu = [];
-    clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
+    const clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
@@ -170,13 +170,14 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   loadCLNMenu() {
-    let clonedMenu = [];
-    clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
+    const clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/peerswap') ||
-          (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
-          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona)) &&
+          (!navMenuChild.link.includes('/services') ||
+            (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
+            (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '')
+          ));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;

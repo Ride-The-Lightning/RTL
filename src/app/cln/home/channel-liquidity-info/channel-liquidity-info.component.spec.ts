@@ -7,6 +7,8 @@ import { mockDataService } from '../../../shared/test-helpers/mock-services';
 
 import { CLNChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { DataService } from '../../../shared/services/data.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CLNChannelLiquidityInfoComponent', () => {
   let component: CLNChannelLiquidityInfoComponent;
@@ -17,6 +19,8 @@ describe('CLNChannelLiquidityInfoComponent', () => {
       declarations: [CLNChannelLiquidityInfoComponent],
       imports: [SharedModule, RouterTestingModule],
       providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
         CommonService,
         { provide: DataService, useClass: mockDataService }
       ]

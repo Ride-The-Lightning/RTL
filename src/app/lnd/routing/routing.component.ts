@@ -10,6 +10,7 @@ import { getForwardingHistory, setForwardingHistory } from '../store/lnd.actions
 import { LoggerService } from '../../shared/services/logger.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-routing',
   templateUrl: './routing.component.html',
   styleUrls: ['./routing.component.scss']

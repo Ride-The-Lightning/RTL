@@ -24,6 +24,7 @@ import { CamelCaseWithReplacePipe } from '../../../../pipes/app.pipe';
 import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-swaps',
   templateUrl: './swaps.component.html',
   styleUrls: ['./swaps.component.scss'],

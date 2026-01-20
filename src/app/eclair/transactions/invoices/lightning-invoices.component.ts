@@ -30,6 +30,7 @@ import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-lightning-invoices',
   templateUrl: './lightning-invoices.component.html',
   styleUrls: ['./lightning-invoices.component.scss'],

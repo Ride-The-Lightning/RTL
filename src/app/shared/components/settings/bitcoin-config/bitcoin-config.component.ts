@@ -10,6 +10,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { fetchConfig } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-bitcoin-config',
   templateUrl: './bitcoin-config.component.html',
   styleUrls: ['./bitcoin-config.component.scss']

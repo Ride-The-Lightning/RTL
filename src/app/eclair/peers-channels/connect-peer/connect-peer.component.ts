@@ -20,6 +20,7 @@ import { rootSelectedNode } from '../../../store/rtl.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-connect-peer',
   templateUrl: './connect-peer.component.html',
   styleUrls: ['./connect-peer.component.scss']

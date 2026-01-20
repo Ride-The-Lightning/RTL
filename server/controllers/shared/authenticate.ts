@@ -47,7 +47,7 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
   }
 };
 
-export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && otplib.authenticator.check(twoFAToken, common.appConfig.secret2FA));
+export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && (otplib as any).authenticator.check(twoFAToken, common.appConfig.secret2FA));
 
 export const authenticateUser = (req, res, next) => {
   const { authenticateWith, authenticationValue, twoFAToken } = req.body;
