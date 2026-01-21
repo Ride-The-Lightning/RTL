@@ -59,7 +59,7 @@
     "@angular-eslint/template-parser": "18.0.1",
     "@angular/animations": "18.0.1",
     "@angular/cdk": "17.0.1",
-    "@angular/cli": "18.0.2",
+    "@angular/cli": "21.1.0",
     "@angular/common": "18.0.1",
     "@angular/compiler": "18.0.1",
     "@angular/compiler-cli": "18.0.1",
