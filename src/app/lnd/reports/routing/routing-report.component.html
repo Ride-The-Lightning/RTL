@@ -3,8 +3,8 @@
   <div fxLayout="column" fxLayoutAlign="center center" class="padding-gap-x">
     <mat-radio-group class="my-1" color="primary" name="selReportBy" fxFlex="100" fxLayoutAlign="start center" [(ngModel)]="selReportBy" (change)="onSelReportByChange()">
       <span class="mr-2">Report By: </span>
-      <mat-radio-button class="mr-2" tabindex="1" value="{{reportBy.FEES}}">Fees</mat-radio-button>
-      <mat-radio-button tabindex="2" value="{{reportBy.EVENTS}}">Events</mat-radio-button>
+      <mat-radio-button value="{{reportBy.FEES}}" class="mr-2" tabindex="1">Fees</mat-radio-button>
+      <mat-radio-button value="{{reportBy.EVENTS}}" tabindex="2">Events</mat-radio-button>
     </mat-radio-group>
   </div>
   <mat-progress-bar *ngIf="errorMessage === 'Getting Forwarding History...'" mode="indeterminate" class="mt-2" />
@@ -41,7 +41,7 @@
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div class="mt-1">
-      <rtl-forwarding-history *ngIf="events && events?.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" [pageId]="'reports'" [tableId]="'routing'" [eventsData]="events?.forwarding_events" [selFilter]="eventFilterValue" />
+      <rtl-forwarding-history *ngIf="events && events?.forwarding_events && events.forwarding_events.length && events.forwarding_events.length > 0" pageId="reports" tableId="routing" [eventsData]="events?.forwarding_events" [selFilter]="eventFilterValue" />
     </div>
   </div>
 </div>

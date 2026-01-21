@@ -15,7 +15,7 @@ import { ChannelsStatus, GetInfo, Fees, Channel, BlockchainBalance, PendingChann
 import { Node } from '../../shared/models/RTLconfig';
 
 import { RTLState } from '../../store/rtl.state';
-import { rootSelectedNode } from 'src/app/store/rtl.selector';
+import { rootSelectedNode } from '../../store/rtl.selector';
 import { blockchainBalance, channels, fees, nodeInfoAndAPIStatus, pendingChannels } from '../store/lnd.selector';
 
 export interface Tile {
@@ -29,6 +29,7 @@ export interface Tile {
 }
 
 @Component({
+  standalone: false,
   selector: 'rtl-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']

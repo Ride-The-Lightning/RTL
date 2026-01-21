@@ -3,6 +3,7 @@ import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStar
 import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-root',
   templateUrl: './ecl-root.component.html',
   styleUrls: ['./ecl-root.component.scss'],

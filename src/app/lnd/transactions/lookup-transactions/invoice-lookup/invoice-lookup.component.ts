@@ -5,6 +5,7 @@ import { Invoice } from '../../../../shared/models/lndModels';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-invoice-lookup',
   templateUrl: './invoice-lookup.component.html',
   styleUrls: ['./invoice-lookup.component.scss']

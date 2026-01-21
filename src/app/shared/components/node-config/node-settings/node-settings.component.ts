@@ -14,6 +14,7 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { updateNodeSettings, setSelectedNode } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-node-settings',
   templateUrl: './node-settings.component.html',
   styleUrls: ['./node-settings.component.scss']

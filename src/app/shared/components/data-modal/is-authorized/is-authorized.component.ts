@@ -10,6 +10,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { isAuthorized, closeAlert } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-is-authorized',
   templateUrl: './is-authorized.component.html',
   styleUrls: ['./is-authorized.component.scss']

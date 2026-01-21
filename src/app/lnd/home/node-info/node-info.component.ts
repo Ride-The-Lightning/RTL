@@ -3,6 +3,7 @@ import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-node-info',
   templateUrl: './node-info.component.html',
   styleUrls: ['./node-info.component.scss']

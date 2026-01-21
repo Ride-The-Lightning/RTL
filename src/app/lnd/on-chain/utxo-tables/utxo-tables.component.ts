@@ -12,6 +12,7 @@ import { Transaction, UTXO } from '../../../shared/models/lndModels';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-utxo-tables',
   templateUrl: './utxo-tables.component.html',
   styleUrls: ['./utxo-tables.component.scss']

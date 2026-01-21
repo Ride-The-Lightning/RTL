@@ -19,6 +19,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/mo
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
+  standalone: false,
   selector: 'rtl-non-routing-peers',
   templateUrl: './non-routing-peers.component.html',
   styleUrls: ['./non-routing-peers.component.scss'],

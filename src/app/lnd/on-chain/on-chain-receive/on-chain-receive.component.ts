@@ -15,6 +15,7 @@ import { lndNodeInformation } from '../../store/lnd.selector';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-receive',
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']

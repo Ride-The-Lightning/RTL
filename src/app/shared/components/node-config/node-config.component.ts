@@ -13,6 +13,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-node-config',
   templateUrl: './node-config.component.html',
   styleUrls: ['./node-config.component.scss']

@@ -22,6 +22,7 @@ import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { Node } from '../../../../shared/models/RTLconfig';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-open-channel',
   templateUrl: './open-channel.component.html',
   styleUrls: ['./open-channel.component.scss']

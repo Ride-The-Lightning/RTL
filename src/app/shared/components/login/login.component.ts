@@ -18,6 +18,7 @@ import { login, openAlert } from '../../../store/rtl.actions';
 import { rootAppConfig, authorizedStatus, loginStatus } from '../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']

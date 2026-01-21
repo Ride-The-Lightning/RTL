@@ -17,6 +17,7 @@ import { PageSettings, TableSetting } from '../../../shared/models/pageSettings'
 import { clnPageSettings } from '../../../cln/store/cln.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-transactions-report',
   templateUrl: './transactions-report.component.html',
   styleUrls: ['./transactions-report.component.scss'],

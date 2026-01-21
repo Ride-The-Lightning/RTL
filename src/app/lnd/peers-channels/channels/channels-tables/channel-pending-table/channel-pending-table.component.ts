@@ -24,6 +24,7 @@ import { PageSettings, TableSetting } from '../../../../../shared/models/pageSet
 import { MessageDataField } from '../../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-pending-table',
   templateUrl: './channel-pending-table.component.html',
   styleUrls: ['./channel-pending-table.component.scss'],

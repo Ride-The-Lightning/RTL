@@ -18,6 +18,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { fetchChannels } from '../../../store/ecl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channel-rebalance',
   templateUrl: './channel-rebalance.component.html',
   styleUrls: ['./channel-rebalance.component.scss'],

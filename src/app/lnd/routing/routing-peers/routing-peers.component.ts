@@ -19,6 +19,7 @@ import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-routing-peers',
   templateUrl: './routing-peers.component.html',
   styleUrls: ['./routing-peers.component.scss'],

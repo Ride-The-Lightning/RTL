@@ -17,6 +17,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { isAuthorized, updateApplicationSettings } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-two-factor-auth',
   templateUrl: './two-factor-auth.component.html',
   styleUrls: ['./two-factor-auth.component.scss']

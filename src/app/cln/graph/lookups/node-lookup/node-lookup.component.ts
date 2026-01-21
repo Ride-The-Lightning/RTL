@@ -15,6 +15,7 @@ import { CLNConnectPeerComponent } from '../../../peers-channels/connect-peer/co
 import { nodeInfoAndBalance } from '../../../store/cln.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-node-lookup',
   templateUrl: './node-lookup.component.html',
   styleUrls: ['./node-lookup.component.scss']

@@ -10,6 +10,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { fetchConfig } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-lnp-config',
   templateUrl: './lnp-config.component.html',
   styleUrls: ['./lnp-config.component.scss']

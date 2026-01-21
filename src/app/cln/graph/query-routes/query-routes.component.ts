@@ -20,6 +20,7 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-query-routes',
   templateUrl: './query-routes.component.html',
   styleUrls: ['./query-routes.component.scss']

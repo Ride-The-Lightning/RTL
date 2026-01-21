@@ -1,4 +1,4 @@
-@import "../../../shared/theme/styles/constants.scss";
+@use '../../../shared/theme/styles/constants.scss' as *;
 
 .mat-column-status, .mat-column-group_status {
   max-width: 2.2rem;

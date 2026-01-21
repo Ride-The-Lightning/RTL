@@ -21,6 +21,7 @@ import { openSnackBar } from '../../../../store/rtl.actions';
 import { getNewAddress, setChannelTransaction } from '../../../store/cln.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-bump-fee',
   templateUrl: './bump-fee.component.html',
   styleUrls: ['./bump-fee.component.scss']

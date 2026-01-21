@@ -16,6 +16,7 @@ import { rootSelectedNode } from '../../store/rtl.selector';
 import { channels, feeRatesPerKB, feeRatesPerKW, forwardingHistory, utxoBalances, nodeInfoAndAPIsStatus } from '../store/cln.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-network-info',
   templateUrl: './network-info.component.html',
   styleUrls: ['./network-info.component.scss']

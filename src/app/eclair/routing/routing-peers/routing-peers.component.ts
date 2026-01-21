@@ -18,6 +18,7 @@ import { ColumnDefinition, PageSettings, TableSetting } from '../../../shared/mo
 import { CamelCaseWithSpacesPipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-routing-peers',
   templateUrl: './routing-peers.component.html',
   styleUrls: ['./routing-peers.component.scss'],

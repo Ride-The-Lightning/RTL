@@ -24,6 +24,7 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-lightning-send-payments',
   templateUrl: './send-payment.component.html',
   styleUrls: ['./send-payment.component.scss']

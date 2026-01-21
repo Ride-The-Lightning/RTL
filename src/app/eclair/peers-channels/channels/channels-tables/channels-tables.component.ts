@@ -16,6 +16,7 @@ import { allChannelsInfo, eclNodeInformation, onchainBalance, peers } from '../.
 import { ApiCallStatusPayload } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-channels-tables',
   templateUrl: './channels-tables.component.html',
   styleUrls: ['./channels-tables.component.scss']

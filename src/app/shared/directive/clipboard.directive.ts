@@ -1,6 +1,7 @@
 import { Directive, Input, Output, EventEmitter, HostListener } from '@angular/core';
 
 @Directive({
+  standalone: false,
   selector: '[rtlClipboard]'
 })
 export class ClipboardDirective {

@@ -4,6 +4,7 @@ import { SwapTypeEnum, ScreenSizeEnum } from '../../../../services/consts-enums-
 import { CommonService } from '../../../../services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-boltz-swap-status',
   templateUrl: './swap-status.component.html',
   styleUrls: ['./swap-status.component.scss']

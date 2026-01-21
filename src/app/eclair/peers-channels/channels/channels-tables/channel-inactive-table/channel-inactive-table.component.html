@@ -76,7 +76,7 @@
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel?.balancedness || 0 | number}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel.toLocal && channel.toLocal > 0 ? ((+channel.toLocal/((+channel.toLocal)+(+channel.toRemote)))*100) : 0}}" />
+          <mat-progress-bar value="{{channel.toLocal && channel.toLocal > 0 ? ((+channel.toLocal/((+channel.toLocal)+(+channel.toRemote)))*100) : 0}}" mode="determinate" />
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
@@ -110,5 +110,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

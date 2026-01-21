@@ -15,6 +15,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { peerLookup } from '../../store/ecl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-lookups',
   templateUrl: './lookups.component.html',
   styleUrls: ['./lookups.component.scss']

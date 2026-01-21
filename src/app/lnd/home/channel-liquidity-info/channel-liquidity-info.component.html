@@ -7,7 +7,7 @@
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider" /></div>
   <div *ngIf="allChannels && allChannels.length > 0;  else noChannelBlock"[perfectScrollbar]>
     <div *ngFor="let channel of allChannels" fxLayout="column">
-      <a class="dashboard-capacity-header mt-2" [routerLink]="['../connections/channels/open']" [state]="{filterColumn: channel.remote_alias ? 'remote_alias' : 'remote_pubkey', filterValue: channel.remote_alias || channel.remote_pubkey}" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">
+      <a matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}" class="dashboard-capacity-header mt-2" [routerLink]="['../connections/channels/open']" [state]="{filterColumn: channel.remote_alias ? 'remote_alias' : 'remote_pubkey', filterValue: channel.remote_alias || channel.remote_pubkey}">
         {{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}
       </a>
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
@@ -17,8 +17,8 @@
           <button *ngIf="showLoop" fxFlex="20" fxLayoutAlign="end center" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
         </div>
       </div>
-      <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}" />
-      <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}" />
+      <mat-progress-bar *ngIf="direction === 'In'" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}" class="dashboard-progress-bar" mode="determinate" />
+      <mat-progress-bar *ngIf="direction === 'Out'" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}" class="dashboard-progress-bar" mode="determinate" />
     </div>
   </div>
 </div>

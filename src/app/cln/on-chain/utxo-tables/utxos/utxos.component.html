@@ -30,7 +30,7 @@
           <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before" matTooltip="Status"></th>
           <td *matCellDef="let utxo" mat-cell>
             <span *ngIf="utxo.status === 'confirmed'" class="dot green" matTooltip="Confirmed" matTooltipPosition="right"></span>
-            <span *ngIf="utxo.status !== 'confirmed'" class="dot yellow" matTooltipPosition="right" matTooltip="{{utxo.status | titlecase}}"></span>
+            <span *ngIf="utxo.status !== 'confirmed'" matTooltip="{{utxo.status | titlecase}}" class="dot yellow" matTooltipPosition="right"></span>
           </td>
         </ng-container>
         <ng-container matColumnDef="txid">
@@ -104,7 +104,7 @@
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
-      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
+      <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
     </div>
   </div>
 </div>

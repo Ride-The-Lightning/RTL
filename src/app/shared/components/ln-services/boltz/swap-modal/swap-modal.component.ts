@@ -16,6 +16,7 @@ import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-boltz-swap-modal',
   templateUrl: './swap-modal.component.html',
   styleUrls: ['./swap-modal.component.scss'],

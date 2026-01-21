@@ -13,6 +13,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { channelLookup, peerLookup } from '../../store/cln.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-lookups',
   templateUrl: './lookups.component.html',
   styleUrls: ['./lookups.component.scss']

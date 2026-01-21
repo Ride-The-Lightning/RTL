@@ -14,6 +14,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { openAlert, closeSpinner, openSpinner } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-loop',
   templateUrl: './loop.component.html',
   styleUrls: ['./loop.component.scss']

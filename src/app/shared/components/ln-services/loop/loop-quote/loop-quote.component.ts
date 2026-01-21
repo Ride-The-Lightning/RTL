@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { LoopQuote } from '../../../../models/loopModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-loop-quote',
   templateUrl: './loop-quote.component.html',
   styleUrls: ['./loop-quote.component.scss']

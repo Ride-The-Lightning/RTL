@@ -1,25 +1,26 @@
 @use '@angular/material' as mat;
-@import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/white.swatch.scss';
+@use './color-swatches/teal-primary.swatch.scss' as *;
+@use './color-swatches/red-warn.swatch.scss' as *;
+@use './color-swatches/white.swatch.scss' as *;
+@use './color-swatches/gray.swatch.scss' as *;
 
-$teal-primary: mat.define-palette(mat.$teal-palette, 800, 300, A200);
-$teal-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$teal-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
-$teal-warn: mat.define-palette($red-warn, 500);
-$teal-warn-night: mat.define-palette($red-warn, A700);
+$teal-primary: mat.m2-define-palette($teal-primary-palette, 800, 300, A200);
+$day-accent: mat.m2-define-palette($gray-palette, 800, 600, 900);
+$night-accent: mat.m2-define-palette($white-palette, 300, 600, 900);
+$red-warn: mat.m2-define-palette($red-warn-palette, 500, 300, 200);
 
-$teal-night-theme: mat.define-dark-theme((
-    color: (
-        primary: $teal-primary,
-        accent: $teal-accent-night,
-        warn: $teal-warn-night
-    )
+$teal-night-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $teal-primary,
+    accent: $night-accent,
+    warn: $red-warn,
+  )
 ));
 
-$teal-day-theme: mat.define-light-theme((
-    color: (
-        primary: $teal-primary,
-        accent: $teal-accent,
-        warn: $teal-warn
-    )
+$teal-day-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $teal-primary,
+    accent: $day-accent,
+    warn: $red-warn,
+  )
 ));

@@ -1,8 +1,8 @@
 import { HammerModule } from '@angular/platform-browser';
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -54,10 +54,16 @@ if (isDevMode()) { isDevEnvironemt = true; }
   ],
   declarations: [AppComponent],
   providers: [
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideUserIdleConfig({ idle: (HOUR_SECONDS - 10), timeout: 10, ping: 12000 }),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    SessionService, DataService, WebSocketClientService, LoopService, CommonService, BoltzService
+    SessionService,
+    DataService,
+    WebSocketClientService,
+    LoopService,
+    CommonService,
+    BoltzService
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
