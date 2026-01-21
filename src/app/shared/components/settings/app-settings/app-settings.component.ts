@@ -12,6 +12,7 @@ import { updateApplicationSettings } from '../../../../store/rtl.actions';
 import { rootAppConfig } from '../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-app-settings',
   templateUrl: './app-settings.component.html',
   styleUrls: ['./app-settings.component.scss']

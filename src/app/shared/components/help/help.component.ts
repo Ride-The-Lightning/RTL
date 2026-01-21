@@ -11,6 +11,7 @@ import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-help',
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss']

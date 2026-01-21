@@ -18,6 +18,7 @@ import { rootSelectedNode } from '../../../store/rtl.selector';
 import { restoreChannels, restoreChannelsList } from '../../store/lnd.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-restore-table',
   templateUrl: './channel-restore-table.component.html',
   styleUrls: ['./channel-restore-table.component.scss'],

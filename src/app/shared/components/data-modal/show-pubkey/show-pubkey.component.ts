@@ -10,6 +10,7 @@ import { GetInfoRoot } from '../../../models/RTLconfig';
 import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-show-pubkey',
   templateUrl: './show-pubkey.component.html',
   styleUrls: ['./show-pubkey.component.scss']

@@ -14,6 +14,7 @@ import { payments } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-routing-report',
   templateUrl: './routing-report.component.html',
   styleUrls: ['./routing-report.component.scss'],

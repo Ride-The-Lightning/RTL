@@ -22,6 +22,7 @@ export function cipherSeedLength(control: UntypedFormGroup): ValidationErrors | 
 }
 
 @Component({
+  standalone: false,
   selector: 'rtl-initialize-wallet',
   templateUrl: './initialize.component.html',
   styleUrls: ['./initialize.component.scss'],

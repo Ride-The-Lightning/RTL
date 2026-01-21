@@ -17,6 +17,7 @@ import { logout, openConfirmation } from '../../../../store/rtl.actions';
 import { rootNodeData } from '../../../../store/rtl.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-top-menu',
   templateUrl: './top-menu.component.html',
   styleUrls: ['./top-menu.component.scss'],

@@ -19,6 +19,7 @@ import { getForwardingHistory } from '../../store/cln.actions';
 import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-routing-peers',
   templateUrl: './routing-peers.component.html',
   styleUrls: ['./routing-peers.component.scss'],

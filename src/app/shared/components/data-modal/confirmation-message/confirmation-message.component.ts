@@ -11,6 +11,7 @@ import { RTLState } from '../../../../store/rtl.state';
 import { closeConfirmation } from '../../../../store/rtl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-confirmation-message',
   templateUrl: './confirmation-message.component.html',
   styleUrls: ['./confirmation-message.component.scss']

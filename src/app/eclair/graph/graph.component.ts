@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss']

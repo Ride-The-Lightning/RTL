@@ -3,6 +3,7 @@ import { Component, AfterContentChecked, Input } from '@angular/core';
 import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/clnModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-fee-rates',
   templateUrl: './fee-rates.component.html',
   styleUrls: ['./fee-rates.component.scss']

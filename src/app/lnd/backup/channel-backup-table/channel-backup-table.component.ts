@@ -25,6 +25,7 @@ import { backupChannels, verifyChannel } from '../../store/lnd.actions';
 import { channels } from '../../store/lnd.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-backup-table',
   templateUrl: './channel-backup-table.component.html',
   styleUrls: ['./channel-backup-table.component.scss'],

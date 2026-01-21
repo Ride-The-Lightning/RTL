@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { fetchTransactions, fetchUTXOs } from '../../store/lnd.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-lebel-modal',
   templateUrl: './on-chain-label-modal.component.html',
   styleUrls: ['./on-chain-label-modal.component.scss']

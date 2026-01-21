@@ -6,6 +6,7 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-routing',
   templateUrl: './routing.component.html',
   styleUrls: ['./routing.component.scss']

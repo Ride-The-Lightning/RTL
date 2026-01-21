@@ -20,6 +20,7 @@ import { lndNodeInformation } from '../../store/lnd.selector';
 import { ConvertedCurrency } from '../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-create-invoices',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']

@@ -25,10 +25,11 @@ import { setChannelTransaction } from '../../store/cln.actions';
 import { rootAppConfig, rootSelectedNode } from '../../../store/rtl.selector';
 import { clnNodeInformation, utxoBalances } from '../../store/cln.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
-import { DataService } from 'src/app/shared/services/data.service';
-import { RecommendedFeeRates } from 'src/app/shared/models/rtlModels';
+import { DataService } from '../../../shared/services/data.service';
+import { RecommendedFeeRates } from '../../../shared/models/rtlModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-on-chain-send-modal',
   templateUrl: './on-chain-send-modal.component.html',
   styleUrls: ['./on-chain-send-modal.component.scss']

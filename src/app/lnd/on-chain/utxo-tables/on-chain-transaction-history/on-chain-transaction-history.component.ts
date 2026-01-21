@@ -23,6 +23,7 @@ import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-on-chain-transaction-history',
   templateUrl: './on-chain-transaction-history.component.html',
   styleUrls: ['./on-chain-transaction-history.component.scss'],

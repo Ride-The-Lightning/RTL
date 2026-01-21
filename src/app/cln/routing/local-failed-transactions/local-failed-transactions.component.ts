@@ -24,6 +24,7 @@ import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-local-failed-history',
   templateUrl: './local-failed-transactions.component.html',
   styleUrls: ['./local-failed-transactions.component.scss'],

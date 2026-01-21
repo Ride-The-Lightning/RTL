@@ -1,4 +1,4 @@
-@import "../../../shared/theme/styles/constants.scss";
+@use '../../../shared/theme/styles/constants.scss' as *;
 
 .mat-column-group_actions {
   & .part-group-head, .part-group-details {

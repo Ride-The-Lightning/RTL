@@ -6,7 +6,7 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar mat-stretch-tabs="false" mat-align-tabs="start" [tabPanel]="tabPanel">
-        <div *ngFor="let link of links" tabindex="1" mat-tab-link role="tab" class="mat-tab-label" [active]="activeLink === link.link" routerLink="{{link.link}}" (click)="activeLink = link.link">{{link.name}}</div>
+        <div *ngFor="let link of links" routerLink="{{link.link}}" tabindex="1" mat-tab-link role="tab" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link">{{link.name}}</div>
       </nav>
       <mat-tab-nav-panel #tabPanel />
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper mb-2">

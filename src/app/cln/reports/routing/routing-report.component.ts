@@ -16,6 +16,7 @@ import { getForwardingHistory } from '../../store/cln.actions';
 import { DataService } from '../../../shared/services/data.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-routing-report',
   templateUrl: './routing-report.component.html',
   styleUrls: ['./routing-report.component.scss'],

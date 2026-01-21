@@ -11,7 +11,7 @@
         <div fxLayout="column" class="bordered-box mb-1 p-2">
           <p fxLayoutAlign="start center" class="pb-1 word-break">
             {{txid ? 'Bump fee for transaction ID: ' + txid : 'Bump fee: '}}
-            <fa-icon class="ml-1 fa-icon-primary" matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
+            <fa-icon matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
           </p>
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div fxFlex="100" class="alert alert-info">

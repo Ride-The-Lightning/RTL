@@ -3,6 +3,7 @@ import { SwapTypeEnum } from '../../../../services/consts-enums-functions';
 import { ServiceInfo } from '../../../../models/boltzModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-boltz-service-info',
   templateUrl: './swap-service-info.component.html',
   styleUrls: ['./swap-service-info.component.scss']

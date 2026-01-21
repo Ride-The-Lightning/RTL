@@ -1,25 +1,26 @@
 @use '@angular/material' as mat;
-@import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/white.swatch.scss';
+@use './color-swatches/indigo-primary.swatch.scss' as *;
+@use './color-swatches/red-warn.swatch.scss' as *;
+@use './color-swatches/white.swatch.scss' as *;
+@use './color-swatches/gray.swatch.scss' as *;
 
-$indigo-primary: mat.define-palette(mat.$indigo-palette, 500, 200, A200);
-$indigo-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
-$indigo-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
-$indigo-warn: mat.define-palette($red-warn, 500);
-$indigo-warn-night: mat.define-palette($red-warn, A700);
+$indigo-primary: mat.m2-define-palette($indigo-primary-palette, 500, 200, A200);
+$day-accent: mat.m2-define-palette($gray-palette, 800, 600, 900);
+$night-accent: mat.m2-define-palette($white-palette, 300, 600, 900);
+$red-warn: mat.m2-define-palette($red-warn-palette, 500, 300, 200);
 
-$indigo-night-theme: mat.define-dark-theme((
-    color: (
-        primary: $indigo-primary,
-        accent: $indigo-accent-night,
-        warn: $indigo-warn-night
-    )
+$indigo-night-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $indigo-primary,
+    accent: $night-accent,
+    warn: $red-warn,
+  )
 ));
 
-$indigo-day-theme: mat.define-light-theme((
-    color: (
-        primary: $indigo-primary,
-        accent: $indigo-accent,
-        warn: $indigo-warn
-    )
+$indigo-day-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $indigo-primary,
+    accent: $day-accent,
+    warn: $red-warn,
+  )
 ));

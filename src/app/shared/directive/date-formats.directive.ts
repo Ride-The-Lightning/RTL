@@ -46,6 +46,7 @@ export const YEARLY_DATE_FORMATS: MatDateFormats = {
 };
 
 @Directive({
+  standalone: false,
   selector: '[monthlyDate]',
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
@@ -55,6 +56,7 @@ export const YEARLY_DATE_FORMATS: MatDateFormats = {
 export class MonthlyDateDirective {}
 
 @Directive({
+  standalone: false,
   selector: '[yearlyDate]',
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },

@@ -5,6 +5,7 @@ import { faBalanceScale, faDumbbell } from '@fortawesome/free-solid-svg-icons';
 import { Channel } from '../../../shared/models/clnModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-channel-capacity-info',
   templateUrl: './channel-capacity-info.component.html',
   styleUrls: ['./channel-capacity-info.component.scss']

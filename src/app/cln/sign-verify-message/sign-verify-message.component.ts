@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { faUserCheck } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-sign-verify-message',
   templateUrl: './sign-verify-message.component.html',
   styleUrls: ['./sign-verify-message.component.scss']

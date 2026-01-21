@@ -2,6 +2,7 @@ import { Component, OnChanges, Input } from '@angular/core';
 import { Fees } from '../../../shared/models/eclModels';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-fee-info',
   templateUrl: './fee-info.component.html',
   styleUrls: ['./fee-info.component.scss']

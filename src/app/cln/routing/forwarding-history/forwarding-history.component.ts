@@ -23,6 +23,7 @@ import { CamelCaseWithReplacePipe } from '../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-forwarding-history',
   templateUrl: './forwarding-history.component.html',
   styleUrls: ['./forwarding-history.component.scss'],

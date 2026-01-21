@@ -10,6 +10,7 @@ import { openAlert } from '../../../store/rtl.actions';
 import { getNewAddress } from '../../store/ecl.actions';
 
 @Component({
+  standalone: false,
   selector: 'rtl-ecl-on-chain-receive',
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']

@@ -41,7 +41,7 @@
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
           <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
             <div fxFlex="48" fxLayoutAlign="space-between start">
-              <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="selFeeRate === 'customperkb' && !flgMinConf ? '48' : '100'">
+              <mat-form-field fxLayout="column" fxLayoutAlign="start center" [ngClass]="selFeeRate === 'customperkb' && !flgMinConf ? 'flex-48' : 'flex-100'">
                 <mat-label>Fee Rate</mat-label>
                 <mat-select tabindex="4" [disabled]="flgMinConf" [(value)]="selFeeRate" (selectionChange)="customFeeRate=null">
                   <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
@@ -132,7 +132,7 @@
             </mat-form-field>
             <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign.gt-sm="space-between center">
               <div fxFlex="48" fxLayoutAlign="space-between start">
-                <mat-form-field fxLayout="column" fxLayoutAlign="start center" [fxFlex]="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value ? '48' : '100'">
+                <mat-form-field fxLayout="column" fxLayoutAlign="start center" [ngClass]="sendFundFormGroup.controls.selFeeRate.value === 'customperkb' && !sendFundFormGroup.controls.flgMinConf.value ? 'flex-48' : 'flex-100'">
                   <mat-label>Fee Rate</mat-label>
                   <mat-select tabindex="4" formControlName="selFeeRate">
                     <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">

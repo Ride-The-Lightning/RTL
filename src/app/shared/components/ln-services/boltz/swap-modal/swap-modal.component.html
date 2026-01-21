@@ -1,8 +1,8 @@
 <div *ngIf="!flgShowInfo" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [@opacityAnimation]>
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxLayoutAlign="start start" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'"><span class="page-title">{{swapDirectionCaption}}</span></div>
-      <div fxLayoutAlign="end end" [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'">
+      <div fxLayoutAlign="start start" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-83' : 'flex-91'"><span class="page-title">{{swapDirectionCaption}}</span></div>
+      <div fxLayoutAlign="end end" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-17' : 'flex-9'">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
         <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
       </div>

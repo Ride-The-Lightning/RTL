@@ -18,6 +18,7 @@ import { CamelCaseWithReplacePipe } from '../../pipes/app.pipe';
 import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
+  standalone: false,
   selector: 'rtl-transactions-report-table',
   templateUrl: './transactions-report-table.component.html',
   styleUrls: ['./transactions-report-table.component.scss'],

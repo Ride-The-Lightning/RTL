@@ -6,6 +6,7 @@ import { Payment, PayRequest } from '../../../../shared/models/lndModels';
 import { DataService } from '../../../../shared/services/data.service';
 
 @Component({
+  standalone: false,
   selector: 'rtl-payment-lookup',
   templateUrl: './payment-lookup.component.html',
   styleUrls: ['./payment-lookup.component.scss']

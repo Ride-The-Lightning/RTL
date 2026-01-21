@@ -16,6 +16,7 @@ import { rootSelectedNode } from '../../../store/rtl.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 
 @Component({
+  standalone: false,
   selector: 'rtl-channel-liquidity-info',
   templateUrl: './channel-liquidity-info.component.html',
   styleUrls: ['./channel-liquidity-info.component.scss']

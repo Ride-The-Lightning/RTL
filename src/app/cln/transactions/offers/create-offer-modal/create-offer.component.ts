@@ -19,6 +19,7 @@ import { saveNewOffer } from '../../../store/cln.actions';
 import { clnNodeInformation } from '../../../store/cln.selector';
 
 @Component({
+  standalone: false,
   selector: 'rtl-cln-create-offer',
   templateUrl: './create-offer.component.html',
   styleUrls: ['./create-offer.component.scss']
