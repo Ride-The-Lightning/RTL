@@ -9,7 +9,7 @@
     </mat-select>
     <mat-divider class="w-100" />
     <mat-tree *ngIf="selNode.settings?.lnServerUrl" #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
-      <mat-tree-node *matTreeNodeDef="let node" routerLink="{{node.link}}" routerLinkActive="active-link">
+      <mat-tree-node *matTreeNodeDef="let node" routerLink="{{node.link}}" routerLinkActive="active-link" matTreeNodeToggle>
         <div tabindex="2" (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
             <span *ngIf="node.iconType === 'SVG'" class="fa-icon-small mr-2" fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><ng-container [ngTemplateOutlet]="node.icon === 'boltzIconBlock' ? boltzIconBlock : null" /></span>
