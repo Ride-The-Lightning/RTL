@@ -53,16 +53,17 @@ export class DataService implements OnDestroy {
 
   decodePayment(payment: string, fromDialog: boolean) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
-      let url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
-      let method = 'GET';
-      let body = null;
-      if (updatedLnImplementation === 'cln') {
-        url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
-        body = { string: payment };
-        method = 'POST';
-      }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
-      return this.httpClient.request(method, url, { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }).pipe(
+      let request$;
+      if (updatedLnImplementation === 'cln') {
+        const url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.UTILITY_API + '/decode';
+        const body = { string: payment };
+        request$ = this.httpClient.post(url, body, { headers: { 'Content-Type': 'application/json' } });
+      } else {
+        const url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
+        request$ = this.httpClient.get(url);
+      }
+      return request$.pipe(
         takeUntil(this.unSubs[0]),
         map((res: any) => {
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DECODE_PAYMENT }));
@@ -72,11 +73,10 @@ export class DataService implements OnDestroy {
           if (fromDialog) {
             this.handleErrorWithoutAlert('Decode Payment', UI_MESSAGES.DECODE_PAYMENT, err);
           } else {
-            this.handleErrorWithAlert('decodePaymentData', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', url, err);
+            this.handleErrorWithAlert('decodePaymentData', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.APIUrl + '/' + updatedLnImplementation + (updatedLnImplementation === 'cln' ? API_END_POINTS.UTILITY_API + '/decode' : API_END_POINTS.PAYMENTS_API + '/decode/' + payment), err);
           }
           return throwError(() => new Error(this.extractErrorMessage(err)));
-        })
-      );
+        }));
     }));
   }
 
