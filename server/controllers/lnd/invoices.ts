@@ -22,7 +22,7 @@ const extractKeysendMessage = (invoice) => {
       }
     }
   }
-  return '';
+  return invoice.memo || '';
 };
 
 export const invoiceLookup = (req, res, next) => {
@@ -61,7 +61,7 @@ export const listInvoices = (req, res, next) => {
         invoice.r_preimage = invoice.r_preimage ? Buffer.from(invoice.r_preimage, 'base64').toString('hex') : '';
         invoice.r_hash = invoice.r_hash ? Buffer.from(invoice.r_hash, 'base64').toString('hex') : '';
         invoice.description_hash = invoice.description_hash ? Buffer.from(invoice.description_hash, 'base64').toString('hex') : null;
-        invoice.memo = extractKeysendMessage(invoice) || '';
+        invoice.memo = extractKeysendMessage(invoice);
       });
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Sorted Invoices List Received', data: body });
