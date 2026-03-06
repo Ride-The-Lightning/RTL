@@ -66,7 +66,7 @@
     "@angular/common": "20.3.14",
     "@angular/compiler": "20.3.14",
     "@angular/compiler-cli": "20.3.14",
-    "@angular/core": "20.3.14",
+    "@angular/core": "20.3.17",
     "@angular/flex-layout": "15.0.0-beta.42",
     "@angular/forms": "20.3.14",
     "@angular/material": "20.2.14",
