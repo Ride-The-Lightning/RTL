@@ -39,7 +39,7 @@
     "ng-qrcode": "21.0.0",
     "ngx-perfect-scrollbar-next": "10.1.1",
     "otplib": "12.0.1",
-    "pdfmake": "0.3.2",
+    "pdfmake": "0.3.6",
     "process": "0.11.10",
     "request": "2.88.2",
     "request-promise": "4.2.6",
