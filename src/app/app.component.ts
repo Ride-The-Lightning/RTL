@@ -103,7 +103,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       subscribe((action: (any)) => {
         if (action.type === RTLActions.SET_APPLICATION_SETTINGS) {
           if (!this.sessionService.getItem('token')) {
-            if (+action.payload.SSO.rtlSSO) {
+            if (!!action.payload.disableAuth) {
+              this.store.dispatch(login({ payload: { password: 'disabledAuth', defaultPassword: false } }));
+            } else if (+action.payload.SSO.rtlSSO) {
               if (!this.accessKey || this.accessKey.trim().length < 32) {
                 this.router.navigate(['./error'], { state: { errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.' } });
               } else {

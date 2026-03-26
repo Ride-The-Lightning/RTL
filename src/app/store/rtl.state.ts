@@ -30,6 +30,7 @@ export const initRootState: RootState = {
     SSO: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
     secret2FA: '',
+    disableAuth: false,
     allowPasswordUpdate: true,
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },

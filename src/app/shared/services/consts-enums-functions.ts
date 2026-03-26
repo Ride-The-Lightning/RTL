@@ -138,6 +138,7 @@ export enum AlertTypeEnum {
 }
 
 export enum AuthenticateWith {
+  NOAUTH = 'NOAUTH',
   JWT = 'JWT',
   PASSWORD = 'PASSWORD'
 }
