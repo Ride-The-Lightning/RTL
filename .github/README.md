@@ -124,6 +124,8 @@ For details on all the configuration options refer to [this page](./docs/Applica
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
 Specific password must be provided in RTL-Config.json (in plain text) for authentication. Password should be set with `multiPass:<user defined>` in the `Authentication` section of RTL-Config.json. Default initial password is `password`.
 
+For hosted solutions such as BTCPayServer, we implemented an "SSO" setup using a one-time-use cookie. For other vendors which have their own authentication service, we introduced a "disableAuth" option, which disables authentication at the RTL level. When using this option, the authentication security is the responsibility of the Vendor. This option is NOT recommended for standalone users of RTL.
+
 ### <a name="start"></a>Start the Server
 Run the following command:
 
