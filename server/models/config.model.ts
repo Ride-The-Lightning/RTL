@@ -55,6 +55,7 @@ export class ApplicationConfig {
     public selectedNodeIndex: number,
     public dbDirectoryPath?: string,
     public rtlConfFilePath?: string,
+    public disableAuth?: boolean,
     public rtlPass?: string,
     public multiPass?: string,
     public multiPassHashed?: string,

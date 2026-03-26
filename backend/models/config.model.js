@@ -40,11 +40,12 @@ export class Authentication {
     }
 }
 export class ApplicationConfig {
-    constructor(defaultNodeIndex, selectedNodeIndex, dbDirectoryPath, rtlConfFilePath, rtlPass, multiPass, multiPassHashed, allowPasswordUpdate, enable2FA, secret2FA, SSO, nodes) {
+    constructor(defaultNodeIndex, selectedNodeIndex, dbDirectoryPath, rtlConfFilePath, disableAuth, rtlPass, multiPass, multiPassHashed, allowPasswordUpdate, enable2FA, secret2FA, SSO, nodes) {
         this.defaultNodeIndex = defaultNodeIndex;
         this.selectedNodeIndex = selectedNodeIndex;
         this.dbDirectoryPath = dbDirectoryPath;
         this.rtlConfFilePath = rtlConfFilePath;
+        this.disableAuth = disableAuth;
         this.rtlPass = rtlPass;
         this.multiPass = multiPass;
         this.multiPassHashed = multiPassHashed;
