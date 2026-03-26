@@ -51,6 +51,7 @@ export class RTLConfiguration {
     public SSO: SSO,
     public enable2FA: boolean,
     public secret2FA: string,
+    public disableAuth: boolean,
     public allowPasswordUpdate: boolean,
     public nodes: Node[]
   ) { }
