@@ -48,7 +48,15 @@ export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && comm
 export const authenticateUser = (req, res, next) => {
     const { authenticateWith, authenticationValue, twoFAToken } = req.body;
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
-    if (+common.appConfig.SSO.rtlSSO) {
+    if (!!common.appConfig.disableAuth) {
+        if (!req.session.selectedNode) {
+            req.session.selectedNode = common.selectedNode;
+        }
+        const token = jwt.sign({ user: 'AUTH_DISABLED_USER' }, common.secret_key);
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Disabled Authentication' });
+        res.status(200).json({ token: token });
+    }
+    else if (+common.appConfig.SSO.rtlSSO) {
         if (authenticateWith === 'JWT' && jwt.verify(authenticationValue, common.secret_key)) {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
             res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
