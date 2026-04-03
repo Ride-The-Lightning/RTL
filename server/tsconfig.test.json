@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../",
+    "outDir": "../backend",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": false,
+    "isolatedModules": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["./**/*"]
+}

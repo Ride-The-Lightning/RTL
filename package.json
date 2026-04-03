@@ -17,6 +17,8 @@
     "serverUbuntu": "NODE_ENV=development nodemon --watch backend --watch server ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
     "test": "ng test --watch=false --browsers=ChromeHeadless",
+    "test:server": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs",
+    "test:server:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs --coverage",
     "lint": "eslint"
   },
   "private": true,
@@ -80,6 +82,7 @@
     "@fortawesome/free-solid-svg-icons": "7.1.0",
     "@ngrx/store-devtools": "21.0.1",
     "@types/jasmine": "5.1.15",
+    "@types/jest": "^30.0.0",
     "@types/node": "20.19.30",
     "@typescript-eslint/eslint-plugin": "8.53.0",
     "@typescript-eslint/parser": "8.53.0",
@@ -88,6 +91,7 @@
     "eslint-plugin-deprecation": "3.0.0",
     "jasmine-core": "5.13.0",
     "jasmine-spec-reporter": "7.0.0",
+    "jest": "^30.3.0",
     "karma": "6.4.4",
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
@@ -97,6 +101,7 @@
     "nodemon": "3.1.11",
     "protractor": "7.0.0",
     "roboto-fontface": "0.10.0",
+    "ts-jest": "^29.4.9",
     "ts-node": "10.9.2",
     "typescript": "5.8.3"
   },
