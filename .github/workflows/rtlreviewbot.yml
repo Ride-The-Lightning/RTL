@@ -43,7 +43,7 @@ jobs:
           actor:           ${{ github.event.sender.login }}
           comment_body:    ${{ github.event.comment.body }}
           comment_id:      ${{ github.event.comment.id }}
-          installation_id: REPLACE_WITH_INSTALLATION_ID
+          installation_id: 127679607
           # Credentials — passed as `with:` inputs (composite actions
           # cannot declare a `secrets:` block). At least one of
           # anthropic_api_key or claude_code_oauth_token must be set;
