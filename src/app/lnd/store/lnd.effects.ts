@@ -874,10 +874,7 @@ export class LNDEffects implements OnDestroy {
   queryRoutesFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.GET_QUERY_ROUTES_LND),
     mergeMap((action: { type: string, payload: GetQueryRoutes }) => {
-      let url = this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount;
-      if (action.payload.outgoingChanId) {
-        url = url + '?outgoing_chan_id=' + action.payload.outgoingChanId;
-      }
+      const url = this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount;
       return this.httpClient.get(url).pipe(
         map((qrRes: any) => {
           this.logger.info(qrRes);

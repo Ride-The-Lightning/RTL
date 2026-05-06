@@ -120,6 +120,15 @@ this release should add its entry under the appropriate section below.
 
 ## Code Health
 
+- **LND: remove the deprecated `outgoing_chan_id` from QueryRoutes**
+  ([#1591](https://github.com/Ride-The-Lightning/RTL/pull/1591)).
+  LND deprecated the singular `outgoing_chan_id` query parameter on `QueryRoutes` as of
+  v0.20.0 in favor of the plural `outgoing_chan_ids`. The code path was already unreachable
+  in RTL — no caller of the `GetQueryRoutes` action ever populated `outgoingChanId`, so the
+  parameter was never sent — so this drops the unused model field, the effect's conditional
+  URL builder, and the server-side passthrough. The plural `outgoing_chan_ids` used by the
+  send-payment and rebalance flows is unaffected.
+
 - **LND: migrate `sat_per_byte` to `sat_per_vbyte` in node requests**
   ([#1592](https://github.com/Ride-The-Lightning/RTL/pull/1592)).
   LND's v0.21.0 release notes deprecate the `sat_per_byte` field, with removal planned in
