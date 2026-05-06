@@ -98,7 +98,7 @@ export class mockDataService {
     return of(mockResponseData.verifyMessage);
   };
 
-  bumpFee(txid: string, outputIndex: number, targetConf: number, satPerByte: number) {
+  bumpFee(txid: string, outputIndex: number, targetConf: number, satPerVByte: number) {
     return of(mockResponseData.bumpFee);
   };
 
