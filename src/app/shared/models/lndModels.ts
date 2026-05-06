@@ -534,7 +534,7 @@ export interface CloseChannel {
   channelPoint: string;
   forcibly: boolean;
   targetConf?: number;
-  satPerByte?: number;
+  satPerVByte?: number;
 }
 
 export interface FetchInvoices {

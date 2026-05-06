@@ -140,7 +140,7 @@ export const postChannel = (req, res, next) => {
         options.form.target_conf = trans_type_value;
     }
     else if (trans_type === '2') {
-        options.form.sat_per_byte = trans_type_value;
+        options.form.sat_per_vbyte = trans_type_value;
     }
     if (commitment_type) {
         options.form.commitment_type = commitment_type;
@@ -171,8 +171,8 @@ export const closeChannel = (req, res, next) => {
         if (req.query.target_conf) {
             options.url = options.url + '&target_conf=' + req.query.target_conf;
         }
-        if (req.query.sat_per_byte) {
-            options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte;
+        if (req.query.sat_per_vbyte) {
+            options.url = options.url + '&sat_per_vbyte=' + req.query.sat_per_vbyte;
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
         request.delete(options);
