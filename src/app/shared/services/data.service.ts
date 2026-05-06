@@ -171,14 +171,14 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  bumpFee(txid: string, outputIndex: number, targetConf: number | null, satPerByte: number | null) {
+  bumpFee(txid: string, outputIndex: number, targetConf: number | null, satPerVByte: number | null) {
     return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
       const bumpFeeBody: any = { txid: txid, outputIndex: outputIndex };
       if (targetConf) {
         bumpFeeBody.targetConf = targetConf;
       }
-      if (satPerByte) {
-        bumpFeeBody.satPerByte = satPerByte;
+      if (satPerVByte) {
+        bumpFeeBody.satPerVByte = satPerVByte;
       }
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.BUMP_FEE }));
       return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.WALLET_API + '/bumpfee', bumpFeeBody).pipe(

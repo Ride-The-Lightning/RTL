@@ -120,6 +120,15 @@ this release should add its entry under the appropriate section below.
 
 ## Code Health
 
+- **LND: migrate `sat_per_byte` to `sat_per_vbyte` in node requests**
+  ([#1592](https://github.com/Ride-The-Lightning/RTL/pull/1592)).
+  LND's v0.21.0 release notes deprecate the `sat_per_byte` field, with removal planned in
+  v0.22 across `CloseChannel`, `OpenChannel`, `SendCoins`, `SendMany` and
+  `walletrpc.BumpFee`. LND already interprets the old field as sat/vbyte internally, so
+  this is a pure wire-format rename with no value conversion. The close-channel,
+  open-channel, send-coins and bump-fee request paths (and their matching TypeScript
+  identifiers) now send `sat_per_vbyte`, keeping RTL compatible ahead of the removal.
+
 - **Batch dependency update resolving all 20 open Dependabot security PRs**
   ([#1633](https://github.com/Ride-The-Lightning/RTL/pull/1633)).
   Dependabot had 20 open security-alert PRs against `master` (#1583–#1617). Rather than

@@ -71,7 +71,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
       closeChannelParams.targetConf = this.blocks;
     }
     if (this.fees) {
-      closeChannelParams.satPerByte = this.fees;
+      closeChannelParams.satPerVByte = this.fees;
     }
     this.store.dispatch(closeChannel({ payload: closeChannelParams }));
     this.dialogRef.close(false);

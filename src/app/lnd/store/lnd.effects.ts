@@ -345,8 +345,8 @@ export class LNDEffects implements OnDestroy {
       if (action.payload.targetConf) {
         reqUrl = reqUrl + '&target_conf=' + action.payload.targetConf;
       }
-      if (action.payload.satPerByte) {
-        reqUrl = reqUrl + '&sat_per_byte=' + action.payload.satPerByte;
+      if (action.payload.satPerVByte) {
+        reqUrl = reqUrl + '&sat_per_vbyte=' + action.payload.satPerVByte;
       }
       return this.httpClient.delete(reqUrl).pipe(
         map((postRes: any) => {
