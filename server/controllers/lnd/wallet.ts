@@ -110,7 +110,7 @@ export const getUTXOs = (req, res, next) => {
 };
 
 export const bumpFee = (req, res, next) => {
-  const { txid, outputIndex, targetConf, satPerByte } = req.body;
+  const { txid, outputIndex, targetConf, satPerVByte } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
@@ -122,8 +122,8 @@ export const bumpFee = (req, res, next) => {
   };
   if (targetConf) {
     options.form.target_conf = targetConf;
-  } else if (satPerByte) {
-    options.form.sat_per_byte = satPerByte;
+  } else if (satPerVByte) {
+    options.form.sat_per_vbyte = satPerVByte;
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
