@@ -69,16 +69,18 @@ export class CommonService {
             if (config.secret2FA === this.appConfig.secret2FA) {
                 config.secret2FA = this.appConfig.secret2FA;
             }
-            config.nodes.map((node, i) => {
-                if (this.appConfig && this.appConfig.nodes && this.appConfig.nodes.length > i && this.appConfig.nodes[i].authentication) {
-                    if (this.appConfig.nodes[i].authentication.macaroonPath) {
-                        node.authentication.macaroonPath = this.appConfig.nodes[i].authentication.macaroonPath;
+            const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]));
+            config.nodes.map((node) => {
+                const appConfigNode = appConfigNodes.get(node.index);
+                if (appConfigNode?.authentication) {
+                    if (appConfigNode.authentication.macaroonPath) {
+                        node.authentication.macaroonPath = appConfigNode.authentication.macaroonPath;
                     }
-                    if (this.appConfig.nodes[i].authentication.runePath) {
-                        node.authentication.runePath = this.appConfig.nodes[i].authentication.runePath;
+                    if (appConfigNode.authentication.runePath) {
+                        node.authentication.runePath = appConfigNode.authentication.runePath;
                     }
-                    if (this.appConfig.nodes[i].authentication.lnApiPassword) {
-                        node.authentication.lnApiPassword = this.appConfig.nodes[i].authentication.lnApiPassword;
+                    if (appConfigNode.authentication.lnApiPassword) {
+                        node.authentication.lnApiPassword = appConfigNode.authentication.lnApiPassword;
                     }
                 }
                 return node;
