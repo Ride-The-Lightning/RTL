@@ -63,7 +63,7 @@ export class CommonService {
     delete config.multiPass;
     delete config.multiPassHashed;
     delete config.secret2FA;
-    config.nodes?.map((node) => this.removeAuthSecureData(node));
+    config.nodes?.forEach((node) => this.removeAuthSecureData(node));
     return config;
   };
 
@@ -79,7 +79,7 @@ export class CommonService {
       config.secret2FA = this.appConfig.secret2FA;
     }
     const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]));
-    config.nodes.map((node) => {
+    config.nodes.forEach((node) => {
       const appConfigNode = appConfigNodes.get(node.index);
       if (appConfigNode?.authentication) {
         if (appConfigNode.authentication.macaroonPath) {
@@ -92,7 +92,6 @@ export class CommonService {
           node.authentication.lnApiPassword = appConfigNode.authentication.lnApiPassword;
         }
       }
-      return node;
     });
     return config;
   };
