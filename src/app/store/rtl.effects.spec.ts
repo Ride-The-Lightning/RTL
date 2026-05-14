@@ -152,8 +152,8 @@ describe('RTL Root Effects', () => {
     actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
     const sub = effects.appConfigFetch.subscribe((appConfigResponse) => {
       expect(appConfigResponse).toEqual({ type: RTLActions.SET_APPLICATION_SETTINGS, payload: appConfig });
-      const setSelectedNodeAction = storeDispatchSpy.calls.all()[4].args[0] as any;
-      expect(setSelectedNodeAction.type).toEqual(RTLActions.SET_SELECTED_NODE);
+      const setSelectedNodeAction = storeDispatchSpy.calls.all().find((call) => (call.args[0] as any).type === RTLActions.SET_SELECTED_NODE)?.args[0] as any;
+      expect(setSelectedNodeAction).toBeTruthy();
       expect(setSelectedNodeAction.payload.currentLnNode.index).toEqual(appConfig.nodes[0].index);
       done();
       setTimeout(() => sub.unsubscribe());

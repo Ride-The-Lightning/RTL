@@ -221,7 +221,7 @@ export class RTLEffects implements OnDestroy {
         let searchNode: Node | null = null;
         rtlConfig.nodes.forEach((node) => {
           node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
-          if (+(node.index || -1) === +rtlConfig.selectedNodeIndex) {
+          if (+(node.index ?? -1) === +rtlConfig.selectedNodeIndex) {
             searchNode = node;
           }
         });
