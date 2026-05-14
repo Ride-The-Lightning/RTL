@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, switchMap, catchError, finalize, take, withLatestFrom, takeUntil } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -212,35 +212,43 @@ export class RTLEffects implements OnDestroy {
         }
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API);
-      }),
-      map((rtlConfig: RTLConfiguration) => {
-        this.logger.info(rtlConfig);
-        this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
-        let searchNode: Node | null = null;
-        rtlConfig.nodes.forEach((node) => {
-          node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
-          if (+(node.index ?? -1) === +rtlConfig.selectedNodeIndex) {
-            searchNode = node;
-          }
-        });
-        searchNode = searchNode || rtlConfig.nodes[0] || null;
-        if (searchNode) {
-          this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: searchNode, isInitialSetup: true } }));
-          return {
-            type: RTLActions.SET_APPLICATION_SETTINGS,
-            payload: rtlConfig
-          };
-        } else {
-          return {
-            type: RTLActions.VOID
-          };
-        }
-      }),
-      catchError((err) => {
-        this.handleErrorWithAlert('FetchRTLConfig', UI_MESSAGES.GET_RTL_CONFIG, 'Fetch RTL Config Failed!', API_END_POINTS.CONF_API, err);
-        return of({ type: RTLActions.VOID });
+        let errorHandled = false;
+        return this.httpClient.get<RTLConfiguration>(API_END_POINTS.CONF_API).pipe(
+          map((rtlConfig: RTLConfiguration) => {
+            this.logger.info(rtlConfig);
+            this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchRTLConfig', status: APICallStatusEnum.COMPLETED } }));
+            let searchNode: Node | null = null;
+            const selectedNodeIndex = +rtlConfig.selectedNodeIndex;
+            rtlConfig.nodes?.forEach((node) => {
+              node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
+              if ((node.index ?? -1) === selectedNodeIndex) {
+                searchNode = node;
+              }
+            });
+            searchNode = searchNode || rtlConfig.nodes?.[0] || null;
+            if (searchNode) {
+              this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: searchNode, isInitialSetup: true } }));
+              return {
+                type: RTLActions.SET_APPLICATION_SETTINGS,
+                payload: rtlConfig
+              };
+            } else {
+              return {
+                type: RTLActions.VOID
+              };
+            }
+          }),
+          catchError((err) => {
+            errorHandled = true;
+            this.handleErrorWithAlert('FetchRTLConfig', UI_MESSAGES.GET_RTL_CONFIG, 'Fetch RTL Config Failed!', API_END_POINTS.CONF_API, err);
+            return of({ type: RTLActions.VOID });
+          }),
+          finalize(() => {
+            if (!errorHandled) {
+              this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_RTL_CONFIG }));
+            }
+          })
+        );
       }))
   );
 
