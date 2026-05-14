@@ -73,6 +73,7 @@ export class CommonService {
             config.nodes?.forEach((node) => {
                 const appConfigNode = appConfigNodes.get(node.index);
                 if (appConfigNode?.authentication) {
+                    node.authentication = node.authentication || {};
                     if (appConfigNode.authentication.macaroonPath) {
                         node.authentication.macaroonPath = appConfigNode.authentication.macaroonPath;
                     }
