@@ -69,7 +69,7 @@ export class CommonService {
             if (config.secret2FA === this.appConfig.secret2FA) {
                 config.secret2FA = this.appConfig.secret2FA;
             }
-            const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]));
+            const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]) || []);
             config.nodes?.forEach((node) => {
                 const appConfigNode = appConfigNodes.get(node.index);
                 if (appConfigNode?.authentication) {
