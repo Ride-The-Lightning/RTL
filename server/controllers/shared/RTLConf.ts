@@ -254,7 +254,7 @@ export const updateApplicationSettings = (req, res, next) => {
   try {
     const oldConfig = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const config = common.addSecureData(JSON.parse(JSON.stringify(req.body)));
-    const runtimeConfig = JSON.parse(JSON.stringify(oldConfig));
+    const runtimeConfig = oldConfig;
     Object.keys(config).forEach((key) => {
       if (key !== 'nodes') {
         runtimeConfig[key] = config[key];
@@ -298,6 +298,7 @@ export const updateApplicationSettings = (req, res, next) => {
     delete fileConfig.allowPasswordUpdate;
     delete fileConfig.rtlConfFilePath;
     delete fileConfig.rtlPass;
+    delete fileConfig.multiPass;
     fileConfig.nodes?.forEach((node) => {
       delete node.authentication?.options;
       delete node.authentication?.runeValue;
