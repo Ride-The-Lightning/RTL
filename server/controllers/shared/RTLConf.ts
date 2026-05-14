@@ -204,7 +204,7 @@ export const updateNodeSettings = (req, res, next) => {
   const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
   if (node && node.settings) {
-    node.settings = req.body.settings;
+    node.settings = { ...node.settings, ...req.body.settings };
     if (req.body.authentication.boltzMacaroonPath) {
       node.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
     } else {
@@ -220,9 +220,17 @@ export const updateNodeSettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
-      selectedNode.settings = req.body.settings;
-      selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
-      selectedNode.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
+      selectedNode.settings = { ...selectedNode.settings, ...req.body.settings };
+      if (req.body.authentication.boltzMacaroonPath) {
+        selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
+      } else {
+        delete selectedNode.authentication.boltzMacaroonPath;
+      }
+      if (req.body.authentication.swapMacaroonPath) {
+        selectedNode.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
+      } else {
+        delete selectedNode.authentication.swapMacaroonPath;
+      }
       common.replaceNode(req, selectedNode);
     }
     let responseNode = JSON.parse(JSON.stringify(common.selectedNode));
@@ -240,14 +248,57 @@ export const updateApplicationSettings = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Application Settings..' });
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   try {
-    const config = common.addSecureData(req.body);
-    common.appConfig = JSON.parse(JSON.stringify(config));
-    delete config.selectedNodeIndex;
-    delete config.enable2FA;
-    delete config.allowPasswordUpdate;
-    delete config.rtlConfFilePath;
-    delete config.rtlPass;
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    const oldConfig = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+    const config = common.addSecureData(JSON.parse(JSON.stringify(req.body)));
+    const runtimeConfig = JSON.parse(JSON.stringify(oldConfig));
+    Object.keys(config).forEach((key) => {
+      if (key !== 'nodes') {
+        runtimeConfig[key] = config[key];
+      }
+    });
+    if (config.nodes && config.nodes.length > 0) {
+      const oldNodes = (common.appConfig.nodes && common.appConfig.nodes.length > 0) ? common.appConfig.nodes : (oldConfig.nodes || []);
+      const newNodesMap = new Map(config.nodes.map((node) => [node.index, node]));
+      const updatedAndExistingNodes = oldNodes.map((oldNode) => {
+        const newNode = newNodesMap.get(oldNode.index);
+        newNodesMap.delete(oldNode.index);
+        const node = newNode ? {
+          ...oldNode,
+          ...newNode,
+          authentication: { ...(oldNode.authentication || {}), ...(newNode.authentication || {}) },
+          settings: { ...(oldNode.settings || {}), ...(newNode.settings || {}) }
+        } : {
+          ...oldNode,
+          authentication: { ...(oldNode.authentication || {}) },
+          settings: { ...(oldNode.settings || {}) }
+        };
+        return node;
+      });
+      const newOnlyNodes = [...newNodesMap.values()].map((newNode) => JSON.parse(JSON.stringify(newNode)));
+      runtimeConfig.nodes = [...updatedAndExistingNodes, ...newOnlyNodes];
+    }
+    common.appConfig = JSON.parse(JSON.stringify({
+      ...runtimeConfig,
+      selectedNodeIndex: config.selectedNodeIndex !== undefined ?
+        config.selectedNodeIndex : common.appConfig.selectedNodeIndex,
+      enable2FA: config.enable2FA !== undefined ?
+        config.enable2FA : common.appConfig.enable2FA,
+      allowPasswordUpdate: config.allowPasswordUpdate !== undefined ?
+        config.allowPasswordUpdate : common.appConfig.allowPasswordUpdate,
+      rtlConfFilePath: common.appConfig.rtlConfFilePath,
+      rtlPass: common.appConfig.rtlPass
+    }));
+    const fileConfig = JSON.parse(JSON.stringify(common.appConfig));
+    delete fileConfig.selectedNodeIndex;
+    delete fileConfig.enable2FA;
+    delete fileConfig.allowPasswordUpdate;
+    delete fileConfig.rtlConfFilePath;
+    delete fileConfig.rtlPass;
+    fileConfig.nodes?.forEach((node) => {
+      delete node.authentication?.options;
+      delete node.authentication?.runeValue;
+    });
+    fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
     const newConfig = JSON.parse(JSON.stringify(common.appConfig));
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.maskPasswords(newConfig) });
     res.status(201).json(common.removeSecureData(newConfig));
