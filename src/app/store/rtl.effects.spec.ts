@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -25,7 +26,7 @@ import { API_END_POINTS, APICallStatusEnum, RTLActions, UI_MESSAGES } from '../s
 
 import { RTLEffects } from './rtl.effects';
 import { RTLState } from './rtl.state';
-import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore } from './rtl.actions';
+import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore, fetchRTLConfig, openSnackBar } from './rtl.actions';
 import { resetLNDStore, fetchInfoLND, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
 import { resetCLNStore } from '../cln/store/cln.actions';
 import { resetECLStore } from '../eclair/store/ecl.actions';
@@ -35,6 +36,7 @@ describe('RTL Root Effects', () => {
   let effects: RTLEffects;
   let mockStore: Store<RTLState>;
   let snackBar: MatSnackBar;
+  let router: Router;
   let container: any;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
@@ -62,6 +64,7 @@ describe('RTL Root Effects', () => {
     effects = TestBed.inject(RTLEffects);
     mockStore = TestBed.inject(Store);
     snackBar = TestBed.inject(MatSnackBar);
+    router = TestBed.inject(Router);
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     container = document.createElement('div');
@@ -123,6 +126,41 @@ describe('RTL Root Effects', () => {
       done();
       setTimeout(() => sub.unsubscribe());
     });
+  });
+
+  it('should refresh application settings after default password login', () => {
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    const routerNavigateSpy = spyOn(router, 'navigate').and.stub();
+
+    effects.setLoggedInDetails(true, { token: 'test-token' });
+
+    expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(fetchRTLConfig());
+    expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(openSnackBar({ payload: 'Reset your password.' }));
+    expect(routerNavigateSpy).toHaveBeenCalledWith(['/settings/auth']);
+  });
+
+  it('should store application settings when selected node index is missing from config', (done) => {
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    actions = new ReplaySubject(1);
+    const appConfig = {
+      ...mockRTLStoreState.root.appConfig,
+      SSO: { rtlSSO: 0, logoutRedirectLink: '/rtl/login' },
+      secret2FA: '',
+      allowPasswordUpdate: true,
+      selectedNodeIndex: 99
+    };
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    const sub = effects.appConfigFetch.subscribe((appConfigResponse) => {
+      expect(appConfigResponse).toEqual({ type: RTLActions.SET_APPLICATION_SETTINGS, payload: appConfig });
+      const setSelectedNodeAction = storeDispatchSpy.calls.all()[4].args[0] as any;
+      expect(setSelectedNodeAction.type).toEqual(RTLActions.SET_SELECTED_NODE);
+      expect(setSelectedNodeAction.payload.currentLnNode.index).toEqual(appConfig.nodes[0].index);
+      done();
+      setTimeout(() => sub.unsubscribe());
+    });
+    const req = httpTestingController.expectOne(API_END_POINTS.CONF_API);
+    req.flush(appConfig);
+    expect(req.request.method).toEqual('GET');
   });
 
   it('should open snack bar', (done) => {

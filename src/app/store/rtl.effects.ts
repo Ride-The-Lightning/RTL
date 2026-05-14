@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
-import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, switchMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -198,7 +198,7 @@ export class RTLEffects implements OnDestroy {
   appConfigFetch = createEffect(
     () => this.actions.pipe(
       ofType(RTLActions.FETCH_APPLICATION_SETTINGS),
-      mergeMap(() => {
+      switchMap(() => {
         this.screenSize = this.commonService.getScreenSize();
         if (this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
           this.alertWidth = '95%';
@@ -221,10 +221,11 @@ export class RTLEffects implements OnDestroy {
         let searchNode: Node | null = null;
         rtlConfig.nodes.forEach((node) => {
           node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings?.currencyUnit ? node.settings?.currencyUnit : '')];
-          if (+(node.index || -1) === rtlConfig.selectedNodeIndex) {
+          if (+(node.index || -1) === +rtlConfig.selectedNodeIndex) {
             searchNode = node;
           }
         });
+        searchNode = searchNode || rtlConfig.nodes[0] || null;
         if (searchNode) {
           this.store.dispatch(setSelectedNode({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: searchNode, isInitialSetup: true } }));
           return {
@@ -568,11 +569,10 @@ export class RTLEffects implements OnDestroy {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
     this.sessionService.setItem('defaultPassword', defaultPassword);
+    this.store.dispatch(fetchRTLConfig());
     if (defaultPassword) {
       this.store.dispatch(openSnackBar({ payload: 'Reset your password.' }));
       this.router.navigate(['/settings/auth']);
-    } else {
-      this.store.dispatch(fetchRTLConfig());
     }
   }
 
