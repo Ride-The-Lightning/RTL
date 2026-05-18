@@ -204,9 +204,9 @@ export class CommonService {
   };
 
   public setOptions = (req) => {
-    if (this.nodes[0].authentication.options && this.nodes[0].authentication.options.headers) { return; }
     if (this.nodes && this.nodes.length > 0) {
       this.nodes.forEach((node) => {
+        if (node.authentication.options && node.authentication.options.headers) { return; }
         node.authentication.options = {
           url: '',
           rejectUnauthorized: false,
