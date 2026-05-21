@@ -11,7 +11,7 @@
         <mat-form-field>
           <mat-label>Password</mat-label>
           <input autoFocus matInput type="password" id="password" name="password" tabindex="1" required [(ngModel)]="password">
-          <mat-error *ngIf="!password">Password is required.</mat-error>
+          <mat-error *ngIf="!password" role="alert" aria-live="assertive">Password is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-1">
           <button mat-button color="primary" tabindex="2" type="submit" default (click)="onAuthenticate()">Confirm</button>

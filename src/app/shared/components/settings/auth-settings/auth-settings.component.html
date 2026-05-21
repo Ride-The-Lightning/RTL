@@ -7,17 +7,17 @@
     <mat-form-field>
       <mat-label>Current Password</mat-label>
       <input autoFocus matInput type="password" id="currpassword" name="currpassword" tabindex="1" required [(ngModel)]="currPassword">
-      <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
+      <mat-error *ngIf="!currPassword" role="alert" aria-live="assertive">Current password is required.</mat-error>
     </mat-form-field>
     <mat-form-field>
       <mat-label>New Password</mat-label>
       <input matInput type="password" id="newpassword" name="newpassword" tabindex="2" required [(ngModel)]="newPassword">
-      <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
+      <mat-error *ngIf="matchOldAndNewPasswords()" role="alert" aria-live="assertive">{{errorMsg}}</mat-error>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Confirm New Password</mat-label>
       <input matInput type="password" id="confirmpassword" name="confirmpassword" tabindex="3" required [(ngModel)]="confirmPassword">
-      <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
+      <mat-error *ngIf="matchNewPasswords()" role="alert" aria-live="assertive">{{errorConfirmMsg}}</mat-error>
     </mat-form-field>
     <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" type="reset" tabindex="4" (click)="onResetPassword()">Reset</button>
