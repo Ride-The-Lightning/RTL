@@ -19,13 +19,13 @@
                 <button mat-icon-button matSuffix tabindex="2" type="button" [attr.aria-label]="'Hide password'" (click)="flgShow = !flgShow">
                   <mat-icon>{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
-                <mat-error *ngIf="!password" role="alert" aria-live="assertive">Password is required.</mat-error>
+                <mat-error *ngIf="!password" aria-live="polite">Password is required.</mat-error>
               </mat-form-field>
-              <p *ngIf="loginErrorMessage !== ''" class="color-warn pre-wrap" fxFlex="100" fxLayoutAlign="start center" role="alert" aria-live="assertive" aria-atomic="true">
+              <p *ngIf="loginErrorMessage !== ''" class="color-warn pre-wrap" fxFlex="100" fxLayoutAlign="start center" role="alert">
                 <mat-icon class="mr-3px icon-small" fxLayoutAlign="center center">close</mat-icon>
                 {{loginErrorMessage}}
               </p>
-              <p *ngIf="logoutReason !== ''" class="color-warn pre-wrap" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" role="status" aria-live="polite" aria-atomic="true">
+              <p *ngIf="logoutReason !== ''" class="color-warn pre-wrap" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" role="status">
                 <mat-icon class="mr-3px icon-small" fxLayoutAlign="center center">close</mat-icon>
                 {{logoutReason}}
               </p>
