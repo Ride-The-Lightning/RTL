@@ -4,7 +4,7 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Bump Fee</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+      <button fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
@@ -30,12 +30,13 @@
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <mat-form-field fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
                 <mat-label>Index for Change Output</mat-label>
-                <input #outputIndx="ngModel" autoFocus matInput type="number" tabindex="1" required name="outputIndx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
+                <input #outputIndx="ngModel" autoFocus matInput type="number" required name="outputIndx" [step]="1" [min]="0" [(ngModel)]="outputIndex">
                 <mat-error *ngIf="outputIndx.errors?.required">Index for change output is required.</mat-error>
                 <mat-error *ngIf="outputIndx.errors?.OutputIndexError">Invalid index value.</mat-error>
               </mat-form-field>
               <mat-form-field fxLayout="column" fxFlex.gt-sm="32">
-                <mat-select tabindex="2" [(value)]="selTransType" (selectionChange)="blocks = null;fees = null;">
+                <mat-label>Transaction Type</mat-label>
+                <mat-select [(value)]="selTransType" (selectionChange)="blocks = null;fees = null;">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}
                   </mat-option>
@@ -44,12 +45,12 @@
               <mat-form-field *ngIf="selTransType === '1'" fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
                 <mat-label>Number of Blocks</mat-label>
                 <input #blcks="ngModel" matInput type="number" name="blocks" required
-                  tabindex="3" [step]="1" [min]="0" [(ngModel)]="blocks">
+                  [step]="1" [min]="0" [(ngModel)]="blocks">
                 <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
               </mat-form-field>
               <mat-form-field *ngIf="selTransType === '2'" fxLayout="column" fxFlex.gt-sm="32" fxLayoutAlign="start end">
                 <mat-label>Fees (Sats/vByte)</mat-label>
-                <input #fee="ngModel" matInput type="number" name="fees" required tabindex="4" [step]="1" [min]="0" [(ngModel)]="fees">
+                <input #fee="ngModel" matInput type="number" name="fees" required [step]="1" [min]="0" [(ngModel)]="fees">
                 <mat-error *ngIf="!fees">Fees is required.</mat-error>
               </mat-form-field>
             </div>
@@ -60,8 +61,8 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-button color="primary" type="reset" class="mr-1" tabindex="5" default (click)="resetData()">Clear</button>
-          <button mat-button color="primary" type="submit" tabindex="6" (click)="onBumpFee()">{{bumpFeeError !== '' ? 'Retry Bump Fee' : 'Bump Fee'}}</button>
+          <button mat-button color="primary" type="reset" class="mr-1" default (click)="resetData()">Clear</button>
+          <button mat-button color="primary" type="submit" (click)="onBumpFee()">{{bumpFeeError !== '' ? 'Retry Bump Fee' : 'Bump Fee'}}</button>
         </div>
       </form>
     </mat-card-content>

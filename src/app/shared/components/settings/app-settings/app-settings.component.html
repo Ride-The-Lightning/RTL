@@ -7,7 +7,8 @@
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="my-2">
       <div fxLayout="row" fxLayoutAlign="start start">
         <mat-form-field fxLayout="column" fxLayoutAlign="start start">
-          <mat-select autoFocus tabindex="1" name="defaultNode" [(ngModel)]="appConfig.defaultNodeIndex">
+          <mat-label>Default Node</mat-label>
+          <mat-select autoFocus name="defaultNode" [(ngModel)]="appConfig.defaultNodeIndex">
             <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
               {{node.lnNode}} ({{node.lnImplementation}})
             </mat-option>
