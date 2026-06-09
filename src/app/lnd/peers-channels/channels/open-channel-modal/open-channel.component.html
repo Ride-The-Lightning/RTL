@@ -4,14 +4,14 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{alertTitle}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+      <button fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()">
         <div fxLayout="column">
           <mat-form-field *ngIf="!peer && peers && peers.length > 0" fxFlex="100">
             <mat-label>Peer Alias</mat-label>
-            <input type="text" aria-label="Peers" matInput tabindex="1" required [formControl]="selectedPeer" [matAutocomplete]="auto">
+            <input type="text" aria-label="Peers" matInput required [formControl]="selectedPeer" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
               <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.pub_key ? peer.pub_key : ''}}</mat-option>
             </mat-autocomplete>
@@ -24,14 +24,14 @@
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
               <mat-label>Amount</mat-label>
-              <input #amt="ngModel" matInput type="number" tabindex="1" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
+              <input #amt="ngModel" matInput type="number" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
               <mat-hint>(Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
               <span matSuffix> Sats </span>
               <mat-error *ngIf="amt.errors?.required">Amount is required.</mat-error>
               <mat-error *ngIf="amt.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
             <div fxFlex="35" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="2" color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
+              <mat-slide-toggle color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
             </div>
           </div>
           <mat-expansion-panel fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
@@ -56,7 +56,8 @@
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                 <mat-form-field fxLayout="column" fxFlex="49">
-                  <mat-select tabindex="3" [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
+                  <mat-label>Transaction Type</mat-label>
+                  <mat-select [(value)]="selTransType" (selectionChange)="onSelTransTypeChanged($event)">
                     <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                       {{transType.name}}
                     </mat-option>
@@ -64,7 +65,7 @@
                 </mat-form-field>
                 <mat-form-field fxLayout="column" fxFlex="49">
                   <mat-label>{{selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}}</mat-label>
-                  <input #transTypeVal="ngModel" matInput type="number" tabindex="4" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [step]="1" [min]="selTransType === '2' ? recommendedFee.minimumFee : 0" [(ngModel)]="transTypeValue">
+                  <input #transTypeVal="ngModel" matInput type="number" name="transTpValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [step]="1" [min]="selTransType === '2' ? recommendedFee.minimumFee : 0" [(ngModel)]="transTypeValue">
                   <mat-hint *ngIf="selTransType === '2'">Mempool Min: {{recommendedFee.minimumFee}} (Sats/vByte)</mat-hint>
                   <mat-error *ngIf="selTransType === '1' && !transTypeValue">Target Confirmation Blocks is required.</mat-error>
                   <mat-error *ngIf="selTransType === '2' && !transTypeValue">Fee is required.</mat-error>
@@ -73,10 +74,10 @@
               </div>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
                 <div *ngIf="isTaprootAvailable" fxFlex="50" fxLayoutAlign="start center">
-                  <mat-slide-toggle tabindex="6" color="primary" name="taprootChannel" [(ngModel)]="taprootChannel">Taproot Channel</mat-slide-toggle>
+                  <mat-slide-toggle color="primary" name="taprootChannel" [(ngModel)]="taprootChannel">Taproot Channel</mat-slide-toggle>
                 </div>
                 <div fxFlex="50" fxLayoutAlign="start center">
-                  <mat-slide-toggle tabindex="7" color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+                  <mat-slide-toggle color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
                 </div>
               </div>
             </div>
@@ -87,8 +88,8 @@
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button mat-button color="primary" class="mr-1" tabindex="7" type="reset">Clear Fields</button>
-          <button autoFocus mat-button color="primary" type="submit" tabindex="9">Open Channel</button>
+          <button mat-button color="primary" class="mr-1" type="reset">Clear Fields</button>
+          <button autoFocus mat-button color="primary" type="submit">Open Channel</button>
         </div>
       </form>
     </mat-card-content>

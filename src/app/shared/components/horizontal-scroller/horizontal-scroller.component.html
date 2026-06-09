@@ -14,21 +14,26 @@
 <ng-template #controlsPanel let-item='animationDirection'>
   <div fxLayout="row" fxLayoutAlign="center center" fxFlex="58" [@sliderAnimation]="animationDirection">
     <div fxFlex="50" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="font-bold-700">
-      <mat-select fxFlex="60" fxFlex.gt-md="30" name="selScrlRange" tabindex="3" class="font-bold-700" [(ngModel)]="selScrollRange" (selectionChange)="onRangeChanged($event)">
-        <mat-option *ngFor="let scrollRange of scrollRanges" [value]="scrollRange">
-          {{scrollRange | titlecase}}
-        </mat-option>
-      </mat-select>
+      <mat-form-field fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
+        <mat-label>Scroll Range</mat-label>
+        <mat-select fxFlex="60" fxFlex.gt-md="30" name="selScrlRange" class="font-bold-700" [(ngModel)]="selScrollRange" (selectionChange)="onRangeChanged($event)">
+          <mat-option *ngFor="let scrollRange of scrollRanges" [value]="scrollRange">
+            {{scrollRange | titlecase}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
     <div fxFlex="50" fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="start center">
       <mat-form-field *ngIf="selScrollRange === scrollRanges[0]" monthlyDate fxLayoutAlign="center center">
-        <input #monthlyDt="ngModel" matInput name="monthlyDate" tabindex="4"
+        <mat-label>Monthly Date</mat-label>
+        <input #monthlyDt="ngModel" matInput name="monthlyDate"
         readonly [matDatepicker]="monthlyDatepicker" [min]="first" [max]="last" [(ngModel)]="selectedValue">
         <mat-datepicker-toggle matSuffix [for]="monthlyDatepicker" />
         <mat-datepicker #monthlyDatepicker startView="year" [startAt]="selectedValue" (monthSelected)="onMonthSelected($event)" (dateSelected)="onMonthSelected($event)" />
       </mat-form-field>
       <mat-form-field *ngIf="selScrollRange === scrollRanges[1]" yearlyDate fxLayoutAlign="center center">
-        <input #yearlyDt="ngModel" matInput name="yearlyDate" tabindex="4"
+        <mat-label>Yearly Date</mat-label>
+        <input #yearlyDt="ngModel" matInput name="yearlyDate"
         readonly [matDatepicker]="yearlyDatepicker" [min]="first" [max]="last" [(ngModel)]="selectedValue">
         <mat-datepicker-toggle matSuffix [for]="yearlyDatepicker" />
         <mat-datepicker #yearlyDatepicker startView="multi-year" [startAt]="selectedValue" (yearSelected)="onYearSelected($event)" (monthSelected)="onYearSelected($event)" (dateSelected)="onYearSelected($event)" />
