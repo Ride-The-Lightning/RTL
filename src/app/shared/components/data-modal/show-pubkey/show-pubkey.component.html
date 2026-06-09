@@ -17,7 +17,8 @@
         </div>
         <div *ngIf="information.uris && information.uris.length > 0" fxLayout="row">
           <mat-form-field fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
-            <mat-select tabindex="1" [(value)]="selInfoType">
+            <mat-label>Info type</mat-label>
+            <mat-select [(value)]="selInfoType">
               <mat-option *ngFor="let infoType of infoTypes" [value]="infoType">
                 {{infoType.infoName}}
               </mat-option>

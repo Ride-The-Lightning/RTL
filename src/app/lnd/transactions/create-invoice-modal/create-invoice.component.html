@@ -4,17 +4,17 @@
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Create Invoice</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
+      <button fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #addInvoiceForm="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100">
         <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="end start">
           <mat-label>Memo</mat-label>
-          <input matInput autoFocus tabindex="1" name="memo" [(ngModel)]="memo">
+          <input matInput autoFocus name="memo" [(ngModel)]="memo">
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="50" fxLayoutAlign="start end">
           <mat-label>Amount</mat-label>
-          <input matInput type="number" tabindex="2" name="invoiceValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
+          <input matInput type="number" name="invoiceValue" [step]="100" [min]="1" [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()">
           <span matSuffix>Sats </span>
           <mat-hint fxLayout="row wrap" fxFlex="100">
             <span *ngIf="invoiceValueHint !== ''" class="mr-3px">= </span>
@@ -27,21 +27,22 @@
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="24" fxLayoutAlign="start end">
           <mat-label>Expiry</mat-label>
-          <input matInput type="number" tabindex="3" name="expiry" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" [(ngModel)]="expiry">
+          <input matInput type="number" name="expiry" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" [(ngModel)]="expiry">
           <span matSuffix>{{selTimeUnit | titlecase}} </span>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex="24" fxLayoutAlign="start end">
-          <mat-select tabindex="4" name="timeUnit" [value]="selTimeUnit" (selectionChange)="onTimeUnitChange($event)">
+          <mat-label>Time Unit</mat-label>
+          <mat-select name="timeUnit" [value]="selTimeUnit" (selectionChange)="onTimeUnitChange($event)">
             <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
           </mat-select>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="ml-2">
           <div fxFlex="49" fxLayoutAlign="start start">
-            <mat-slide-toggle tabindex="4" color="primary" name="private" [(ngModel)]="private">Private Routing Hints</mat-slide-toggle>
+            <mat-slide-toggle color="primary" name="private" [(ngModel)]="private">Private Routing Hints</mat-slide-toggle>
             <mat-icon matTooltip="Include routing hints for private channels" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
           </div>
           <div fxFlex="49" fxLayoutAlign="start start">
-            <mat-slide-toggle tabindex="5" color="primary" name="amp" [(ngModel)]="isAmp">AMP Invoice</mat-slide-toggle>
+            <mat-slide-toggle color="primary" name="amp" [(ngModel)]="isAmp">AMP Invoice</mat-slide-toggle>
             <mat-icon matTooltip="Atomic multipath payment invoice" matTooltipPosition="above" class="info-icon">info_outline</mat-icon>
           </div>
         </div>
@@ -50,8 +51,8 @@
           <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
         </div>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" tabindex="6" type="reset" (click)="resetData()">Clear Field</button>
-          <button mat-button color="primary" tabindex="7" (click)="onAddInvoice(addInvoiceForm)">Create Invoice</button>
+          <button class="mr-1" mat-button color="primary" type="reset" (click)="resetData()">Clear Field</button>
+          <button mat-button color="primary" (click)="onAddInvoice(addInvoiceForm)">Create Invoice</button>
         </div>
       </form>
     </mat-card-content>
