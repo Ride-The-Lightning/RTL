@@ -16,7 +16,7 @@
     <div fxFlex="50" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="font-bold-700">
       <mat-form-field fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
         <mat-label>Scroll Range</mat-label>
-        <mat-select fxFlex="60" fxFlex.gt-md="30" name="selScrlRange" class="font-bold-700" [(ngModel)]="selScrollRange" (selectionChange)="onRangeChanged($event)">
+        <mat-select name="selScrlRange" class="font-bold-700" [(ngModel)]="selScrollRange" (selectionChange)="onRangeChanged($event)">
           <mat-option *ngFor="let scrollRange of scrollRanges" [value]="scrollRange">
             {{scrollRange | titlecase}}
           </mat-option>
