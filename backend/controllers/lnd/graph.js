@@ -79,9 +79,6 @@ export const getQueryRoutes = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
-    if (req.query.outgoing_chan_id) {
-        options.url = options.url + '?outgoing_chan_id=' + req.query.outgoing_chan_id;
-    }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });

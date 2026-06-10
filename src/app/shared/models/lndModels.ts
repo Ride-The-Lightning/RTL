@@ -571,7 +571,6 @@ export interface GetNewAddress {
 export interface GetQueryRoutes {
   destPubkey: string;
   amount: number;
-  outgoingChanId?: string;
 }
 
 export interface InitWallet {
