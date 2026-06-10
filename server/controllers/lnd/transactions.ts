@@ -28,7 +28,7 @@ export const postTransactions = (req, res, next) => {
   options.form = {
     amount: amount,
     addr: address,
-    sat_per_byte: fees,
+    sat_per_vbyte: fees,
     target_conf: blocks
   };
   if (sendAll) { options.form.send_all = sendAll; }
