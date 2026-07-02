@@ -9,7 +9,7 @@
         <fa-icon class="page-title-img mr-1" [icon]="faReceipt" />
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
       </div>
-      <button type="button" aria-label="Close dialog" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-icon-button (click)="onClose()"><mat-icon aria-hidden="true">close</mat-icon></button>
+      <button type="button" aria-label="Close dialog" fxFlex="none" fxLayoutAlign="center center" class="btn-close-x p-0" mat-icon-button (click)="onClose()"><mat-icon aria-hidden="true">close</mat-icon></button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
