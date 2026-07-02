@@ -4,7 +4,7 @@
       <div fxLayoutAlign="start start" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-83' : 'flex-91'"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
       <div fxLayoutAlign="space-between end" [ngClass]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? 'flex-17' : 'flex-9'">
         <button tabindex="21" class="btn-close-x p-0" mat-button (click)="showInfo()">?</button>
-        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
+        <button type="button" aria-label="Close dialog" class="btn-close-x p-0" mat-icon-button (click)="onClose()"><mat-icon aria-hidden="true">close</mat-icon></button>
       </div>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
@@ -121,7 +121,7 @@
     <mat-card-header fxLayout="row" fxFlex="8" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title"></span></div>
       <div fxFlex="5" fxLayoutAlign="end center">
-        <button tabindex="22" class="btn-close-x p-0" mat-button (click)="flgShowInfo=false;stepNumber=1;">X</button>
+        <button type="button" aria-label="Close dialog" class="btn-close-x p-0" mat-icon-button (click)="flgShowInfo=false;stepNumber=1;"><mat-icon aria-hidden="true">close</mat-icon></button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
