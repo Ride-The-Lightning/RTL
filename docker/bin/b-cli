@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
+#
+# bitcoin-cli against the regtest fixture.
+#
+#   bin/b-cli getblockchaininfo
+#   bin/b-cli -rpcwallet=rtldev getbalance
+#   bin/b-cli -rpcwallet=rtldev generatetoaddress 6 <address>
 
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+# shellcheck disable=SC1091
 source .env
 
-docker-compose exec bitcoind bitcoin-cli \
-  -datadir=/bitcoin \
-  -rpcuser=$BITCOIN_RPC_USER \
-  -rpcpassword=$BITCOIN_RPC_PASSWORD \
-  -rpcport=$BITCOIN_RPC_PORT \
+exec docker compose exec -T bitcoind bitcoin-cli \
+  -regtest \
+  -rpcuser="$BITCOIN_RPC_USER" \
+  -rpcpassword="$BITCOIN_RPC_PASSWORD" \
+  -rpcport="$BITCOIN_RPC_PORT" \
   "$@"

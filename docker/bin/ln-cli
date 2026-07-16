@@ -1,8 +1,32 @@
 #!/usr/bin/env bash
+#
+# lncli against one node of the regtest fixture. The node name is required,
+# because the fixture runs three of them.
+#
+#   bin/ln-cli alice getinfo
+#   bin/ln-cli bob listchannels
+#   bin/ln-cli carol addinvoice --amt=1000
+#
+# --lnddir is passed explicitly: 'docker compose exec' lands as root, whose HOME
+# is /root, but lnd's datadir is /home/lnd/.lnd. Without it lncli looks for the
+# TLS cert in the wrong place and fails.
 
-source .env
+set -euo pipefail
 
-docker-compose exec lnd lncli \
-  --macaroonpath /shared/admin.macaroon \
-  --tlscertpath /shared/tls.cert \
+cd "$(dirname "$0")/.."
+
+node="${1:-}"
+case "$node" in
+  alice|bob|carol)
+    shift
+    ;;
+  *)
+    echo "usage: $(basename "$0") <alice|bob|carol> [lncli args...]" >&2
+    exit 1
+    ;;
+esac
+
+exec docker compose exec -T "$node" lncli \
+  --network=regtest \
+  --lnddir=/home/lnd/.lnd \
   "$@"
