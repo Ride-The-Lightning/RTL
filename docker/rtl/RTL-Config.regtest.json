@@ -1,5 +1,5 @@
 {
-  "multiPass": "password",
+  "multiPass": "rtldev",
   "port": "3000",
   "defaultNodeIndex": 1,
   "dbDirectoryPath": "/RTL/database",
