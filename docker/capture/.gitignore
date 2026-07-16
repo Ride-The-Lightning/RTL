@@ -1,0 +1,3 @@
+node_modules/
+# Captured screenshots live in the RTL-Design repo (baseline/), not here.
+shots/

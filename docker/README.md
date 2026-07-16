@@ -28,7 +28,7 @@ docker compose up -d          # bitcoind, alice, bob, carol, rtl
 ./scripts/seed.sh             # fund, connect, open channels, make payments
 ```
 
-Then open <http://localhost:3000> — password `password`. All three nodes appear in
+Then open <http://localhost:3000> — password `rtldev`. All three nodes appear in
 the node switcher.
 
 Tear down, discarding all state:

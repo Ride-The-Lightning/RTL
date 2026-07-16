@@ -1,0 +1,13 @@
+{
+  "name": "rtl-baseline-capture",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic screenshot capture of RTL against the regtest fixture",
+  "scripts": {
+    "capture": "node capture.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}
