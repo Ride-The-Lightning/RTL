@@ -19,6 +19,16 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# Docker Compose reads .env by itself; bash does not. Without this the defaults
+# below silently win, and the summary at the end prints a password that does not
+# work.
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 BITCOIN_RPC_USER="${BITCOIN_RPC_USER:-rtldev}"
 BITCOIN_RPC_PASSWORD="${BITCOIN_RPC_PASSWORD:-rtldev}"
 
