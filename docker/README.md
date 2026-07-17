@@ -3,17 +3,22 @@
 ### NOT suitable for production. Development only. Every credential here is throwaway.
 
 A self-contained regtest network for developing and testing RTL: `bitcoind`, three
-LND nodes, and RTL wired to all three.
+LND nodes, a Core Lightning node, and RTL wired to all four.
 
 ```
 alice --[ 5,000,000 sat ]--> bob --[ 3,000,000 sat ]--> carol
+cln   --[ 4,000,000 sat ]--> alice
 ```
 
 bob sits in the middle so it accrues forwarding history, which is what gives RTL's
-routing screens something to show. Two nodes would leave them empty.
+routing screens something to show. Two nodes would leave them empty. The `cln`
+(Core Lightning) node gives RTL's CLN screens a real backend — it talks to RTL over
+clnrest with rune auth.
 
-Node images come from [Polar](https://lightningpolar.com), which publishes multi-arch
-(amd64 + arm64) builds. Nothing is built locally, so this works on Apple Silicon.
+LND and bitcoind images come from [Polar](https://lightningpolar.com); the Core
+Lightning image is the official [`elementsproject/lightningd`](https://hub.docker.com/r/elementsproject/lightningd).
+All are multi-arch (amd64 + arm64) and nothing is built locally, so this works on
+Apple Silicon.
 
 ## Requirements
 
@@ -24,12 +29,12 @@ Docker with Compose v2 (`docker compose`, not `docker-compose`).
 From this directory:
 
 ```bash
-docker compose up -d          # bitcoind, alice, bob, carol, rtl
+docker compose up -d          # bitcoind, alice, bob, carol, cln, rtl
 ./scripts/seed.sh             # fund, connect, open channels, make payments
 ```
 
-Then open <http://localhost:3000> — password `rtldev`. All three nodes appear in
-the node switcher.
+Then open <http://localhost:3000> — password `rtldev`. All four nodes (alice, bob,
+carol, cln) appear in the node switcher.
 
 Tear down, discarding all state:
 
@@ -41,12 +46,12 @@ docker compose down -v
 
 | | |
 |---|---|
-| On-chain | 10,000,000 sats per node, confirmed |
-| Channels | alice→bob 5,000,000 sats · bob→carol 3,000,000 sats (1,000,000 pushed each) |
+| On-chain | 10,000,000 sats per node (LND) + 10,000,000 sats on cln, confirmed |
+| Channels | alice→bob 5,000,000 sats · bob→carol 3,000,000 sats (1,000,000 pushed each) · cln→alice 4,000,000 sats |
 | Routed payments | 5 × alice→carol via bob (10k, 25k, 50k, 75k, 100k sats) |
 | Direct payments | 2 × alice→bob (5k, 15k sats) |
 | Open invoices | 2 unpaid on carol (20k, 40k sats) |
-| Personas | alice + bob OPERATOR, carol MERCHANT |
+| Personas | alice + bob + cln OPERATOR, carol MERCHANT |
 
 ## Determinism
 
@@ -70,6 +75,7 @@ bin/b-cli -rpcwallet=rtldev getbalance
 bin/ln-cli alice getinfo                   # lncli, node name required
 bin/ln-cli bob listchannels
 bin/ln-cli bob fwdinghistory               # forwarding history
+docker compose exec cln lightning-cli --network=regtest listpeerchannels   # Core Lightning
 ```
 
 Logs:
@@ -108,8 +114,16 @@ In `docker-compose.yml` the `$` must be written `$$` to escape Compose interpola
 before she can route to carol. The seed waits for this; anything you script yourself
 should too.
 
+**Core Lightning auth uses a rune.** RTL talks to `cln` over clnrest and authenticates
+with a rune, not a macaroon. On first start `cln/poststart.d/create-rune.sh` runs inside
+the node (once the RPC is up), creates a master rune, and writes it as
+`LIGHTNING_RUNE="…"` to `rtl.rune` in the shared `cln_data` volume; RTL reads it via the
+`runePath` in its config. The `cln` healthcheck only passes once that file exists, so RTL
+waits for it. `--clnrest-host=0.0.0.0` is required for RTL (another container) to reach
+clnrest; the default `127.0.0.1` would only be reachable from inside the node.
+
 ## Not included
 
-Core Lightning and Eclair nodes, and the Boltz swap service. Polar publishes
-multi-arch `clightning` and `eclair` images, so adding them means compose services,
-RTL config entries, and seeding adapters — no image building.
+Eclair nodes and the Boltz swap service. Polar publishes a multi-arch `eclair` image, so
+adding an Eclair node means a compose service, an RTL config entry, and a seeding adapter
+— no image building.
