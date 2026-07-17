@@ -115,12 +115,15 @@ before she can route to carol. The seed waits for this; anything you script your
 should too.
 
 **Core Lightning auth uses a rune.** RTL talks to `cln` over clnrest and authenticates
-with a rune, not a macaroon. On first start `cln/poststart.d/create-rune.sh` runs inside
-the node (once the RPC is up), creates a master rune, and writes it as
-`LIGHTNING_RUNE="…"` to `rtl.rune` in the shared `cln_data` volume; RTL reads it via the
-`runePath` in its config. The `cln` healthcheck only passes once that file exists, so RTL
-waits for it. `--clnrest-host=0.0.0.0` is required for RTL (another container) to reach
-clnrest; the default `127.0.0.1` would only be reachable from inside the node.
+with a rune, not a macaroon. `cln/create-rune.sh` — run from the `cln` healthcheck —
+creates a master rune once the RPC is up and writes it as `LIGHTNING_RUNE="…"` to
+`rtl.rune` in the shared `cln_data` volume; RTL reads it via the `runePath` in its config.
+The healthcheck reports unhealthy until that file exists, so RTL (which waits on
+`service_healthy`) starts only once the rune is ready. Because it runs on every
+healthcheck tick (idempotent), a transient RPC-startup race just retries and self-heals
+rather than wedging the stack. `--clnrest-host=0.0.0.0` is required for RTL (another
+container) to reach clnrest; the default `127.0.0.1` would only be reachable from inside
+the node.
 
 ## Not included
 

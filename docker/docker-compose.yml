@@ -145,9 +145,9 @@ services:
 
   # Core Lightning node. Unlike the LND nodes it talks to RTL over clnrest (the
   # built-in REST plugin) using rune auth, so it needs --clnrest-* options and a
-  # rune written where RTL can read it. The entrypoint runs scripts dropped in
-  # lightning-poststart.d once the RPC socket is up; create-rune.sh generates the
-  # rune there and writes it to /root/.lightning/rtl.rune (RTL mounts that read-only).
+  # rune written where RTL can read it. create-rune.sh (run from the healthcheck)
+  # creates the rune and writes it to /root/.lightning/rtl.rune (RTL mounts that
+  # read-only); the healthcheck is unhealthy until it exists, so rtl waits for it.
   # --clnrest-host=0.0.0.0 is required so the rtl container can reach it; the default
   # 127.0.0.1 would only be reachable from inside this container. Protocol stays https
   # (clnrest default, self-signed) — RTL connects with rejectUnauthorized:false.
@@ -175,13 +175,16 @@ services:
       - "${CLN_REST_PORT:-3010}:3010"
     volumes:
       - cln_data:/root/.lightning
-      - ./cln/poststart.d:/root/.lightning/lightning-poststart.d:ro
+      - ./cln/create-rune.sh:/opt/create-rune.sh:ro
     healthcheck:
-      # Healthy only once the RPC is up AND the rune file has been written, so the
-      # rtl service (which reads the rune at startup) can wait on this.
-      test: ["CMD-SHELL", "lightning-cli --network=regtest getinfo >/dev/null 2>&1 && test -f /root/.lightning/rtl.rune"]
+      # create-rune.sh ensures the rune exists (idempotent, one quick attempt) and
+      # this reports healthy only once it does. Driving it from the healthcheck — which
+      # retries on its interval — means a transient RPC-startup race self-heals instead
+      # of a one-shot script permanently wedging the stack. rtl waits on this via
+      # depends_on: condition: service_healthy before reading the rune at startup.
+      test: ["CMD-SHELL", "sh /opt/create-rune.sh && test -f /root/.lightning/rtl.rune"]
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 40
 
   # RTL rewrites its config file on startup, so it cannot be given the tracked
