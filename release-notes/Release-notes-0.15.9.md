@@ -32,7 +32,7 @@ this release should add its entry under the appropriate section below.
   unaffected.
 
 - **All implementations: restore the "items per page" dropdown (and first/last-page buttons)
-  on paginated tables** ([#XXXX](https://github.com/Ride-The-Lightning/RTL/pull/XXXX), fixes
+  on paginated tables** ([#1626](https://github.com/Ride-The-Lightning/RTL/pull/1626), fixes
   [#1580](https://github.com/Ride-The-Lightning/RTL/issues/1580)).
   A dependency-update commit in the 0.15.8-beta cycle mechanically renamed the paginator
   binding `[showFirstLastButtons]` to `[hidePageSize]` on every `mat-paginator` while keeping
