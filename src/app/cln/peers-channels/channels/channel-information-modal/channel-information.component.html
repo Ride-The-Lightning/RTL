@@ -43,7 +43,7 @@
             <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>
             <span class="foreground-secondary-text">
               {{channel.funding_txid}}
-              <fa-icon matTooltip="{{'Link to ' + selNode.settings.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
+              <fa-icon *ngIf="selNode?.settings?.blockExplorerUrl" matTooltip="{{'Link to ' + selNode?.settings?.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
             </span>
           </div>
         </div>

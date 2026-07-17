@@ -16,6 +16,17 @@ this release should add its entry under the appropriate section below.
   sync, and the list columns read `peer_connected` directly. Regression tests were added for
   both channel tables.
 
+- **Core Lightning: fix the channel View Info modal rendering blank for disconnected channels**
+  ([#1625](https://github.com/Ride-The-Lightning/RTL/pull/1625), fixes
+  [#1606](https://github.com/Ride-The-Lightning/RTL/issues/1606)).
+  The channel information modal renders a block-explorer link from `selNode.settings.blockExplorerUrl`,
+  but the pending/inactive channels table opened the modal without passing `selNode`. With it
+  undefined, that binding threw during change detection and blanked every field below it — State,
+  Connected, Private and the balances all showed no value. Because a disconnected channel moves to
+  the pending/inactive table, this is exactly what was seen on "View Info" for a disconnected
+  channel. The pending table now passes `selNode` (matching the open table), and the modal guards
+  the explorer link so a missing `selNode` can no longer blank the dialog.
+
 ## Developer Tooling
 
 - **Added a Core Lightning node to the regtest docker fixture**
