@@ -57,6 +57,7 @@ export class CLNChannelInformationComponent implements OnInit {
   }
 
   onExplorerClicked() {
+    if (!this.selNode?.settings?.blockExplorerUrl) { return; }
     window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.channel.funding_txid, '_blank');
   }
 
