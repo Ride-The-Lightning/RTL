@@ -58,7 +58,7 @@
       </ng-container>
       <ng-container matColumnDef="connected">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Connected</th>
-        <td *matCellDef="let channel" mat-cell>{{(channel?.connected) ? 'Connected' : 'Disconnected'}}</td>
+        <td *matCellDef="let channel" mat-cell>{{(channel?.peer_connected) ? 'Connected' : 'Disconnected'}}</td>
       </ng-container>
       <ng-container matColumnDef="state">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
