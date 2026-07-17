@@ -13,6 +13,7 @@ volumes:
   alice_data:
   bob_data:
   carol_data:
+  cln_data:
   rtl_db:
   rtl_config:
 
@@ -142,6 +143,47 @@ services:
     volumes:
       - carol_data:/home/lnd/.lnd
 
+  # Core Lightning node. Unlike the LND nodes it talks to RTL over clnrest (the
+  # built-in REST plugin) using rune auth, so it needs --clnrest-* options and a
+  # rune written where RTL can read it. The entrypoint runs scripts dropped in
+  # lightning-poststart.d once the RPC socket is up; create-rune.sh generates the
+  # rune there and writes it to /root/.lightning/rtl.rune (RTL mounts that read-only).
+  # --clnrest-host=0.0.0.0 is required so the rtl container can reach it; the default
+  # 127.0.0.1 would only be reachable from inside this container. Protocol stays https
+  # (clnrest default, self-signed) — RTL connects with rejectUnauthorized:false.
+  cln:
+    image: elementsproject/lightningd:v25.09
+    container_name: ${COMPOSE_PROJECT_NAME}_cln
+    restart: unless-stopped
+    depends_on:
+      - bitcoind
+    environment:
+      LIGHTNINGD_NETWORK: regtest
+    command:
+      - --alias=cln
+      - --bitcoin-rpcconnect=${BITCOIN_HOST}
+      - --bitcoin-rpcport=${BITCOIN_RPC_PORT}
+      - --bitcoin-rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoin-rpcpassword=${BITCOIN_RPC_PASSWORD}
+      - --bitcoin-retry-timeout=3600
+      - --addr=0.0.0.0:9735
+      - --announce-addr=cln:9735
+      - --large-channels
+      - --clnrest-host=0.0.0.0
+      - --clnrest-port=3010
+    ports:
+      - "${CLN_REST_PORT:-3010}:3010"
+    volumes:
+      - cln_data:/root/.lightning
+      - ./cln/poststart.d:/root/.lightning/lightning-poststart.d:ro
+    healthcheck:
+      # Healthy only once the RPC is up AND the rune file has been written, so the
+      # rtl service (which reads the rune at startup) can wait on this.
+      test: ["CMD-SHELL", "lightning-cli --network=regtest getinfo >/dev/null 2>&1 && test -f /root/.lightning/rtl.rune"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
   # RTL rewrites its config file on startup, so it cannot be given the tracked
   # template directly: a bind mount would either be read-only (RTL exits with
   # EROFS) or would let RTL scribble into a version-controlled file. Instead the
@@ -160,7 +202,9 @@ services:
 
   rtl:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
-    image: shahanafarooqui/rtl:v0.15.8
+    # Defaults to the published image; override with RTL_IMAGE (e.g. a locally built
+    # branch image) to test unreleased changes: RTL_IMAGE=rtl:pr1625 docker compose up.
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.8}
     restart: unless-stopped
     depends_on:
       rtl-config-init:
@@ -171,6 +215,8 @@ services:
         condition: service_started
       carol:
         condition: service_started
+      cln:
+        condition: service_healthy
     ports:
       - "${RTL_PORT}:${RTL_PORT}"
     environment:
@@ -180,4 +226,5 @@ services:
       - alice_data:/lnd/alice:ro
       - bob_data:/lnd/bob:ro
       - carol_data:/lnd/carol:ro
+      - cln_data:/cln:ro
       - rtl_db:/RTL/database

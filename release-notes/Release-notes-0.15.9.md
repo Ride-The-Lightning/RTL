@@ -15,3 +15,13 @@ this release should add its entry under the appropriate section below.
   `connected = peer_connected` in the `listPeerChannels` response so legacy consumers stay in
   sync, and the list columns read `peer_connected` directly. Regression tests were added for
   both channel tables.
+
+## Developer Tooling
+
+- **Added a Core Lightning node to the regtest docker fixture**
+  ([#1625](https://github.com/Ride-The-Lightning/RTL/pull/1625)).
+  The `docker/` fixture now runs a `cln` node (official `elementsproject/lightningd` image)
+  alongside the three LND nodes, wired to RTL over clnrest with rune auth, and the seed opens
+  a `cln→alice` channel. This gives RTL's Core Lightning screens a real backend for local
+  development and testing — it was used to verify the CLN channel-connection fix above
+  end-to-end. See `docker/README.md`.
