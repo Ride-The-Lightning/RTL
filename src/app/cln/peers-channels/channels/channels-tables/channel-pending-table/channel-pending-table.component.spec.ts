@@ -15,6 +15,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../../shared/services/data.service';
+import { MatTableDataSource } from '@angular/material/table';
 
 describe('CLNChannelPendingTableComponent', () => {
   let component: CLNChannelPendingTableComponent;
@@ -47,6 +48,29 @@ describe('CLNChannelPendingTableComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  const connectedCellText = (): string => {
+    const cell = fixture.nativeElement.querySelector('td.mat-column-connected');
+    return cell ? cell.textContent.trim() : '';
+  };
+
+  const renderSingleChannel = (channel: any) => {
+    component.displayedColumns = ['connected'];
+    component.channels = new MatTableDataSource<any>([channel]);
+    fixture.detectChanges();
+  };
+
+  // Issue #1606: the connected column must reflect peer_connected (what listpeerchannels
+  // returns), not the legacy 'connected' field, so it stays consistent with the detail panel.
+  it('should render Connected from peer_connected even when legacy connected is false', () => {
+    renderSingleChannel({ peer_connected: true, connected: false });
+    expect(connectedCellText()).toBe('Connected');
+  });
+
+  it('should render Disconnected from peer_connected even when legacy connected is true', () => {
+    renderSingleChannel({ peer_connected: false, connected: true });
+    expect(connectedCellText()).toBe('Disconnected');
   });
 
   afterEach(() => {
