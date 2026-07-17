@@ -25,7 +25,11 @@ this release should add its entry under the appropriate section below.
   Connected, Private and the balances all showed no value. Because a disconnected channel moves to
   the pending/inactive table, this is exactly what was seen on "View Info" for a disconnected
   channel. The pending table now passes `selNode` (matching the open table), and the modal guards
-  the explorer link so a missing `selNode` can no longer blank the dialog.
+  the explorer link so a missing `selNode` can no longer blank the dialog. The LND channel
+  information modal had the same unguarded `selNode.settings.blockExplorerUrl` binding (reachable
+  from the active-HTLCs and channel-backup tables, which open it without `selNode`), so the same
+  guard was applied there for parity. Eclair's modal doesn't use `selNode.settings`, so it is
+  unaffected.
 
 ## Developer Tooling
 

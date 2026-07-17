@@ -52,6 +52,7 @@ export class ChannelInformationComponent implements OnInit {
   }
 
   onExplorerClicked() {
+    if (!this.selNode?.settings?.blockExplorerUrl) { return; }
     window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.channel.channel_point, '_blank');
   }
 
