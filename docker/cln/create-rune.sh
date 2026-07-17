@@ -11,7 +11,12 @@
 # format RTL reads via its runePath. POSIX sh compatible.
 set -u
 
-RUNE_FILE="${LIGHTNINGD_DATA}/rtl.rune"
+# Hardcoded to match the single source of truth used everywhere else in the fixture:
+# the cln volume mount (cln_data:/root/.lightning), the healthcheck's `test -f`, and
+# RTL's runePath (/cln/rtl.rune, /cln being cln_data mounted read-only). Keep these in
+# lockstep — do not switch to ${LIGHTNINGD_DATA}, which would silently diverge if the
+# image's data dir ever changed while the mounts/healthcheck stayed on /root/.lightning.
+RUNE_FILE="/root/.lightning/rtl.rune"
 
 [ -f "${RUNE_FILE}" ] && exit 0
 

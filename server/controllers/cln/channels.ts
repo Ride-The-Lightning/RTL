@@ -22,9 +22,9 @@ export const listPeerChannels = (req, res, next) => {
       channel.to_them_msat = channel.total_msat - channel.to_us_msat;
       channel.balancedness = (channel.total_msat === 0) ? 1 : (1 - Math.abs((channel.to_us_msat - channel.to_them_msat) / channel.total_msat)).toFixed(3);
       // listpeerchannels reports connection state as peer_connected. Mirror it onto the
-      // legacy 'connected' field so backward-compat consumers stay in sync (issue #1606).
-      // Coerce to a real boolean so strict-equality readers (e.g. onchain.ts's
-      // connected === false) behave correctly even when peer_connected is absent.
+      // documented legacy 'connected' field (see the Channel model) as a real boolean, so
+      // any backward-compat consumer of this endpoint gets a defined true/false rather than
+      // undefined when peer_connected is absent (issue #1606).
       channel.connected = !!channel.peer_connected;
       return getAlias(req.session.selectedNode, channel, 'peer_id');
     });
