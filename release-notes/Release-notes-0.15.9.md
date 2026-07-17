@@ -43,6 +43,18 @@ this release should add its entry under the appropriate section below.
   `[showFirstLastButtons]` restores both behaviors across the LND, Core Lightning, Eclair and
   shared tables.
 
+## Enhancements
+
+- **LND: show "Blocks till Maturity" by default on the Pending Force Closing list**
+  ([#XXXX](https://github.com/Ride-The-Lightning/RTL/pull/XXXX), fixes
+  [#1567](https://github.com/Ride-The-Lightning/RTL/issues/1567)).
+  Blocks-till-maturity is critical for a force-closing channel, but it was only visible in the
+  per-channel detail modal. The column and its data binding already existed in the table (and
+  was selectable via column settings); it was simply absent from the default column selection.
+  Added `blocks_til_maturity` to the `pending_force_closing` defaults for both the desktop and
+  mobile (SM) layouts, so it's surfaced on the list out of the box. Users who have already
+  customized this page keep their saved columns and can add it via the column-settings gear.
+
 ## Developer Tooling
 
 - **Added a Core Lightning node to the regtest docker fixture**
