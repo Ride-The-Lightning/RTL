@@ -23,7 +23,9 @@ export const listPeerChannels = (req, res, next) => {
       channel.balancedness = (channel.total_msat === 0) ? 1 : (1 - Math.abs((channel.to_us_msat - channel.to_them_msat) / channel.total_msat)).toFixed(3);
       // listpeerchannels reports connection state as peer_connected. Mirror it onto the
       // legacy 'connected' field so backward-compat consumers stay in sync (issue #1606).
-      channel.connected = channel.peer_connected;
+      // Coerce to a real boolean so strict-equality readers (e.g. onchain.ts's
+      // connected === false) behave correctly even when peer_connected is absent.
+      channel.connected = !!channel.peer_connected;
       return getAlias(req.session.selectedNode, channel, 'peer_id');
     });
     common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
