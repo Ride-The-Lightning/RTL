@@ -31,6 +31,18 @@ this release should add its entry under the appropriate section below.
   guard was applied there for parity. Eclair's modal doesn't use `selNode.settings`, so it is
   unaffected.
 
+- **All implementations: restore the "items per page" dropdown (and first/last-page buttons)
+  on paginated tables** ([#XXXX](https://github.com/Ride-The-Lightning/RTL/pull/XXXX), fixes
+  [#1580](https://github.com/Ride-The-Lightning/RTL/issues/1580)).
+  A dependency-update commit in the 0.15.8-beta cycle mechanically renamed the paginator
+  binding `[showFirstLastButtons]` to `[hidePageSize]` on every `mat-paginator` while keeping
+  the same `screenSize === XS ? false : true` expression. Because the two properties have
+  opposite polarity, this inverted the behavior: on desktop the page-size selector was hidden,
+  so users were locked to 10 items per page with no way to raise it — and the first/last-page
+  buttons were dropped everywhere as collateral. Reverting the ~44 affected paginators back to
+  `[showFirstLastButtons]` restores both behaviors across the LND, Core Lightning, Eclair and
+  shared tables.
+
 ## Developer Tooling
 
 - **Added a Core Lightning node to the regtest docker fixture**
