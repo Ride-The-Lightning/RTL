@@ -38,6 +38,7 @@ NODES=(alice bob carol)
 FUND_SATS=10000000           # on-chain funding per node
 CH_ALICE_BOB=5000000         # channel capacity alice -> bob
 CH_BOB_CAROL=3000000         # channel capacity bob -> carol
+CH_CLN_ALICE=4000000         # channel capacity cln -> alice (Core Lightning node)
 PUSH_SATS=1000000            # pushed to remote on open, so both sides have liquidity
 MINE_CONFIRM=6               # blocks to confirm a funding tx
 
@@ -55,6 +56,11 @@ bcli() {
 lncli() {
   local node=$1; shift
   docker compose exec -T "$node" lncli --network=regtest --lnddir=/home/lnd/.lnd "$@"
+}
+
+# Core Lightning cli. Runs inside the cln container against the regtest node.
+clncli() {
+  docker compose exec -T cln lightning-cli --network=regtest "$@"
 }
 
 # Extract the first value for a JSON key from lncli output.
@@ -146,8 +152,10 @@ pubkey_of() {
 }
 
 log "Connecting peers"
+ALICE_PUB=$(pubkey_of alice)
 BOB_PUB=$(pubkey_of bob)
 CAROL_PUB=$(pubkey_of carol)
+info "alice pubkey: $ALICE_PUB"
 info "bob   pubkey: $BOB_PUB"
 info "carol pubkey: $CAROL_PUB"
 
@@ -220,6 +228,44 @@ for amt in 20000 40000; do
   info "carol open invoice ${amt} sats"
 done
 
+# ---------------------------------------------------------------- core lightning
+
+# A Core Lightning node with one active channel, so RTL's CLN screens have data.
+# An active (peer_connected) channel is what exercises the connection-status column.
+log "Waiting for Core Lightning node"
+wait_for "cln" 120 clncli getinfo
+
+log "Funding Core Lightning (${FUND_SATS} sats)"
+CLN_ADDR=$(clncli newaddr | json_first bech32)
+[ -n "$CLN_ADDR" ] || die "could not get address for cln"
+bcli -rpcwallet=rtldev sendtoaddress "$CLN_ADDR" "$BTC_AMOUNT" >/dev/null
+info "cln <- $BTC_AMOUNT BTC ($CLN_ADDR)"
+bcli -rpcwallet=rtldev generatetoaddress "$MINE_CONFIRM" "$MINE_ADDR" >/dev/null
+info "mined $MINE_CONFIRM blocks to confirm cln funding"
+
+log "Waiting for cln confirmed on-chain balance"
+for i in $(seq 1 60); do
+  clncli listfunds | grep -q '"status": "confirmed"' && { info "cln funds confirmed"; break; }
+  sleep 1
+  (( i == 60 )) && die "cln never saw confirmed funds"
+done
+
+log "Opening channel cln -> alice"
+clncli connect "${ALICE_PUB}@alice:9735" >/dev/null 2>&1 || info "cln->alice already connected"
+clncli fundchannel "$ALICE_PUB" "$CH_CLN_ALICE" >/dev/null
+info "cln -> alice ${CH_CLN_ALICE} sats"
+bcli -rpcwallet=rtldev generatetoaddress "$MINE_CONFIRM" "$MINE_ADDR" >/dev/null
+info "mined $MINE_CONFIRM blocks to confirm the cln channel"
+
+log "Waiting for the cln channel to become active"
+for i in $(seq 1 90); do
+  if clncli listpeerchannels | grep -o '"state": "[A-Z_]*"' | grep -q "CHANNELD_NORMAL"; then
+    info "cln channel is CHANNELD_NORMAL"; break
+  fi
+  sleep 1
+  (( i == 90 )) && die "cln channel never reached CHANNELD_NORMAL"
+done
+
 # ---------------------------------------------------------------- summary
 
 log "Seed complete"
@@ -228,6 +274,8 @@ for n in "${NODES[@]}"; do
   bal=$(lncli "$n" walletbalance | json_first confirmed_balance)
   printf '    %-6s  channels: %-3s  on-chain: %s sats\n' "$n" "${chans:-0}" "${bal:-0}"
 done
+cln_chans=$(clncli listpeerchannels | grep -o '"state": "[A-Z_]*"' | grep -c "CHANNELD_NORMAL" || true)
+printf '    %-6s  channels: %-3s  (Core Lightning)\n' "cln" "${cln_chans:-0}"
 # '|| echo 0' would be wrong here: grep -c already prints 0 when it finds nothing
 # and then exits 1, so the echo would append a second line.
 fwds=$(lncli bob fwdinghistory | grep -c '"chan_id_in"' || true)

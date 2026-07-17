@@ -62,6 +62,24 @@
         "unannouncedChannels": false,
         "blockExplorerUrl": "https://mempool.space"
       }
+    },
+    {
+      "index": 4,
+      "lnNode": "cln",
+      "lnImplementation": "CLN",
+      "authentication": {
+        "runePath": "/cln/rtl.rune"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://cln:3010",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
     }
   ]
 }
