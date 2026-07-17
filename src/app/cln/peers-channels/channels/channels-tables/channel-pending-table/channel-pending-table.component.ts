@@ -21,6 +21,7 @@ import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel } from '../../../../store/cln.actions';
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
 import { rootSelectedNode } from '../../../../../store/rtl.selector';
+import { Node } from '../../../../../shared/models/RTLconfig';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
