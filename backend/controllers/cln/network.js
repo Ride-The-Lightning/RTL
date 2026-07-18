@@ -99,9 +99,20 @@ export const getAlias = (selNode, peer, id) => {
         peer.alias = cached.alias;
         return Promise.resolve(peer);
     }
-    options.url = selNode.settings.lnServerUrl + '/v1/listnodes';
-    options.body = { id: peerId };
-    return request.post(options).then((body) => {
+    // Build a self-contained request from the selected node's own auth options rather than the
+    // shared module-level 'options', which is only set by a prior network.ts endpoint call. That
+    // coupling meant a cold Peers/route lookup (no prior network call) dereferenced a null 'options'
+    // and threw; now that the limiter swallows per-task throws, that surfaced as a 200 with every
+    // alias unset (#1501 review F1). selNode.authentication.options is guaranteed present here
+    // because every caller runs getOptions() first.
+    const nodeOptions = selNode.authentication?.options;
+    if (!nodeOptions || !nodeOptions.headers) {
+        peer.alias = peerId.substring(0, 20);
+        return Promise.resolve(peer);
+    }
+    const aliasOptions = { ...nodeOptions, method: 'POST', url: selNode.settings.lnServerUrl + '/v1/listnodes', body: { id: peerId }, json: true, qs: {} };
+    delete aliasOptions.form;
+    return request.post(aliasOptions).then((body) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
         const alias = body.nodes?.[0]?.alias || peerId.substring(0, 20);
         // Re-insert so a refreshed entry moves to the most-recent position, then evict the
