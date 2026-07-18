@@ -71,7 +71,7 @@ this release should add its entry under the appropriate section below.
   natural DOM order across the LND, Core Lightning, Eclair and shared modals.
 
 - **Core Lightning: bound alias resolution on the peers and route lookups to stop clnrest
-  "Resource temporarily unavailable" errors** ([#XXXX](https://github.com/Ride-The-Lightning/RTL/pull/XXXX),
+  "Resource temporarily unavailable" errors** ([#1629](https://github.com/Ride-The-Lightning/RTL/pull/1629),
   fixes [#1501](https://github.com/Ride-The-Lightning/RTL/issues/1501)).
   RTL resolves peer aliases by calling `listnodes` once per peer. A prior fix bounded this to 20
   concurrent calls (plus a cache) for the channel list, but the **peers list** and **route lookup**
