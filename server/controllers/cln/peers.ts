@@ -20,8 +20,15 @@ export const getPeers = (req, res, next) => {
     // with many peers and fails with "Resource temporarily unavailable (os error 11)" (#1501).
     const getPeerAliasesTasks = peers.map((peer) => () => getAlias(req.session.selectedNode, peer, 'id'));
     common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
-      res.status(200).json(body.peers || []);
+      // The limiter invokes this outside the surrounding .then/.catch chain, so guard the
+      // response-send: a throw here would otherwise be an unhandled rejection with no response.
+      try {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
+        res.status(200).json(body.peers || []);
+      } catch (e) {
+        const err = common.handleError(e, 'Peers', 'List Peers Error', req.session.selectedNode);
+        if (!res.headersSent) { res.status(err.statusCode).json({ message: err.message, error: err.error }); }
+      }
     });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Peers', 'List Peers Error', req.session.selectedNode);
@@ -41,8 +48,18 @@ export const postPeer = (req, res, next) => {
     listOptions.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listpeers';
     request.post(listOptions).then((listPeersRes) => {
       const peers = listPeersRes && listPeersRes.peers ? common.newestOnTop(listPeersRes.peers, 'id', connectRes.id) : [];
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
-      res.status(201).json(peers);
+      // Resolve aliases (bounded) for the returned peers so a freshly connected peer shows its
+      // alias rather than a raw node id, matching getPeers and the LND postPeer path (#1629 F5).
+      const getPeerAliasesTasks = peers.map((peer) => () => getAlias(req.session.selectedNode, peer, 'id'));
+      common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
+        try {
+          logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
+          res.status(201).json(peers);
+        } catch (e) {
+          const err = common.handleError(e, 'Peers', 'Connect Peer Error', req.session.selectedNode);
+          if (!res.headersSent) { res.status(err.statusCode).json({ message: err.message, error: err.error }); }
+        }
+      });
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });

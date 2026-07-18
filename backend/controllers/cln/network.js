@@ -23,8 +23,17 @@ export const getRoute = (req, res, next) => {
         // peers/channels paths, so a long route can't storm clnrest (#1501).
         const getRouteAliasesTasks = (body.route || []).map((rt) => () => getAlias(req.session.selectedNode, rt, 'id'));
         common.runWithConcurrencyLimit(getRouteAliasesTasks, 20, () => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Network Routes with Alias Received', data: body });
-            res.status(200).json(body || []);
+            // Guard the response-send: the limiter invokes this outside the surrounding .catch.
+            try {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Network Routes with Alias Received', data: body });
+                res.status(200).json(body || []);
+            }
+            catch (e) {
+                const err = common.handleError(e, 'Network', 'Query Routes Error', req.session.selectedNode);
+                if (!res.headersSent) {
+                    res.status(err.statusCode).json({ message: err.message, error: err.error });
+                }
+            }
         });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Network', 'Query Routes Error', req.session.selectedNode);
