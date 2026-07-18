@@ -583,16 +583,24 @@ export class CommonService {
 
   public runWithConcurrencyLimit = (tasks, limit, done) => {
     const results = new Array(tasks?.length || 0);
+    // 'done' must fire exactly once. Guard it: multiple runNext() completions (e.g. several
+    // non-function task elements draining synchronously) must not send the response twice.
+    let finished = false;
+    const finish = () => {
+      if (finished) { return; }
+      finished = true;
+      done(results);
+    };
     // No tasks: the start loop below never runs, so 'done' would never fire and the
     // response would hang. Resolve immediately for empty lists (e.g. a node with no peers).
-    if (!tasks || tasks.length === 0) { return done(results); }
+    if (!tasks || tasks.length === 0) { return finish(); }
     let nextIndex = 0;
     let activeCount = 0;
 
     const runNext = () => {
       if (nextIndex >= tasks.length) {
         if (activeCount === 0) {
-          done(results); // all tasks are finished
+          finish(); // all tasks are finished
         }
         return;
       }
