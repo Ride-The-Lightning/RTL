@@ -16,7 +16,7 @@ export const SECS_IN_YEAR = 31536000;
 
 export const DEFAULT_INVOICE_EXPIRY = HOUR_SECONDS * 24 * 7;
 
-export const VERSION = '0.15.8-beta';
+export const VERSION = '0.15.9-beta';
 
 export const API_URL = isDevMode() ? 'http://localhost:3000/rtl/api' : './api';
 
@@ -138,6 +138,7 @@ export enum AlertTypeEnum {
 }
 
 export enum AuthenticateWith {
+  NOAUTH = 'NOAUTH',
   JWT = 'JWT',
   PASSWORD = 'PASSWORD'
 }
@@ -933,8 +934,8 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
       columnSelectionSM: ['remote_alias', 'capacity'],
       columnSelection: ['remote_alias', 'commit_fee', 'commit_weight', 'capacity'] },
     { tableId: 'pending_force_closing', sortBy: 'limbo_balance', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['remote_alias', 'limbo_balance'],
-      columnSelection: ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity'] },
+      columnSelectionSM: ['remote_alias', 'blocks_til_maturity', 'limbo_balance'],
+      columnSelection: ['remote_alias', 'blocks_til_maturity', 'recovered_balance', 'limbo_balance', 'capacity'] },
     { tableId: 'pending_closing', sortBy: 'capacity', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['remote_alias', 'capacity'],
       columnSelection: ['remote_alias', 'local_balance', 'remote_balance', 'capacity'] },

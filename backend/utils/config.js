@@ -118,9 +118,18 @@ export class ConfigService {
         this.validateNodeConfig = (config) => {
             config.allowPasswordUpdate = true;
             if ((process?.env?.RTL_SSO && +process?.env?.RTL_SSO === 0) || (typeof process?.env?.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
-                if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
+                if (!!process?.env?.DISABLE_AUTH || !!config.disableAuth) {
+                    config.allowPasswordUpdate = false;
+                    config.enable2FA = false;
+                    this.logger.log({ selectedNode: this.common.selectedNode, level: 'WARN', fileName: 'Config', msg: 'Authentication is Disabled via environment or config' });
+                    if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
+                        this.errMsg = this.errMsg + '\nRTL Password cannot be set with disabled authentication. Please remove disableAuth option or password.';
+                    }
+                }
+                else if (process?.env?.APP_PASSWORD && process?.env?.APP_PASSWORD.trim() !== '') {
                     config.rtlPass = this.hash.update(process?.env?.APP_PASSWORD).digest('hex');
                     config.allowPasswordUpdate = false;
+                    this.logger.log({ selectedNode: this.common.selectedNode, level: 'WARN', fileName: 'Config', msg: 'Passing APP_PASSWORD via environment is suggested for standalone RTL application' });
                 }
                 else if (config.multiPassHashed && config.multiPassHashed !== '') {
                     config.rtlPass = config.multiPassHashed;

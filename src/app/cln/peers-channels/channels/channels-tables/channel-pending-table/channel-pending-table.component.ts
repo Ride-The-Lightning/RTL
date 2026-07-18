@@ -20,6 +20,8 @@ import { openAlert, openConfirmation } from '../../../../../store/rtl.actions';
 import { RTLState } from '../../../../../store/rtl.state';
 import { closeChannel } from '../../../../store/cln.actions';
 import { channels, clnPageSettings, nodeInfoAndBalanceAndNumPeers } from '../../../../store/cln.selector';
+import { rootSelectedNode } from '../../../../../store/rtl.selector';
+import { Node } from '../../../../../shared/models/RTLconfig';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../../shared/pipes/app.pipe';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
@@ -62,6 +64,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public errorMessage = '';
   public apiCallStatus: ApiCallStatusPayload | null = null;
   public apiCallStatusEnum = APICallStatusEnum;
+  public selNode: Node | null = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private camelCaseWithReplace: CamelCaseWithReplacePipe) {
@@ -109,6 +112,10 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
         }
         this.logger.info(channelsSeletor);
       });
+    this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[4])).
+      subscribe((nodeSettings) => {
+        this.selNode = nodeSettings;
+      });
   }
 
   ngAfterViewInit() {
@@ -133,6 +140,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
       payload: {
         data: {
           channel: selChannel,
+          selNode: this.selNode,
           showCopy: true,
           component: CLNChannelInformationComponent
         }

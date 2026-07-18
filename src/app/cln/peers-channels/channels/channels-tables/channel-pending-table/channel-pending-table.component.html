@@ -58,7 +58,7 @@
       </ng-container>
       <ng-container matColumnDef="connected">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Connected</th>
-        <td *matCellDef="let channel" mat-cell>{{(channel?.connected) ? 'Connected' : 'Disconnected'}}</td>
+        <td *matCellDef="let channel" mat-cell>{{(channel?.peer_connected) ? 'Connected' : 'Disconnected'}}</td>
       </ng-container>
       <ng-container matColumnDef="state">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
@@ -108,7 +108,7 @@
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
               <mat-select-trigger />
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option *ngIf="(channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
+              <mat-option *ngIf="(channel.state === 'CHANNELD_SHUTTING_DOWN' || channel.state === 'CLOSINGD_SIGEXCHANGE' || (!channel.peer_connected && channel.state === 'CHANNELD_NORMAL'))" (click)="onChannelClose(channel)">Close Channel</mat-option>
               <mat-option *ngIf="channel.state === 'CHANNELD_AWAITING_LOCKIN'" (click)="onBumpFee(channel)">Bump Fee</mat-option>
             </mat-select>
           </div>
@@ -127,5 +127,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

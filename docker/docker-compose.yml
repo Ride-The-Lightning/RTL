@@ -1,132 +1,233 @@
-version: "2.4"
+# Regtest dev fixture for RTL: bitcoind + 3 LND nodes + RTL.
+#
+# NOT suitable for production. All credentials are throwaway.
+#
+# Topology is alice -> bob -> carol, so bob forwards payments and RTL's
+# routing/forwarding screens have data in them. See README.md.
+#
+# Node images come from Polar (https://lightningpolar.com), which publishes
+# multi-arch (amd64 + arm64) builds. Nothing is built locally.
 
 volumes:
-  bitcoin_data:
-  lightning_data:
-  lightning_shared:
+  bitcoind_data:
+  alice_data:
+  bob_data:
+  carol_data:
+  cln_data:
   rtl_db:
+  rtl_config:
+
+x-lnd: &lnd
+  image: polarlightning/lnd:0.20.0-beta
+  restart: unless-stopped
+  depends_on:
+    - bitcoind
 
 services:
   bitcoind:
     container_name: ${COMPOSE_PROJECT_NAME}_bitcoind
-    image: bitcoind:0.19.0
-    build: ./bitcoind
-    command: [
-      "bitcoind",
-      "-datadir=/bitcoin",
-      "-port=${BITCOIN_PORT}",
-      "-upnp=0",
-      "-dnsseed=0",
-      "-txindex=1",
-      "-listen=0",
-      "-onlynet=ipv4",
-      "-regtest=1",
-      "-regtest.rpcport=${BITCOIN_RPC_PORT}",
-      "-regtest.port=${BITCOIN_PORT}",
-      "-rpcport=${BITCOIN_RPC_PORT}",
-      "-rpcuser=${BITCOIN_RPC_USER}",
-      "-rpcpassword=${BITCOIN_RPC_PASSWORD}",
-      "-rpcallowip=0.0.0.0/0",
-      "-zmqpubrawtx=tcp://0.0.0.0:${BITCOIN_ZMQ_TX_PORT}",
-      "-zmqpubrawblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}",
-      "-zmqpubhashblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}"
-    ]
-    ports:
-      - "${BITCOIN_PORT}:${BITCOIN_PORT}"
-    volumes:
-      - bitcoin_data:/bitcoin
-
-  lnd:
-    container_name: ${COMPOSE_PROJECT_NAME}_lnd
-    image: lnd:0.12.0-beta
-    build: ./lnd
+    image: polarlightning/bitcoind:30.0
     restart: unless-stopped
-    command: [
-      "lnd",
-      "--noseedbackup",
-      "--rpclisten=0.0.0.0:${LIGHTNING_RPC_PORT}",
-      "--restlisten=0.0.0.0:${LIGHTNING_REST_PORT}",
-      "--adminmacaroonpath=/shared/admin.macaroon",
-      "--tlsextradomain=${LIGHTNING_HOST}",
-      "--tlsextraip=0.0.0.0",
-      "--tlscertpath=/shared/tls.cert",
-      "--datadir=/lnd",
-      "--bitcoin.active",
-      "--bitcoin.regtest",
-      "--bitcoin.node=bitcoind",
-      "--bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}",
-      "--bitcoind.rpcuser=${BITCOIN_RPC_USER}",
-      "--bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}",
-      "--bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}",
-      "--bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}"
-    ]
+    command:
+      - bitcoind
+      - -server=1
+      - -regtest=1
+      # rpcauth hash for ${BITCOIN_RPC_USER}/${BITCOIN_RPC_PASSWORD}. '$$' escapes
+      # compose interpolation and reaches bitcoind as a single '$'.
+      - -rpcauth=rtldev:8a1f2c3d4e5b6a7c8d9e0f1a2b3c4d5e$$010df4b32c5e9a556cba1857eb5865990c983d8a56dadc0fdbf457cf90073c6c
+      - -zmqpubrawblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}
+      - -zmqpubrawtx=tcp://0.0.0.0:${BITCOIN_ZMQ_TX_PORT}
+      - -txindex=1
+      - -dnsseed=0
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcport=${BITCOIN_RPC_PORT}
+      - -listen=1
+      - -listenonion=0
+      - -fallbackfee=0.0002
+    ports:
+      - "${BITCOIN_RPC_PORT}:${BITCOIN_RPC_PORT}"
+    volumes:
+      - bitcoind_data:/home/bitcoin/.bitcoin
+
+  # --alias / --externalip / --tlsextradomain are per-node on purpose: the alias
+  # is what RTL displays, and the extradomain must match the hostname RTL dials
+  # (https://alice:8080) or TLS validation fails.
+  alice:
+    <<: *lnd
+    container_name: ${COMPOSE_PROJECT_NAME}_alice
+    command:
+      - lnd
+      - --noseedbackup
+      - --trickledelay=5000
+      - --alias=alice
+      - --externalip=alice
+      - --tlsextradomain=alice
+      - --tlsextradomain=${COMPOSE_PROJECT_NAME}_alice
+      - --tlsextradomain=host.docker.internal
+      - --listen=0.0.0.0:${LIGHTNING_P2P_PORT}
+      - --rpclisten=0.0.0.0:${LIGHTNING_RPC_PORT}
+      - --restlisten=0.0.0.0:${LIGHTNING_REST_PORT}
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}
+      - --bitcoind.rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}
+      - --bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}
+      - --bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}
+      - --accept-keysend
+      - --accept-amp
+    ports:
+      - "${ALICE_REST_PORT}:${LIGHTNING_REST_PORT}"
+    volumes:
+      - alice_data:/home/lnd/.lnd
+
+  bob:
+    <<: *lnd
+    container_name: ${COMPOSE_PROJECT_NAME}_bob
+    command:
+      - lnd
+      - --noseedbackup
+      - --trickledelay=5000
+      - --alias=bob
+      - --externalip=bob
+      - --tlsextradomain=bob
+      - --tlsextradomain=${COMPOSE_PROJECT_NAME}_bob
+      - --tlsextradomain=host.docker.internal
+      - --listen=0.0.0.0:${LIGHTNING_P2P_PORT}
+      - --rpclisten=0.0.0.0:${LIGHTNING_RPC_PORT}
+      - --restlisten=0.0.0.0:${LIGHTNING_REST_PORT}
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}
+      - --bitcoind.rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}
+      - --bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}
+      - --bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}
+      - --accept-keysend
+      - --accept-amp
+    ports:
+      - "${BOB_REST_PORT}:${LIGHTNING_REST_PORT}"
+    volumes:
+      - bob_data:/home/lnd/.lnd
+
+  carol:
+    <<: *lnd
+    container_name: ${COMPOSE_PROJECT_NAME}_carol
+    command:
+      - lnd
+      - --noseedbackup
+      - --trickledelay=5000
+      - --alias=carol
+      - --externalip=carol
+      - --tlsextradomain=carol
+      - --tlsextradomain=${COMPOSE_PROJECT_NAME}_carol
+      - --tlsextradomain=host.docker.internal
+      - --listen=0.0.0.0:${LIGHTNING_P2P_PORT}
+      - --rpclisten=0.0.0.0:${LIGHTNING_RPC_PORT}
+      - --restlisten=0.0.0.0:${LIGHTNING_REST_PORT}
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}
+      - --bitcoind.rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}
+      - --bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}
+      - --bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}
+      - --accept-keysend
+      - --accept-amp
+    ports:
+      - "${CAROL_REST_PORT}:${LIGHTNING_REST_PORT}"
+    volumes:
+      - carol_data:/home/lnd/.lnd
+
+  # Core Lightning node. Unlike the LND nodes it talks to RTL over clnrest (the
+  # built-in REST plugin) using rune auth, so it needs --clnrest-* options and a
+  # rune written where RTL can read it. create-rune.sh (run from the healthcheck)
+  # creates the rune and writes it to /root/.lightning/rtl.rune (RTL mounts that
+  # read-only); the healthcheck is unhealthy until it exists, so rtl waits for it.
+  # --clnrest-host=0.0.0.0 is required so the rtl container can reach it; the default
+  # 127.0.0.1 would only be reachable from inside this container. Protocol stays https
+  # (clnrest default, self-signed) — RTL connects with rejectUnauthorized:false.
+  cln:
+    image: elementsproject/lightningd:v25.09
+    container_name: ${COMPOSE_PROJECT_NAME}_cln
+    restart: unless-stopped
     depends_on:
       - bitcoind
+    environment:
+      LIGHTNINGD_NETWORK: regtest
+    command:
+      - --alias=cln
+      - --bitcoin-rpcconnect=${BITCOIN_HOST}
+      - --bitcoin-rpcport=${BITCOIN_RPC_PORT}
+      - --bitcoin-rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoin-rpcpassword=${BITCOIN_RPC_PASSWORD}
+      - --bitcoin-retry-timeout=3600
+      - --addr=0.0.0.0:9735
+      - --announce-addr=cln:9735
+      - --large-channels
+      - --clnrest-host=0.0.0.0
+      - --clnrest-port=3010
     ports:
-      - "${LIGHTNING_REST_PORT}:${LIGHTNING_REST_PORT}"
+      - "${CLN_REST_PORT:-3010}:3010"
     volumes:
-      - lightning_data:/lnd
-      - lightning_shared:/shared
+      - cln_data:/root/.lightning
+      - ./cln/create-rune.sh:/opt/create-rune.sh:ro
+    healthcheck:
+      # create-rune.sh ensures the rune exists (idempotent, one quick attempt) and
+      # this reports healthy only once it does. Driving it from the healthcheck — which
+      # retries on its interval — means a transient RPC-startup race self-heals instead
+      # of a one-shot script permanently wedging the stack. rtl waits on this via
+      # depends_on: condition: service_healthy before reading the rune at startup.
+      test: ["CMD-SHELL", "sh /opt/create-rune.sh && test -f /root/.lightning/rtl.rune"]
+      interval: 5s
+      timeout: 10s
+      retries: 40
 
-  boltz:
-    container_name: ${COMPOSE_PROJECT_NAME}_boltz
-    image: boltz:1.2.0
-    build: ./boltz
-    restart: unless-stopped
-    command: [
-      "boltz",
-      "--noseedbackup",
-      "--rpclisten=0.0.0.0:${BOLTZ_RPC_PORT}",
-      "--restlisten=0.0.0.0:${BOLTZ_REST_PORT}",
-      "--adminmacaroonpath=/shared/admin.macaroon",
-      "--tlsextradomain=${BOLTZ_HOST}",
-      "--tlsextraip=0.0.0.0",
-      "--tlscertpath=/shared/tls.cert",
-      "--datadir=/boltz",
-      "--bitcoin.active",
-      "--bitcoin.regtest",
-      "--bitcoin.node=bitcoind",
-      "--bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}",
-      "--bitcoind.rpcuser=${BITCOIN_RPC_USER}",
-      "--bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}",
-      "--bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}",
-      "--bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}"
-    ]
-    depends_on:
-      - bitcoind
-    ports:
-      - "${BOLTZ_REST_PORT}:${BOLTZ_REST_PORT}"
+  # RTL rewrites its config file on startup, so it cannot be given the tracked
+  # template directly: a bind mount would either be read-only (RTL exits with
+  # EROFS) or would let RTL scribble into a version-controlled file. Instead the
+  # template is copied into a volume that 'down -v' discards, which keeps the
+  # source pristine and every run starting from identical config.
+  rtl-config-init:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_config_init
+    image: busybox:1.36
+    command: >
+      sh -c "cp /template/RTL-Config.regtest.json /config/RTL-Config.json &&
+             chmod 644 /config/RTL-Config.json &&
+             echo 'config staged'"
     volumes:
-      - boltz_data:/boltz
-      - boltz_shared:/shared
-      
+      - ./rtl/RTL-Config.regtest.json:/template/RTL-Config.regtest.json:ro
+      - rtl_config:/config
+
   rtl:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
-    image: shahanafarooqui/rtl:0.12.0
+    # Defaults to the published image; override with RTL_IMAGE (e.g. a locally built
+    # branch image) to test unreleased changes: RTL_IMAGE=rtl:pr1625 docker compose up.
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.8}
     restart: unless-stopped
     depends_on:
-      - lnd
-    volumes:
-      - lightning_shared:/shared:ro
-      - rtl_db:/database
+      rtl-config-init:
+        condition: service_completed_successfully
+      alice:
+        condition: service_started
+      bob:
+        condition: service_started
+      carol:
+        condition: service_started
+      cln:
+        condition: service_healthy
     ports:
       - "${RTL_PORT}:${RTL_PORT}"
     environment:
-      PORT: ${RTL_PORT}
-      HOST: 192.168.0.27
-      MACAROON_PATH: /shared
-      LN_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}
-      CONFIG_PATH: ''
-      LN_IMPLEMENTATION: LND
-      SWAP_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_LOOP_PORT}
-      SWAP_MACAROON_PATH: /shared
-      BOLTZ_SERVER_URL: https://${BOLTZ_HOST}:${BOLTZ_PORT}
-      BOLTZ_MACAROON_PATH: /shared
-      RTL_SSO: 0
-      RTL_COOKIE_PATH: ''
-      LOGOUT_REDIRECT_LINK: ''
-      RTL_CONFIG_PATH: /RTL
-      BITCOIND_CONFIG_PATH: ''
-      CHANNEL_BACKUP_PATH: /shared/lnd/backup
-      ENABLE_OFFERS: false
-      ENABLE_PEERSWAP: false
+      RTL_CONFIG_PATH: /RTL/config
+    volumes:
+      - rtl_config:/RTL/config
+      - alice_data:/lnd/alice:ro
+      - bob_data:/lnd/bob:ro
+      - carol_data:/lnd/carol:ro
+      - cln_data:/cln:ro
+      - rtl_db:/RTL/database

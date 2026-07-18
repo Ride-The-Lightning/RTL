@@ -368,7 +368,7 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(resetECLStore());
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'Login', status: APICallStatusEnum.INITIATED } }));
         return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API, {
-          authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
+          authenticateWith: (action.payload.password === 'disabledAuth') ? AuthenticateWith.NOAUTH : (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
           authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
           twoFAToken: (action.payload.twoFAToken) ? action.payload.twoFAToken : ''
         }).pipe(

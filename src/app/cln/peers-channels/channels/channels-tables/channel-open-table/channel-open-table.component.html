@@ -66,7 +66,7 @@
       </ng-container>
       <ng-container matColumnDef="connected">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Connected</th>
-        <td *matCellDef="let channel" mat-cell>{{(channel?.connected) ? 'Connected' : 'Disconnected'}}</td>
+        <td *matCellDef="let channel" mat-cell>{{(channel?.peer_connected) ? 'Connected' : 'Disconnected'}}</td>
       </ng-container>
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>
@@ -142,5 +142,5 @@
       <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
   </div>
-  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [hidePageSize]="screenSize === screenSizeEnum.XS ? false : true" />
+  <mat-paginator class="mb-1" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" />
 </div>

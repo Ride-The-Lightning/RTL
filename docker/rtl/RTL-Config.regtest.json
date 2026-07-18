@@ -1,0 +1,85 @@
+{
+  "multiPass": "rtldev",
+  "port": "3000",
+  "defaultNodeIndex": 1,
+  "dbDirectoryPath": "/RTL/database",
+  "SSO": {
+    "rtlSSO": 0,
+    "rtlCookiePath": "",
+    "logoutRedirectLink": ""
+  },
+  "nodes": [
+    {
+      "index": 1,
+      "lnNode": "alice",
+      "lnImplementation": "LND",
+      "authentication": {
+        "macaroonPath": "/lnd/alice/data/chain/bitcoin/regtest"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://alice:8080",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
+    },
+    {
+      "index": 2,
+      "lnNode": "bob",
+      "lnImplementation": "LND",
+      "authentication": {
+        "macaroonPath": "/lnd/bob/data/chain/bitcoin/regtest"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://bob:8080",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
+    },
+    {
+      "index": 3,
+      "lnNode": "carol",
+      "lnImplementation": "LND",
+      "authentication": {
+        "macaroonPath": "/lnd/carol/data/chain/bitcoin/regtest"
+      },
+      "settings": {
+        "userPersona": "MERCHANT",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://carol:8080",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
+    },
+    {
+      "index": 4,
+      "lnNode": "cln",
+      "lnImplementation": "CLN",
+      "authentication": {
+        "runePath": "/cln/rtl.rune"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://cln:3010",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
+    }
+  ]
+}
