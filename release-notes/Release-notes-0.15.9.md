@@ -133,3 +133,14 @@ this release should add its entry under the appropriate section below.
   a `cln→alice` channel. This gives RTL's Core Lightning screens a real backend for local
   development and testing — it was used to verify the CLN channel-connection fix above
   end-to-end. See `docker/README.md`.
+
+- **Added an Eclair node to the regtest docker fixture**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The `docker/` fixture now runs an `eclair` node alongside the LND and Core Lightning nodes,
+  completing backend coverage of all three implementations RTL supports. RTL talks to its HTTP
+  API with basic auth (`lnApiPassword`), and the seed opens an `eclair→bob` channel plus
+  payments and an open invoice so RTL's Eclair screens have data. Polar's multi-arch
+  `polarlightning/eclair` image is used because the official `acinq/eclair` image is amd64-only
+  and its versioned tags are years stale. Since Eclair drives a bitcoind wallet rather than its
+  own, an init container creates a dedicated `eclair` wallet before the node starts — otherwise
+  it would attach to the fixture's mining wallet. A `bin/e-cli` helper wraps `eclair-cli`.

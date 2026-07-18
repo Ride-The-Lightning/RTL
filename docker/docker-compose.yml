@@ -14,6 +14,7 @@ volumes:
   bob_data:
   carol_data:
   cln_data:
+  eclair_data:
   rtl_db:
   rtl_config:
 
@@ -37,6 +38,10 @@ services:
       - -rpcauth=rtldev:8a1f2c3d4e5b6a7c8d9e0f1a2b3c4d5e$$010df4b32c5e9a556cba1857eb5865990c983d8a56dadc0fdbf457cf90073c6c
       - -zmqpubrawblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}
       - -zmqpubrawtx=tcp://0.0.0.0:${BITCOIN_ZMQ_TX_PORT}
+      # eclair's zmqblock consumes the hashblock topic, not rawblock (LND uses
+      # rawblock/rawtx above); without this endpoint eclair never sees new
+      # blocks and channels stay in WAIT_FOR_FUNDING_CONFIRMED forever.
+      - -zmqpubhashblock=tcp://0.0.0.0:${BITCOIN_ZMQ_HASHBLOCK_PORT:-28336}
       - -txindex=1
       - -dnsseed=0
       - -rpcbind=0.0.0.0
@@ -187,6 +192,79 @@ services:
       timeout: 10s
       retries: 40
 
+  # Eclair has no on-chain wallet of its own -- it drives a bitcoind wallet over
+  # RPC. Without a dedicated wallet it would grab "the default loaded wallet",
+  # which here is the rtldev mining wallet, and eclair's on-chain balance would
+  # show the miner's coins. This init container creates (or reloads) a wallet
+  # named "eclair" before the eclair node starts; load_on_startup survives
+  # bitcoind restarts.
+  eclair-wallet-init:
+    container_name: ${COMPOSE_PROJECT_NAME}_eclair_wallet_init
+    image: polarlightning/bitcoind:30.0
+    depends_on:
+      - bitcoind
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        bcli() { bitcoin-cli -regtest -rpcconnect=${BITCOIN_HOST} -rpcport=${BITCOIN_RPC_PORT} -rpcuser=${BITCOIN_RPC_USER} -rpcpassword=${BITCOIN_RPC_PASSWORD} "$$@"; }
+        i=0
+        until bcli getblockchaininfo >/dev/null 2>&1; do
+          i=$$((i+1)); [ "$$i" -ge 60 ] && echo "bitcoind never came up" && exit 1
+          sleep 1
+        done
+        bcli -named createwallet wallet_name=eclair load_on_startup=true >/dev/null 2>&1 \
+          || bcli loadwallet eclair true >/dev/null 2>&1 \
+          || true
+        bcli -rpcwallet=eclair getwalletinfo >/dev/null
+        echo "eclair wallet ready"
+
+  # Eclair node. Talks to RTL over its HTTP API with basic auth (the
+  # lnApiPassword in RTL's config). The polarlightning image is used because
+  # acinq/eclair on Docker Hub is amd64-only and its newest versioned tag is
+  # years stale; Polar builds the same ACINQ source multi-arch (amd64 + arm64).
+  # The image entrypoint translates each --key=value into -Declair.key=value.
+  # The entrypoint also overrides server.public-ips.0 with the container IP, but
+  # the arg must still be present for that substitution to happen.
+  eclair:
+    image: polarlightning/eclair:0.13.1
+    container_name: ${COMPOSE_PROJECT_NAME}_eclair
+    restart: unless-stopped
+    depends_on:
+      bitcoind:
+        condition: service_started
+      eclair-wallet-init:
+        condition: service_completed_successfully
+    command:
+      - polar-eclair
+      - --node-alias=eclair
+      - --server.public-ips.0=eclair
+      - --server.port=9735
+      - --api.enabled=true
+      - --api.binding-ip=0.0.0.0
+      - --api.port=8080
+      - --api.password=${ECLAIR_API_PASSWORD:-rtldev}
+      - --chain=regtest
+      - --bitcoind.host=${BITCOIN_HOST}
+      - --bitcoind.rpcport=${BITCOIN_RPC_PORT}
+      - --bitcoind.rpcuser=${BITCOIN_RPC_USER}
+      - --bitcoind.rpcpassword=${BITCOIN_RPC_PASSWORD}
+      # zmqblock must be bitcoind's *hashblock* endpoint (eclair subscribes to
+      # that topic); pointing it at the rawblock endpoint the LND nodes use
+      # leaves eclair blind to new blocks.
+      - --bitcoind.zmqblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_HASHBLOCK_PORT:-28336}
+      - --bitcoind.zmqtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}
+      - --bitcoind.wallet=eclair
+      - --datadir=/home/eclair/.eclair
+      - --printToConsole=true
+      # Regtest feerates are far from mainnet estimates; without a wide
+      # tolerance eclair closes channels over feerate disagreements.
+      - --on-chain-fees.feerate-tolerance.ratio-low=0.00001
+      - --on-chain-fees.feerate-tolerance.ratio-high=10000.0
+    ports:
+      - "${ECLAIR_REST_PORT:-8281}:8080"
+    volumes:
+      - eclair_data:/home/eclair
+
   # RTL rewrites its config file on startup, so it cannot be given the tracked
   # template directly: a bind mount would either be read-only (RTL exits with
   # EROFS) or would let RTL scribble into a version-controlled file. Instead the
@@ -220,6 +298,8 @@ services:
         condition: service_started
       cln:
         condition: service_healthy
+      eclair:
+        condition: service_started
     ports:
       - "${RTL_PORT}:${RTL_PORT}"
     environment:

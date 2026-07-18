@@ -80,6 +80,24 @@
         "unannouncedChannels": false,
         "blockExplorerUrl": "https://mempool.space"
       }
+    },
+    {
+      "index": 5,
+      "lnNode": "eclair",
+      "lnImplementation": "ECL",
+      "authentication": {
+        "lnApiPassword": "rtldev"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "http://eclair:8080",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
     }
   ]
 }
