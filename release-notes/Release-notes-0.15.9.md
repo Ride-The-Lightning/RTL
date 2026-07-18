@@ -46,7 +46,7 @@ this release should add its entry under the appropriate section below.
 ## Enhancements
 
 - **LND: show "Blocks till Maturity" by default on the Pending Force Closing list**
-  ([#XXXX](https://github.com/Ride-The-Lightning/RTL/pull/XXXX), fixes
+  ([#1627](https://github.com/Ride-The-Lightning/RTL/pull/1627), fixes
   [#1567](https://github.com/Ride-The-Lightning/RTL/issues/1567)).
   Blocks-till-maturity is critical for a force-closing channel, but it was only visible in the
   per-channel detail modal. The column and its data binding already existed in the table (and
