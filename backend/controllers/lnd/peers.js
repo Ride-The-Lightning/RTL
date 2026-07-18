@@ -29,8 +29,17 @@ export const getPeers = (req, res, next) => {
         // request per peer at once and overwhelm the backend (parity with the CLN fix, #1501).
         const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
         common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
-            res.status(200).json(body.peers);
+            // Guard the response-send: the limiter invokes this outside the surrounding .catch.
+            try {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
+                res.status(200).json(body.peers);
+            }
+            catch (e) {
+                const err = common.handleError(e, 'Peers', 'List Peers Error', req.session.selectedNode);
+                if (!res.headersSent) {
+                    res.status(err.statusCode).json({ message: err.message, error: err.error });
+                }
+            }
         });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Peers', 'List Peers Error', req.session.selectedNode);
@@ -57,11 +66,21 @@ export const postPeer = (req, res, next) => {
             // Bound concurrent alias lookups (parity with the CLN fix, #1501).
             const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
             common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
-                if (body.peers) {
-                    body.peers = common.newestOnTop(body.peers, 'pub_key', pubkey);
-                    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
+                // Guard the response-send: the limiter invokes this outside the surrounding .catch, and
+                // this replaced an explicit inner .catch — a throw here must not hang the POST (#1629 F4).
+                try {
+                    if (body.peers) {
+                        body.peers = common.newestOnTop(body.peers, 'pub_key', pubkey);
+                        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
+                    }
+                    res.status(201).json(body.peers);
                 }
-                res.status(201).json(body.peers);
+                catch (e) {
+                    const err = common.handleError(e, 'Peers', 'Connect Peer Error', req.session.selectedNode);
+                    if (!res.headersSent) {
+                        res.status(err.statusCode).json({ message: err.message, error: err.error });
+                    }
+                }
             });
         }).catch((errRes) => {
             const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
