@@ -618,7 +618,10 @@ export class CommonService {
       });
     };
 
-    for (let i = 0; i < limit && i < tasks.length; i++) {
+    // Normalize to at least 1: a non-positive limit would start no tasks, so 'done' (only
+    // reached from a task's finally) would never fire and the response would hang.
+    const startCount = Math.max(1, limit);
+    for (let i = 0; i < startCount && i < tasks.length; i++) {
       runNext();
     }
   };
