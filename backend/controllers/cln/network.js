@@ -4,6 +4,10 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+// Alias cache: peerId -> { alias, ts }. Bounded by a TTL so an updated node alias is picked
+// up without an RTL restart, and by a max size so it can't grow unbounded (evicts oldest).
+const ALIAS_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+const ALIAS_CACHE_MAX = 5000;
 const aliasCache = new Map();
 export const getRoute = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Getting Network Routes..' });
@@ -15,7 +19,10 @@ export const getRoute = (req, res, next) => {
     options.body = req.body;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Network', msg: 'Network Routes Received', data: body });
-        return Promise.all(body.route?.map((rt) => getAlias(req.session.selectedNode, rt, 'id'))).then((values) => {
+        // Resolve hop aliases with a bounded number of concurrent listnodes calls, matching the
+        // peers/channels paths, so a long route can't storm clnrest (#1501).
+        const getRouteAliasesTasks = (body.route || []).map((rt) => () => getAlias(req.session.selectedNode, rt, 'id'));
+        common.runWithConcurrencyLimit(getRouteAliasesTasks, 20, () => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Network Routes with Alias Received', data: body });
             res.status(200).json(body || []);
         });
@@ -87,8 +94,9 @@ export const getAlias = (selNode, peer, id) => {
         peer.alias = '';
         return Promise.resolve(peer);
     }
-    if (aliasCache.has(peerId)) {
-        peer.alias = aliasCache.get(peerId);
+    const cached = aliasCache.get(peerId);
+    if (cached && (Date.now() - cached.ts) < ALIAS_CACHE_TTL) {
+        peer.alias = cached.alias;
         return Promise.resolve(peer);
     }
     options.url = selNode.settings.lnServerUrl + '/v1/listnodes';
@@ -96,7 +104,13 @@ export const getAlias = (selNode, peer, id) => {
     return request.post(options).then((body) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Network', msg: 'Peer Alias Finished', data: body });
         const alias = body.nodes?.[0]?.alias || peerId.substring(0, 20);
-        aliasCache.set(peerId, alias);
+        // Re-insert so a refreshed entry moves to the most-recent position, then evict the
+        // oldest if we're over the cap (Map preserves insertion order).
+        aliasCache.delete(peerId);
+        aliasCache.set(peerId, { alias, ts: Date.now() });
+        if (aliasCache.size > ALIAS_CACHE_MAX) {
+            aliasCache.delete(aliasCache.keys().next().value);
+        }
         peer.alias = alias;
         return peer;
     }).catch((errRes) => {
