@@ -135,7 +135,7 @@ this release should add its entry under the appropriate section below.
   end-to-end. See `docker/README.md`.
 
 - **Added an Eclair node to the regtest docker fixture**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1632](https://github.com/Ride-The-Lightning/RTL/pull/1632)).
   The `docker/` fixture now runs an `eclair` node alongside the LND and Core Lightning nodes,
   completing backend coverage of all three implementations RTL supports. RTL talks to its HTTP
   API with basic auth (`lnApiPassword`), and the seed opens an `eclair→bob` channel plus
