@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# eclair-cli against the regtest fixture's eclair node.
+#
+#   bin/e-cli getinfo
+#   bin/e-cli channels
+#   bin/e-cli createinvoice --amountMsat=1000000 --description=test
+#
+# The API password is passed explicitly because 'docker compose exec' does not
+# read eclair's config for auth; it defaults to the fixture's throwaway value.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+# shellcheck disable=SC1091
+source .env
+
+exec docker compose exec -T eclair eclair-cli \
+  -p "${ECLAIR_API_PASSWORD:-rtldev}" \
+  "$@"
