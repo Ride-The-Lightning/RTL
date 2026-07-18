@@ -15,7 +15,11 @@ export const getPeers = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
     const peers = !body.peers ? [] : body.peers;
-    return Promise.all(peers?.map((peer) => getAlias(req.session.selectedNode, peer, 'id'))).then((values) => {
+    // Resolve peer aliases with a bounded number of concurrent listnodes calls. An unbounded
+    // Promise.all here fires one request per peer at once, which overwhelms clnrest on nodes
+    // with many peers and fails with "Resource temporarily unavailable (os error 11)" (#1501).
+    const getPeerAliasesTasks = peers.map((peer) => () => getAlias(req.session.selectedNode, peer, 'id'));
+    common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
       res.status(200).json(body.peers || []);
     });

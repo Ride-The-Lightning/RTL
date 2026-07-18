@@ -582,7 +582,10 @@ export class CommonService {
   };
 
   public runWithConcurrencyLimit = (tasks, limit, done) => {
-    const results = new Array(tasks.length);
+    const results = new Array(tasks?.length || 0);
+    // No tasks: the start loop below never runs, so 'done' would never fire and the
+    // response would hang. Resolve immediately for empty lists (e.g. a node with no peers).
+    if (!tasks || tasks.length === 0) { return done(results); }
     let nextIndex = 0;
     let activeCount = 0;
 
