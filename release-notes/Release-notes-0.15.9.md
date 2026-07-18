@@ -105,6 +105,15 @@ this release should add its entry under the appropriate section below.
   mobile (SM) layouts, so it's surfaced on the list out of the box. Users who have already
   customized this page keep their saved columns and can add it via the column-settings gear.
 
+## Code Health
+
+- **Rebuild the compiled CLN channels controller to match its source**
+  ([#1631](https://github.com/Ride-The-Lightning/RTL/pull/1631)).
+  The #1606 fix updated `server/controllers/cln/channels.ts` to mirror `peer_connected` onto the
+  legacy `connected` field, but the committed compiled artifact
+  `backend/controllers/cln/channels.js` was never regenerated, so it lagged its source. Rebuilt it
+  so the committed backend output includes the connected-mirror line.
+
 ## Developer Tooling
 
 - **Rebuilt the regtest docker fixture**
