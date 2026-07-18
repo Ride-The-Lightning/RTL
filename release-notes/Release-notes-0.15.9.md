@@ -60,6 +60,16 @@ this release should add its entry under the appropriate section below.
   `[showFirstLastButtons]` restores both behaviors across the LND, Core Lightning, Eclair and
   shared tables.
 
+- **Accessibility: add missing form-field labels and remove positive tab indexes**
+  ([#1609](https://github.com/Ride-The-Lightning/RTL/pull/1609), fixes
+  [#1566](https://github.com/Ride-The-Lightning/RTL/issues/1566)).
+  Several `mat-select` and datepicker controls across the send, invoice, open/close-channel,
+  bump-fee, public-key and settings forms were rendered without a `mat-label`, so screen readers
+  had no way to announce their purpose (WCAG 1.3.1 / 3.3.2). Descriptive labels were added to
+  the affected controls. The forms also relied on positive `tabindex` values, an anti-pattern
+  (WCAG 2.4.3) that produced an inconsistent keyboard order; these were removed so focus follows
+  natural DOM order across the LND, Core Lightning, Eclair and shared modals.
+
 ## Enhancements
 
 - **Add a Disable Authentication option**
