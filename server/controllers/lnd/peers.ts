@@ -26,7 +26,10 @@ export const getPeers = (req, res, next) => {
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
     const peers = !body.peers ? [] : body.peers;
-    return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
+    // Bound concurrent alias lookups so a node with many peers can't fire one graph/node
+    // request per peer at once and overwhelm the backend (parity with the CLN fix, #1501).
+    const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
+    common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Sorted Peers List Received', data: body.peers });
       res.status(200).json(body.peers);
     });
@@ -51,15 +54,14 @@ export const postPeer = (req, res, next) => {
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
     request(options).then((body) => {
       const peers = (!body.peers) ? [] : body.peers;
-      return Promise.all(peers?.map((peer) => getAliasForPeers(req.session.selectedNode, peer))).then((values) => {
+      // Bound concurrent alias lookups (parity with the CLN fix, #1501).
+      const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
+      common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
         if (body.peers) {
           body.peers = common.newestOnTop(body.peers, 'pub_key', pubkey);
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
         }
         res.status(201).json(body.peers);
-      }).catch((errRes) => {
-        const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
       });
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);
