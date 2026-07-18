@@ -70,18 +70,20 @@ this release should add its entry under the appropriate section below.
   (WCAG 2.4.3) that produced an inconsistent keyboard order; these were removed so focus follows
   natural DOM order across the LND, Core Lightning, Eclair and shared modals.
 
-- **Core Lightning: bound alias resolution on the peers and route lookups to stop clnrest
-  "Resource temporarily unavailable" errors** ([#1629](https://github.com/Ride-The-Lightning/RTL/pull/1629),
+- **Bound peer/route alias resolution to stop clnrest "Resource temporarily unavailable" errors**
+  ([#1629](https://github.com/Ride-The-Lightning/RTL/pull/1629),
   fixes [#1501](https://github.com/Ride-The-Lightning/RTL/issues/1501)).
-  RTL resolves peer aliases by calling `listnodes` once per peer. A prior fix bounded this to 20
-  concurrent calls (plus a cache) for the channel list, but the **peers list** and **route lookup**
-  still fired an unbounded `Promise.all` — one request per peer at once — which overwhelms clnrest
-  on nodes with many peers and fails with `Resource temporarily unavailable (os error 11)`
-  (`EAGAIN`), leaving raw node IDs instead of aliases. Both paths now use the same 20-way
-  concurrency limit. The limiter was also hardened to resolve immediately for an empty list (an
-  empty peers/route set would previously never send a response), and the alias cache gained a
-  6-hour TTL and a max size so aliases refresh without an RTL restart and the cache can't grow
-  unbounded.
+  RTL resolves peer aliases by calling `listnodes` (CLN) / `graph/node` (LND) once per peer. A
+  prior fix bounded this to 20 concurrent calls (plus a cache) for the CLN channel list, but the
+  Core Lightning **peers list** and **route lookup** — and the LND **peers list** — still fired an
+  unbounded `Promise.all`, one request per peer at once. On Core Lightning nodes with many peers
+  this overwhelms clnrest and fails with `Resource temporarily unavailable (os error 11)`
+  (`EAGAIN`), leaving raw node IDs instead of aliases. All of these paths now use the same 20-way
+  concurrency limit (Eclair already resolves aliases inline from a bulk nodes list, so it is
+  unaffected). The CLN alias lookup was also made self-contained so aliases resolve regardless of
+  which screen is opened first; the limiter now resolves immediately for an empty or non-positive
+  input (which would previously never send a response); and the CLN alias cache gained a 6-hour TTL
+  and a max size so aliases refresh without an RTL restart and the cache can't grow unbounded.
 
 ## Enhancements
 
