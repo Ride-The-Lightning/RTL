@@ -11,6 +11,44 @@ cln    --[ 4,000,000 sat ]--> alice
 eclair --[ 3,500,000 sat ]--> bob
 ```
 
+## Topology
+
+```mermaid
+flowchart TB
+    subgraph chain["Chain backend"]
+        bitcoind["bitcoind (regtest)<br/>RPC · ZMQ rawblock/rawtx · ZMQ hashblock"]
+    end
+
+    subgraph ln["Lightning nodes"]
+        alice["alice (LND)"]
+        bob["bob (LND)<br/>forwards payments"]
+        carol["carol (LND)"]
+        cln["cln (Core Lightning)"]
+        eclair["eclair (Eclair)"]
+    end
+
+    alice =="5M sat"==> bob
+    bob =="3M sat"==> carol
+    cln =="4M sat"==> alice
+    eclair =="3.5M sat"==> bob
+
+    alice -.-> bitcoind
+    bob -.-> bitcoind
+    carol -.-> bitcoind
+    cln -.-> bitcoind
+    eclair -.->|"dedicated 'eclair' wallet<br/>+ hashblock ZMQ"| bitcoind
+
+    rtl["RTL<br/>localhost:3000"]
+    rtl -->|"REST + macaroon"| alice
+    rtl -->|"REST + macaroon"| bob
+    rtl -->|"REST + macaroon"| carol
+    rtl -->|"clnrest + rune"| cln
+    rtl -->|"HTTP API + basic auth"| eclair
+```
+
+Thick arrows are channels (opener → peer), dotted arrows the chain backend each node
+uses, and solid arrows how RTL reaches each node.
+
 bob sits in the middle so it accrues forwarding history, which is what gives RTL's
 routing screens something to show. Two nodes would leave them empty. The `cln`
 (Core Lightning) node gives RTL's CLN screens a real backend — it talks to RTL over
