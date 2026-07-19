@@ -16,7 +16,9 @@ const buildConfig = (options, method) => {
         // Bound hung upstreams; 10 minutes accommodates the slowest legitimate
         // operations (LND's /v2/router/send streams up to timeout_seconds=600 and
         // slow CLN channel operations get req.setTimeout(600000) upstream).
-        timeout: 600000
+        // Callers can override per request; 0 disables the bound entirely, which
+        // the LND invoice/payment subscription streams need (open until settled).
+        timeout: options.timeout !== null && options.timeout !== undefined ? options.timeout : 600000
     };
     if (options.baseUrl) {
         config.baseURL = options.baseUrl;

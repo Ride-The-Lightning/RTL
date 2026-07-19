@@ -44,7 +44,9 @@ export class LNDWebSocketClient {
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
             rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
-            options.url = selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash;
+            // Copy the options: the caller may pass the session-cached object, and the
+            // long poll needs an unbounded timeout without leaking it to other calls.
+            options = { ...options, url: selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash, timeout: 0 };
             request(options).then((msg) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
                 if (typeof msg === 'string') {
@@ -67,7 +69,9 @@ export class LNDWebSocketClient {
         };
         this.subscribeToPayment = (options, selectedNode, paymentHash) => {
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Payment ' + paymentHash + ' ..' });
-            options.url = selectedNode.settings.lnServerUrl + '/v2/router/track/' + paymentHash;
+            // Copy the options: the long poll needs an unbounded timeout without
+            // leaking it to other calls sharing the object.
+            options = { ...options, url: selectedNode.settings.lnServerUrl + '/v2/router/track/' + paymentHash, timeout: 0 };
             request(options).then((msg) => {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Payment Information Received for ' + paymentHash });
                 msg['type'] = 'payment';
