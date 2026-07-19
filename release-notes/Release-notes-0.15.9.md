@@ -116,6 +116,16 @@ this release should add its entry under the appropriate section below.
 
 ## Developer Tooling
 
+- **Documented the Dependabot / dependency-update process in CONTRIBUTING.md**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Dependabot's security PRs target `master` and are never merged individually — they are
+  resolved in batch dependency-update PRs against the current release branch (as done in
+  #1633). That process was previously undocumented. CONTRIBUTING.md now has a "Handling
+  Dependabot PRs" section covering the full flow: collecting targets (including in-range
+  fixes hidden by exact pins), applying bumps with Angular in lockstep, regenerating the
+  lockfile from scratch, rebuilding and committing the compiled artifacts, verification,
+  and tracking deprecated packages that need code-level replacement in dedicated issues.
+
 - **Rebuilt the regtest docker fixture**
   ([#1621](https://github.com/Ride-The-Lightning/RTL/pull/1621)).
   The `docker/` dev setup had been unable to start since February 2021 — a broken `boltz` service

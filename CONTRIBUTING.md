@@ -77,3 +77,15 @@ Contributions via code is the most sought after contribution and something we en
 * We are conservative in adding new dependencies to the repository. Do your best to not add any new libraries on RTL. We believe this is the best strategy to keep the software safe from vulnerabilites.
 * Confirm before starting by creating an issue about adding the library 
 * The library should be popular, well maintained and pre-existing vulnerability free.
+
+##### Handling Dependabot PRs (dependency updates)
+Dependabot files its security PRs against `master`, but they are not merged individually: they conflict with each other on `package-lock.json`, and `master` only advances when a release is merged. Instead, all open Dependabot alerts are resolved together in a single dependency-update PR against the current release branch (see [#1633](https://github.com/Ride-The-Lightning/RTL/pull/1633) for an example). The process:
+
+1. **Collect the targets.** Gather the fixed versions from every open Dependabot PR. Also review `npm audit` for findings *without* an open Dependabot PR — many are fixable in the same pass, and exact version pins in `package.json` can hide an available in-range fix for a direct dependency (check `fixAvailable` in `npm audit --json`).
+2. **Apply the bumps.** Update the pins in `package.json` for direct dependencies (Dependabot's validated version for runtime deps; the latest patch of the same minor for build tooling). Keep all `@angular/*` framework packages on a single version, and the CLI line (`@angular/cli`, `@angular/build`, `@angular-devkit/build-angular`) on its own matching version — Angular is under devDependencies but is compiled into the shipped frontend bundle. Never run a blanket `npm audit fix`.
+3. **Regenerate the lockfile from scratch.** Delete `package-lock.json` and run `npm install --legacy-peer-deps`. This produces one clean, fully re-resolved tree instead of an incrementally patched lockfile, and typically picks up additional in-range fixes for deep transitive dependencies.
+4. **Rebuild the compiled outputs.** Run `npm run buildbackend && npm run buildfrontend` and commit the regenerated `backend/` and `frontend/` artifacts along with `package.json` and `package-lock.json`, so the shipped bundles match the updated dependency tree.
+5. **Verify before opening the PR.** `npm run lint`, `npm run test`, and a functional check against real nodes — the regtest fixture under `docker/` covers all three implementations (see `docker/README.md`).
+6. **Open one PR** against the current release branch with a release-note entry summarizing the before/after `npm audit` counts. Once the release branch is merged to `master`, Dependabot closes its superseded PRs automatically.
+
+Vulnerabilities in deprecated packages (e.g. an unmaintained dependency with no fixed release) cannot be resolved by version bumps — track those in a dedicated issue for a code-level replacement instead of leaving them in the batch PR.
