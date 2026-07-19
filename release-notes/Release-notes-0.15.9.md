@@ -86,7 +86,7 @@ this release should add its entry under the appropriate section below.
   and a max size so aliases refresh without an RTL restart and the cache can't grow unbounded.
 
 - **Reports: realign the Scroll Range select with the date picker**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1637](https://github.com/Ride-The-Lightning/RTL/pull/1637), fixes
   [#1635](https://github.com/Ride-The-Lightning/RTL/issues/1635)).
   The a11y fix in #1609 wrapped the Reports page's bare Scroll Range `mat-select` in a
   `mat-form-field` so it could carry a label, but the new wrapper reserved Material's
