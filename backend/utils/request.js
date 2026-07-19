@@ -12,7 +12,11 @@ const buildConfig = (options, method) => {
     const config = {
         url: options.url && options.url !== '' ? options.url : options.uri,
         method: method || options.method || 'GET',
-        headers: options.headers ? { ...options.headers } : {}
+        headers: options.headers ? { ...options.headers } : {},
+        // Bound hung upstreams; 10 minutes accommodates the slowest legitimate
+        // operations (LND's /v2/router/send streams up to timeout_seconds=600 and
+        // slow CLN channel operations get req.setTimeout(600000) upstream).
+        timeout: 600000
     };
     if (options.baseUrl) {
         config.baseURL = options.baseUrl;
@@ -31,7 +35,17 @@ const buildConfig = (options, method) => {
         else {
             const params = new URLSearchParams();
             Object.entries(options.form).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
+                if (value === null || value === undefined) {
+                    return;
+                }
+                if (Array.isArray(value)) {
+                    // Eclair parses list fields as comma-separated values; omit empty lists
+                    // (request-promise's qs encoding also dropped them).
+                    if (value.length > 0) {
+                        params.append(key, value.join(','));
+                    }
+                }
+                else {
                     params.append(key, String(value));
                 }
             });
