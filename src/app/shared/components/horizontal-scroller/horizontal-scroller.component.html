@@ -14,7 +14,7 @@
 <ng-template #controlsPanel let-item='animationDirection'>
   <div fxLayout="row" fxLayoutAlign="center center" fxFlex="58" [@sliderAnimation]="animationDirection">
     <div fxFlex="50" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="font-bold-700">
-      <mat-form-field fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
+      <mat-form-field subscriptSizing="dynamic" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="center end">
         <mat-label>Scroll Range</mat-label>
         <mat-select name="selScrlRange" class="font-bold-700" [(ngModel)]="selScrollRange" (selectionChange)="onRangeChanged($event)">
           <mat-option *ngFor="let scrollRange of scrollRanges" [value]="scrollRange">
