@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -68,7 +68,7 @@ export const getChannels = (req, res, next) => {
         });
       } else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Empty Channels List Received' });
-        res.status(200).json([]);
+        return res.status(200).json([]);
       }
     }).
       catch((errRes) => {

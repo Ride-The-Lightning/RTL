@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { getAlias } from './network.js';

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 let options = null;
@@ -96,7 +96,7 @@ export const queryPaymentRoute = (req, res, next) => {
         }
         else {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Empty Payment Route Information Received' });
-            res.status(200).json({ routes: [] });
+            return res.status(200).json({ routes: [] });
         }
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'Query Route Error', req.session.selectedNode);

@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
@@ -42,7 +42,7 @@ export const getPeers = (req, res, next) => {
         });
       } else {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Empty Peers Received' });
-        res.status(200).json([]);
+        return res.status(200).json([]);
       }
     }).
       catch((errRes) => {
@@ -91,7 +91,7 @@ export const connectPeer = (req, res, next) => {
           res.status(201).json(peers);
         });
       } else {
-        res.status(201).json([]);
+        return res.status(201).json([]);
       }
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Peers', 'Connect Peer Error', req.session.selectedNode);

@@ -149,6 +149,31 @@ this release should add its entry under the appropriate section below.
   builds, and an end-to-end smoke test of the docker regtest fixture across LND, Core
   Lightning and Eclair (auth, getinfo, channel lists, and the WebSocket upgrade path).
 
+- **Replace the deprecated `request`/`request-promise` HTTP stack with axios**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  [#1634](https://github.com/Ride-The-Lightning/RTL/issues/1634)).
+  `request` has been deprecated and unmaintained since 2020 and carries an unfixable SSRF
+  advisory plus vulnerable pinned copies of `form-data` (critical), `qs`, `tough-cookie` and
+  `uuid` — 8 of the 13 production `npm audit` findings left after #1633, none fixable by a
+  version bump. All 36 backend files that imported `request-promise` (the LND, Core Lightning
+  and Eclair controllers, Boltz/Loop/RTLConf shared controllers, `common.ts` and the LND
+  websocket client) now go through a small compatibility wrapper (`server/utils/request.ts`)
+  backed by `axios` — already a production dependency, so nothing new is added. The wrapper
+  accepts the existing request-promise options (`qs`, `form` including pre-encoded string
+  bodies, `body`, `baseUrl`/`uri`, `rejectUnauthorized`, `json`), resolves with the response
+  body directly, and rejects with a plain object mirroring request-promise's
+  `StatusCodeError`/`RequestError` shape, so `CommonService.handleError`'s status-code and
+  message extraction (including the `ECONNREFUSED` → 503 mapping and Eclair's status-code
+  special case) behaves as before; auth headers are omitted from rejected errors so they
+  cannot leak into logs. Callers without `json: true` still receive the raw text body, and
+  LND's line-delimited `/v2/router/send` stream still surfaces as a string for the existing
+  parser. Production `npm audit` drops from 13 findings (2 critical) to 6 low, all in the
+  `crypto-browserify`/`elliptic` polyfill chain tracked in #1634. Verified end-to-end against
+  the docker regtest fixture: 43 API checks across all three implementations (reads, invoice
+  creation, a routed LND payment over the streaming endpoint, cross-implementation payments
+  from Core Lightning and Eclair, message sign/verify, channel backup to disk, bad-invoice
+  and node-unreachable error mapping) plus a clean lint and both production builds.
+
 - **Rebuild the compiled CLN channels controller to match its source**
   ([#1631](https://github.com/Ride-The-Lightning/RTL/pull/1631)).
   The #1606 fix updated `server/controllers/cln/channels.ts` to mirror `peer_connected` onto the
