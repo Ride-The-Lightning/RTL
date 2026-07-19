@@ -85,7 +85,18 @@ this release should add its entry under the appropriate section below.
   input (which would previously never send a response); and the CLN alias cache gained a 6-hour TTL
   and a max size so aliases refresh without an RTL restart and the cache can't grow unbounded.
 
-## Enhancements
+- **Reports: realign the Scroll Range select with the date picker**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1635](https://github.com/Ride-The-Lightning/RTL/issues/1635)).
+  The a11y fix in #1609 wrapped the Reports page's bare Scroll Range `mat-select` in a
+  `mat-form-field` so it could carry a label, but the new wrapper reserved Material's
+  hint/subscript space below the input (78.8px total vs the date field's 56px) and was
+  top-anchored, leaving the Monthly/Yearly Date picker sitting ~11px lower than the select
+  on every implementation's report screens. The field now uses `subscriptSizing="dynamic"`
+  (no hints are used, so no space is reserved) and centers on the cross axis, restoring the
+  aligned 56px control row from v0.15.8 while keeping the accessibility label. Verified by
+  measuring the rendered layout headlessly against the regtest fixture: both fields now
+  render at identical top/height.
 
 - **Add a Disable Authentication option**
   ([#1582](https://github.com/Ride-The-Lightning/RTL/pull/1582)).
