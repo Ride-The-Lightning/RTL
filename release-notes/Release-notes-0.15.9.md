@@ -108,7 +108,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Batch dependency update resolving all 20 open Dependabot security PRs**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1633](https://github.com/Ride-The-Lightning/RTL/pull/1633)).
   Dependabot had 20 open security-alert PRs against `master` (#1583–#1617). Rather than
   merging them piecemeal (they conflict with each other on `package-lock.json` and target
   the wrong branch for the release flow), the same bumps were applied in one pass on the
