@@ -117,12 +117,13 @@ this release should add its entry under the appropriate section below.
   `path-to-regexp`, `follow-redirects`, `lodash`, and the rest of the flagged transitive
   deps; the Angular framework packages moved in lockstep to 20.3.26 and the CLI/build
   toolchain to 20.3.32 (which drops the vulnerable `node-forge` from the tree entirely).
-  In-range fixes Dependabot hadn't re-opened PRs for (`qs`, `uuid`, `tough-cookie`,
-  `cookie`, `ajv`, `bn.js`, `elliptic`) were picked up in the same pass. `npm audit` goes
-  from 85 vulnerabilities (23 production) to 30 (14 production); everything remaining
-  requires code changes, not version bumps — the deprecated `request`/`request-promise`
-  stack, `csurf`, `pdfmake` and the `crypto-browserify` polyfill chain — and is tracked
-  separately. Verified with a clean lint, the full frontend test suite, both production
+  In-range fixes Dependabot hadn't re-opened PRs for (`pdfmake` 0.3.11 for its SSRF
+  advisory, `qs`, `uuid`, `tough-cookie`, `cookie`, `ajv`, `bn.js`, `elliptic`) were
+  picked up in the same pass. `npm audit` goes from 85 vulnerabilities (23 production)
+  to 29 (13 production, none high or critical besides the `request` stack); everything
+  remaining requires code changes, not version bumps — the deprecated
+  `request`/`request-promise` stack, `csurf` and the `crypto-browserify` polyfill
+  chain — and is tracked separately. Verified with a clean lint, the full frontend test suite, both production
   builds, and an end-to-end smoke test of the docker regtest fixture across LND, Core
   Lightning and Eclair (auth, getinfo, channel lists, and the WebSocket upgrade path).
 
