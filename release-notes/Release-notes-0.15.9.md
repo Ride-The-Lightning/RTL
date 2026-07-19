@@ -117,7 +117,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Documented the Dependabot / dependency-update process in CONTRIBUTING.md**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1636](https://github.com/Ride-The-Lightning/RTL/pull/1636)).
   Dependabot's security PRs target `master` and are never merged individually — they are
   resolved in batch dependency-update PRs against the current release branch (as done in
   #1633). That process was previously undocumented. CONTRIBUTING.md now has a "Handling
