@@ -107,6 +107,25 @@ this release should add its entry under the appropriate section below.
 
 ## Code Health
 
+- **Batch dependency update resolving all 20 open Dependabot security PRs**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Dependabot had 20 open security-alert PRs against `master` (#1583–#1617). Rather than
+  merging them piecemeal (they conflict with each other on `package-lock.json` and target
+  the wrong branch for the release flow), the same bumps were applied in one pass on the
+  release branch: `axios` 1.16.0 and `ws` 8.21.0 (direct), the socket.io server stack
+  (`engine.io`, `engine.io-client`, `socket.io-adapter`, `socket.io-parser`), express's
+  `path-to-regexp`, `follow-redirects`, `lodash`, and the rest of the flagged transitive
+  deps; the Angular framework packages moved in lockstep to 20.3.26 and the CLI/build
+  toolchain to 20.3.32 (which drops the vulnerable `node-forge` from the tree entirely).
+  In-range fixes Dependabot hadn't re-opened PRs for (`qs`, `uuid`, `tough-cookie`,
+  `cookie`, `ajv`, `bn.js`, `elliptic`) were picked up in the same pass. `npm audit` goes
+  from 85 vulnerabilities (23 production) to 30 (14 production); everything remaining
+  requires code changes, not version bumps — the deprecated `request`/`request-promise`
+  stack, `csurf`, `pdfmake` and the `crypto-browserify` polyfill chain — and is tracked
+  separately. Verified with a clean lint, the full frontend test suite, both production
+  builds, and an end-to-end smoke test of the docker regtest fixture across LND, Core
+  Lightning and Eclair (auth, getinfo, channel lists, and the WebSocket upgrade path).
+
 - **Rebuild the compiled CLN channels controller to match its source**
   ([#1631](https://github.com/Ride-The-Lightning/RTL/pull/1631)).
   The #1606 fix updated `server/controllers/cln/channels.ts` to mirror `peer_connected` onto the
