@@ -109,7 +109,7 @@ export const sendPayment = (req, res, next) => {
     req.body.last_hop_pubkey = Buffer.from(req.body.last_hop_pubkey, 'hex').toString('base64');
   }
   req.body.amp = req.body.amp ?? false;
-  req.body.timeout_seconds = req.body.timeout_seconds || 600;
+  req.body.timeout_seconds = (Number.isFinite(+req.body.timeout_seconds) && +req.body.timeout_seconds > 0) ? +req.body.timeout_seconds : 600;
   options.form = JSON.stringify(req.body);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
   // LND ends the stream at timeout_seconds with a FAILURE_REASON_TIMEOUT result;
