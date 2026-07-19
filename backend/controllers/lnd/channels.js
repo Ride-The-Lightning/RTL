@@ -175,7 +175,13 @@ export const closeChannel = (req, res, next) => {
             options.url = options.url + '&sat_per_vbyte=' + req.query.sat_per_vbyte;
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
-        request.delete(options);
+        // Fire-and-forget: LND keeps the close stream open until the closing tx
+        // confirms, so exempt it from the request timeout; the 202 is already sent,
+        // so log a rejection instead of letting it crash the process.
+        request.delete({ ...options, timeout: 0 }).catch((errRes) => {
+            const err = common.handleError(errRes, 'Channels', 'Close Channel Error', req.session.selectedNode);
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: err });
+        });
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Close Requested' });
         res.status(202).json({ message: 'Close channel request has been submitted.' });
     }
