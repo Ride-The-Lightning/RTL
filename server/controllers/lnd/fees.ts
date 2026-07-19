@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { getAllForwardingEvents } from './switch.js';

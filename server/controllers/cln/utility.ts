@@ -1,4 +1,4 @@
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 
@@ -42,7 +42,7 @@ export const verifyMessage = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/checkmessage';
   options.body = req.body;
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Message', msg: 'Message Verified', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
