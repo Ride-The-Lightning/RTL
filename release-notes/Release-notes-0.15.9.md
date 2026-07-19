@@ -98,6 +98,8 @@ this release should add its entry under the appropriate section below.
   measuring the rendered layout headlessly against the regtest fixture: both fields now
   render at identical top/height.
 
+## Enhancements
+
 - **Add a Disable Authentication option**
   ([#1582](https://github.com/Ride-The-Lightning/RTL/pull/1582)).
   A new `disableAuth` config flag (or `DISABLE_AUTH` environment variable) lets RTL run without its
