@@ -150,7 +150,7 @@ this release should add its entry under the appropriate section below.
   Lightning and Eclair (auth, getinfo, channel lists, and the WebSocket upgrade path).
 
 - **Replace the deprecated `request`/`request-promise` HTTP stack with axios**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  ([#1638](https://github.com/Ride-The-Lightning/RTL/pull/1638), part of
   [#1634](https://github.com/Ride-The-Lightning/RTL/issues/1634)).
   `request` has been deprecated and unmaintained since 2020 and carries an unfixable SSRF
   advisory plus vulnerable pinned copies of `form-data` (critical), `qs`, `tough-cookie` and
