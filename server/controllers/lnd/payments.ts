@@ -88,6 +88,9 @@ export const paymentLookup = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/router/track/' + req.params.paymentHash;
+  // Deliberately keep the wrapper's default timeout here: this holds a
+  // browser-facing response open while tracking, and payments in flight
+  // longer than that are delivered via the websocket subscription instead.
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Information Received for ' + req.params.paymentHash, data: body });
     res.status(200).json(body.result || body);
@@ -109,7 +112,10 @@ export const sendPayment = (req, res, next) => {
   req.body.timeout_seconds = req.body.timeout_seconds || 600;
   options.form = JSON.stringify(req.body);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
-  request.post(options).then((body) => {
+  // LND ends the stream at timeout_seconds with a FAILURE_REASON_TIMEOUT result;
+  // give the transport a margin over that so LND's mapped failure always wins
+  // the race against the wrapper's own timeout.
+  request.post({ ...options, timeout: (+req.body.timeout_seconds + 60) * 1000 }).then((body) => {
     const results = body.split('\n').filter(Boolean).map((jsonString) => JSON.parse(jsonString));
     body = results.length > 0 ? results[results.length - 1] : { result: { status: 'UNKNOWN' } };
     if (body.result.status === 'FAILED') {
