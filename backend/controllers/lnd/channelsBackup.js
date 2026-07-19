@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { sep } from 'path';
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 let options = null;

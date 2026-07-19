@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { sep } from 'path';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
-import request from 'request-promise';
+import request from '../../utils/request.js';
 import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';

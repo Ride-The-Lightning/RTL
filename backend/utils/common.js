@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
-import request from 'request-promise';
+import request from './request.js';
 import { Logger } from './logger.js';
 export class CommonService {
     constructor() {
