@@ -257,7 +257,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Link the release notes from the README for discoverability**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1646](https://github.com/Ride-The-Lightning/RTL/pull/1646)).
   The `release-notes/` folder was not referenced anywhere — no README link, workflow, or
   script — so it was effectively undiscoverable. The README's intro navigation now links to
   it (`[Release Notes](../release-notes)`, alongside the existing docs links), so the
