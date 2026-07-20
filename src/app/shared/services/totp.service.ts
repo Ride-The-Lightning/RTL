@@ -44,9 +44,10 @@ export class TotpService {
     return String(binary % (10 ** 6)).padStart(6, '0');
   }
 
-  // Mirrors otplib's totpPadSecret for SHA1: secrets shorter than 10 bytes are
-  // repeated up to 20 bytes. Never triggers for the 10 byte secrets generated
-  // above; kept for exact parity with the backend's token derivation.
+  // Mirrors otplib's totpPadSecret for SHA1 (repeat to 20 bytes below 10 bytes).
+  // Never triggers for the 10 byte secrets generated above, which is the only
+  // case RTL produces; note otplib itself under-repeats to 18 bytes for 1- and
+  // 9-byte secrets, so parity is exact only for the secrets used here.
   private createHmacKey(secretBytes: Uint8Array): Uint8Array {
     if (secretBytes.length * 2 >= 20) { return secretBytes; }
     const padded = new Uint8Array(20);
