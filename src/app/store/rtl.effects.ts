@@ -423,18 +423,31 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.LOG_OUT }));
         if (appConfig.SSO && +appConfig.SSO.rtlSSO) {
           window.location.href = appConfig.SSO.logoutRedirectLink;
-        } else {
-          this.router.navigate(['./login'], { state: { logoutReason: action.payload } });
         }
         this.sessionService.clearAll();
         this.store.dispatch(setNodeData({ payload: {} }));
         this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
         this.logger.info('Logged out from browser');
+        // Navigate with a full document load once the server has destroyed the
+        // session, so a fresh CSRF token (bound to the new session) is minted
+        // before the next login. The reason survives the reload in sessionStorage.
+        const navigateToLogin = () => {
+          if (!(appConfig.SSO && +appConfig.SSO.rtlSSO)) {
+            if (action.payload) { this.sessionService.setItem('logoutReason', action.payload); }
+            window.location.href = document.baseURI + 'login';
+          }
+        };
         return this.httpClient.get(API_END_POINTS.AUTHENTICATE_API + '/logout').
           pipe(map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
             this.logger.info('Logged out from server');
+            navigateToLogin();
+          }), catchError((err) => {
+            this.logger.error(err);
+            this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
+            navigateToLogin();
+            return of({ type: RTLActions.VOID });
           }));
       })),
     { dispatch: false }
