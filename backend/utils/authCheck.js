@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
-import csurf from 'csurf/index.js';
+import CSRF from './csrf.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
 const common = Common;
 const logger = Logger;
-const csurfProtection = csurf({ cookie: true });
+const csurfProtection = CSRF.csrfProtection;
 export const isAuthenticated = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];

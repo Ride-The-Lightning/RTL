@@ -174,6 +174,29 @@ this release should add its entry under the appropriate section below.
   from Core Lightning and Eclair, message sign/verify, channel backup to disk, bad-invoice
   and node-unreachable error mapping) plus a clean lint and both production builds.
 
+- **Replace the deprecated `csurf` middleware with `csrf-csrf`**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  [#1634](https://github.com/Ride-The-Lightning/RTL/issues/1634)).
+  `csurf` has been deprecated since 2022 and pins an old `cookie` release with a known
+  advisory; npm's only offered "fix" is a downgrade. It is now replaced by the maintained
+  `csrf-csrf` (v4), which implements the same double-submit-cookie pattern with an
+  HMAC-signed, session-bound token keyed on RTL's existing boot secret. The frontend
+  contract is unchanged — the token still arrives in the `XSRF-TOKEN` cookie/header and is
+  echoed back as `x-xsrf-token` (all header/body/query token sources csurf accepted are
+  still accepted), the signed token cookie keeps the `_csrf` name (now httpOnly), and the
+  `EBADCSRFTOKEN` error path in `app.ts` applies as before, so no Angular or Quickpay
+  changes were needed. One behavioral fix this surfaced: `app.ts` called `req.csrfToken()`
+  twice (cookie + header) — harmless under csurf, but token-desyncing under csrf-csrf —
+  and now generates the token once per request. Tokens are also now bound to the session,
+  so a token stolen from one session no longer validates in another — a check csurf's
+  cookie mode didn't perform (and the websocket upgrade check in `authCheck.ts` keeps its
+  previous semantics). Production `npm audit` drops from 6 low findings to 4, all in the
+  `crypto-browserify`/`elliptic` chain tracked in #1634. Verified against the docker
+  regtest fixture: both API suites (43 checks across LND, Core Lightning and Eclair) plus
+  a dedicated CSRF battery — valid-token auth, missing/garbage token → 403,
+  cross-session token replay → 403, token stability, the `XSRF-TOKEN` response header for
+  Quickpay, and the websocket handshake.
+
 - **Rebuild the compiled CLN channels controller to match its source**
   ([#1631](https://github.com/Ride-The-Lightning/RTL/pull/1631)).
   The #1606 fix updated `server/controllers/cln/channels.ts` to mirror `peer_connected` onto the
