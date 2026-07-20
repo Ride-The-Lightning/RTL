@@ -4,7 +4,7 @@
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 
-**Intro** -- [Application Features](./docs/Application_features.md) -- [Road Map](./docs/Roadmap.md) -- [Application Configurations](./docs/Application_configurations.md) -- [Core Lightning](./docs/Core_lightning_setup.md) -- [Eclair](./docs/Eclair_setup.md) -- [Contribution](./docs/Contributing.md)
+**Intro** -- [Application Features](./docs/Application_features.md) -- [Road Map](./docs/Roadmap.md) -- [Application Configurations](./docs/Application_configurations.md) -- [Core Lightning](./docs/Core_lightning_setup.md) -- [Eclair](./docs/Eclair_setup.md) -- [Contribution](./docs/Contributing.md) -- [Release Notes](../release-notes)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
