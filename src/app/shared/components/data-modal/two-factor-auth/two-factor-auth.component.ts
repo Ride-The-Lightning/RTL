@@ -30,6 +30,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public flgValidated = false;
   public isTokenValid = true;
+  private verifyingToken = false;
   public otpauth = '';
   public appConfig: RTLConfiguration | null = null;
   public flgEditable = true;
@@ -98,10 +99,13 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       this.generateSecret();
       this.isTokenValid = true;
     } else {
-      if (!this.tokenFormGroup.controls.token.value) {
+      if (!this.tokenFormGroup.controls.token.value || this.verifyingToken) {
         return true;
       }
+      // check() is async, so guard against a second click dispatching the update twice.
+      this.verifyingToken = true;
       this.totpService.check(this.tokenFormGroup.controls.token.value, this.secretFormGroup.controls.secret.value).then((isTokenValid) => {
+        this.verifyingToken = false;
         this.isTokenValid = isTokenValid;
         if (!isTokenValid) {
           this.tokenFormGroup.controls.token.setErrors({ notValid: true });
