@@ -21,6 +21,10 @@ class CSRF {
                 req.headers['x-csrf-token'] || req.headers['x-xsrf-token']
         });
         this.csrfProtection = this.doubleCsrfUtilities.doubleCsrfProtection;
+        // Force-mints a fresh token for the current session, discarding any token
+        // cookie bound to a previous session or boot secret (used by the
+        // EBADCSRFTOKEN error path in app.ts so a client retry succeeds).
+        this.reMintToken = (req, res) => this.doubleCsrfUtilities.generateCsrfToken(req, res, { overwrite: true });
     }
     mount(app) {
         this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'CSRF', msg: 'Setting up CSRF..' });

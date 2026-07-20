@@ -11,6 +11,7 @@ import { RTLConfiguration } from '../../models/RTLconfig';
 import { APICallStatusEnum, PASSWORD_BLACKLIST, RTLActions, ScreenSizeEnum } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 import { LoggerService } from '../../services/logger.service';
+import { SessionService } from '../../services/session.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -39,7 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private actions: Actions, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
+  constructor(private actions: Actions, private logger: LoggerService, private store: Store<RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private sessionService: SessionService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -63,6 +64,13 @@ export class LoginComponent implements OnInit, OnDestroy {
       subscribe((action: any) => {
         this.logoutReason = action.payload;
       });
+    // Logout navigates with a full document load (to re-mint the CSRF token),
+    // so the reason arrives via sessionStorage instead of the action stream.
+    const storedLogoutReason = this.sessionService.getItem('logoutReason');
+    if (storedLogoutReason) {
+      this.logoutReason = storedLogoutReason;
+      this.sessionService.removeItem('logoutReason');
+    }
   }
 
   onLogin(): boolean | void {

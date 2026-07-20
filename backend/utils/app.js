@@ -46,12 +46,12 @@ export class ExpressApplication {
                 res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
             });
             this.app.use((err, req, res, next) => {
-                this.handleApplicationErrors(err, res);
+                this.handleApplicationErrors(err, req, res);
                 next();
             });
             this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'App', msg: 'Application Routes Set' });
         };
-        this.handleApplicationErrors = (err, res) => {
+        this.handleApplicationErrors = (err, req, res) => {
             switch (err.code) {
                 case 'EACCES':
                     this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'Server requires elevated privileges' });
@@ -66,6 +66,16 @@ export class ExpressApplication {
                     res.status(401).send('Server is down/locked.');
                     break;
                 case 'EBADCSRFTOKEN':
+                    // Re-mint the token for the current session so a client retry succeeds
+                    // (the stale one may be bound to a destroyed session or rotated secret).
+                    try {
+                        const csrfToken = CSRF.reMintToken(req, res);
+                        res.cookie('XSRF-TOKEN', csrfToken);
+                        res.setHeader('XSRF-TOKEN', csrfToken);
+                    }
+                    catch (csrfError) {
+                        this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'CSRF Token Re-Mint Failed', error: csrfError });
+                    }
                     this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'Invalid CSRF token. Form tempered.' });
                     res.status(403).send('Invalid CSRF token, form tempered.');
                     break;
