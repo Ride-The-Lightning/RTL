@@ -256,6 +256,14 @@ this release should add its entry under the appropriate section below.
 
 ## Developer Tooling
 
+- **Link the release notes from the README for discoverability**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The `release-notes/` folder was not referenced anywhere — no README link, workflow, or
+  script — so it was effectively undiscoverable. The README's intro navigation now links to
+  it (`[Release Notes](../release-notes)`, alongside the existing docs links), so the
+  per-release notes are reachable from the repo homepage. The folder stays at the repo root
+  (release history is content, not `.github/` repo-meta).
+
 - **Documented the Dependabot / dependency-update process in CONTRIBUTING.md**
   ([#1636](https://github.com/Ride-The-Lightning/RTL/pull/1636)).
   Dependabot's security PRs target `master` and are never merged individually — they are
