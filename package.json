@@ -30,7 +30,7 @@
     "buffer": "6.0.3",
     "cookie-parser": "1.4.7",
     "crypto-browserify": "3.12.1",
-    "csurf": "1.11.0",
+    "csrf-csrf": "4.0.3",
     "express": "5.2.1",
     "express-session": "1.18.2",
     "hocon-parser": "1.0.1",
