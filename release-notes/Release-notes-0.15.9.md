@@ -204,7 +204,7 @@ this release should add its entry under the appropriate section below.
   re-mints fresh `XSRF-TOKEN`/`_csrf` cookies, so retrying with the new token succeeds.
 
 - **Drop the `crypto-browserify` polyfill chain by moving 2FA TOTP to WebCrypto**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1644](https://github.com/Ride-The-Lightning/RTL/pull/1644), closes
   [#1634](https://github.com/Ride-The-Lightning/RTL/issues/1634)).
   The frontend build pulled in the browser polyfills `crypto-browserify`, `stream-browserify`
   and `vm-browserify` (mapped in via `tsconfig.json` `paths`) solely because `otplib`'s
