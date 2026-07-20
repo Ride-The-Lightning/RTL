@@ -7,7 +7,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
 import { faInfoCircle, faCopy, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { authenticator } from 'otplib';
 import * as sha256 from 'sha256';
 
 import { RTLConfiguration } from '../../../models/RTLconfig';
@@ -15,6 +14,7 @@ import { AuthConfig } from '../../../models/alertData';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { RTLState } from '../../../../store/rtl.state';
 import { isAuthorized, updateApplicationSettings } from '../../../../store/rtl.actions';
+import { TotpService } from '../../../services/totp.service';
 
 @Component({
   standalone: false,
@@ -51,7 +51,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   disableFormGroup: UntypedFormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<RTLState>, private formBuilder: UntypedFormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar, private totpService: TotpService) { }
 
   ngOnInit() {
     this.appConfig = this.data.appConfig || null;
@@ -62,8 +62,8 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   }
 
   generateSecret() {
-    const secret2fa = authenticator.generateSecret();
-    this.otpauth = authenticator.keyuri('', 'Ride The Lightning (RTL)', secret2fa);
+    const secret2fa = this.totpService.generateSecret();
+    this.otpauth = this.totpService.keyuri('', 'Ride The Lightning (RTL)', secret2fa);
     return secret2fa;
   }
 
@@ -101,15 +101,19 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
       if (!this.tokenFormGroup.controls.token.value) {
         return true;
       }
-      this.isTokenValid = authenticator.check(this.tokenFormGroup.controls.token.value, this.secretFormGroup.controls.secret.value);
-      if (!this.isTokenValid) {
-        this.tokenFormGroup.controls.token.setErrors({ notValid: true });
-        return true;
-      }
-      this.appConfig.enable2FA = true;
-      this.appConfig.secret2FA = this.secretFormGroup.controls.secret.value;
-      this.store.dispatch(updateApplicationSettings({ payload: { showSnackBar: false, message: 'Two factor authentication enabled successfully.', config: this.appConfig } }));
-      this.tokenFormGroup.controls.token.setValue('');
+      this.totpService.check(this.tokenFormGroup.controls.token.value, this.secretFormGroup.controls.secret.value).then((isTokenValid) => {
+        this.isTokenValid = isTokenValid;
+        if (!isTokenValid) {
+          this.tokenFormGroup.controls.token.setErrors({ notValid: true });
+          return;
+        }
+        this.appConfig.enable2FA = true;
+        this.appConfig.secret2FA = this.secretFormGroup.controls.secret.value;
+        this.store.dispatch(updateApplicationSettings({ payload: { showSnackBar: false, message: 'Two factor authentication enabled successfully.', config: this.appConfig } }));
+        this.tokenFormGroup.controls.token.setValue('');
+        this.flgValidated = true;
+      });
+      return;
     }
     this.flgValidated = true;
   }
