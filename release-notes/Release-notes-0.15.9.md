@@ -5,6 +5,19 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **Multi-node: preserve per-node auth when saving application settings**
+  ([#1645](https://github.com/Ride-The-Lightning/RTL/pull/1645), supersedes
+  [#1598](https://github.com/Ride-The-Lightning/RTL/pull/1598)).
+  When saving application settings on a multi-node setup, `addSecureData` matched each saved
+  node against the in-memory config by **array position** (`appConfig.nodes[i]`), so once nodes
+  were reordered or one was removed, another node's `macaroonPath`/`runePath` could be grafted
+  onto the wrong node — corrupting its authentication. Matching is now keyed by `node.index`
+  (via a lookup map) in both `addSecureData` and the config-write path, and the persisted
+  `RTL-Config.json` is sanitized of runtime-only fields (the request `options` object and the
+  resolved `runeValue`) so they are never written to disk. Contributed by @CosimoRicciardi in
+  #1598; landed here rebased onto the release branch with a regression test
+  (`test/backend/rtlconf.test.mjs`).
+
 - **All implementations: fix a page-load error when a channel's alias is undefined**
   ([#1581](https://github.com/Ride-The-Lightning/RTL/pull/1581)).
   On the home dashboard, channel labels were rendered as `(channel.alias || channel.peer_id).length`
