@@ -196,6 +196,12 @@ this release should add its entry under the appropriate section below.
   a dedicated CSRF battery — valid-token auth, missing/garbage token → 403,
   cross-session token replay → 403, token stability, the `XSRF-TOKEN` response header for
   Quickpay, and the websocket handshake.
+  **Note for third-party scripts / API consumers**: because tokens are session-bound, the
+  session cookie (`connect.sid`) must now be carried alongside the `_csrf` cookie and the
+  token header — a token without its session no longer validates. Handshake against `GET /`
+  (or any non-static route): static-served paths such as `/rtl/` do not mint CSRF cookies.
+  If a token goes stale (destroyed or expired session, or an RTL restart), the 403 response
+  re-mints fresh `XSRF-TOKEN`/`_csrf` cookies, so retrying with the new token succeeds.
 
 - **Rebuild the compiled CLN channels controller to match its source**
   ([#1631](https://github.com/Ride-The-Lightning/RTL/pull/1631)).
