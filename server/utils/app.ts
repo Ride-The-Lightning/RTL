@@ -59,8 +59,12 @@ export class ExpressApplication {
     this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
     this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
     this.app.use((req: any, res, next) => {
-      res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Angular Frontend
-      res.setHeader('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : ''); // RTL Quickpay JQuery
+      // Generate the token once per request: with csrf-csrf every call mints a
+      // new token on a first visit, so calling twice would desync the cookie
+      // from the header and the _csrf cookie it must match.
+      const csrfToken = req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : '';
+      res.cookie('XSRF-TOKEN', csrfToken); // RTL Angular Frontend
+      res.setHeader('XSRF-TOKEN', csrfToken); // RTL Quickpay JQuery
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
     this.app.use((err, req, res, next) => {
