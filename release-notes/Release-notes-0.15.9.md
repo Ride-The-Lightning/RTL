@@ -175,7 +175,7 @@ this release should add its entry under the appropriate section below.
   and node-unreachable error mapping) plus a clean lint and both production builds.
 
 - **Replace the deprecated `csurf` middleware with `csrf-csrf`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  ([#1643](https://github.com/Ride-The-Lightning/RTL/pull/1643), part of
   [#1634](https://github.com/Ride-The-Lightning/RTL/issues/1634)).
   `csurf` has been deprecated since 2022 and pins an old `cookie` release with a known
   advisory; npm's only offered "fix" is a downgrade. It is now replaced by the maintained
