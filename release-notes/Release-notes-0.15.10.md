@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Batch dependency update resolving the open Dependabot security PRs**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1653](https://github.com/Ride-The-Lightning/RTL/pull/1653)).
   Dependabot had three open security PRs against `master` (#1648, #1649, #1650). Rather than
   merging them piecemeal (they conflict with each other on `package-lock.json` and target the
   wrong branch for the release flow), the fixes were applied in one pass on the release branch.
