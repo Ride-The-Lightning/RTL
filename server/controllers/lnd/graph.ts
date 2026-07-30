@@ -80,8 +80,9 @@ export const getQueryRoutes = (req, res, next) => {
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
     if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
-      const requestOptions = { ...options };
-      const getRouteAliasesTasks = body.routes[0].hops.map((hop) => () => getAliasFromPubkey(req.session.selectedNode, hop.pub_key, requestOptions));
+      const selNode = req.session.selectedNode;
+      const { qs: _qs, ...requestOptions } = options;
+      const getRouteAliasesTasks = body.routes[0].hops.map((hop) => () => getAliasFromPubkey(selNode, hop.pub_key, { ...requestOptions }));
       common.runWithConcurrencyLimit(getRouteAliasesTasks, 20, (values) => {
         try {
           body.routes[0].hops?.map((hop, i) => {
@@ -140,8 +141,9 @@ export const getAliasesForPubkeys = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.query.pubkeys) {
     const pubkeyArr = req.query.pubkeys.split(',');
-    const requestOptions = { ...options };
-    const getAliasesTasks = pubkeyArr.map((pubkey) => () => getAliasFromPubkey(req.session.selectedNode, pubkey, requestOptions));
+    const selNode = req.session.selectedNode;
+    const { qs: _qs, ...requestOptions } = options;
+    const getAliasesTasks = pubkeyArr.map((pubkey) => () => getAliasFromPubkey(selNode, pubkey, { ...requestOptions }));
     common.runWithConcurrencyLimit(getAliasesTasks, 20, (values) => {
       try {
         const safeValues = values.map((v) => (typeof v === 'string' ? v : 'Unknown'));

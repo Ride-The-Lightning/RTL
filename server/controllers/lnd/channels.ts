@@ -37,8 +37,9 @@ export const getAllChannels = (req, res, next) => {
         total = local + remote;
         channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       });
-      const requestOptions = { ...options };
-      const getChannelAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(req.session.selectedNode, channel, requestOptions));
+      const selNode = req.session.selectedNode;
+      const { qs: _qs, ...requestOptions } = options;
+      const getChannelAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
       common.runWithConcurrencyLimit(getChannelAliasesTasks, 20, () => {
         try {
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
@@ -69,19 +70,20 @@ export const getPendingChannels = (req, res, next) => {
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
     }
-    const requestOptions = { ...options };
+    const selNode = req.session.selectedNode;
+    const { qs: _qs, ...requestOptions } = options;
     const getPendingAliasesTasks = [];
     if (body.pending_open_channels && body.pending_open_channels.length > 0) {
-      body.pending_open_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(req.session.selectedNode, channel.channel, requestOptions)));
+      body.pending_open_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
     }
     if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
-      body.pending_force_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(req.session.selectedNode, channel.channel, requestOptions)));
+      body.pending_force_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
     }
     if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-      body.pending_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(req.session.selectedNode, channel.channel, requestOptions)));
+      body.pending_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
     }
     if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
-      body.waiting_close_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(req.session.selectedNode, channel.channel, requestOptions)));
+      body.waiting_close_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
     }
     common.runWithConcurrencyLimit(getPendingAliasesTasks, 20, () => {
       try {
@@ -109,8 +111,9 @@ export const getClosedChannels = (req, res, next) => {
       body.channels.forEach((channel) => {
         channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
       });
-      const requestOptions = { ...options };
-      const getClosedAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(req.session.selectedNode, channel, requestOptions));
+      const selNode = req.session.selectedNode;
+      const { qs: _qs, ...requestOptions } = options;
+      const getClosedAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
       common.runWithConcurrencyLimit(getClosedAliasesTasks, 20, () => {
         try {
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
