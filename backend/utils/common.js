@@ -22,22 +22,37 @@ export class CommonService {
             { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }
         ];
         this.maskPasswords = (obj) => {
-            const keys = Object.keys(obj);
-            const length = keys.length;
-            if (length !== 0) {
-                for (let i = 0; i < length; i++) {
-                    if (typeof obj[keys[i]] === 'object') {
-                        keys[keys[i]] = this.maskPasswords(obj[keys[i]]);
-                    }
-                    if (typeof keys[i] === 'string' &&
-                        ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
-                            keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
-                            keys[i].toLowerCase().includes('rpcuser'))) {
-                        obj[keys[i]] = '*'.repeat(20);
+            // Clone up front: masking a live config object must not blank the credentials LN
+            // requests authenticate with (mirrors removeSecureData).
+            const masked = JSON.parse(JSON.stringify(obj));
+            const maskRecursive = (current) => {
+                const keys = Object.keys(current);
+                const length = keys.length;
+                if (length !== 0) {
+                    for (let i = 0; i < length; i++) {
+                        // Header maps always carry credentials in this codebase (macaroon, rune, basic
+                        // auth). Key-substring matching cannot catch them without also hiding the *Path
+                        // fields the settings UI legitimately shows, so mask the whole map.
+                        if (keys[i] === 'headers' && current[keys[i]] && typeof current[keys[i]] === 'object') {
+                            Object.keys(current[keys[i]]).forEach((headerKey) => { current[keys[i]][headerKey] = '*'.repeat(20); });
+                        }
+                        else if (current[keys[i]] && typeof current[keys[i]] === 'object') {
+                            // Truthiness guard: null is 'object' too and must not reach Object.keys.
+                            maskRecursive(current[keys[i]]);
+                        }
+                        if (typeof keys[i] === 'string' &&
+                            ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
+                                keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
+                                keys[i].toLowerCase().includes('rpcuser') || keys[i].toLowerCase().includes('rpcauth') ||
+                                keys[i].toLowerCase().includes('secret2fa') || keys[i].toLowerCase().includes('cookievalue') ||
+                                keys[i].toLowerCase().includes('rtlpass') || keys[i].toLowerCase().includes('runevalue'))) {
+                            current[keys[i]] = '*'.repeat(20);
+                        }
                     }
                 }
-            }
-            return obj;
+                return current;
+            };
+            return maskRecursive(masked);
         };
         this.removeAuthSecureData = (node) => {
             if (node.authentication) {
@@ -50,25 +65,55 @@ export class CommonService {
             return node;
         };
         this.removeSecureData = (config) => {
-            delete config.rtlConfFilePath;
-            delete config.rtlPass;
-            delete config.multiPass;
-            delete config.multiPassHashed;
-            delete config.secret2FA;
-            config.nodes?.forEach((node) => this.removeAuthSecureData(node));
-            return config;
+            // Clone before deleting: cookieValue is runtime-only, so mutating a caller's live
+            // appConfig would destroy SSO state with no way to restore it.
+            const sanitized = JSON.parse(JSON.stringify(config));
+            delete sanitized.rtlConfFilePath;
+            delete sanitized.rtlPass;
+            delete sanitized.multiPass;
+            delete sanitized.multiPassHashed;
+            delete sanitized.secret2FA;
+            // The SSO cookie is a live bearer credential; it must never leave the server.
+            if (sanitized.SSO) {
+                delete sanitized.SSO.cookieValue;
+            }
+            sanitized.nodes?.forEach((node) => this.removeAuthSecureData(node));
+            return sanitized;
         };
         this.addSecureData = (config) => {
             config.rtlConfFilePath = this.appConfig.rtlConfFilePath;
             config.rtlPass = this.appConfig.rtlPass;
-            config.multiPassHashed = this.appConfig.multiPassHashed;
-            config.SSO.rtlCookiePath = this.appConfig.SSO.rtlCookiePath;
+            // Pin the hash only when the server holds one: on a default install's first boot the
+            // file already has multiPassHashed but the in-memory config does not, and pinning
+            // undefined would erase the only password from the file on save, bricking the boot.
+            if (this.appConfig.multiPassHashed) {
+                config.multiPassHashed = this.appConfig.multiPassHashed;
+            }
+            else {
+                delete config.multiPassHashed;
+            }
+            // Deployment-level switches are pinned to server-held values: the settings API must
+            // not flip the authentication mode (disableAuth, SSO) or move SSO fields, the
+            // password policy, or the database location; no UI flow writes them. Pinning the
+            // whole SSO object also means a trimmed or missing SSO object can never wipe server
+            // state.
+            config.disableAuth = this.appConfig.disableAuth;
+            config.allowPasswordUpdate = this.appConfig.allowPasswordUpdate;
+            config.dbDirectoryPath = this.appConfig.dbDirectoryPath;
+            config.SSO = JSON.parse(JSON.stringify(this.appConfig.SSO || {}));
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
             }
-            if (config.secret2FA === this.appConfig.secret2FA) {
+            // Restore the TOTP seed when the client omits it — and when it sends an empty seed
+            // while still claiming 2FA is on (an inconsistent pair no honest flow produces).
+            // The settings UI's enable flow sends a non-empty seed; its disable flow sends an
+            // empty seed with enable2FA false. Both are honored.
+            if (config.secret2FA === undefined || (config.secret2FA === '' && config.enable2FA)) {
                 config.secret2FA = this.appConfig.secret2FA;
             }
+            // enable2FA derives from the seed, matching the boot-time derivation in config.ts,
+            // so the two fields can never diverge after a save.
+            config.enable2FA = !!config.secret2FA;
             const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]) || []);
             config.nodes?.forEach((node) => {
                 const appConfigNode = appConfigNodes.get(node.index);
@@ -103,7 +148,7 @@ export class CommonService {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options', data: swapOptions });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options Set' });
             return swapOptions;
         };
         this.getBoltzServerOptions = (req) => {
@@ -121,7 +166,7 @@ export class CommonService {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options', data: boltzOptions });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options Set' });
             return boltzOptions;
         };
         this.getOptions = (req) => {
@@ -167,7 +212,7 @@ export class CommonService {
                     }
                 }
                 if (req.session.selectedNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode });
                 }
                 return { status: 200, message: 'Updated Successfully' };
             }
@@ -237,7 +282,7 @@ export class CommonService {
                             form: ''
                         };
                     }
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode });
                 });
                 this.updateSelectedNodeOptions(req);
             }
@@ -345,10 +390,11 @@ export class CommonService {
             this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : err) });
             let newErrorObj = { statusCode: 500, message: '', error: '' };
             if (err.code && err.code === 'ENOENT') {
+                // The absolute path stays in the server log above but is not echoed to clients.
                 newErrorObj = {
                     statusCode: 500,
-                    message: 'No such file or directory ' + (err.path ? err.path : ''),
-                    error: 'No such file or directory ' + (err.path ? err.path : '')
+                    message: 'No such file or directory',
+                    error: 'No such file or directory'
                 };
             }
             else {

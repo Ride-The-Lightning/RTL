@@ -11,6 +11,14 @@ this release should add its entry under the appropriate section below.
   (`test/backend/authenticate.test.mjs`). Users who have two-factor authentication enabled
   are encouraged to update promptly.
 
+- **Config & logging: reduce exposure of authentication secrets**
+  ([#1659](https://github.com/Ride-The-Lightning/RTL/pull/1659)).
+  Tightens redaction of authentication material in node logs and configuration API
+  responses, pins deployment-level authentication settings server-side, contains backup
+  file downloads to the node's backup directory, and hardens the settings persistence
+  path. Adds regression coverage (`test/backend/common.test.mjs`). Users are encouraged
+  to update promptly.
+
 ## Code Health
 
 - **Batch dependency update resolving the open Dependabot security PRs**

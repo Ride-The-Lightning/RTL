@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as fs from 'fs';
-import { sep } from 'path';
+import { resolve, sep } from 'path';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
 import request from '../../utils/request.js';
@@ -81,7 +81,22 @@ export const getCurrencyRates = (req, res, next) => {
 
 export const getFile = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-  const file = req.query.path ? req.query.path : (req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
+  const channelBackupPath = req.session.selectedNode.settings.channelBackupPath;
+  let file = '';
+  if (req.query.path) {
+    // The UI only ever requests channel backup files; contain caller paths to the node's
+    // backup directory so this endpoint cannot read the config, macaroons or the SSO
+    // cookie (getConfig serves the config file masked; this must not bypass that).
+    const resolved = resolve(req.query.path);
+    if (resolved !== resolve(channelBackupPath) && !resolved.startsWith(resolve(channelBackupPath) + sep)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'RTLConf', msg: 'Blocked file read outside the channel backup directory', data: req.query.path });
+      const err = common.handleError({ statusCode: 403, message: 'Reading File Error', error: 'File path is outside the channel backup directory' }, 'RTLConf', 'Reading File Error', req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    }
+    file = resolved;
+  } else {
+    file = channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak';
+  }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
   fs.readFile(file, 'utf8', (errRes, data) => {
@@ -91,7 +106,8 @@ export const getFile = (req, res, next) => {
       const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.error, error: err.error });
     } else {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received', data: data });
+      // File contents can carry node credentials; never write them to the log.
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received' });
       res.status(200).json(data);
     }
   });
@@ -112,7 +128,6 @@ export const getApplicationSettings = (req, res, next) => {
       delete appConfData.SSO.rtlCookiePath;
       delete appConfData.SSO.cookieValue;
       delete appConfData.SSO.logoutRedirectLink;
-      appConfData.secret2FA = '';
       appConfData.dbDirectoryPath = '';
       appConfData.nodes[selNodeIdx].authentication = new Authentication();
       delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
@@ -205,7 +220,12 @@ export const updateNodeSettings = (req, res, next) => {
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
     if (node && node.settings) {
+      // channelBackupPath anchors getFile's containment root and is documented as a
+      // config-file-only setting; accepting it from the API would let the caller being
+      // contained choose the containment base. Pin it to the server-held value.
+      const serverChannelBackupPath = node.settings.channelBackupPath;
       node.settings = { ...node.settings, ...req.body.settings };
+      node.settings.channelBackupPath = serverChannelBackupPath;
       if (node.authentication && req.body.authentication) {
         if (req.body.authentication.boltzMacaroonPath) {
           node.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
@@ -222,7 +242,9 @@ export const updateNodeSettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
+      const serverChannelBackupPath = selectedNode.settings.channelBackupPath;
       selectedNode.settings = { ...selectedNode.settings, ...req.body.settings };
+      selectedNode.settings.channelBackupPath = serverChannelBackupPath;
       if (selectedNode.authentication && req.body.authentication) {
         if (req.body.authentication.boltzMacaroonPath) {
           selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
@@ -281,7 +303,7 @@ export const updateApplicationSettings = (req, res, next) => {
       const newOnlyNodes = [...newNodesMap.values()].map((newNode) => JSON.parse(JSON.stringify(newNode)));
       runtimeConfig.nodes = [...updatedAndExistingNodes, ...newOnlyNodes];
     }
-    common.appConfig = JSON.parse(JSON.stringify({
+    const newAppConfig = JSON.parse(JSON.stringify({
       ...runtimeConfig,
       selectedNodeIndex: config.selectedNodeIndex !== undefined ?
         config.selectedNodeIndex : common.appConfig.selectedNodeIndex,
@@ -292,21 +314,39 @@ export const updateApplicationSettings = (req, res, next) => {
       rtlConfFilePath: common.appConfig.rtlConfFilePath,
       rtlPass: common.appConfig.rtlPass
     }));
-    const fileConfig = JSON.parse(JSON.stringify(common.appConfig));
+    const fileConfig = JSON.parse(JSON.stringify(newAppConfig));
     delete fileConfig.selectedNodeIndex;
     delete fileConfig.enable2FA;
     delete fileConfig.allowPasswordUpdate;
     delete fileConfig.rtlConfFilePath;
     delete fileConfig.rtlPass;
     delete fileConfig.multiPass;
+    // Runtime-only SSO bearer; must not be persisted with the config.
+    if (fileConfig.SSO) { delete fileConfig.SSO.cookieValue; }
     fileConfig.nodes?.forEach((node) => {
       delete node.authentication?.options;
       delete node.authentication?.runeValue;
     });
-    fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
-    const newConfig = JSON.parse(JSON.stringify(common.appConfig));
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.maskPasswords(newConfig) });
-    res.status(201).json(common.removeSecureData(newConfig));
+    // Persist atomically (temp file + rename, so a mid-write failure cannot truncate the
+    // config) and only then adopt the new runtime config, so a failed write leaves the
+    // process on the old one. The temp file inherits the existing file's mode so a
+    // hardened 0600 is not silently downgraded; a fresh file gets 0600. Symlinks and
+    // single-file bind mounts cannot be renamed over — fall back to an in-place write,
+    // which preserves inode and mode.
+    const tempConfigFile = RTLConfFile + '.tmp';
+    try {
+      fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+      fs.chmodSync(tempConfigFile, fs.existsSync(RTLConfFile) ? (fs.statSync(RTLConfFile).mode & 0o777) : 0o600);
+      fs.renameSync(tempConfigFile, RTLConfFile);
+    } catch {
+      fs.rmSync(tempConfigFile, { force: true, recursive: true });
+      fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+    }
+    common.appConfig = newAppConfig;
+    // removeSecureData clones, so the runtime config is untouched; it strips rtlPass,
+    // the TOTP seed, the SSO cookie and all per-node credentials symmetrically.
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.removeSecureData(newAppConfig) });
+    res.status(201).json(common.removeSecureData(newAppConfig));
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';
     const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);
