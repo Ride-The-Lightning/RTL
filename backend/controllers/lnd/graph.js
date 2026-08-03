@@ -4,9 +4,9 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getAliasFromPubkey = (selNode, pubkey) => {
-    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
-    return request(options).then((res) => {
+export const getAliasFromPubkey = (selNode, pubkey, requestOptions) => {
+    requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
+    return request(requestOptions).then((res) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Graph', msg: 'Alias Received', data: res.node.alias });
         return res.node.alias;
     }).
@@ -83,19 +83,25 @@ export const getQueryRoutes = (req, res, next) => {
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
         if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
-            return Promise.all(body.routes[0].hops?.map((hop) => getAliasFromPubkey(req.session.selectedNode, hop.pub_key))).
-                then((values) => {
-                body.routes[0].hops?.map((hop, i) => {
-                    hop.hop_sequence = i + 1;
-                    hop.pubkey_alias = values[i];
-                    return hop;
-                });
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Routes with Alias Received', data: body });
-                res.status(200).json(body);
-            }).
-                catch((errRes) => {
-                const err = common.handleError(errRes, 'Graph', 'Get Query Routes Error', req.session.selectedNode);
-                return res.status(err.statusCode).json({ message: err.message, error: err.error });
+            const selNode = req.session.selectedNode;
+            const { qs: _qs, ...requestOptions } = options;
+            const getRouteAliasesTasks = body.routes[0].hops.map((hop) => () => getAliasFromPubkey(selNode, hop.pub_key, { ...requestOptions }));
+            common.runWithConcurrencyLimit(getRouteAliasesTasks, 20, (values) => {
+                try {
+                    body.routes[0].hops?.map((hop, i) => {
+                        hop.hop_sequence = i + 1;
+                        hop.pubkey_alias = typeof values[i] === 'string' ? values[i] : 'Unknown';
+                        return hop;
+                    });
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Routes with Alias Received', data: body });
+                    res.status(200).json(body);
+                }
+                catch (e) {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Graph', msg: 'Get Query Routes Error', error: e.message });
+                    if (!res.headersSent) {
+                        res.status(500).json({ message: 'Get Query Routes Error', error: e.message });
+                    }
+                }
             });
         }
         else {
@@ -145,14 +151,21 @@ export const getAliasesForPubkeys = (req, res, next) => {
     }
     if (req.query.pubkeys) {
         const pubkeyArr = req.query.pubkeys.split(',');
-        return Promise.all(pubkeyArr?.map((pubkey) => getAliasFromPubkey(req.session.selectedNode, pubkey))).
-            then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Node Alias', data: values });
-            res.status(200).json(values);
-        }).
-            catch((errRes) => {
-            const err = common.handleError(errRes, 'Graph', 'Get Aliases for Pubkeys Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ message: err.message, error: err.error });
+        const selNode = req.session.selectedNode;
+        const { qs: _qs, ...requestOptions } = options;
+        const getAliasesTasks = pubkeyArr.map((pubkey) => () => getAliasFromPubkey(selNode, pubkey, { ...requestOptions }));
+        common.runWithConcurrencyLimit(getAliasesTasks, 20, (values) => {
+            try {
+                const safeValues = values.map((v) => (typeof v === 'string' ? v : 'Unknown'));
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Node Alias', data: safeValues });
+                res.status(200).json(safeValues);
+            }
+            catch (e) {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Graph', msg: 'Get Aliases for Pubkeys Error', error: e.message });
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Get Aliases for Pubkeys Error', error: e.message });
+                }
+            }
         });
     }
     else {
