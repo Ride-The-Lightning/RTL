@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as fs from 'fs';
-import { sep } from 'path';
+import { resolve, sep } from 'path';
 import ini from 'ini';
 import parseHocon from 'hocon-parser';
 import request from '../../utils/request.js';
@@ -76,7 +76,23 @@ export const getCurrencyRates = (req, res, next) => {
 };
 export const getFile = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
-    const file = req.query.path ? req.query.path : (req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak');
+    const channelBackupPath = req.session.selectedNode.settings.channelBackupPath;
+    let file = '';
+    if (req.query.path) {
+        // The UI only ever requests channel backup files; contain caller paths to the node's
+        // backup directory so this endpoint cannot read the config, macaroons or the SSO
+        // cookie (getConfig serves the config file masked; this must not bypass that).
+        const resolved = resolve(req.query.path);
+        if (resolved !== resolve(channelBackupPath) && !resolved.startsWith(resolve(channelBackupPath) + sep)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'RTLConf', msg: 'Blocked file read outside the channel backup directory', data: req.query.path });
+            const err = common.handleError({ statusCode: 403, message: 'Reading File Error', error: 'File path is outside the channel backup directory' }, 'RTLConf', 'Reading File Error', req.session.selectedNode);
+            return res.status(err.statusCode).json({ message: err.message, error: err.error });
+        }
+        file = resolved;
+    }
+    else {
+        file = channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak';
+    }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
     fs.readFile(file, 'utf8', (errRes, data) => {
@@ -307,9 +323,12 @@ export const updateApplicationSettings = (req, res, next) => {
             delete node.authentication?.options;
             delete node.authentication?.runeValue;
         });
-        // Persist first and only then adopt the new runtime config, so a failed write
-        // (read-only volume, ENOSPC) cannot leave the process diverged from the file.
-        fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+        // Persist atomically (temp file + rename, so a mid-write failure cannot truncate the
+        // config) and only then adopt the new runtime config, so a failed write leaves the
+        // process on the old one.
+        const tempConfigFile = RTLConfFile + '.tmp';
+        fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+        fs.renameSync(tempConfigFile, RTLConfFile);
         common.appConfig = newAppConfig;
         // removeSecureData clones, so the runtime config is untouched; it strips rtlPass,
         // the TOTP seed, the SSO cookie and all per-node credentials symmetrically.

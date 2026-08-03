@@ -161,3 +161,49 @@ test('addSecureData honors an explicit seed wipe only when 2FA is disabled', () 
   assert.equal(config.secret2FA, '');
   assert.equal(config.enable2FA, false);
 });
+
+test('addSecureData does not pin an undefined multiPassHashed over the persisted one', () => {
+  // First-boot state of a default install: the file already holds multiPassHashed (the
+  // boot converted it), but the in-memory appConfig still holds plaintext multiPass and
+  // no hash. Pinning undefined here would erase the only password from the file on save
+  // and brick the next boot.
+  seedAppConfig();
+  Common.appConfig.multiPassHashed = undefined;
+  Common.appConfig.multiPass = 'password';
+  const config = Common.addSecureData({ nodes: [] });
+  assert.equal(Object.prototype.hasOwnProperty.call(config, 'multiPassHashed'), false);
+  assert.equal(config.multiPass, 'password');
+});
+
+test('addSecureData pins multiPassHashed when the server holds one', () => {
+  seedAppConfig();
+  Common.appConfig.multiPassHashed = 'server-hash-value';
+  const config = Common.addSecureData({ multiPassHashed: 'client-value', nodes: [] });
+  assert.equal(config.multiPassHashed, 'server-hash-value');
+});
+
+test('addSecureData pins allowPasswordUpdate and dbDirectoryPath to server-held values', () => {
+  // allowPasswordUpdate is false precisely when the password is environment-managed, and
+  // dbDirectoryPath redirects the runtime database — neither is writable from the UI.
+  seedAppConfig();
+  Common.appConfig.allowPasswordUpdate = false;
+  Common.appConfig.dbDirectoryPath = '/server-db';
+  const config = Common.addSecureData({ allowPasswordUpdate: true, dbDirectoryPath: '/client-db', nodes: [] });
+  assert.equal(config.allowPasswordUpdate, false);
+  assert.equal(config.dbDirectoryPath, '/server-db');
+});
+
+test('maskPasswords masks bitcoind rpcauth', () => {
+  const config = { rpcauth: 'user:salt$hmac', rpcuser: 'user', rpcpassword: 'pass' };
+  const masked = Common.maskPasswords(config);
+  assert.equal(masked.rpcauth, '*'.repeat(20));
+  assert.equal(masked.rpcuser, '*'.repeat(20));
+  assert.equal(masked.rpcpassword, '*'.repeat(20));
+});
+
+test('maskPasswords does not mutate its input', () => {
+  // Masking a live object must not blank the credentials LN requests authenticate with.
+  const config = { authentication: { options: { headers: { 'Grpc-Metadata-macaroon': 'deadbeef' } } } };
+  Common.maskPasswords(config);
+  assert.equal(config.authentication.options.headers['Grpc-Metadata-macaroon'], 'deadbeef');
+});

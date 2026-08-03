@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 import test from 'node:test';
 
-import { updateApplicationSettings } from '../../backend/controllers/shared/RTLConf.js';
+import { updateApplicationSettings, getFile } from '../../backend/controllers/shared/RTLConf.js';
 import { Common } from '../../backend/utils/common.js';
 import { WSServer } from '../../backend/utils/webSocketServer.js';
 
@@ -324,6 +324,117 @@ test('updateApplicationSettings tolerates a request body without an SSO object',
 
     assert.equal(responseStatus, 201);
     assert.equal(typeof Common.appConfig.SSO, 'object');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings leaves the runtime config untouched when the file write fails', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-writefail-'));
+  const confPath = join(tempDir, 'RTL-Config.json');
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    secret2FA: 'live-totp-seed',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '', cookieValue: 'live-sso-cookie' }
+  });
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    SSO: { rtlSSO: 0 },
+    nodes: [{ ...clone(oldConfig.nodes[0]), settings: { themeMode: 'NIGHT' } }]
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(confPath, JSON.stringify(oldConfig, null, 2), 'utf-8');
+    chmodSync(tempDir, 0o555); // read-only dir: temp-file create and rename both fail
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 500);
+    // The failed write must not have committed the prospective config in memory either.
+    assert.equal(Common.appConfig.secret2FA, 'live-totp-seed');
+    assert.equal(Common.appConfig.SSO.cookieValue, 'live-sso-cookie');
+    assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
+    // And the on-disk file still parses as the pre-call config.
+    const onDisk = JSON.parse(readFileSync(confPath, 'utf-8'));
+    assert.equal(onDisk.nodes.length, 1);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    chmodSync(tempDir, 0o755);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('getFile contains caller paths to the channel backup directory', async () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-getfile-'));
+  const backupDir = join(tempDir, 'backups');
+  mkdirSync(backupDir);
+  writeFileSync(join(tempDir, 'secret.bak'), 'top-secret', 'utf-8');
+  writeFileSync(join(backupDir, 'channel-1x2x3.bak'), 'backup-data', 'utf-8');
+  const session = { selectedNode: { lnImplementation: 'LND', settings: { channelBackupPath: backupDir } } };
+  const mockRes = () => {
+    const res = { statusCode: null, body: null };
+    res.status = (code) => {
+      res.statusCode = code;
+      return { json: (body) => { res.body = body; } };
+    };
+    return res;
+  };
+
+  try {
+    // An escaping path is rejected before any read.
+    const rejected = mockRes();
+    getFile({ query: { path: join(tempDir, 'secret.bak') }, session }, rejected, null);
+    assert.equal(rejected.statusCode, 403);
+
+    // A contained path is served.
+    const served = mockRes();
+    await new Promise((resolve) => {
+      const res = { status: (code) => { served.statusCode = code; return { json: (body) => { served.body = body; resolve(); } }; } };
+      getFile({ query: { path: join(backupDir, 'channel-1x2x3.bak') }, session }, res, null);
+    });
+    assert.equal(served.statusCode, 200);
+    assert.equal(served.body, 'backup-data');
+
+    // A contained but missing file returns a path-free error (the ENOENT branch).
+    const missing = mockRes();
+    await new Promise((resolve) => {
+      const res = { status: (code) => { missing.statusCode = code; return { json: (body) => { missing.body = body; resolve(); } }; } };
+      getFile({ query: { path: join(backupDir, 'channel-missing.bak') }, session }, res, null);
+    });
+    assert.equal(missing.statusCode, 500);
+    assert.equal(JSON.stringify(missing.body).includes(backupDir), false);
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
