@@ -3,6 +3,14 @@
 This document collects the changes that go into the 0.15.10 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Bug Fixes
+
+- **Auth: harden login request validation**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Tightens server-side validation of authentication requests and adds regression coverage
+  (`test/backend/authenticate.test.mjs`). Users who have two-factor authentication enabled
+  are encouraged to update promptly.
+
 ## Code Health
 
 - **Batch dependency update resolving the open Dependabot security PRs**

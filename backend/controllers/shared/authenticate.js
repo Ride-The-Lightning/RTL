@@ -84,8 +84,11 @@ export const authenticateUser = (req, res, next) => {
         const failed = getFailedInfo(reqIP, currentTime);
         const password = authenticationValue;
         if (common.appConfig.rtlPass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
-            if (twoFAToken && twoFAToken !== '') {
-                if (!verifyToken(twoFAToken)) {
+            // Gate on the server-side 2FA configuration, not on the request: when a secret is
+            // configured a token is mandatory, so a request omitting twoFAToken is rejected
+            // instead of silently skipping verification.
+            if (common.appConfig.secret2FA && common.appConfig.secret2FA !== '') {
+                if (!twoFAToken || twoFAToken === '' || !verifyToken(twoFAToken)) {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
                     failed.count = failed.count + 1;
                     failed.lastTried = currentTime;
