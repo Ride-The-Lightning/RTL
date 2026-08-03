@@ -52,6 +52,21 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
 
 export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && (otplib as any).authenticator.check(twoFAToken, common.appConfig.secret2FA));
 
+// Mirrors isAuthenticated: a request carrying a valid session JWT has already
+// completed 2FA at login, since tokens are only minted after verification when
+// 2FA is enabled. Used to exempt in-app re-authorization (e.g. the password
+// prompt before on-chain sends) from the TOTP requirement without opening a
+// password-only path.
+const hasValidAuthToken = (req) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, common.secret_key);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const authenticateUser = (req, res, next) => {
   const { authenticateWith, authenticationValue, twoFAToken } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
@@ -88,7 +103,9 @@ export const authenticateUser = (req, res, next) => {
       // instead of silently skipping verification. The login UI keys its token prompt
       // on enable2FA, so both fields are consulted — a stale secret with 2FA disabled
       // must not lock the operator out of a UI that never prompts for a token.
-      if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '') {
+      // Requests with a valid session token (in-app re-authorization, e.g. the
+      // password prompt before on-chain sends) are exempt from the TOTP requirement.
+      if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req)) {
         if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
           failed.count = failed.count + 1;

@@ -16,8 +16,8 @@
     "server": "set NODE_ENV=development&&nodemon --watch backend --watch server ./rtl.js",
     "serverUbuntu": "NODE_ENV=development nodemon --watch backend --watch server ./rtl.js",
     "testdev": "ng test --watch=true --code-coverage",
-    "testbackend": "node --test \"test/backend/*.test.mjs\"",
-    "test": "npm run testbackend && ng test --watch=false --browsers=ChromeHeadless",
+    "testbackend": "node --test test/backend/*.test.mjs",
+    "test": "npm run buildbackend && npm run testbackend && ng test --watch=false --browsers=ChromeHeadless",
     "lint": "eslint"
   },
   "private": true,

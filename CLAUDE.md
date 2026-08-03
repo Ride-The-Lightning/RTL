@@ -92,9 +92,9 @@ Eclair, wired to RTL — for end-to-end testing across all three implementations
 every credential in it is throwaway.
 
 Backend regression tests live in `test/backend/` (plain `node:test`, run against the
-compiled `backend/` — run `npm run buildbackend` first or they test stale code).
-`npm run test` chains them (`npm run testbackend`) before the frontend Karma/Jasmine specs.
-For backend changes, also verify against the fixture and say so in the PR.
+compiled `backend/`). `npm run test` compiles the backend, then runs them
+(`npm run testbackend`) before the frontend Karma/Jasmine specs, so they never test stale
+code. For backend changes, also verify against the fixture and say so in the PR.
 
 ## Conventions
 
