@@ -50,3 +50,20 @@ this release should add its entry under the appropriate section below.
   need Angular 21, i.e. `@angular/core` ^21 and TypeScript ≥5.9 — a framework migration, not a
   bump; #1650 is left for that work), the `@angular-eslint` line, and the karma/jasmine stack.
   None of it ships in the released bundle.
+
+- **Angular framework patch update to 20.3.27**
+  ([#1661](https://github.com/Ride-The-Lightning/RTL/pull/1661)).
+  Dependabot opened one PR per package against `master` for `@angular/core` (#1658),
+  `@angular/compiler` (#1657) and `@angular/common` (#1655). The framework packages are
+  pinned to exact versions and their peer ranges require them to move as a set, so the three
+  were applied as a single batch on the release branch, taking all nine 20.3.26 packages
+  (`animations`, `common`, `compiler`, `compiler-cli`, `core`, `forms`, `platform-browser`,
+  `platform-browser-dynamic`, `router`) to 20.3.27. Upstream fixes only, no advisories:
+  the compiler now disallows `i18n` event attributes and limits its possible-event-handler
+  check to property names longer than two characters, `HttpClient` distinguishes repeated
+  transfer-cache params, and `platform-server` picks up a newer `domino`.
+
+  This stays inside Angular 20 — the build toolchain (`@angular/build`, `@angular/cli`
+  20.3.32) and `@angular/cdk`/`@angular/material` (20.2.14) are already at the top of their
+  v20 lines, so nothing in this batch pulls in the Angular 21 migration still tracked by
+  #1650. `frontend/` was rebuilt for the new framework code.
