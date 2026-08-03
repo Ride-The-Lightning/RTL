@@ -137,3 +137,74 @@ test('updateApplicationSettings preserves indexed node auth and sanitizes only p
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
+
+test('updateApplicationSettings keeps the SSO cookie server-side without exposing or persisting it', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-sso-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 1, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    SSO: { rtlSSO: 1, rtlCookiePath: '/cookie-path', logoutRedirectLink: '', cookieValue: 'live-sso-cookie' }
+  });
+  // The request carries only what the sanitized client can have seen: no cookieValue.
+  // The server must re-attach it — a settings save must never wipe the live cookie —
+  // while keeping it out of both the response and the persisted file.
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    SSO: { rtlSSO: 1, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' }
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    let responseBody;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return {
+            json: (body) => {
+              responseBody = body;
+            }
+          };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.SSO.cookieValue, 'live-sso-cookie');
+    assert.equal(Common.appConfig.SSO.rtlCookiePath, '/cookie-path');
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(fileConfig.SSO.cookieValue, undefined);
+    assert.equal(responseBody.SSO.cookieValue, undefined);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});

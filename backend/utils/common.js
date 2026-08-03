@@ -32,7 +32,8 @@ export class CommonService {
                     if (typeof keys[i] === 'string' &&
                         ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
                             keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
-                            keys[i].toLowerCase().includes('rpcuser'))) {
+                            keys[i].toLowerCase().includes('rpcuser') || keys[i].toLowerCase().includes('secret2fa') ||
+                            keys[i].toLowerCase().includes('cookievalue'))) {
                         obj[keys[i]] = '*'.repeat(20);
                     }
                 }
@@ -55,6 +56,10 @@ export class CommonService {
             delete config.multiPass;
             delete config.multiPassHashed;
             delete config.secret2FA;
+            // The SSO cookie is a live bearer credential; it must never leave the server.
+            if (config.SSO) {
+                delete config.SSO.cookieValue;
+            }
             config.nodes?.forEach((node) => this.removeAuthSecureData(node));
             return config;
         };
@@ -63,6 +68,9 @@ export class CommonService {
             config.rtlPass = this.appConfig.rtlPass;
             config.multiPassHashed = this.appConfig.multiPassHashed;
             config.SSO.rtlCookiePath = this.appConfig.SSO.rtlCookiePath;
+            // cookieValue is stripped from client responses, so a settings save can never echo it;
+            // restore the server-held value or the save would silently wipe the live SSO cookie.
+            config.SSO.cookieValue = this.appConfig.SSO.cookieValue;
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
             }
@@ -103,7 +111,7 @@ export class CommonService {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Loop macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options', data: swapOptions });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options Set' });
             return swapOptions;
         };
         this.getBoltzServerOptions = (req) => {
@@ -121,7 +129,7 @@ export class CommonService {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
                 }
             }
-            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options', data: boltzOptions });
+            this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options Set' });
             return boltzOptions;
         };
         this.getOptions = (req) => {
@@ -167,7 +175,7 @@ export class CommonService {
                     }
                 }
                 if (req.session.selectedNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode, data: req.session.selectedNode.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Updated Node Options for ' + req.session.selectedNode.lnNode });
                 }
                 return { status: 200, message: 'Updated Successfully' };
             }
@@ -237,7 +245,7 @@ export class CommonService {
                             form: ''
                         };
                     }
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode, data: node.authentication.options });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Set Node Options for ' + node.lnNode });
                 });
                 this.updateSelectedNodeOptions(req);
             }

@@ -299,6 +299,8 @@ export const updateApplicationSettings = (req, res, next) => {
     delete fileConfig.rtlConfFilePath;
     delete fileConfig.rtlPass;
     delete fileConfig.multiPass;
+    // Runtime-only SSO bearer; must not be persisted with the config.
+    if (fileConfig.SSO) { delete fileConfig.SSO.cookieValue; }
     fileConfig.nodes?.forEach((node) => {
       delete node.authentication?.options;
       delete node.authentication?.runeValue;

@@ -11,6 +11,13 @@ this release should add its entry under the appropriate section below.
   (`test/backend/authenticate.test.mjs`). Users who have two-factor authentication enabled
   are encouraged to update promptly.
 
+- **Config & logging: reduce exposure of authentication secrets**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Tightens redaction of authentication material in node logs and configuration API
+  responses, and keeps runtime-only SSO state out of the persisted config file. Adds
+  regression coverage (`test/backend/common.test.mjs`). Users are encouraged to update
+  promptly.
+
 ## Code Health
 
 - **Batch dependency update resolving the open Dependabot security PRs**

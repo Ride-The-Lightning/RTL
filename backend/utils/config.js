@@ -302,7 +302,9 @@ export class ConfigService {
                         this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'Config', msg: 'Something went wrong while creating the backup directory: \n' + err });
                     }
                     this.common.nodes[idx].settings.logFile = config.rtlConfFilePath + '/logs/RTL-Node-' + node.index + '.log';
-                    this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.nodes[idx]) });
+                    // maskPasswords keeps paths visible for debugging while redacting lnApiPassword
+                    // and any other credential fields before they reach the log file.
+                    this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'Config', msg: 'Node Config: ' + JSON.stringify(this.common.maskPasswords(JSON.parse(JSON.stringify(this.common.nodes[idx])))) });
                     const log_file = this.common.nodes[idx].settings.logFile;
                     if (fs.existsSync(log_file || '')) {
                         fs.writeFile((log_file || ''), '', () => { });
