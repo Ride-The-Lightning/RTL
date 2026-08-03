@@ -75,3 +75,89 @@ test('handleError does not echo the absolute file path to the caller', () => {
   assert.equal(err.error.includes('/secret/dir'), false);
   assert.equal(err.message.includes('/secret/dir'), false);
 });
+
+test('handleError keeps the absolute path out of controller-wrapped errors too', () => {
+  // RTLConf handlers pass { statusCode, message, error: errRes } wrappers; the response
+  // must resolve to the caller's generic message, never the wrapped fs error's path.
+  const err = Common.handleError(
+    { statusCode: 500, message: 'Reading File Error', error: { code: 'ENOENT', path: '/secret/dir/x.bak' } },
+    'Test', 'Reading File Error', { lnImplementation: 'LND', settings: {} }
+  );
+  assert.equal(err.error.includes('/secret/dir'), false);
+  assert.equal(err.message.includes('/secret/dir'), false);
+});
+
+test('maskPasswords masks every value under a headers key', () => {
+  // Header values are always credential carriers here (macaroon, rune, basic auth), and
+  // key-substring matching cannot catch them without also hiding *Path fields.
+  const config = {
+    authentication: {
+      macaroonPath: '/visible/path',
+      options: { headers: { 'Grpc-Metadata-macaroon': 'deadbeef', rune: 'cln-rune', authorization: 'Basic xyz' } }
+    }
+  };
+  const masked = Common.maskPasswords(config);
+  assert.equal(masked.authentication.options.headers['Grpc-Metadata-macaroon'], '*'.repeat(20));
+  assert.equal(masked.authentication.options.headers.rune, '*'.repeat(20));
+  assert.equal(masked.authentication.options.headers.authorization, '*'.repeat(20));
+  assert.equal(masked.authentication.macaroonPath, '/visible/path');
+});
+
+const seedAppConfig = () => {
+  Common.appConfig = {
+    defaultNodeIndex: 0,
+    selectedNodeIndex: 0,
+    rtlConfFilePath: '/conf',
+    dbDirectoryPath: '/db',
+    rtlPass: 'server-hash',
+    allowPasswordUpdate: true,
+    enable2FA: true,
+    secret2FA: 'server-seed',
+    disableAuth: false,
+    SSO: { rtlSSO: 0, rtlCookiePath: '/server-cookie', logoutRedirectLink: 'https://server-logout', cookieValue: 'server-cookie' },
+    nodes: []
+  };
+  Common.selectedNode = null;
+  Common.nodes = [];
+};
+
+test('addSecureData pins disableAuth and the SSO object to server-held values', () => {
+  // The settings API must not be able to flip the authentication mode or move SSO fields;
+  // client-supplied values for these are deployment-level switches, not settings.
+  seedAppConfig();
+  const config = Common.addSecureData({
+    disableAuth: true,
+    SSO: { rtlSSO: 1, rtlCookiePath: '/client-path', logoutRedirectLink: 'https://client', cookieValue: 'client-cookie' },
+    secret2FA: 'client-seed',
+    nodes: []
+  });
+  assert.equal(config.disableAuth, false);
+  assert.deepEqual(config.SSO, { rtlSSO: 0, rtlCookiePath: '/server-cookie', logoutRedirectLink: 'https://server-logout', cookieValue: 'server-cookie' });
+  // An explicit non-empty seed is the settings UI's enable flow and is honored.
+  assert.equal(config.secret2FA, 'client-seed');
+  assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData restores an omitted TOTP seed and derives enable2FA from the seed', () => {
+  seedAppConfig();
+  const config = Common.addSecureData({ nodes: [] });
+  assert.equal(config.secret2FA, 'server-seed');
+  assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData treats an empty seed with 2FA claimed on as an omission', () => {
+  // The pre-login config response shape carries secret2FA: ''; echoing it must not wipe
+  // the seed while enable2FA stays on.
+  seedAppConfig();
+  const config = Common.addSecureData({ secret2FA: '', enable2FA: true, nodes: [] });
+  assert.equal(config.secret2FA, 'server-seed');
+  assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData honors an explicit seed wipe only when 2FA is disabled', () => {
+  // The settings UI's disable flow sends secret2FA: '' together with enable2FA: false.
+  seedAppConfig();
+  const config = Common.addSecureData({ secret2FA: '', enable2FA: false, nodes: [] });
+  assert.equal(config.secret2FA, '');
+  assert.equal(config.enable2FA, false);
+});

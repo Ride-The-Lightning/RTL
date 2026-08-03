@@ -31,9 +31,14 @@ export class CommonService {
     const length = keys.length;
     if (length !== 0) {
       for (let i = 0; i < length; i++) {
-        // Truthiness guard: null is 'object' too, and the recursive call mutates in
-        // place — assigning into keys[] here clobbered the key list for numeric keys.
-        if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
+        // Header maps always carry credentials in this codebase (macaroon, rune, basic
+        // auth). Key-substring matching cannot catch them without also hiding the *Path
+        // fields the settings UI legitimately shows, so mask the whole map.
+        if (keys[i] === 'headers' && obj[keys[i]] && typeof obj[keys[i]] === 'object') {
+          Object.keys(obj[keys[i]]).forEach((headerKey) => { obj[keys[i]][headerKey] = '*'.repeat(20); });
+        } else if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
+          // Truthiness guard: null is 'object' too, and the recursive call mutates in
+          // place — assigning into keys[] here clobbered the key list for numeric keys.
           this.maskPasswords(obj[keys[i]]);
         }
         if (typeof keys[i] === 'string' &&
@@ -80,24 +85,25 @@ export class CommonService {
     config.rtlConfFilePath = this.appConfig.rtlConfFilePath;
     config.rtlPass = this.appConfig.rtlPass;
     config.multiPassHashed = this.appConfig.multiPassHashed;
-    // Merge rather than replace: sanitized client responses never carry cookieValue, and
-    // a trimmed or missing SSO object must not silently wipe server-held SSO state. The
-    // cookie is always pinned to the server-held value.
-    config.SSO = {
-      ...(this.appConfig.SSO || {}),
-      ...(config.SSO || {}),
-      rtlCookiePath: this.appConfig.SSO?.rtlCookiePath,
-      cookieValue: this.appConfig.SSO?.cookieValue
-    };
+    // Deployment-level switches are pinned to server-held values: the settings API must
+    // not flip the authentication mode (disableAuth, SSO) or move SSO fields, and no UI
+    // flow writes them. Pinning the whole object also means a trimmed or missing SSO
+    // object can never wipe server state.
+    config.disableAuth = this.appConfig.disableAuth;
+    config.SSO = JSON.parse(JSON.stringify(this.appConfig.SSO || {}));
     if (this.appConfig.multiPass) {
       config.multiPass = this.appConfig.multiPass;
     }
-    // Restore the TOTP seed only when the client omits it (sanitized responses never
-    // include it, so an echo would otherwise wipe it). An explicit value is the settings
-    // UI's enable/disable flow and is honored.
-    if (config.secret2FA === undefined) {
+    // Restore the TOTP seed when the client omits it — and when it sends an empty seed
+    // while still claiming 2FA is on (the pre-login config response carries that shape).
+    // An explicit non-empty seed is the settings UI's enable flow and is honored; an
+    // empty seed with enable2FA false is its disable flow and is honored too.
+    if (config.secret2FA === undefined || (config.secret2FA === '' && config.enable2FA)) {
       config.secret2FA = this.appConfig.secret2FA;
     }
+    // enable2FA derives from the seed, matching the boot-time derivation in config.ts,
+    // so the two fields can never diverge after a save.
+    config.enable2FA = !!config.secret2FA;
     const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]) || []);
     config.nodes?.forEach((node) => {
       const appConfigNode = appConfigNodes.get(node.index);

@@ -89,7 +89,8 @@ export const getFile = (req, res, next) => {
             return res.status(err.statusCode).json({ message: err.error, error: err.error });
         }
         else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received', data: data });
+            // File contents can carry node credentials; never write them to the log.
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received' });
             res.status(200).json(data);
         }
     });
@@ -109,7 +110,6 @@ export const getApplicationSettings = (req, res, next) => {
             delete appConfData.SSO.rtlCookiePath;
             delete appConfData.SSO.cookieValue;
             delete appConfData.SSO.logoutRedirectLink;
-            appConfData.secret2FA = '';
             appConfData.dbDirectoryPath = '';
             appConfData.nodes[selNodeIdx].authentication = new Authentication();
             delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
@@ -281,7 +281,7 @@ export const updateApplicationSettings = (req, res, next) => {
             const newOnlyNodes = [...newNodesMap.values()].map((newNode) => JSON.parse(JSON.stringify(newNode)));
             runtimeConfig.nodes = [...updatedAndExistingNodes, ...newOnlyNodes];
         }
-        common.appConfig = JSON.parse(JSON.stringify({
+        const newAppConfig = JSON.parse(JSON.stringify({
             ...runtimeConfig,
             selectedNodeIndex: config.selectedNodeIndex !== undefined ?
                 config.selectedNodeIndex : common.appConfig.selectedNodeIndex,
@@ -292,7 +292,7 @@ export const updateApplicationSettings = (req, res, next) => {
             rtlConfFilePath: common.appConfig.rtlConfFilePath,
             rtlPass: common.appConfig.rtlPass
         }));
-        const fileConfig = JSON.parse(JSON.stringify(common.appConfig));
+        const fileConfig = JSON.parse(JSON.stringify(newAppConfig));
         delete fileConfig.selectedNodeIndex;
         delete fileConfig.enable2FA;
         delete fileConfig.allowPasswordUpdate;
@@ -307,12 +307,14 @@ export const updateApplicationSettings = (req, res, next) => {
             delete node.authentication?.options;
             delete node.authentication?.runeValue;
         });
+        // Persist first and only then adopt the new runtime config, so a failed write
+        // (read-only volume, ENOSPC) cannot leave the process diverged from the file.
         fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
-        const newConfig = JSON.parse(JSON.stringify(common.appConfig));
+        common.appConfig = newAppConfig;
         // removeSecureData clones, so the runtime config is untouched; it strips rtlPass,
         // the TOTP seed, the SSO cookie and all per-node credentials symmetrically.
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.removeSecureData(newConfig) });
-        res.status(201).json(common.removeSecureData(newConfig));
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.removeSecureData(newAppConfig) });
+        res.status(201).json(common.removeSecureData(newAppConfig));
     }
     catch (errRes) {
         const errMsg = 'Update Default Node Error';
