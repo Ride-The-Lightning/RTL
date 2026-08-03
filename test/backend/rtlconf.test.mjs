@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import test from 'node:test';
 
-import { updateApplicationSettings, getFile } from '../../backend/controllers/shared/RTLConf.js';
+import { updateApplicationSettings, updateNodeSettings, getFile } from '../../backend/controllers/shared/RTLConf.js';
 import { Common } from '../../backend/utils/common.js';
 import { WSServer } from '../../backend/utils/webSocketServer.js';
 
@@ -367,7 +367,10 @@ test('updateApplicationSettings leaves the runtime config untouched when the fil
     Common.nodes = clone(runtimeConfig.nodes);
     Common.selectedNode = Common.nodes[0];
     writeFileSync(confPath, JSON.stringify(oldConfig, null, 2), 'utf-8');
-    chmodSync(tempDir, 0o555); // read-only dir: temp-file create and rename both fail
+    // Both write paths must fail: a read-only dir defeats the temp-file write, and a
+    // read-only file defeats the in-place fallback.
+    chmodSync(confPath, 0o444);
+    chmodSync(tempDir, 0o555);
 
     let responseStatus = null;
     updateApplicationSettings(
@@ -391,7 +394,164 @@ test('updateApplicationSettings leaves the runtime config untouched when the fil
     assert.equal(onDisk.nodes.length, 1);
   } finally {
     clearInterval(WSServer.pingInterval);
+    chmodSync(confPath, 0o644);
     chmodSync(tempDir, 0o755);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings preserves the config file mode across the atomic write', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-mode-'));
+  const confPath = join(tempDir, 'RTL-Config.json');
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(confPath, JSON.stringify(oldConfig, null, 2), 'utf-8');
+    chmodSync(confPath, 0o600); // operator-hardened; must not be silently downgraded
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      { body: clone(oldConfig), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(statSync(confPath).mode & 0o777, 0o600);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings falls back to an in-place write when the rename fails', () => {
+  // Single-file bind mounts and symlinks cannot be renamed over; the save must still work.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-fallback-'));
+  const confPath = join(tempDir, 'RTL-Config.json');
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(confPath, JSON.stringify(oldConfig, null, 2), 'utf-8');
+    chmodSync(confPath, 0o600);
+    mkdirSync(confPath + '.tmp'); // forces the temp write to fail, exercising the fallback
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      { body: clone(oldConfig), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(statSync(confPath).mode & 0o777, 0o600); // in-place write keeps the inode
+    assert.deepEqual(JSON.parse(readFileSync(confPath, 'utf-8')).nodes.length, 1);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateNodeSettings pins channelBackupPath to the server-held value', () => {
+  // channelBackupPath anchors getFile's containment root; accepting it from the request
+  // would let the caller being contained choose the containment base.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', channelBackupPath: '/server/backups' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({ ...oldConfig, rtlConfFilePath: tempDir });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateNodeSettings(
+      {
+        body: { settings: { themeMode: 'NIGHT', channelBackupPath: tempDir } },
+        session: { selectedNode: Common.nodes[0] }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+    assert.equal(fileNode.settings.channelBackupPath, '/server/backups');
+    assert.equal(fileNode.settings.themeMode, 'NIGHT'); // other settings still merge
+    assert.equal(Common.nodes[0].settings.channelBackupPath, '/server/backups');
+  } finally {
+    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });

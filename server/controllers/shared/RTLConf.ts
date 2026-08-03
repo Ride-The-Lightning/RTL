@@ -220,7 +220,12 @@ export const updateNodeSettings = (req, res, next) => {
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
     if (node && node.settings) {
+      // channelBackupPath anchors getFile's containment root and is documented as a
+      // config-file-only setting; accepting it from the API would let the caller being
+      // contained choose the containment base. Pin it to the server-held value.
+      const serverChannelBackupPath = node.settings.channelBackupPath;
       node.settings = { ...node.settings, ...req.body.settings };
+      node.settings.channelBackupPath = serverChannelBackupPath;
       if (node.authentication && req.body.authentication) {
         if (req.body.authentication.boltzMacaroonPath) {
           node.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
@@ -237,7 +242,9 @@ export const updateNodeSettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
+      const serverChannelBackupPath = selectedNode.settings.channelBackupPath;
       selectedNode.settings = { ...selectedNode.settings, ...req.body.settings };
+      selectedNode.settings.channelBackupPath = serverChannelBackupPath;
       if (selectedNode.authentication && req.body.authentication) {
         if (req.body.authentication.boltzMacaroonPath) {
           selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
@@ -322,10 +329,19 @@ export const updateApplicationSettings = (req, res, next) => {
     });
     // Persist atomically (temp file + rename, so a mid-write failure cannot truncate the
     // config) and only then adopt the new runtime config, so a failed write leaves the
-    // process on the old one.
+    // process on the old one. The temp file inherits the existing file's mode so a
+    // hardened 0600 is not silently downgraded; a fresh file gets 0600. Symlinks and
+    // single-file bind mounts cannot be renamed over — fall back to an in-place write,
+    // which preserves inode and mode.
     const tempConfigFile = RTLConfFile + '.tmp';
-    fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
-    fs.renameSync(tempConfigFile, RTLConfFile);
+    try {
+      fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+      fs.chmodSync(tempConfigFile, fs.existsSync(RTLConfFile) ? (fs.statSync(RTLConfFile).mode & 0o777) : 0o600);
+      fs.renameSync(tempConfigFile, RTLConfFile);
+    } catch {
+      fs.rmSync(tempConfigFile, { force: true, recursive: true });
+      fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+    }
     common.appConfig = newAppConfig;
     // removeSecureData clones, so the runtime config is untouched; it strips rtlPass,
     // the TOTP seed, the SSO cookie and all per-node credentials symmetrically.
