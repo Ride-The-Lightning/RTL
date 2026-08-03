@@ -21,6 +21,9 @@ const loginInterval = setInterval(() => {
     }
   }
 }, LOCKING_PERIOD);
+// The sweeper must not hold the event loop open on its own (it would keep
+// `node --test` or a CLI invocation alive for the full 30-minute period).
+loginInterval.unref();
 
 export const getFailedInfo = (reqIP, currentTime) => {
   let failed = { count: 0, lastTried: currentTime };
@@ -80,11 +83,13 @@ export const authenticateUser = (req, res, next) => {
     const failed = getFailedInfo(reqIP, currentTime);
     const password = authenticationValue;
     if (common.appConfig.rtlPass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
-      // Gate on the server-side 2FA configuration, not on the request: when a secret is
-      // configured a token is mandatory, so a request omitting twoFAToken is rejected
-      // instead of silently skipping verification.
-      if (common.appConfig.secret2FA && common.appConfig.secret2FA !== '') {
-        if (!twoFAToken || twoFAToken === '' || !verifyToken(twoFAToken)) {
+      // Gate on the server-side 2FA configuration, not on the request: when 2FA is
+      // enabled a token is mandatory, so a request omitting twoFAToken is rejected
+      // instead of silently skipping verification. The login UI keys its token prompt
+      // on enable2FA, so both fields are consulted — a stale secret with 2FA disabled
+      // must not lock the operator out of a UI that never prompts for a token.
+      if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '') {
+        if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
           failed.count = failed.count + 1;
           failed.lastTried = currentTime;
