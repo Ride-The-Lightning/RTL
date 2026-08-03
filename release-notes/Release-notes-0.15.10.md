@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Auth: harden login request validation**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1654](https://github.com/Ride-The-Lightning/RTL/pull/1654)).
   Tightens server-side validation of authentication requests and adds regression coverage
   (`test/backend/authenticate.test.mjs`). Users who have two-factor authentication enabled
   are encouraged to update promptly.
