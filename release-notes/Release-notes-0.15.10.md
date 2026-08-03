@@ -52,7 +52,7 @@ this release should add its entry under the appropriate section below.
   None of it ships in the released bundle.
 
 - **Angular framework patch update to 20.3.27**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1661](https://github.com/Ride-The-Lightning/RTL/pull/1661)).
   Dependabot opened one PR per package against `master` for `@angular/core` (#1658),
   `@angular/compiler` (#1657) and `@angular/common` (#1655). The framework packages are
   pinned to exact versions and their peer ranges require them to move as a set, so the three
