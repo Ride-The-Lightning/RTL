@@ -208,3 +208,124 @@ test('updateApplicationSettings keeps the SSO cookie server-side without exposin
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
+
+test('updateApplicationSettings restores omitted secret2FA and merges a trimmed SSO object', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-secrets-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: 'https://logout.example' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: true,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    secret2FA: 'live-totp-seed',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: 'https://logout.example', cookieValue: 'live-sso-cookie' }
+  });
+  // Sanitized responses carry neither secret2FA nor cookieValue, so an echoing client
+  // omits both; a trimmed SSO object also lacks logoutRedirectLink. All three must
+  // survive the save server-side.
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    enable2FA: true,
+    allowPasswordUpdate: true,
+    SSO: { rtlSSO: 0 }
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.secret2FA, 'live-totp-seed');
+    assert.equal(Common.appConfig.enable2FA, true);
+    assert.equal(Common.appConfig.SSO.cookieValue, 'live-sso-cookie');
+    assert.equal(Common.appConfig.SSO.logoutRedirectLink, 'https://logout.example');
+    assert.equal(Common.appConfig.SSO.rtlSSO, 0);
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(fileConfig.SSO.cookieValue, undefined);
+    assert.equal(fileConfig.secret2FA, 'live-totp-seed');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings tolerates a request body without an SSO object', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nosso-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const requestBody = clone(oldConfig);
+  delete requestBody.SSO;
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    updateApplicationSettings(
+      { body: requestBody, session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(typeof Common.appConfig.SSO, 'object');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});

@@ -26,14 +26,17 @@ export class CommonService {
             const length = keys.length;
             if (length !== 0) {
                 for (let i = 0; i < length; i++) {
-                    if (typeof obj[keys[i]] === 'object') {
-                        keys[keys[i]] = this.maskPasswords(obj[keys[i]]);
+                    // Truthiness guard: null is 'object' too, and the recursive call mutates in
+                    // place — assigning into keys[] here clobbered the key list for numeric keys.
+                    if (obj[keys[i]] && typeof obj[keys[i]] === 'object') {
+                        this.maskPasswords(obj[keys[i]]);
                     }
                     if (typeof keys[i] === 'string' &&
                         ((keys[i].toLowerCase().includes('password') && keys[i] !== 'allowPasswordUpdate') || keys[i].toLowerCase().includes('multipass') ||
                             keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword') ||
                             keys[i].toLowerCase().includes('rpcuser') || keys[i].toLowerCase().includes('secret2fa') ||
-                            keys[i].toLowerCase().includes('cookievalue'))) {
+                            keys[i].toLowerCase().includes('cookievalue') || keys[i].toLowerCase().includes('rtlpass') ||
+                            keys[i].toLowerCase().includes('runevalue'))) {
                         obj[keys[i]] = '*'.repeat(20);
                     }
                 }
@@ -51,30 +54,41 @@ export class CommonService {
             return node;
         };
         this.removeSecureData = (config) => {
-            delete config.rtlConfFilePath;
-            delete config.rtlPass;
-            delete config.multiPass;
-            delete config.multiPassHashed;
-            delete config.secret2FA;
+            // Clone before deleting: cookieValue is runtime-only, so mutating a caller's live
+            // appConfig would destroy SSO state with no way to restore it.
+            const sanitized = JSON.parse(JSON.stringify(config));
+            delete sanitized.rtlConfFilePath;
+            delete sanitized.rtlPass;
+            delete sanitized.multiPass;
+            delete sanitized.multiPassHashed;
+            delete sanitized.secret2FA;
             // The SSO cookie is a live bearer credential; it must never leave the server.
-            if (config.SSO) {
-                delete config.SSO.cookieValue;
+            if (sanitized.SSO) {
+                delete sanitized.SSO.cookieValue;
             }
-            config.nodes?.forEach((node) => this.removeAuthSecureData(node));
-            return config;
+            sanitized.nodes?.forEach((node) => this.removeAuthSecureData(node));
+            return sanitized;
         };
         this.addSecureData = (config) => {
             config.rtlConfFilePath = this.appConfig.rtlConfFilePath;
             config.rtlPass = this.appConfig.rtlPass;
             config.multiPassHashed = this.appConfig.multiPassHashed;
-            config.SSO.rtlCookiePath = this.appConfig.SSO.rtlCookiePath;
-            // cookieValue is stripped from client responses, so a settings save can never echo it;
-            // restore the server-held value or the save would silently wipe the live SSO cookie.
-            config.SSO.cookieValue = this.appConfig.SSO.cookieValue;
+            // Merge rather than replace: sanitized client responses never carry cookieValue, and
+            // a trimmed or missing SSO object must not silently wipe server-held SSO state. The
+            // cookie is always pinned to the server-held value.
+            config.SSO = {
+                ...(this.appConfig.SSO || {}),
+                ...(config.SSO || {}),
+                rtlCookiePath: this.appConfig.SSO?.rtlCookiePath,
+                cookieValue: this.appConfig.SSO?.cookieValue
+            };
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
             }
-            if (config.secret2FA === this.appConfig.secret2FA) {
+            // Restore the TOTP seed only when the client omits it (sanitized responses never
+            // include it, so an echo would otherwise wipe it). An explicit value is the settings
+            // UI's enable/disable flow and is honored.
+            if (config.secret2FA === undefined) {
                 config.secret2FA = this.appConfig.secret2FA;
             }
             const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]) || []);
@@ -353,10 +367,11 @@ export class CommonService {
             this.logger.log({ selectedNode: selectedNode, level: 'ERROR', fileName: fileName, msg: errMsg, error: (typeof err === 'object' ? JSON.stringify(err) : err) });
             let newErrorObj = { statusCode: 500, message: '', error: '' };
             if (err.code && err.code === 'ENOENT') {
+                // The absolute path stays in the server log above but is not echoed to clients.
                 newErrorObj = {
                     statusCode: 500,
-                    message: 'No such file or directory ' + (err.path ? err.path : ''),
-                    error: 'No such file or directory ' + (err.path ? err.path : '')
+                    message: 'No such file or directory',
+                    error: 'No such file or directory'
                 };
             }
             else {

@@ -307,7 +307,9 @@ export const updateApplicationSettings = (req, res, next) => {
     });
     fs.writeFileSync(RTLConfFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
     const newConfig = JSON.parse(JSON.stringify(common.appConfig));
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.maskPasswords(newConfig) });
+    // removeSecureData clones, so the runtime config is untouched; it strips rtlPass,
+    // the TOTP seed, the SSO cookie and all per-node credentials symmetrically.
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Application Settings Updated', data: common.removeSecureData(newConfig) });
     res.status(201).json(common.removeSecureData(newConfig));
   } catch (errRes) {
     const errMsg = 'Update Default Node Error';
