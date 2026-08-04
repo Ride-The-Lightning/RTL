@@ -19,6 +19,18 @@ this release should add its entry under the appropriate section below.
   path. Adds regression coverage (`test/backend/common.test.mjs`). Users are encouraged
   to update promptly.
 
+- **Eclair: stop logging the node's auth header at DEBUG level**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  `getChannels` in the Eclair channels controller logged its entire request options object,
+  which for Eclair carries HTTP basic auth — so raising an Eclair node's `logLevel` to
+  `DEBUG` wrote `authorization: Basic <base64>` into the node log, a recoverable form of the
+  configured `lnApiPassword`. The log now carries only the request url and form, matching
+  every other DEBUG log in the controllers. Present since 0.12.0 and only reachable by
+  opting in to `DEBUG` (the default level is `ERROR`), but it contradicted the logging
+  guarantee stated for #1659. Regression coverage added
+  (`test/backend/eclair-channels.test.mjs`). Found by auditing node logs at `DEBUG` while
+  verifying this release against the regtest fixture.
+
 ## Code Health
 
 - **Bound remaining unbounded LND alias-resolution fan-outs**
