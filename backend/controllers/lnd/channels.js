@@ -4,10 +4,10 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getAliasForChannel = (selNode, channel) => {
+export const getAliasForChannel = (selNode, channel, requestOptions) => {
     const pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
-    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
-    return request(options).then((aliasBody) => {
+    requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
+    return request(requestOptions).then((aliasBody) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Alias Received', data: aliasBody.node.alias });
         channel.remote_alias = aliasBody.node.alias && aliasBody.node.alias !== '' ? aliasBody.node.alias : aliasBody.node.pub_key.slice(0, 20);
         return channel;
@@ -30,18 +30,26 @@ export const getAllChannels = (req, res, next) => {
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
         if (body.channels) {
-            return Promise.all(body.channels?.map((channel) => {
+            body.channels.forEach((channel) => {
                 local = (channel.local_balance) ? +channel.local_balance : 0;
                 remote = (channel.remote_balance) ? +channel.remote_balance : 0;
                 total = local + remote;
                 channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
-                return getAliasForChannel(req.session.selectedNode, channel);
-            })).then((values) => {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
-                return res.status(200).json(body);
-            }).catch((errRes) => {
-                const err = common.handleError(errRes, 'Channels', 'Get All Channel Aliases Error', req.session.selectedNode);
-                return res.status(err.statusCode).json({ message: err.message, error: err.error });
+            });
+            const selNode = req.session.selectedNode;
+            const { qs: _qs, ...requestOptions } = options;
+            const getChannelAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
+            common.runWithConcurrencyLimit(getChannelAliasesTasks, 20, () => {
+                try {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Sorted Channels List Received', data: body });
+                    return res.status(200).json(body);
+                }
+                catch (e) {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Get All Channel Aliases Error', error: e.message });
+                    if (!res.headersSent) {
+                        res.status(500).json({ message: 'Get All Channel Aliases Error', error: e.message });
+                    }
+                }
             });
         }
         else {
@@ -66,26 +74,32 @@ export const getPendingChannels = (req, res, next) => {
         if (!body.total_limbo_balance) {
             body.total_limbo_balance = 0;
         }
-        const promises = [];
+        const selNode = req.session.selectedNode;
+        const { qs: _qs, ...requestOptions } = options;
+        const getPendingAliasesTasks = [];
         if (body.pending_open_channels && body.pending_open_channels.length > 0) {
-            body.pending_open_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_open_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
         }
         if (body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
-            body.pending_force_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_force_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
         }
         if (body.pending_closing_channels && body.pending_closing_channels.length > 0) {
-            body.pending_closing_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.pending_closing_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
         }
         if (body.waiting_close_channels && body.waiting_close_channels.length > 0) {
-            body.waiting_close_channels?.map((channel) => promises.push(getAliasForChannel(req.session.selectedNode, channel.channel)));
+            body.waiting_close_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
         }
-        return Promise.all(promises).then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Pending Channels List Received', data: body });
-            return res.status(200).json(body);
-        }).
-            catch((errRes) => {
-            const err = common.handleError(errRes, 'Channels', 'Get Pending Channel Aliases Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ message: err.message, error: err.error });
+        common.runWithConcurrencyLimit(getPendingAliasesTasks, 20, () => {
+            try {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Pending Channels List Received', data: body });
+                return res.status(200).json(body);
+            }
+            catch (e) {
+                logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Get Pending Channel Aliases Error', error: e.message });
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Get Pending Channel Aliases Error', error: e.message });
+                }
+            }
         });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'List Pending Channels Error', req.session.selectedNode);
@@ -102,15 +116,23 @@ export const getClosedChannels = (req, res, next) => {
     options.qs = req.query;
     request(options).then((body) => {
         if (body.channels && body.channels.length > 0) {
-            return Promise.all(body.channels?.map((channel) => {
+            body.channels.forEach((channel) => {
                 channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
-                return getAliasForChannel(req.session.selectedNode, channel);
-            })).then((values) => {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
-                return res.status(200).json(body);
-            }).catch((errRes) => {
-                const err = common.handleError(errRes, 'Channels', 'Get Closed Channel Aliases Error', req.session.selectedNode);
-                return res.status(err.statusCode).json({ message: err.message, error: err.error });
+            });
+            const selNode = req.session.selectedNode;
+            const { qs: _qs, ...requestOptions } = options;
+            const getClosedAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
+            common.runWithConcurrencyLimit(getClosedAliasesTasks, 20, () => {
+                try {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Closed Channels List Received', data: body });
+                    return res.status(200).json(body);
+                }
+                catch (e) {
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Get Closed Channel Aliases Error', error: e.message });
+                    if (!res.headersSent) {
+                        res.status(500).json({ message: 'Get Closed Channel Aliases Error', error: e.message });
+                    }
+                }
             });
         }
         else {

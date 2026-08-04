@@ -91,8 +91,10 @@ Eclair, wired to RTL — for end-to-end testing across all three implementations
 `docker/README.md`, or the `rtl-docker-fixture` skill in `.claude/skills/`. It is dev-only;
 every credential in it is throwaway.
 
-Backend code has no unit-test harness; `npm run test` runs the frontend Karma/Jasmine specs.
-For backend changes, verify against the fixture and say so in the PR.
+Backend regression tests live in `test/backend/` (plain `node:test`, run against the
+compiled `backend/`). `npm run test` compiles the backend, then runs them
+(`npm run testbackend`) before the frontend Karma/Jasmine specs, so they never test stale
+code. For backend changes, also verify against the fixture and say so in the PR.
 
 ## Conventions
 

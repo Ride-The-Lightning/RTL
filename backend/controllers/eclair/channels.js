@@ -53,7 +53,10 @@ export const getChannels = (req, res, next) => {
         options.form = req.query;
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels Node Id', data: options.form });
     }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: options });
+    // Log the call's shape only. Eclair authenticates with HTTP basic auth, so the options
+    // object carries the node's lnApiPassword in its authorization header, and node logs are
+    // routinely shared when debugging.
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Options', data: { url: options.url, form: options.form } });
     if (common.read_dummy_data) {
         common.getDummyData('Channels', req.session.selectedNode.lnImplementation).then((data) => { res.status(200).json(data); });
     }
