@@ -20,7 +20,7 @@ this release should add its entry under the appropriate section below.
   to update promptly.
 
 - **Eclair: stop logging the node's auth header at DEBUG level**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1664](https://github.com/Ride-The-Lightning/RTL/pull/1664)).
   `getChannels` in the Eclair channels controller logged its entire request options object,
   which for Eclair carries HTTP basic auth — so raising an Eclair node's `logLevel` to
   `DEBUG` wrote `authorization: Basic <base64>` into the node log, a recoverable form of the
