@@ -4,9 +4,9 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getAliasForPeers = (selNode, peer) => {
-    options.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key;
-    return request(options).then((aliasBody) => {
+export const getAliasForPeers = (selNode, peer, requestOptions) => {
+    requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key;
+    return request(requestOptions).then((aliasBody) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Alias Received', data: aliasBody.node.alias });
         peer.alias = aliasBody.node.alias;
         return aliasBody.node.alias;
@@ -22,12 +22,14 @@ export const getPeers = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
+    const selNode = req.session.selectedNode;
+    const { qs: _qs, ...requestOptions } = options;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
         const peers = !body.peers ? [] : body.peers;
         // Bound concurrent alias lookups so a node with many peers can't fire one graph/node
         // request per peer at once and overwhelm the backend (parity with the CLN fix, #1501).
-        const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
+        const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(selNode, peer, { ...requestOptions }));
         common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
             // Guard the response-send: the limiter invokes this outside the surrounding .catch.
             try {
@@ -58,13 +60,15 @@ export const postPeer = (req, res, next) => {
         addr: { host: host, pubkey: pubkey },
         perm: perm
     });
+    const selNode = req.session.selectedNode;
+    const { qs: _qs, ...requestOptions } = options;
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
         options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
         request(options).then((body) => {
             const peers = (!body.peers) ? [] : body.peers;
             // Bound concurrent alias lookups (parity with the CLN fix, #1501).
-            const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(req.session.selectedNode, peer));
+            const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(selNode, peer, { ...requestOptions }));
             common.runWithConcurrencyLimit(getPeerAliasesTasks, 20, () => {
                 // Guard the response-send: the limiter invokes this outside the surrounding .catch, and
                 // this replaced an explicit inner .catch — a throw here must not hang the POST (#1629 F4).
