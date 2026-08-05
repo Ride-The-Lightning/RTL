@@ -91,6 +91,17 @@ Eclair, wired to RTL — for end-to-end testing across all three implementations
 `docker/README.md`, or the `rtl-docker-fixture` skill in `.claude/skills/`. It is dev-only;
 every credential in it is throwaway.
 
+The fixture also carries a **BTCPay Server SSO harness** behind a compose profile
+(`docker compose --profile sso up -d`). BTCPay bundles RTL and reaches it over a path the
+standalone login never exercises: a rotating cookie file, an unregistered
+`/rtl/api/authenticate/cookie` URL that is not a route at all and falls through to the
+catch-all in `server/utils/app.ts`, and a reverse proxy serving it under `/rtl`. Run
+`docker/scripts/verify-sso.sh` (11 assertions, exits non-zero) after touching
+authentication, CSRF or static serving — none of that path is covered by logging into the
+fixture's own RTL. One trap it encodes: `GET /rtl/` is served by `express.static`, which
+sits above the catch-all and mints no `XSRF-TOKEN`, so a client entering there gets a 403
+on its first POST. That is long-standing behaviour, not a regression.
+
 Backend regression tests live in `test/backend/` (plain `node:test`, run against the
 compiled `backend/`). `npm run test` compiles the backend, then runs them
 (`npm run testbackend`) before the frontend Karma/Jasmine specs, so they never test stale
