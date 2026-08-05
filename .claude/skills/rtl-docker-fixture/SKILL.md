@@ -33,8 +33,23 @@ bin/ln-cli bob fwdinghistory
 docker compose logs -f rtl
 ```
 
+Testing the **BTCPay Server integration** (RTL in single-sign-on mode behind a proxy) —
+behind a compose profile, so a plain `up` does not start it:
+
+```bash
+docker compose --profile sso up -d
+./scripts/verify-sso.sh       # 11 assertions over the whole entry path; non-zero on failure
+open "$(bin/sso-url)"         # the link BTCPay renders on its Services page
+```
+
 Key facts when working with the fixture:
 
+- **Run `scripts/verify-sso.sh` after touching authentication, CSRF or static serving.**
+  BTCPay reaches RTL over a path the standalone login never exercises — a rotating cookie
+  file, an unregistered `/rtl/api/authenticate/cookie` URL that falls through to the
+  catch-all in `server/utils/app.ts`, and a reverse proxy. Note `GET /rtl/` is served by
+  `express.static` and mints **no** `XSRF-TOKEN`; only the catch-all does, so a client
+  entering there 403s on its first POST. That is long-standing, not a regression.
 - **`scripts/seed.sh` is deterministic but not idempotent.** Every amount is fixed, so a
   fresh run always produces identical state (screenshots differ only by your change) — so
   **do not introduce randomness**. It refuses to run twice against an already-seeded

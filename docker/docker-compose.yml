@@ -17,6 +17,9 @@ volumes:
   eclair_data:
   rtl_db:
   rtl_config:
+  rtl_sso_db:
+  rtl_sso_config:
+  rtl_sso_cookie:
 
 x-lnd: &lnd
   image: polarlightning/lnd:0.20.0-beta
@@ -285,7 +288,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
     # Defaults to the published image; override with RTL_IMAGE (e.g. a locally built
     # branch image) to test unreleased changes: RTL_IMAGE=rtl:pr1625 docker compose up.
-    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.8}
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.10}
     restart: unless-stopped
     depends_on:
       rtl-config-init:
@@ -311,3 +314,87 @@ services:
       - carol_data:/lnd/carol:ro
       - cln_data:/cln:ro
       - rtl_db:/RTL/database
+
+  # ---------------------------------------------------------------------------
+  # BTCPay Server SSO harness -- profile "sso", so a plain 'up' does not start it:
+  #
+  #     docker compose --profile sso up -d
+  #     bin/sso-url
+  #
+  # BTCPay bundles RTL as a service and runs it in single-sign-on mode. RTL
+  # writes a random cookie to RTL_COOKIE_PATH; BTCPay reads that file and renders
+  # a link to /rtl/api/authenticate/cookie?access-key=<cookie> on its Services
+  # page. That path is not a registered route -- it falls through to RTL's
+  # catch-all, which mints the XSRF-TOKEN cookie and serves index.html, and the
+  # SPA then reads access-key from the query string and posts it as a password
+  # login. Reproducing that entry path is the whole point of this harness: it is
+  # where RTL's auth, CSRF and static-serving behaviour meet an external caller,
+  # and it has broken before without the standalone flow noticing.
+  #
+  # BTCPay itself (postgres + nbxplorer + btcpayserver) is deliberately not here.
+  # See README.md, "BTCPay SSO harness", for what that leaves untested and how to
+  # run against a real BTCPay when it matters.
+  # ---------------------------------------------------------------------------
+
+  # Same copy-into-a-volume dance as rtl-config-init above, and for the same
+  # reason: RTL rewrites its config on startup.
+  rtl-sso-config-init:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_sso_config_init
+    profiles: ["sso"]
+    image: busybox:1.36
+    command: >
+      sh -c "cp /template/RTL-Config.sso.json /config/RTL-Config.json &&
+             chmod 644 /config/RTL-Config.json &&
+             echo 'sso config staged'"
+    volumes:
+      - ./rtl/RTL-Config.sso.json:/template/RTL-Config.sso.json:ro
+      - rtl_sso_config:/config
+
+  # A second RTL rather than a flag on the first: RTL picks one authentication
+  # mode at startup, so SSO and the password login cannot coexist in one
+  # instance. Only alice is wired up, matching BTCPay's one-node-per-RTL layout.
+  #
+  # The environment block is copied from BTCPay's own compose fragment
+  # (docker-compose-generator/docker-fragments/bitcoin-lnd.yml in
+  # btcpayserver-docker), so this exercises the env-driven SSO path BTCPay
+  # actually uses rather than the config-file equivalent -- which is why
+  # RTL-Config.sso.json leaves its SSO block zeroed and carries no multiPass.
+  #
+  # Only 'expose'd, never published: all access goes through the proxy, as it
+  # does under BTCPay.
+  rtl-sso:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_sso
+    profiles: ["sso"]
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.10}
+    restart: unless-stopped
+    depends_on:
+      rtl-sso-config-init:
+        condition: service_completed_successfully
+      alice:
+        condition: service_started
+    environment:
+      RTL_CONFIG_PATH: /RTL/config
+      RTL_SSO: 1
+      RTL_COOKIE_PATH: /RTL/cookie/.cookie
+      LOGOUT_REDIRECT_LINK: /server/services
+    expose:
+      - "3000"
+    volumes:
+      - rtl_sso_config:/RTL/config
+      - rtl_sso_cookie:/RTL/cookie
+      - alice_data:/lnd/alice:ro
+      - rtl_sso_db:/RTL/database
+
+  # Stands in for BTCPay's traefik. Routes only /rtl and /rtl/*, mirroring the
+  # label BTCPay puts on its RTL container; see nginx/rtl-sso.conf.
+  rtl-sso-proxy:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_sso_proxy
+    profiles: ["sso"]
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - rtl-sso
+    ports:
+      - "${RTL_SSO_PORT:-3001}:80"
+    volumes:
+      - ./nginx/rtl-sso.conf:/etc/nginx/conf.d/default.conf:ro

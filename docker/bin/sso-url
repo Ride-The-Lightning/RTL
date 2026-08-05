@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Print the BTCPay-style single-sign-on entry URL for the SSO harness.
+#
+#   docker compose --profile sso up -d
+#   bin/sso-url                    # print it
+#   open "$(bin/sso-url)"          # or follow it straight into RTL
+#
+# This is the link BTCPay renders on its Services page. BTCPay builds it from
+#   BTCPAY_BTCEXTERNALRTL="server=/rtl/api/authenticate/cookie;cookiefile=..."
+# by reading the cookie file RTL wrote and appending it as ?access-key=. The
+# value is the raw file content: RTL's frontend sha256s it before posting
+# (src/app/app.component.ts) and the backend compares against
+# sha256(cookieValue), so no hashing happens here.
+#
+# Authenticating rotates the cookie (common.refreshCookie), so re-run this for
+# each login -- exactly as BTCPay re-reads the file on every page render.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+# shellcheck disable=SC1091
+[ -f .env ] && source .env
+
+port="${RTL_SSO_PORT:-3001}"
+
+if ! docker compose --profile sso ps --status running --services 2>/dev/null | grep -qx rtl-sso; then
+  echo "rtl-sso is not running. Start it with: docker compose --profile sso up -d" >&2
+  exit 1
+fi
+
+cookie="$(docker compose --profile sso exec -T rtl-sso cat /RTL/cookie/.cookie | tr -d '\r\n')"
+
+if [ -z "$cookie" ]; then
+  echo "The cookie file /RTL/cookie/.cookie is empty. Is RTL_SSO=1 set on rtl-sso?" >&2
+  exit 1
+fi
+
+echo "http://localhost:${port}/rtl/api/authenticate/cookie?access-key=${cookie}"

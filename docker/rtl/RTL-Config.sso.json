@@ -1,0 +1,30 @@
+{
+  "port": "3000",
+  "defaultNodeIndex": 1,
+  "dbDirectoryPath": "/RTL/database",
+  "SSO": {
+    "rtlSSO": 0,
+    "rtlCookiePath": "",
+    "logoutRedirectLink": ""
+  },
+  "nodes": [
+    {
+      "index": 1,
+      "lnNode": "alice",
+      "lnImplementation": "LND",
+      "authentication": {
+        "macaroonPath": "/lnd/alice/data/chain/bitcoin/regtest"
+      },
+      "settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "logLevel": "ERROR",
+        "lnServerUrl": "https://alice:8080",
+        "fiatConversion": false,
+        "unannouncedChannels": false,
+        "blockExplorerUrl": "https://mempool.space"
+      }
+    }
+  ]
+}
