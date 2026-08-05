@@ -74,6 +74,9 @@ docker compose up -d          # bitcoind, alice, bob, carol, cln, eclair, rtl
 ./scripts/seed.sh             # fund, connect, open channels, make payments
 ```
 
+To also bring up the BTCPay single-sign-on harness, add `--profile sso` — see
+[BTCPay SSO harness](#btcpay-sso-harness).
+
 Then open <http://localhost:3000> — password `rtldev`. All five nodes (alice, bob,
 carol, cln, eclair) appear in the node switcher.
 
@@ -118,6 +121,7 @@ bin/ln-cli bob listchannels
 bin/ln-cli bob fwdinghistory               # forwarding history
 bin/e-cli getinfo                          # eclair-cli
 bin/e-cli channels
+bin/sso-url                                # BTCPay-style SSO link (needs --profile sso)
 docker compose exec cln lightning-cli --network=regtest listpeerchannels   # Core Lightning
 ```
 
@@ -127,6 +131,94 @@ Logs:
 docker compose logs -f rtl
 docker compose logs alice
 ```
+
+## BTCPay SSO harness
+
+BTCPay Server bundles RTL and runs it in single-sign-on mode, reached through a very
+different entry path than the standalone login: no password, a rotating cookie, and a
+reverse proxy in front. That path has broken before without the standalone flow
+noticing, so the fixture can reproduce it.
+
+It is behind a compose profile, so a plain `docker compose up -d` does not start it:
+
+```bash
+docker compose --profile sso up -d
+./scripts/verify-sso.sh          # 11 assertions over the whole entry path
+open "$(bin/sso-url)"            # or click through it yourself
+```
+
+`bin/sso-url` prints the link BTCPay renders on its Services page. Following it lands
+you in RTL already authenticated, against the `alice` node.
+
+### How the flow works
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant P as rtl-sso-proxy<br/>(stands in for traefik)
+    participant R as rtl-sso<br/>(RTL_SSO=1)
+    participant C as .cookie<br/>(shared volume)
+
+    R->>C: writes 64 random bytes at startup
+    Note over B: bin/sso-url reads the cookie —<br/>BTCPay reads the same file
+    B->>P: GET /rtl/api/authenticate/cookie?access-key=<cookie>
+    P->>R: same URI, prefix passed through
+    R-->>B: not a registered route → catch-all:<br/>mints XSRF-TOKEN, serves index.html
+    B->>P: POST /rtl/api/authenticate<br/>{ PASSWORD, sha256(access-key) }
+    P->>R: 
+    R->>C: matches → rotates the cookie
+    R-->>B: JWT
+```
+
+The three services are `rtl-sso-config-init` (stages `rtl/RTL-Config.sso.json`, same
+copy-into-a-volume dance as the standalone RTL), `rtl-sso` (RTL with `RTL_SSO=1`,
+`RTL_COOKIE_PATH` and `LOGOUT_REDIRECT_LINK` — the env block is lifted verbatim from
+BTCPay's own compose fragment), and `rtl-sso-proxy` (nginx standing in for BTCPay's
+traefik). `RTL_IMAGE` overrides both RTL containers at once, so a branch build gets
+tested through both entry paths.
+
+It is a second RTL container rather than a flag on the first because RTL picks one
+authentication mode at startup — SSO and the password login cannot coexist in one
+instance. Both are up at the same time on different ports.
+
+### Things this makes visible
+
+**No prefix stripping anywhere.** RTL is built with `<base href="/rtl/">` and mounts
+every route under `baseHref '/rtl'`, so BTCPay's traefik — and the nginx here — pass
+`/rtl/…` through unmodified. The proxy deliberately 404s everything outside `/rtl`, so
+a request escaping the prefix shows up as a failure instead of being quietly served.
+
+**The entry URL is not a real route.** `/rtl/api/authenticate/cookie` matches nothing in
+`server/routes/shared/authenticate.ts`; it falls through to the catch-all in
+`server/utils/app.ts`, which is what mints the `XSRF-TOKEN` cookie and serves the SPA.
+The access-key is the raw cookie file content — the frontend sha256s it before posting
+and the backend compares against `sha256(cookieValue)`.
+
+**`GET /rtl/` mints no CSRF token.** That path is served by `express.static`, which
+sits *above* the catch-all, so a client entering there has no `XSRF-TOKEN` and its first
+POST gets a 403. Only the catch-all mints one. This is long-standing behaviour, not a
+regression — but it is why `verify-sso.sh` always seeds its cookie jar from the entry
+URL, and worth remembering before concluding that CSRF is broken.
+
+**The cookie is effectively single-use.** Authenticating rotates it, so a stale
+`bin/sso-url` link fails. BTCPay re-reads the file on every page render, which is why
+this is invisible in normal use.
+
+### What it does not cover
+
+BTCPay itself is not here — no postgres, nbxplorer or btcpayserver container. So this
+does not exercise BTCPay *generating* the link, its Services page, or its own upgrades.
+For that, run BTCPay's own regtest stack and point it at a local image:
+
+```bash
+# in a btcpayserver-docker checkout, after building an RTL image locally
+docker build -t shahanafarooqui/rtl:dev /path/to/RTL
+# then edit the rtl image tag in the generated docker-compose, or set it in
+# docker-compose-generator/docker-fragments/bitcoin-lnd.yml before generating
+```
+
+That tests the real composition rather than this reconstruction of it; the harness here
+is the fast everyday check.
 
 ## Notes and gotchas
 
@@ -180,3 +272,7 @@ one LND uses, eclair never sees new blocks and channels never confirm.
 ## Not included
 
 The Boltz swap service.
+
+BTCPay Server itself (postgres + nbxplorer + btcpayserver). The `sso` profile
+reproduces the entry path BTCPay uses to reach RTL without running BTCPay — see
+[BTCPay SSO harness](#btcpay-sso-harness) for what that covers and what it does not.
