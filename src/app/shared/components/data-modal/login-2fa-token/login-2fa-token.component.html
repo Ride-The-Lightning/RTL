@@ -10,7 +10,7 @@
       <form #tokenForm="ngForm" fxLayout="column" fxFlex="100" (ngSubmit)="onVerifyToken()">
         <mat-form-field>
           <mat-label>Token</mat-label>
-          <input autoFocus matInput type="text" id="token" name="token" tabindex="2" required [(ngModel)]="token">
+          <input autoFocus matInput type="text" id="token" name="token" autocomplete="one-time-code" tabindex="2" required [(ngModel)]="token">
           <mat-error *ngIf="!token">Token is required.</mat-error>
         </mat-form-field>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-1">

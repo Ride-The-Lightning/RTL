@@ -3,6 +3,22 @@
 This document collects the changes that go into the 0.15.11 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Enhancements
+
+- **2FA login: password managers can offer the one-time code**
+  ([#1673](https://github.com/Ride-The-Lightning/RTL/pull/1673), fixes
+  [#1674](https://github.com/Ride-The-Lightning/RTL/issues/1674)).
+  The token input in the two-factor login dialog had no `autocomplete` attribute, and its
+  `id`, `name` and label were all `token`. A password manager had no data to find the
+  field. Bitwarden, for example, accepts a field only if the field has
+  `autocomplete="one-time-code"`, or if it contains a word from the `TotpFieldNames` list,
+  which does not include `token`. RTL also makes this dialog only after you send the
+  password, so the field is not in the page during the first autofill operation. Users
+  typed each code by hand. The input now has `autocomplete="one-time-code"`, the standard
+  value for this field, which password managers and browsers read directly. The change is
+  in the frontend only, and the token check does not change. A new test in
+  `login-2fa-token.component.spec.ts` guards the attribute.
+
 ## Code Health
 
 - **Batch dependency update resolving the open Dependabot security PRs**
