@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 
@@ -39,6 +40,11 @@ describe('LoginTokenComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should advertise the token input as a one-time code', () => {
+    const tokenInput = fixture.debugElement.query(By.css('input#token')).nativeElement;
+    expect(tokenInput.getAttribute('autocomplete')).toBe('one-time-code');
   });
 
   afterEach(() => {
