@@ -29,6 +29,16 @@ npm run buildfrontend    # ng build --configuration production: src/ -> frontend
 a dependency bump alone won't move it. `frontend/` is a bundle, so it also carries the app
 version and any bundled dependency.
 
+**Never merge a contributor's `frontend/` or `backend/` as submitted — regenerate them.**
+Committed build output is the one part of an external PR that cannot be reviewed by reading
+the diff: `main.*.js` is ~3 MB of minified code that GitHub collapses, so a PR whose `src/`
+change is one harmless line could carry anything at all in the bundle. When reviewing an
+external PR, rebuild both artifacts from the PR's sources on the current release branch,
+discard the contributor's copies, and commit your own. If you want evidence rather than
+trust, a token-level diff of the two bundles (split on `;` and `,`, then `diff`) shows
+exactly what the source change added — for a one-attribute template change it should be a
+couple of strings and nothing else; `runtime.*.js` may differ only in minifier variable names.
+
 ## The three-implementation pattern
 
 RTL supports three Lightning implementations, and the layout mirrors that everywhere:
