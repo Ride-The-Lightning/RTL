@@ -6,17 +6,14 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
-export const getAliasForPeers = (selNode: SelectedNode, peer, requestOptions) => {
-  requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key;
-  return request(requestOptions).then((aliasBody) => {
-    logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Alias Received', data: aliasBody.node.alias });
-    peer.alias = aliasBody.node.alias;
-    return aliasBody.node.alias;
-  }).catch((err) => {
-    peer.alias = peer.pub_key.slice(0, 20);
-    return peer.pub_key;
-  });
-};
+export const getAliasForPeers = (selNode: SelectedNode, peer, requestOptions) => request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key }).then((aliasBody) => {
+  logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Alias Received', data: aliasBody.node.alias });
+  peer.alias = aliasBody.node.alias;
+  return aliasBody.node.alias;
+}).catch((err) => {
+  peer.alias = peer.pub_key.slice(0, 20);
+  return peer.pub_key;
+});
 
 export const getPeers = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Getting Peers..' });
@@ -24,8 +21,8 @@ export const getPeers = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
   const selNode = req.session.selectedNode;
-  const { qs: _qs, ...requestOptions } = options;
-  request(options).then((body) => {
+  const { qs: _qs, form: _form, ...requestOptions } = options;
+  request({ ...requestOptions }).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List Received', data: body });
     const peers = !body.peers ? [] : body.peers;
     // Bound concurrent alias lookups so a node with many peers can't fire one graph/node
@@ -58,11 +55,10 @@ export const postPeer = (req, res, next) => {
     perm: perm
   });
   const selNode = req.session.selectedNode;
-  const { qs: _qs, ...requestOptions } = options;
-  request.post(options).then((body) => {
+  const { qs: _qs, form: _form, ...requestOptions } = options;
+  request.post({ ...requestOptions, form: options.form }).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers';
-    request(options).then((body) => {
+    request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/peers' }).then((body) => {
       const peers = (!body.peers) ? [] : body.peers;
       // Bound concurrent alias lookups (parity with the CLN fix, #1501).
       const getPeerAliasesTasks = peers.map((peer) => () => getAliasForPeers(selNode, peer, { ...requestOptions }));
