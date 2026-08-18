@@ -13,6 +13,7 @@
 * [Prep For Execution](#prep)
 * [Start The Server](#start)
 * [Access The Application](#access)
+* [Security](#security)
 * [Troubleshooting](#trouble)
 
 ### <a name="intro"></a>Introduction
@@ -184,6 +185,9 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 - Sample SSL setup guide can be found [here](./docs/RTL_SSL_setup.md)
 - (For advanced users) A sample SSL guide to serve remote access over an encrypted Tor connection can be found [here](./docs/RTL_TOR_setup.md)
 
+### <a name="security"></a>Security
+RTL holds your node's credentials and can move funds, so please **report security vulnerabilities privately** — not in a public issue. See [SECURITY.md](../SECURITY.md) for the reporting channels (GitHub private vulnerability reporting or email), the PGP key, what is in and out of scope, and what to expect after you report.
+
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
-You can also reach out to us via twitter DM on [@Suheb__](https://twitter.com/Suheb__) or [@RTL_App](https://twitter.com/RTL_App). Thanks for your interest.
+You can also reach out to us via twitter DM on [@Suheb__](https://twitter.com/Suheb__) or [@RTL_App](https://twitter.com/RTL_App). Thanks for your interest. (For security vulnerabilities, please use the channels in [SECURITY.md](../SECURITY.md) rather than a DM or a public issue.)

@@ -21,6 +21,20 @@ this release should add its entry under the appropriate section below.
 
 ## Code Health
 
+- **Add a security policy (`SECURITY.md`) and private reporting channels**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  RTL had no `SECURITY.md`, GitHub private vulnerability reporting was disabled, and the only
+  contact path in the repo was a Twitter DM — so a researcher holding an RTL vulnerability had
+  no private way to report it short of a DM or a public issue. A `SECURITY.md` at the repo root
+  now names two private channels (GitHub private vulnerability reporting, and a security email
+  with a `[RTL-SEC]` subject prefix), the RTL release-signing PGP fingerprint for encrypted
+  reports, a no-attachments / no-bounty policy, an RTL-specific scope (in: auth and session
+  bypass, CSRF, credential exposure, config-file handling, traversal/XSS; out: `disableAuth`
+  deployments, plain HTTP behind a proxy, the intentionally-committed `docker/` fixture
+  credentials), a latest-release-only support statement, and a 72-hour acknowledgement
+  target. The README gains a Security section and its contact line now routes security
+  reports there instead of to Twitter.
+
 - **Batch dependency update resolving the open Dependabot security PRs**
   ([#1676](https://github.com/Ride-The-Lightning/RTL/pull/1676)).
   Dependabot had seven open security PRs against `master` (#1663, #1666, #1667, #1670,
