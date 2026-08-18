@@ -19,16 +19,17 @@ Use either channel:
    subject line. After first contact we will normally move the conversation into a private
    GitHub advisory.
 
-   You can encrypt to the RTL release-signing key:
+   You can encrypt to the RTL release-signing key, which carries the
+   `security@ridethelightning.info` identity:
 
    ```
    3E9B D443 6C28 8039 CA82 7A92 00C9 E2BC 2E45 666F
    ```
 
-   This is the same key that signs RTL release tags and archives, so you can verify it
-   against any past release. Note that the key's user IDs carry a GitHub `noreply` address
-   rather than the contact address above; that is expected, and the fingerprint is what to
-   check.
+   Fetch it with `gpg --locate-key security@ridethelightning.info` (published on
+   `keys.openpgp.org`). This is the same key that signs RTL release tags and archives, so you
+   can also verify it against any past release. Please paste encrypted messages inline as an
+   armored block rather than attaching them.
 
 What to include: the RTL version (or commit), the Lightning implementation (LND / Core
 Lightning / Eclair), how RTL is deployed (standalone, behind a reverse proxy, or bundled by a
