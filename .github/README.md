@@ -186,7 +186,7 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 - (For advanced users) A sample SSL guide to serve remote access over an encrypted Tor connection can be found [here](./docs/RTL_TOR_setup.md)
 
 ### <a name="security"></a>Security
-RTL holds your node's credentials and can move funds, so please **report security vulnerabilities privately** — not in a public issue. See [SECURITY.md](../SECURITY.md) for the reporting channels (GitHub private vulnerability reporting or email), the PGP key, what is in and out of scope, and what to expect after you report.
+RTL holds your node's credentials, so a security flaw in RTL could let an attacker act on your node — including moving funds. Please **report security vulnerabilities privately** — not in a public issue. See [SECURITY.md](../SECURITY.md) for the reporting channels (GitHub private vulnerability reporting or email), the PGP key, what is in and out of scope, and what to expect after you report.
 
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
