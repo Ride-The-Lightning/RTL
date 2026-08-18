@@ -22,7 +22,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Add a security policy (`SECURITY.md`) and private reporting channels**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1677](https://github.com/Ride-The-Lightning/RTL/pull/1677)).
   RTL had no `SECURITY.md`, GitHub private vulnerability reporting was disabled, and the only
   contact path in the repo was a Twitter DM — so a researcher holding an RTL vulnerability had
   no private way to report it short of a DM or a public issue. A `SECURITY.md` at the repo root
