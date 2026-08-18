@@ -6,7 +6,7 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
-export const getAliasForPeers = (selNode: SelectedNode, peer, requestOptions) => request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key }).then((aliasBody) => {
+export const getAliasForPeers = (selNode: SelectedNode, peer: { pub_key: string; alias?: string }, requestOptions: any) => request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/graph/node/' + peer.pub_key }).then((aliasBody) => {
   logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Alias Received', data: aliasBody.node.alias });
   peer.alias = aliasBody.node.alias;
   return aliasBody.node.alias;
@@ -56,7 +56,7 @@ export const postPeer = (req, res, next) => {
   });
   const selNode = req.session.selectedNode;
   const { qs: _qs, form: _form, ...requestOptions } = options;
-  request.post({ ...requestOptions, form: options.form }).then((body) => {
+  request.post({ ...requestOptions, form: _form }).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
     request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/peers' }).then((body) => {
       const peers = (!body.peers) ? [] : body.peers;
