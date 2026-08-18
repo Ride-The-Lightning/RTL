@@ -3,6 +3,23 @@
 This document collects the changes that go into the 0.15.11 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Bug Fixes
+
+- **LND: peer alias lookups could use another node's URL and macaroon**
+  ([#1668](https://github.com/Ride-The-Lightning/RTL/pull/1668), fixes
+  [#1662](https://github.com/Ride-The-Lightning/RTL/issues/1662)).
+  `getAliasForPeers` read the module-level `options` object inside the limiter-deferred alias
+  tasks in `server/controllers/lnd/peers.ts`, and `postPeer` mutated it again after the connect
+  round trip. Because every handler reassigns that object on entry, a request for a different
+  node arriving in that window (a second tab, or a multi-node switch) made node A's alias
+  lookups — and `postPeer`'s follow-up peer list — go out with node B's URL or macaroon,
+  yielding truncated aliases or a failed connect. This was the one alias fan-out #1651 did
+  not cover; CLN and Eclair are structurally unaffected. Both handlers now snapshot their
+  request options before any async boundary and hand each alias task its own copy, and
+  `getAliasForPeers` derives its request from the options it is given rather than module
+  state. Two backend regression tests (`test/backend/lnd-peers.test.mjs`) reproduce the race
+  against fake LND nodes and fail on the pre-fix code.
+
 ## Enhancements
 
 - **2FA login: password managers can offer the one-time code**
