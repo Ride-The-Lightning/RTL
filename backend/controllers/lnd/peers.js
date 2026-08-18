@@ -59,7 +59,7 @@ export const postPeer = (req, res, next) => {
     });
     const selNode = req.session.selectedNode;
     const { qs: _qs, form: _form, ...requestOptions } = options;
-    request.post({ ...requestOptions, form: options.form }).then((body) => {
+    request.post({ ...requestOptions, form: _form }).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peer Connected', data: body });
         request({ ...requestOptions, url: selNode.settings.lnServerUrl + '/v1/peers' }).then((body) => {
             const peers = (!body.peers) ? [] : body.peers;
