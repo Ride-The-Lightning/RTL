@@ -1,8 +1,9 @@
 # Security Policy
 
-RTL (Ride The Lightning) is a web interface for Lightning nodes. It holds node credentials
-(LND macaroons, Core Lightning runes, Eclair API passwords) and can move funds, so we treat
-security reports seriously and ask that you report them privately.
+RTL (Ride The Lightning) is a web interface for Lightning nodes. To do its job it holds
+node credentials (LND macaroons, Core Lightning runes, Eclair API passwords), so a security
+flaw in RTL could let an attacker act on the node it manages — including moving funds. We
+therefore treat security reports seriously and ask that you report them privately.
 
 **Please do not open a public GitHub issue for a security vulnerability.**
 
