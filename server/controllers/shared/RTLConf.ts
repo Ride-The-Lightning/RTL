@@ -15,6 +15,26 @@ const logger: LoggerService = Logger;
 const common: CommonService = Common;
 const wsServer = WSServer;
 const databaseService: DatabaseService = Database;
+// The settings API echoes the whole config back, so these are the only per-node fields
+// accepted from the request body. Credential paths and runtime-only fields are not here;
+// addSecureData re-pins the credential paths for existing nodes and strips them for new
+// ones. Anything else arriving under authentication/settings is discarded.
+const NODE_SETTINGS_ALLOWLIST = [
+  'blockExplorerUrl', 'logLevel', 'logFile', 'userPersona', 'themeMode', 'themeColor',
+  'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap',
+  'lnServerUrl', 'swapServerUrl', 'boltzServerUrl', 'bitcoindConfigPath', 'channelBackupPath'
+];
+const NODE_AUTH_ALLOWLIST = ['swapMacaroonPath', 'boltzMacaroonPath'];
+const indexKey = (node) => +node.index;
+const isValidServerUrl = (url) => {
+  if (typeof url !== 'string' || url.trim() === '') { return false; }
+  try {
+    const parsed = new URL(url);
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && !!parsed.hostname;
+  } catch {
+    return false;
+  }
+};
 // Set local block explorer URL after first API call
 // if the selected node block explorer has working REST API suite
 // otherwise set it to mempool.space
@@ -275,7 +295,19 @@ export const updateApplicationSettings = (req, res, next) => {
   const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
   try {
     const oldConfig = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    const config = common.addSecureData(JSON.parse(JSON.stringify(req.body)));
+    // Allowlist the per-node payload before addSecureData runs, so an injected credential
+    // path, runeValue/options or unknown setting can never reach the runtime config or
+    // the file — the same strategy updateNodeSettings applies to its settings merge.
+    const requestBody = JSON.parse(JSON.stringify(req.body));
+    requestBody.nodes?.forEach((node) => {
+      if (node.authentication && typeof node.authentication === 'object') {
+        node.authentication = Object.fromEntries(Object.entries(node.authentication).filter(([key]) => NODE_AUTH_ALLOWLIST.includes(key)));
+      }
+      if (node.settings && typeof node.settings === 'object') {
+        node.settings = Object.fromEntries(Object.entries(node.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
+      }
+    });
+    const config = common.addSecureData(requestBody);
     const runtimeConfig = oldConfig;
     Object.keys(config).forEach((key) => {
       if (key !== 'nodes') {
@@ -284,10 +316,10 @@ export const updateApplicationSettings = (req, res, next) => {
     });
     if (config.nodes && config.nodes.length > 0) {
       const oldNodes = (common.appConfig.nodes && common.appConfig.nodes.length > 0) ? common.appConfig.nodes : (oldConfig.nodes || []);
-      const newNodesMap = new Map(config.nodes.map((node) => [node.index, node]));
+      const newNodesMap = new Map(config.nodes.map((node) => [indexKey(node), node]));
       const updatedAndExistingNodes = oldNodes.map((oldNode) => {
-        const newNode = newNodesMap.get(oldNode.index);
-        newNodesMap.delete(oldNode.index);
+        const newNode = newNodesMap.get(indexKey(oldNode));
+        newNodesMap.delete(indexKey(oldNode));
         const node = newNode ? {
           ...oldNode,
           ...newNode,
@@ -298,9 +330,22 @@ export const updateApplicationSettings = (req, res, next) => {
           authentication: { ...(oldNode.authentication || {}) },
           settings: { ...(oldNode.settings || {}) }
         };
+        node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
         return node;
       });
-      const newOnlyNodes = [...newNodesMap.values()].map((newNode) => JSON.parse(JSON.stringify(newNode)));
+      const newOnlyNodes = [...newNodesMap.values()].map((newNode) => {
+        const node = JSON.parse(JSON.stringify(newNode));
+        node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
+        return node;
+      });
+      // A node unknown to the server cannot be provisioned with credentials through this
+      // endpoint; validate the only server anchor it may carry before persisting.
+      const invalidNewNode = newOnlyNodes.find((node) => node.settings?.lnServerUrl && !isValidServerUrl(node.settings.lnServerUrl));
+      if (invalidNewNode) {
+        const errMsg = 'Invalid lnServerUrl format for node index ' + invalidNewNode.index;
+        const err = common.handleError({ statusCode: 400, message: errMsg, error: errMsg }, 'RTLConf', 'Update Default Node Error', req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.error, error: err.error });
+      }
       runtimeConfig.nodes = [...updatedAndExistingNodes, ...newOnlyNodes];
     }
     const newAppConfig = JSON.parse(JSON.stringify({
