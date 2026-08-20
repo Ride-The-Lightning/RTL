@@ -522,7 +522,8 @@ export interface SaveInvoice {
 
 export interface SaveChannel {
   selectedPeerPubkey: string;
-  fundingAmount: number;
+  fundingAmount: number | null;
+  fundMax: boolean;
   private: boolean;
   transType: string;
   transTypeValue: string;

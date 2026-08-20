@@ -49,6 +49,8 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public selTransType = '0';
   public isTaprootAvailable = false;
   public taprootChannel = false;
+  public isFundMaxAvailable = false;
+  public fundMax = false;
   public spendUnconfirmed = false;
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
@@ -66,12 +68,15 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.peer = this.data.message.peer || null;
       this.peers = this.data.message.peers || [];
       this.isTaprootAvailable = this.commonService.isVersionCompatible(this.information.version, '0.17.0');
+      // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
+      this.isFundMaxAvailable = this.commonService.isVersionCompatible(this.information.version, '0.16.0');
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
       this.peers = [];
       this.isTaprootAvailable = false;
+      this.isFundMaxAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
@@ -137,6 +142,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.fundingAmount = null;
     this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.taprootChannel = false;
+    this.fundMax = false;
     this.spendUnconfirmed = false;
     this.selTransType = '0';
     this.transTypeValue = '';
@@ -145,11 +151,17 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
+  onFundMaxChange() {
+    if (this.fundMax) {
+      this.fundingAmount = null;
+    }
+  }
+
   onOpenChannel(): boolean | void {
     if (
       (!this.peer && !this.selectedPubkey) ||
-      (!this.fundingAmount ||
-      ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue)) ||
+      (!this.fundMax && (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) ||
+      ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue) ||
       (this.selTransType === '2' && this.recommendedFee.minimumFee > +this.transTypeValue)
     ) {
       return true;
@@ -157,7 +169,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
-        selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
+        selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: (this.fundMax ? null : this.fundingAmount), fundMax: this.fundMax, private: this.isPrivate,
         transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed, commitmentType: (this.taprootChannel ? 5 : null)
       }
     }));
