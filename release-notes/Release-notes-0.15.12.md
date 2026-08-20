@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Enhancements
 
 - **LND: open a channel with the entire wallet balance**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1682](https://github.com/Ride-The-Lightning/RTL/pull/1682), fixes
   [#155](https://github.com/Ride-The-Lightning/RTL/issues/155)).
   Emptying the on-chain wallet into a channel could not be done from the UI: the amount had
   to be entered by hand, and the balance itself is never a valid amount because nothing is
