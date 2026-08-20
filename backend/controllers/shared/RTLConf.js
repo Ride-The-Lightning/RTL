@@ -24,6 +24,10 @@ const NODE_SETTINGS_ALLOWLIST = [
     'lnServerUrl', 'swapServerUrl', 'boltzServerUrl', 'bitcoindConfigPath', 'channelBackupPath'
 ];
 const NODE_AUTH_ALLOWLIST = ['swapMacaroonPath', 'boltzMacaroonPath'];
+// Top-level keys accepted on a node object. authentication and settings are themselves
+// filtered by the allowlists above; any other key (e.g. a root-level macaroonPath) is
+// discarded so it can never be persisted alongside a node in RTL-Config.json.
+const NODE_ALLOWLIST = ['index', 'lnNode', 'lnImplementation', 'authentication', 'settings'];
 const indexKey = (node) => +node.index;
 const isValidServerUrl = (url) => {
     if (typeof url !== 'string' || url.trim() === '') {
@@ -300,16 +304,21 @@ export const updateApplicationSettings = (req, res, next) => {
     try {
         const oldConfig = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
         // Allowlist the per-node payload before addSecureData runs, so an injected credential
-        // path, runeValue/options or unknown setting can never reach the runtime config or
-        // the file — the same strategy updateNodeSettings applies to its settings merge.
+        // path, runeValue/options, unknown setting or unknown top-level node key (such as a
+        // root-level macaroonPath) can never reach the runtime config or the file — the same
+        // strategy updateNodeSettings applies to its settings merge.
         const requestBody = JSON.parse(JSON.stringify(req.body));
-        requestBody.nodes?.forEach((node) => {
-            if (node.authentication && typeof node.authentication === 'object') {
-                node.authentication = Object.fromEntries(Object.entries(node.authentication).filter(([key]) => NODE_AUTH_ALLOWLIST.includes(key)));
+        requestBody.nodes = requestBody.nodes?.map((node) => {
+            const filteredNode = (node && typeof node === 'object') ?
+                Object.fromEntries(Object.entries(node).filter(([key]) => NODE_ALLOWLIST.includes(key))) :
+                node;
+            if (filteredNode && filteredNode.authentication && typeof filteredNode.authentication === 'object') {
+                filteredNode.authentication = Object.fromEntries(Object.entries(filteredNode.authentication).filter(([key]) => NODE_AUTH_ALLOWLIST.includes(key)));
             }
-            if (node.settings && typeof node.settings === 'object') {
-                node.settings = Object.fromEntries(Object.entries(node.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
+            if (filteredNode && filteredNode.settings && typeof filteredNode.settings === 'object') {
+                filteredNode.settings = Object.fromEntries(Object.entries(filteredNode.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
             }
+            return filteredNode;
         });
         const config = common.addSecureData(requestBody);
         const runtimeConfig = oldConfig;

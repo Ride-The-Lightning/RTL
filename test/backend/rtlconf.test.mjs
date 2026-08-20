@@ -541,7 +541,8 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
   });
   // An attacker with an authenticated session attempts to re-point credential paths and
   // server URLs on the existing node, inject runtime-only auth state, smuggle an unknown
-  // setting, and provision a brand-new node carrying its own credential paths.
+  // setting, stash a root-level macaroonPath, and provision a brand-new node carrying its
+  // own credential paths.
   const requestBody = {
     ...clone(oldConfig),
     selectedNodeIndex: 0,
@@ -553,6 +554,7 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
         index: 0,
         lnNode: 'lnd-main',
         lnImplementation: 'LND',
+        macaroonPath: '/etc/shadow',
         authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', runeValue: 'evil-rune', macaroonValue: 'evil-macaroon', options: { headers: { 'Grpc-Metadata-macaroon': 'evil' } } },
         settings: { themeMode: 'NIGHT', lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', evilSetting: 'smuggled' }
       },
@@ -560,6 +562,7 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
         index: 5,
         lnNode: 'new-lnd',
         lnImplementation: 'LND',
+        macaroonPath: '/etc/passwd',
         authentication: { macaroonPath: '/evil/new', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd' },
         settings: { themeMode: 'DAY', lnServerUrl: 'https://new.example' }
       }
@@ -597,6 +600,7 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(existingNode.authentication.lnApiPassword, undefined);
     assert.equal(existingNode.authentication.runeValue, undefined);
     assert.equal(existingNode.authentication.macaroonValue, undefined);
+    assert.equal(existingNode.macaroonPath, undefined);
     // Runtime-only auth state carried by the pre-existing node survives the save.
     assert.deepEqual(existingNode.authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
     assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
@@ -612,6 +616,7 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(newNode.authentication.runePath, undefined);
     assert.equal(newNode.authentication.lnApiPassword, undefined);
     assert.equal(newNode.authentication.configPath, undefined);
+    assert.equal(newNode.macaroonPath, undefined);
     assert.equal(newNode.settings.lnServerUrl, 'https://new.example');
     assert.equal(newNode.settings.themeMode, 'DAY');
 
@@ -623,9 +628,12 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(fileConfig.nodes[0].settings.lnServerUrl, 'https://server:8080');
     assert.equal(fileConfig.nodes[0].settings.themeMode, 'NIGHT');
     assert.equal(fileConfig.nodes[0].settings.evilSetting, undefined);
+    assert.equal(fileConfig.nodes[0].macaroonPath, undefined);
     assert.equal(fileConfig.nodes[1].authentication.macaroonPath, undefined);
+    assert.equal(fileConfig.nodes[1].macaroonPath, undefined);
     assert.equal(fileConfig.nodes[1].settings.lnServerUrl, 'https://new.example');
     assert.equal(responseBody.nodes[0].authentication.macaroonPath, undefined);
+    assert.equal(responseBody.nodes[0].macaroonPath, undefined);
     assert.equal(responseBody.nodes[0].settings.lnServerUrl, 'https://server:8080');
   } finally {
     clearInterval(WSServer.pingInterval);
