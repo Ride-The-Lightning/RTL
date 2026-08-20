@@ -46,8 +46,9 @@
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                   <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
                     <mat-label>Amount</mat-label>
-                    <input matInput formControlName="fundingAmount" type="number" tabindex="1" required [step]="1000">
-                    <mat-hint>Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
+                    <input matInput formControlName="fundingAmount" type="number" tabindex="1" [required]="!channelFormGroup.controls.fundMax.value" [step]="1000">
+                    <mat-hint *ngIf="!channelFormGroup.controls.fundMax.value">Remaining: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0) | number}}</mat-hint>
+                    <mat-hint *ngIf="channelFormGroup.controls.fundMax.value">Amount set by the node, less the on-chain fee and reserve</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.min">Amount must be a positive number.</mat-error>
@@ -56,6 +57,9 @@
                   <div fxFlex="35" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="2" color="primary" formControlName="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
                   </div>
+                </div>
+                <div *ngIf="isFundMaxAvailable" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
+                  <mat-slide-toggle tabindex="2" color="primary" formControlName="fundMax" name="fundMax">Use Entire Wallet Balance</mat-slide-toggle>
                 </div>
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
                   <mat-form-field fxLayout="column" fxFlex="49" fxLayoutAlign="start end">

@@ -24,8 +24,9 @@
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxLayout="column" fxFlex="60" fxLayoutAlign="start end">
               <mat-label>Amount</mat-label>
-              <input #amt="ngModel" matInput type="number" required name="amnt" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
-              <mat-hint>(Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
+              <input #amt="ngModel" matInput type="number" name="amnt" [required]="!fundMax" [disabled]="fundMax" [step]="1000" [min]="1" [max]="totalBalance" [(ngModel)]="fundingAmount">
+              <mat-hint *ngIf="!fundMax">(Remaining: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
+              <mat-hint *ngIf="fundMax">Amount set by the node, less the on-chain fee and reserve</mat-hint>
               <span matSuffix> Sats </span>
               <mat-error *ngIf="amt.errors?.required">Amount is required.</mat-error>
               <mat-error *ngIf="amt.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
@@ -33,6 +34,9 @@
             <div fxFlex="35" fxLayoutAlign="start center">
               <mat-slide-toggle color="primary" name="isPrivate" [(ngModel)]="isPrivate">Private Channel</mat-slide-toggle>
             </div>
+          </div>
+          <div *ngIf="isFundMaxAvailable" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
+            <mat-slide-toggle color="primary" name="fundMax" [(ngModel)]="fundMax" (change)="onFundMaxChange()">Use Entire Wallet Balance</mat-slide-toggle>
           </div>
           <mat-expansion-panel fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>

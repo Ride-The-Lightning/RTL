@@ -45,6 +45,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
   public isTaprootAvailable = false;
+  public isFundMaxAvailable = false;
   public peerConnectionError = '';
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
@@ -72,6 +73,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       selTransType: [TRANS_TYPES[0].id],
       transTypeValue: [{ value: '', disabled: true }],
       taprootChannel: [false],
+      fundMax: [false],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });
@@ -82,7 +84,20 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.selNode = nodeSettings;
         this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
         this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.17.0');
+        // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
+        this.isFundMaxAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.16.0');
       });
+    this.channelFormGroup.controls.fundMax.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe((fundMax) => {
+      this.channelFormGroup.controls.fundingAmount.setValue('');
+      this.channelFormGroup.controls.fundingAmount.setErrors(null);
+      if (fundMax) {
+        this.channelFormGroup.controls.fundingAmount.disable();
+        this.channelFormGroup.controls.fundingAmount.setValidators(null);
+      } else {
+        this.channelFormGroup.controls.fundingAmount.enable();
+        this.channelFormGroup.controls.fundingAmount.setValidators([Validators.required, Validators.min(1), Validators.max(this.totalBalance)]);
+      }
+    });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
@@ -151,9 +166,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       this.channelFormGroup.controls.transTypeValue.setErrors({ minimum: true });
       return true;
     }
+    const fundMax = !!this.channelFormGroup.controls.fundMax.value;
     if (
-      !this.channelFormGroup.controls.fundingAmount.value ||
-      ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) ||
+      (!fundMax && (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0))) ||
       (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) ||
       (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)
     ) {
@@ -163,7 +178,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
-        selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
+        selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: (fundMax ? null : this.channelFormGroup.controls.fundingAmount.value), fundMax: fundMax, private: this.channelFormGroup.controls.isPrivate.value,
         transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, commitmentType: (!!this.channelFormGroup.controls.taprootChannel.value ? 5 : null)
       }
     }));
@@ -208,7 +223,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         } else {
           this.peerFormLabel = 'Peer Details';
         }
-        if (this.channelFormGroup.controls.fundingAmount.value) {
+        if (this.channelFormGroup.controls.fundMax.value) {
+          this.channelFormLabel = 'Opening Channel for the Entire Wallet Balance';
+        } else if (this.channelFormGroup.controls.fundingAmount.value) {
           this.channelFormLabel = 'Opening Channel for ' + this.channelFormGroup.controls.fundingAmount.value + ' Sats';
         } else {
           this.channelFormLabel = 'Open Channel (Optional)';

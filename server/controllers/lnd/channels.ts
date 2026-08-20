@@ -134,17 +134,23 @@ export const getClosedChannels = (req, res, next) => {
 };
 
 export const postChannel = (req, res, next) => {
-  const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, trans_type, trans_type_value, commitment_type } = req.body;
+  const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, fund_max, trans_type, trans_type_value, commitment_type } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
   options.form = {
     node_pubkey_string: node_pubkey,
-    local_funding_amount: local_funding_amount,
     private: privateChannel,
     spend_unconfirmed: spend_unconfirmed
   };
+  // LND rejects a request carrying both, and computes the maximum itself: the wallet
+  // balance less the on-chain fee and the reserve it keeps back for anchor channels.
+  if (fund_max) {
+    options.form.fund_max = true;
+  } else {
+    options.form.local_funding_amount = local_funding_amount;
+  }
   if (trans_type === '1') {
     options.form.target_conf = trans_type_value;
   } else if (trans_type === '2') {

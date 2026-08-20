@@ -1,11 +1,12 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
+import { LNDActions } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -49,6 +50,44 @@ describe('ConnectPeerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should clear and release the amount field while fund max is on', () => {
+    component.channelFormGroup.controls.fundingAmount.setValue(250000);
+
+    component.channelFormGroup.controls.fundMax.setValue(true);
+    expect(component.channelFormGroup.controls.fundingAmount.value).toEqual('');
+    expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(true);
+    // An amount is no longer required, so the step is not held back by an empty field.
+    expect(component.channelFormGroup.controls.fundingAmount.errors).toBeNull();
+
+    component.channelFormGroup.controls.fundMax.setValue(false);
+    expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
+    component.channelFormGroup.controls.fundingAmount.updateValueAndValidity();
+    expect(component.channelFormGroup.controls.fundingAmount.errors?.required).toBeTruthy();
+  });
+
+  it('should open the channel with fund max and no funding amount when the toggle is on', () => {
+    const dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
+    component.newlyAddedPeer = { pub_key: 'peer-pubkey' };
+    component.channelFormGroup.controls.fundMax.setValue(true);
+
+    component.onOpenChannel();
+
+    const dispatched = dispatchSpy.calls.allArgs().map((args) => args[0]).find((action: any) => action.type === LNDActions.SAVE_NEW_CHANNEL_LND);
+    expect(dispatched).toBeDefined();
+    expect((<any>dispatched).payload.fundMax).toBe(true);
+    expect((<any>dispatched).payload.fundingAmount).toBeNull();
+  });
+
+  it('should not open the channel without an amount when fund max is off', () => {
+    const dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
+    component.newlyAddedPeer = { pub_key: 'peer-pubkey' };
+    component.channelFormGroup.controls.fundMax.setValue(false);
+    component.channelFormGroup.controls.fundingAmount.setValue('');
+
+    expect(component.onOpenChannel()).toBe(true);
+    expect(dispatchSpy.calls.allArgs().map((args) => args[0]).find((action: any) => action.type === LNDActions.SAVE_NEW_CHANNEL_LND)).toBeUndefined();
   });
 
   afterEach(() => {
