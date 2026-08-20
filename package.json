@@ -21,6 +21,9 @@
     "lint": "eslint"
   },
   "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "dependencies": {
     "@ngrx/effects": "21.0.1",
     "@ngrx/store": "21.0.1",
