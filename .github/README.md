@@ -45,7 +45,7 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
 ### <a name="prereq"></a>Prerequisites
 * Functioning and synced LND lightning node.
-* Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
+* Node.js v20.19 or above, which can be downloaded [here](https://nodejs.org/en/download/)
 * Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### <a name="install"></a>Installation
