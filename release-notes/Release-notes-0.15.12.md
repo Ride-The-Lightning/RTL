@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Declare a minimum Node.js version**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1681](https://github.com/Ride-The-Lightning/RTL/pull/1681), closes
   [#1220](https://github.com/Ride-The-Lightning/RTL/issues/1220)).
   `package.json` carried no `engines` field, so npm installed RTL on any Node.js version
   without a word, and an unsupported runtime only showed up later as a confusing failure at
