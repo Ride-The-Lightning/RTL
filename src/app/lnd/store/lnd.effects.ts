@@ -283,8 +283,10 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SaveChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.OPEN_CHANNEL }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED } }));
+      // fund_max is only sent when asked for, so nodes older than LND 0.16.0 never see it.
+      const newChannelBody = action.payload.fundMax ? { fund_max: true } : { local_funding_amount: action.payload.fundingAmount };
       return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API, {
-        node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
+        node_pubkey: action.payload.selectedPeerPubkey, ...newChannelBody, private: action.payload.private,
         trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed,
         commitment_type: action.payload.commitmentType
       }).pipe(
