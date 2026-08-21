@@ -18,7 +18,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
-import { blockchainBalance, nodeInfoAndAPIStatus } from '../../store/lnd.selector';
+import { blockchainBalance, nodeInfoAndAPIStatus, getSpendableBalance } from '../../store/lnd.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -90,9 +90,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         if (this.channelFormGroup.controls.isPrivate.pristine) {
           this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
         }
-        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.17.0');
+        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information?.version, '0.17.0');
         // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
-        this.isFundMaxAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.16.0');
+        this.isFundMaxAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information?.version, '0.16.0');
       });
     this.channelFormGroup.controls.fundMax.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe((fundMax) => {
       this.channelFormGroup.controls.fundingAmount.setValue('');
@@ -226,11 +226,11 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   // node will not draw on yet, which the user can release, and the anchor reserve, which
   // nothing releases. Only the first has a remedy worth naming.
   get unconfirmedWouldHelp(): boolean {
-    return this.spendableBalance <= 0 && !this.channelFormGroup.controls.spendUnconfirmed.value && this.commonService.getSpendableBalance(this.walletBalance, true) > 0;
+    return this.spendableBalance <= 0 && !this.channelFormGroup.controls.spendUnconfirmed.value && getSpendableBalance(this.walletBalance, true) > 0;
   }
 
   private updateSpendableBalance() {
-    this.spendableBalance = this.commonService.getSpendableBalance(this.walletBalance, !!this.channelFormGroup.controls.spendUnconfirmed.value);
+    this.spendableBalance = getSpendableBalance(this.walletBalance, !!this.channelFormGroup.controls.spendUnconfirmed.value);
     // The balance selector re-emits on every LND action, and enable()/disable() raise
     // valueChanges even when the state is unchanged — so only touch the control on an actual
     // flip, otherwise the fund max handler clears an amount the user is still typing.
