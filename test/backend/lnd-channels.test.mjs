@@ -158,7 +158,7 @@ test('postChannel funds the max when the amount field is present but empty', asy
 // through to the amount branch -- for a caller that sent only the flag that leaves LND with
 // neither funding field, and paired with an amount it opens a channel for that amount while
 // the caller believed the whole wallet was committed.
-for (const spelling of ['on', '1', 'True', 'TRUE', ' true ', 'yes']) {
+for (const spelling of ['on', '1', 1, 'True', 'TRUE', ' true ', 'yes']) {
   test('postChannel funds the max for fund_max=' + JSON.stringify(spelling), async () => {
     const node = await startFakeLnd('macaroon-A');
     try {
@@ -176,7 +176,7 @@ for (const spelling of ['on', '1', 'True', 'TRUE', ' true ', 'yes']) {
   });
 }
 
-for (const spelling of ['off', 'no', '0', 'FALSE']) {
+for (const spelling of ['off', 'no', '0', 0, 'FALSE']) {
   test('postChannel uses the amount for fund_max=' + JSON.stringify(spelling), async () => {
     const node = await startFakeLnd('macaroon-A');
     try {
