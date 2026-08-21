@@ -7,13 +7,14 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { Peer, GetInfo, BlockchainBalance } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { blockchainBalance } from '../../../store/lnd.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
 import { Node } from '../../../../shared/models/RTLconfig';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -55,7 +56,8 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
   public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  public spendableBalance = 0;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, public dialogRef: MatDialogRef<OpenChannelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>,
@@ -102,6 +104,13 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
+    // total_balance still counts the reserve LND holds back for anchor channels, so a wallet
+    // can read as funded while nothing is actually spendable — and fund max would then fail
+    // in the node with a negative-amount error.
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
+        this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
+      });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
       takeUntil(this.unSubs[2]), startWith(''),
       map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key)),
