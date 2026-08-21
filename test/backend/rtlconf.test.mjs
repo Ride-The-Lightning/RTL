@@ -505,6 +505,297 @@ test('updateApplicationSettings falls back to an in-place write when the rename 
   }
 });
 
+test('updateApplicationSettings strips untrusted credential paths and un-allowlisted payload fields', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-allowlist-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/server/lnd/admin', configPath: '' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '', cookieValue: 'live-sso-cookie' },
+    nodes: [
+      {
+        ...oldConfig.nodes[0],
+        authentication: {
+          ...oldConfig.nodes[0].authentication,
+          options: { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } }
+        }
+      }
+    ]
+  });
+  // An attacker with an authenticated session attempts to re-point credential paths and
+  // server URLs on the existing node, inject runtime-only auth state, smuggle an unknown
+  // setting, stash a root-level macaroonPath, and provision a brand-new node carrying its
+  // own credential paths.
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        macaroonPath: '/etc/shadow',
+        authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', runeValue: 'evil-rune', macaroonValue: 'evil-macaroon', options: { headers: { 'Grpc-Metadata-macaroon': 'evil' } } },
+        settings: { themeMode: 'NIGHT', lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', evilSetting: 'smuggled' }
+      },
+      {
+        index: 5,
+        lnNode: 'new-lnd',
+        lnImplementation: 'LND',
+        macaroonPath: '/etc/passwd',
+        authentication: { macaroonPath: '/evil/new', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd' },
+        settings: { themeMode: 'DAY', lnServerUrl: 'https://new.example' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    let responseBody;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return {
+            json: (body) => {
+              responseBody = body;
+            }
+          };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    const existingNode = Common.appConfig.nodes[0];
+    assert.equal(existingNode.authentication.macaroonPath, '/server/lnd/admin');
+    assert.equal(existingNode.authentication.configPath, '');
+    assert.equal(existingNode.authentication.runePath, undefined);
+    assert.equal(existingNode.authentication.lnApiPassword, undefined);
+    assert.equal(existingNode.authentication.runeValue, undefined);
+    assert.equal(existingNode.authentication.macaroonValue, undefined);
+    assert.equal(existingNode.macaroonPath, undefined);
+    // Runtime-only auth state carried by the pre-existing node survives the save.
+    assert.deepEqual(existingNode.authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
+    assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
+    assert.equal(existingNode.settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(existingNode.settings.boltzServerUrl, 'https://boltz:9003');
+    assert.equal(existingNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
+    assert.equal(existingNode.settings.channelBackupPath, '/server/backups');
+    assert.equal(existingNode.settings.themeMode, 'NIGHT');
+    assert.equal(existingNode.settings.evilSetting, undefined);
+    const newNode = Common.appConfig.nodes[1];
+    assert.equal(newNode.index, 5);
+    assert.equal(newNode.authentication.macaroonPath, undefined);
+    assert.equal(newNode.authentication.runePath, undefined);
+    assert.equal(newNode.authentication.lnApiPassword, undefined);
+    assert.equal(newNode.authentication.configPath, undefined);
+    assert.equal(newNode.macaroonPath, undefined);
+    assert.equal(newNode.settings.lnServerUrl, 'https://new.example');
+    assert.equal(newNode.settings.themeMode, 'DAY');
+
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 5]);
+    assert.equal(fileConfig.nodes[0].authentication.macaroonPath, '/server/lnd/admin');
+    assert.equal(fileConfig.nodes[0].authentication.options, undefined);
+    assert.equal(fileConfig.nodes[0].authentication.runeValue, undefined);
+    assert.equal(fileConfig.nodes[0].settings.lnServerUrl, 'https://server:8080');
+    assert.equal(fileConfig.nodes[0].settings.themeMode, 'NIGHT');
+    assert.equal(fileConfig.nodes[0].settings.evilSetting, undefined);
+    assert.equal(fileConfig.nodes[0].macaroonPath, undefined);
+    assert.equal(fileConfig.nodes[1].authentication.macaroonPath, undefined);
+    assert.equal(fileConfig.nodes[1].macaroonPath, undefined);
+    assert.equal(fileConfig.nodes[1].settings.lnServerUrl, 'https://new.example');
+    assert.equal(responseBody.nodes[0].authentication.macaroonPath, undefined);
+    assert.equal(responseBody.nodes[0].macaroonPath, undefined);
+    assert.equal(responseBody.nodes[0].settings.lnServerUrl, 'https://server:8080');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings normalizes string node indexes when merging', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-index-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/server/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://server:8080' }
+      },
+      {
+        index: 2,
+        lnNode: 'cln-secondary',
+        lnImplementation: 'CLN',
+        authentication: { runePath: '/cln/rune' },
+        settings: { userPersona: 'MERCHANT', themeMode: 'NIGHT', lnServerUrl: 'https://cln:8080' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '', cookieValue: 'live-sso-cookie' }
+  });
+  // JSON payloads carry indexes as strings; "2" must merge into the existing node 2, not
+  // be appended as a brand-new node.
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: '2',
+        lnNode: 'cln-secondary',
+        lnImplementation: 'CLN',
+        authentication: {},
+        settings: { themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0, 2]);
+    const clnNode = Common.appConfig.nodes[1];
+    assert.equal(clnNode.index, 2);
+    assert.equal(clnNode.settings.themeMode, 'DAY');
+    assert.equal(clnNode.settings.lnServerUrl, 'https://cln:8080');
+    assert.equal(clnNode.authentication.runePath, '/cln/rune');
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 2]);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings rejects an invalid lnServerUrl on a new node without persisting', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-url-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/server/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://server:8080' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '', cookieValue: 'live-sso-cookie' }
+  });
+  const requestBody = {
+    ...clone(oldConfig),
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
+    nodes: [
+      { index: 0, lnNode: 'lnd-main', lnImplementation: 'LND', authentication: {}, settings: {} },
+      { index: 9, lnNode: 'rogue-node', lnImplementation: 'LND', authentication: {}, settings: { lnServerUrl: 'not-a-valid-url' } }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    let responseBody;
+    updateApplicationSettings(
+      { body: clone(requestBody), session: { selectedNode: Common.selectedNode } },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return {
+            json: (body) => {
+              responseBody = body;
+            }
+          };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 400);
+    assert.equal(JSON.stringify(responseBody).includes('Invalid lnServerUrl'), true);
+    // The failed validation must not have touched the runtime config or the file.
+    assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0]);
+    assert.equal(JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes.length, 1);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
 test('updateNodeSettings pins channelBackupPath to the server-held value', () => {
   // channelBackupPath anchors getFile's containment root; accepting it from the request
   // would let the caller being contained choose the containment base.
