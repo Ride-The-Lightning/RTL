@@ -1,6 +1,8 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { EffectsModule } from '@ngrx/effects';
 import { Store, StoreModule } from '@ngrx/store';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../../shared/test-helpers/mock-services';
@@ -14,6 +16,7 @@ import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../../eclair/store/ecl.reducers';
+import { setBalanceBlockchain } from '../../../store/lnd.actions';
 import { OpenChannelComponent } from './open-channel.component';
 
 const configureModule = (dialogData: any) => TestBed.configureTestingModule({
@@ -69,7 +72,8 @@ describe('OpenChannelComponent fund max', () => {
     await configureModule({ message: { information: { version: version }, balance: 500000 } });
     fixture = TestBed.createComponent(OpenChannelComponent);
     component = fixture.componentInstance;
-    dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
+    // callThrough so store-driven state (the blockchain balance) still updates.
+    dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch').and.callThrough();
     fixture.detectChanges();
   };
 
@@ -113,6 +117,30 @@ describe('OpenChannelComponent fund max', () => {
 
     expect(component.onOpenChannel()).toBe(true);
     expect(dispatchedNewChannel()).toBeUndefined();
+  });
+
+  it('should treat a wallet that is all anchor reserve as having nothing spendable', async () => {
+    await buildComponent('0.18.3-beta');
+    // A wallet can report a balance while every sat of it is the reserve LND keeps back.
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    expect(component.spendableBalance).toEqual(0);
+
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    expect(component.spendableBalance).toEqual(4715574);
+  });
+
+  it('should disable the fund max toggle when nothing is spendable', async () => {
+    await buildComponent('0.18.3-beta');
+    const fundMaxToggle = () => fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      map((el) => el.componentInstance).find((toggle) => toggle.name === 'fundMax');
+
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    fixture.detectChanges();
+    expect(fundMaxToggle().disabled).toBe(true);
+
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    fixture.detectChanges();
+    expect(fundMaxToggle().disabled).toBe(false);
   });
 
   it('should open the channel with the entered amount when fund max is off', async () => {

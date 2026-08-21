@@ -18,7 +18,9 @@ this release should add its entry under the appropriate section below.
   disables the amount field and sends `fund_max` instead of `local_funding_amount`; LND
   rejects a request carrying both, so `postChannel` sends exactly one. The flag is only sent
   when the toggle is on, and the toggle only appears on LND 0.16.0 and above, so nothing
-  changes for older nodes. Core Lightning already had the equivalent (`amount: "all"`);
+  changes for older nodes. The toggle is disabled while nothing is spendable — `total_balance`
+  still counts the anchor-channel reserve, so a wallet can look funded while fund max would
+  fail inside LND with a negative-amount error. Core Lightning already had the equivalent (`amount: "all"`);
   Eclair's `/open` has no fund-max option and is unchanged. Covered by backend tests
   (`test/backend/lnd-channels.test.mjs`) that pin which of the two fields reaches the node,
   and by component specs for the version gate and the dispatched payload.

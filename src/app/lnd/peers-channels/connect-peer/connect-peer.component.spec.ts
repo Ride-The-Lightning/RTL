@@ -11,6 +11,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
+import { setBalanceBlockchain } from '../../store/lnd.actions';
 import { ConnectPeerComponent } from './connect-peer.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -78,6 +79,17 @@ describe('ConnectPeerComponent', () => {
     expect(dispatched).toBeDefined();
     expect((<any>dispatched).payload.fundMax).toBe(true);
     expect((<any>dispatched).payload.fundingAmount).toBeNull();
+  });
+
+  it('should disable the fund max control when the wallet is all anchor reserve', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    expect(component.spendableBalance).toEqual(0);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
+
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    expect(component.spendableBalance).toEqual(4715574);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
   });
 
   it('should not open the channel without an amount when fund max is off', () => {
