@@ -143,6 +143,18 @@ describe('OpenChannelComponent fund max', () => {
     expect(fundMaxToggle().disabled).toBe(false);
   });
 
+  it('should turn fund max back off when the spendable balance runs out', async () => {
+    await buildComponent('0.18.3-beta');
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    component.fundMax = true;
+    component.onFundMaxChange();
+
+    // The toggle only greys out, so left on it would still send fund_max for a wallet the
+    // node cannot fund from.
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    expect(component.fundMax).toBe(false);
+  });
+
   it('should open the channel with the entered amount when fund max is off', async () => {
     await buildComponent('0.18.3-beta');
     component.selectedPubkey = 'peer-pubkey';
