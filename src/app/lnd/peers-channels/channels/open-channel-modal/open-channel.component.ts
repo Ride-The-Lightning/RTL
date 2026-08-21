@@ -110,6 +110,8 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
         this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
+        // A disabled toggle keeps whatever it was left on, so turn it off too.
+        if (this.spendableBalance <= 0) { this.fundMax = false; }
       });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
       takeUntil(this.unSubs[2]), startWith(''),

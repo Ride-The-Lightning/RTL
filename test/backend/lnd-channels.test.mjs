@@ -66,6 +66,7 @@ test('postChannel sends fund_max and no local_funding_amount when the entire bal
 
     assert.equal(res.statusCode, 201, JSON.stringify(res.body));
     assert.equal(node.seen.length, 1);
+    assert.equal(node.seen[0].macaroon, 'macaroon-A');
     const sent = node.seen[0].body;
     assert.equal(sent.fund_max, true);
     assert.ok(!('local_funding_amount' in sent), 'LND rejects fund_max alongside a funding amount: ' + JSON.stringify(sent));
@@ -91,6 +92,25 @@ test('postChannel sends local_funding_amount and no fund_max for an explicit amo
     assert.equal(sent.private, true);
     assert.equal(sent.spend_unconfirmed, true);
     assert.equal(sent.target_conf, '6');
+  } finally {
+    await node.close();
+  }
+});
+
+// The API also accepts urlencoded bodies, which deliver every field as a string, so a client
+// that spells the flag out as `fund_max=false` arrives here as the truthy string 'false'.
+// Reading that as a request for the entire wallet is the opposite of what it asked for.
+test('postChannel does not read a "false" fund_max as a request for the entire balance', async () => {
+  const node = await startFakeLnd('macaroon-A');
+  try {
+    const res = buildResponse();
+    postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: 'false', local_funding_amount: 250000, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+    await res.done;
+
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    const sent = node.seen[0].body;
+    assert.equal(sent.local_funding_amount, 250000);
+    assert.ok(!('fund_max' in sent), 'a falsy string must not commit the whole wallet: ' + JSON.stringify(sent));
   } finally {
     await node.close();
   }

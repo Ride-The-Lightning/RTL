@@ -6,12 +6,12 @@ import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
-import { LNDActions } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
-import { setBalanceBlockchain } from '../../store/lnd.actions';
+import { setBalanceBlockchain, updateLNDAPICallStatus } from '../../store/lnd.actions';
 import { ConnectPeerComponent } from './connect-peer.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -90,6 +90,19 @@ describe('ConnectPeerComponent', () => {
     store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     expect(component.spendableBalance).toEqual(4715574);
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
+  });
+
+  it('should keep a typed amount when an unrelated LND action re-emits the balance', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    component.channelFormGroup.controls.fundingAmount.setValue(250000);
+
+    // A failed open leaves the dialog open and dispatches an API status update; the balance
+    // selector projects a fresh object off the whole LND state, so it re-emits on any action.
+    store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.ERROR, message: 'Insufficient funds' } }));
+
+    expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
+    expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
   });
 
   it('should not open the channel without an amount when fund max is off', () => {
