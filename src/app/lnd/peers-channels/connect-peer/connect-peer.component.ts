@@ -109,8 +109,14 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         // even when the state is unchanged — so only touch the control on an actual flip,
         // otherwise the handler above clears an amount the user is still typing.
         if (this.spendableBalance <= 0 && this.channelFormGroup.controls.fundMax.enabled) {
-          this.channelFormGroup.controls.fundMax.setValue(false);
-          this.channelFormGroup.controls.fundMax.disable();
+          if (this.channelFormGroup.controls.fundMax.value) {
+            // Only a toggle that was actually on has an amount field to release, and this
+            // write is the emission that releases it.
+            this.channelFormGroup.controls.fundMax.setValue(false);
+          }
+          // Silently: either the write above already emitted, or the toggle was off all along
+          // and an emission would clear an amount the user is part-way through typing.
+          this.channelFormGroup.controls.fundMax.disable({ emitEvent: false });
         } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
           // Silently: the toggle is off here, so the amount field is already released, and an
           // emission would only clear it. The branch above must keep emitting to release it.
@@ -227,15 +233,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
 
+      // The stepper has two steps, so the channel step is index 1; case 2 is kept folded in
+      // for a stepper that grows a third.
       case 1:
-        if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
-        } else {
-          this.peerFormLabel = 'Peer Details';
-        }
-        this.channelFormLabel = 'Open Channel (Optional)';
-        break;
-
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
