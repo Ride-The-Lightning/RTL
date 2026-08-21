@@ -7,6 +7,7 @@ import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum, HOUR_SECONDS, getSelectedCurrency } from './consts-enums-functions';
+import { BlockchainBalance } from '../models/lndModels';
 
 @Injectable()
 export class CommonService implements OnDestroy {
@@ -340,9 +341,12 @@ export class CommonService implements OnDestroy {
   // LND's fund_max draws on the coins that meet the node's min-confs policy -- 1 by default,
   // 0 only when spend_unconfirmed is set -- so unconfirmed coins count only when the user has
   // asked to spend them. Either pool still includes the reserve LND holds back for anchor
-  // channels, so a wallet can read as funded while nothing is actually spendable, and fund max
-  // would then fail inside the node with a negative-amount error.
-  getSpendableBalance(walletBalance: any, spendUnconfirmed: boolean): number {
+  // channels, so a wallet can read as funded while nothing is actually spendable.
+  // A necessary condition, not a sufficient one: LND also deducts the on-chain funding fee and
+  // applies a minimum channel size, so a positive result here can still be refused by the node.
+  // The node stays authoritative; this only keeps the toggle off a wallet that plainly has
+  // nothing to commit. LND-specific, despite living here -- see BlockchainBalance.
+  getSpendableBalance(walletBalance: BlockchainBalance, spendUnconfirmed: boolean): number {
     const usableBalance = spendUnconfirmed ? +(walletBalance?.total_balance || 0) : +(walletBalance?.confirmed_balance || 0);
     return usableBalance - +(walletBalance?.reserved_balance_anchor_chan || 0);
   }
