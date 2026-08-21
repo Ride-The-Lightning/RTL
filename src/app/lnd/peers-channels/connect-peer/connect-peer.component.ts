@@ -47,6 +47,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public isTaprootAvailable = false;
   public isFundMaxAvailable = false;
   public spendableBalance = 0;
+  private walletBalance: BlockchainBalance = {};
   public peerConnectionError = '';
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
@@ -55,7 +56,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   peerFormGroup: UntypedFormGroup;
   channelFormGroup: UntypedFormGroup;
   statusFormGroup: UntypedFormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert,
     private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder,
@@ -98,31 +99,25 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.fundingAmount.enable();
         this.channelFormGroup.controls.fundingAmount.setValidators([Validators.required, Validators.min(1), Validators.max(this.totalBalance)]);
       }
+      // setValidators does not revalidate, and enable() ran against the previous set — without
+      // this the control reports valid while empty until the template's [required] binding
+      // happens to trigger it.
+      this.channelFormGroup.controls.fundingAmount.updateValueAndValidity({ emitEvent: false });
+      this.setChannelFormLabel();
     });
-    // total_balance still counts the reserve LND holds back for anchor channels, so a wallet
-    // can read as funded while nothing is actually spendable — and fund max would then fail
-    // in the node with a negative-amount error.
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
-        this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
-        // This selector re-emits on every LND action, and enable()/disable() raise valueChanges
-        // even when the state is unchanged — so only touch the control on an actual flip,
-        // otherwise the handler above clears an amount the user is still typing.
-        if (this.spendableBalance <= 0 && this.channelFormGroup.controls.fundMax.enabled) {
-          if (this.channelFormGroup.controls.fundMax.value) {
-            // Only a toggle that was actually on has an amount field to release, and this
-            // write is the emission that releases it.
-            this.channelFormGroup.controls.fundMax.setValue(false);
-          }
-          // Silently: either the write above already emitted, or the toggle was off all along
-          // and an emission would clear an amount the user is part-way through typing.
-          this.channelFormGroup.controls.fundMax.disable({ emitEvent: false });
-        } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
-          // Silently: the toggle is off here, so the amount field is already released, and an
-          // emission would only clear it. The branch above must keep emitting to release it.
-          this.channelFormGroup.controls.fundMax.enable({ emitEvent: false });
-        }
+        this.walletBalance = bcBalanceSelector.blockchainBalance;
+        this.updateSpendableBalance();
       });
+    this.channelFormGroup.controls.fundingAmount.valueChanges.pipe(takeUntil(this.unSubs[7])).subscribe(() => {
+      this.setChannelFormLabel();
+    });
+    // Which pool fund max draws on depends on this toggle, so the guard has to be recomputed
+    // when it flips, not only when a new balance arrives.
+    this.channelFormGroup.controls.spendUnconfirmed.valueChanges.pipe(takeUntil(this.unSubs[6])).subscribe(() => {
+      this.updateSpendableBalance();
+    });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
@@ -222,6 +217,46 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updateSpendableBalance() {
+    // fund_max is computed over the coins that meet the node's min-confs policy, so
+    // unconfirmed coins only count when the user has asked to spend them. Either pool still
+    // includes the reserve LND holds back for anchor channels, so a wallet can read as funded
+    // while nothing is actually spendable — fund max would then fail in the node with a
+    // negative-amount error.
+    const usableBalance = this.channelFormGroup.controls.spendUnconfirmed.value ? +(this.walletBalance.total_balance || 0) : +(this.walletBalance.confirmed_balance || 0);
+    this.spendableBalance = usableBalance - +(this.walletBalance.reserved_balance_anchor_chan || 0);
+    // The balance selector re-emits on every LND action, and enable()/disable() raise
+    // valueChanges even when the state is unchanged — so only touch the control on an actual
+    // flip, otherwise the fund max handler clears an amount the user is still typing.
+    if (this.spendableBalance <= 0 && this.channelFormGroup.controls.fundMax.enabled) {
+      if (this.channelFormGroup.controls.fundMax.value) {
+        // Only a toggle that was actually on has an amount field to release, and this write
+        // is the emission that releases it.
+        this.channelFormGroup.controls.fundMax.setValue(false);
+      }
+      // Silently: either the write above already emitted, or the toggle was off all along and
+      // an emission would clear an amount the user is part-way through typing.
+      this.channelFormGroup.controls.fundMax.disable({ emitEvent: false });
+    } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
+      // Silently: the toggle is off here, so the amount field is already released, and an
+      // emission would only clear it. The branch above must keep emitting to release it.
+      this.channelFormGroup.controls.fundMax.enable({ emitEvent: false });
+    }
+  }
+
+  private setChannelFormLabel() {
+    // Driven from the form rather than from the stepper's selectionChange: the channel step is
+    // entered once, before anything has been filled in, and flgEditable then blocks a return,
+    // so a label only written on selection can never show what was chosen.
+    if (this.channelFormGroup.controls.fundMax.value) {
+      this.channelFormLabel = 'Opening Channel for the Entire Wallet Balance';
+    } else if (this.channelFormGroup.controls.fundingAmount.value) {
+      this.channelFormLabel = 'Opening Channel for ' + this.channelFormGroup.controls.fundingAmount.value + ' Sats';
+    } else {
+      this.channelFormLabel = 'Open Channel (Optional)';
+    }
+  }
+
   onClose() {
     this.dialogRef.close(false);
   }
@@ -242,13 +277,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         } else {
           this.peerFormLabel = 'Peer Details';
         }
-        if (this.channelFormGroup.controls.fundMax.value) {
-          this.channelFormLabel = 'Opening Channel for the Entire Wallet Balance';
-        } else if (this.channelFormGroup.controls.fundingAmount.value) {
-          this.channelFormLabel = 'Opening Channel for ' + this.channelFormGroup.controls.fundingAmount.value + ' Sats';
-        } else {
-          this.channelFormLabel = 'Open Channel (Optional)';
-        }
+        this.setChannelFormLabel();
         break;
 
       default:

@@ -82,7 +82,7 @@
                   <mat-slide-toggle color="primary" name="taprootChannel" [(ngModel)]="taprootChannel">Taproot Channel</mat-slide-toggle>
                 </div>
                 <div fxFlex="50" fxLayoutAlign="start center">
-                  <mat-slide-toggle color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+                  <mat-slide-toggle color="primary" name="spendUnconfirmed" [(ngModel)]="spendUnconfirmed" (change)="updateSpendableBalance()">Spend Unconfirmed Output</mat-slide-toggle>
                 </div>
               </div>
             </div>

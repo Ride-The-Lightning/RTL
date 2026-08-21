@@ -160,7 +160,14 @@ export const postChannel = (req, res, next) => {
     // LND rejects a request carrying both, and computes the maximum itself: the wallet
     // balance less the on-chain fee and the reserve it keeps back for anchor channels.
     // Matched strictly: a urlencoded body delivers the flag as a string, and 'false' is truthy.
-    if (fund_max === true || fund_max === 'true') {
+    const fundMaxRequested = fund_max === true || fund_max === 'true';
+    if (fundMaxRequested && local_funding_amount !== undefined && local_funding_amount !== null && local_funding_amount !== '') {
+        // Contradictory, and the two readings differ by the whole wallet, so fail closed rather
+        // than pick one and drop the amount the caller asked for without saying so.
+        logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: 'Both fund_max and local_funding_amount received' });
+        return res.status(400).json({ message: 'Open Channel Error', error: 'Send either fund_max or local_funding_amount, not both.' });
+    }
+    if (fundMaxRequested) {
         options.form.fund_max = true;
     }
     else {

@@ -115,3 +115,39 @@ test('postChannel does not read a "false" fund_max as a request for the entire b
     await node.close();
   }
 });
+
+// The two fields mean different things and differ by the whole on-chain wallet, so a body
+// carrying both is ambiguous. Resolving it by branch order would silently drop the caller's
+// amount and commit everything, so the request is refused instead.
+test('postChannel refuses a request carrying both fund_max and local_funding_amount', async () => {
+  const node = await startFakeLnd('macaroon-A');
+  try {
+    const res = buildResponse();
+    postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: true, local_funding_amount: 250000, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+    await res.done;
+
+    assert.equal(res.statusCode, 400);
+    assert.match(res.body.error, /not both/);
+    assert.equal(node.seen.length, 0, 'nothing may reach the node for an ambiguous body: ' + JSON.stringify(node.seen));
+  } finally {
+    await node.close();
+  }
+});
+
+// An amount left in the body as an empty string is what an untouched form field sends, not a
+// second instruction, so it must not be read as a conflict.
+test('postChannel funds the max when the amount field is present but empty', async () => {
+  const node = await startFakeLnd('macaroon-A');
+  try {
+    const res = buildResponse();
+    postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: 'true', local_funding_amount: '', private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+    await res.done;
+
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    const sent = node.seen[0].body;
+    assert.equal(sent.fund_max, true);
+    assert.ok(!('local_funding_amount' in sent), JSON.stringify(sent));
+  } finally {
+    await node.close();
+  }
+});

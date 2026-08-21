@@ -122,10 +122,10 @@ describe('OpenChannelComponent fund max', () => {
   it('should treat a wallet that is all anchor reserve as having nothing spendable', async () => {
     await buildComponent('0.18.3-beta');
     // A wallet can report a balance while every sat of it is the reserve LND keeps back.
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
     expect(component.spendableBalance).toEqual(0);
 
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     expect(component.spendableBalance).toEqual(4715574);
   });
 
@@ -134,25 +134,54 @@ describe('OpenChannelComponent fund max', () => {
     const fundMaxToggle = () => fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
       map((el) => el.componentInstance).find((toggle) => toggle.name === 'fundMax');
 
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
     fixture.detectChanges();
     expect(fundMaxToggle().disabled).toBe(true);
 
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     fixture.detectChanges();
     expect(fundMaxToggle().disabled).toBe(false);
   });
 
   it('should turn fund max back off when the spendable balance runs out', async () => {
     await buildComponent('0.18.3-beta');
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     component.fundMax = true;
     component.onFundMaxChange();
 
     // The toggle only greys out, so left on it would still send fund_max for a wallet the
     // node cannot fund from.
-    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
     expect(component.fundMax).toBe(false);
+  });
+
+  it('should not offer fund max while the only balance is unconfirmed', async () => {
+    await buildComponent('0.18.3-beta');
+    const toggleByName = (name: string) => fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      map((el) => el.componentInstance).find((toggle) => toggle.name === name);
+    const clickToggle = (name: string) => fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      find((el) => el.componentInstance.name === name).nativeElement.querySelector('button').click();
+
+    // fund_max draws on coins meeting the node's min-confs policy, so an unconfirmed-only
+    // wallet reads as funded but has nothing fund max can commit.
+    TestBed.inject(Store).dispatch(setBalanceBlockchain({ payload: { total_balance: 500000, confirmed_balance: 0, unconfirmed_balance: 500000, reserved_balance_anchor_chan: 0 } }));
+    fixture.detectChanges();
+    expect(component.spendableBalance).toEqual(0);
+    expect(toggleByName('fundMax').disabled).toBe(true);
+
+    // Asking to spend unconfirmed output moves min-confs to 0, so those coins now count.
+    clickToggle('spendUnconfirmed');
+    fixture.detectChanges();
+    expect(component.spendUnconfirmed).toBe(true);
+    expect(component.spendableBalance).toEqual(500000);
+    expect(toggleByName('fundMax').disabled).toBe(false);
+
+    clickToggle('spendUnconfirmed');
+    fixture.detectChanges();
+    expect(component.spendUnconfirmed).toBe(false);
+    expect(component.spendableBalance).toEqual(0);
+    expect(component.fundMax).toBe(false);
+    expect(toggleByName('fundMax').disabled).toBe(true);
   });
 
   it('should open the channel with the entered amount when fund max is off', async () => {

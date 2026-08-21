@@ -57,6 +57,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public transTypes = TRANS_TYPES;
   public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
   public spendableBalance = 0;
+  private walletBalance: BlockchainBalance = {};
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, public dialogRef: MatDialogRef<OpenChannelComponent>,
@@ -104,14 +105,10 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
-    // total_balance still counts the reserve LND holds back for anchor channels, so a wallet
-    // can read as funded while nothing is actually spendable — and fund max would then fail
-    // in the node with a negative-amount error.
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
-        this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
-        // A disabled toggle keeps whatever it was left on, so turn it off too.
-        if (this.spendableBalance <= 0) { this.fundMax = false; }
+        this.walletBalance = bcBalanceSelector.blockchainBalance;
+        this.updateSpendableBalance();
       });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
       takeUntil(this.unSubs[2]), startWith(''),
@@ -148,6 +145,18 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.dialogRef.close(false);
   }
 
+  updateSpendableBalance() {
+    // fund_max is computed over the coins that meet the node's min-confs policy, so
+    // unconfirmed coins only count when the user has asked to spend them. Either pool still
+    // includes the reserve LND holds back for anchor channels, so a wallet can read as funded
+    // while nothing is actually spendable — fund max would then fail in the node with a
+    // negative-amount error.
+    const usableBalance = this.spendUnconfirmed ? +(this.walletBalance.total_balance || 0) : +(this.walletBalance.confirmed_balance || 0);
+    this.spendableBalance = usableBalance - +(this.walletBalance.reserved_balance_anchor_chan || 0);
+    // A disabled toggle keeps whatever it was left on, so turn it off too.
+    if (this.spendableBalance <= 0) { this.fundMax = false; }
+  }
+
   resetData() {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
@@ -155,6 +164,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.taprootChannel = false;
     this.fundMax = false;
     this.spendUnconfirmed = false;
+    this.updateSpendableBalance();
     this.selTransType = '0';
     this.transTypeValue = '';
     this.channelConnectionError = '';
