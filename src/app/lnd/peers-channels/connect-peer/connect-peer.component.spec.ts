@@ -105,6 +105,19 @@ describe('ConnectPeerComponent', () => {
     expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
   });
 
+  it('should keep a typed amount when a deposit makes the wallet spendable again', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    component.channelFormGroup.controls.fundingAmount.setValue(250000);
+
+    // A deposit confirming while the stepper is open releases the toggle; the amount the user
+    // typed against the manual path must survive it.
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
+    expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
+  });
+
   it('should not open the channel without an amount when fund max is off', () => {
     const dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
     component.newlyAddedPeer = { pub_key: 'peer-pubkey' };
