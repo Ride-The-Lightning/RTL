@@ -159,7 +159,8 @@ export const postChannel = (req, res, next) => {
     };
     // LND rejects a request carrying both, and computes the maximum itself: the wallet
     // balance less the on-chain fee and the reserve it keeps back for anchor channels.
-    if (fund_max) {
+    // Matched strictly: a urlencoded body delivers the flag as a string, and 'false' is truthy.
+    if (fund_max === true || fund_max === 'true') {
         options.form.fund_max = true;
     }
     else {

@@ -16,7 +16,9 @@ this release should add its entry under the appropriate section below.
   `OpenChannelRequest`, LND 0.16.0). Both LND channel-open dialogs — the open-channel modal
   and the connect-peer stepper — now carry a "Use Entire Wallet Balance" toggle that
   disables the amount field and sends `fund_max` instead of `local_funding_amount`; LND
-  rejects a request carrying both, so `postChannel` sends exactly one. The flag is only sent
+  rejects a request carrying both, so `postChannel` sends exactly one, matching the flag
+  strictly — the API also accepts urlencoded bodies, where a client's `fund_max=false` arrives
+  as a truthy string and must not commit the whole wallet. The flag is only sent
   when the toggle is on, and the toggle only appears on LND 0.16.0 and above, so nothing
   changes for older nodes. The toggle is disabled while nothing is spendable — `total_balance`
   still counts the anchor-channel reserve, so a wallet can look funded while fund max would

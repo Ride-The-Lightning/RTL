@@ -105,10 +105,13 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
       subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
         this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
-        if (this.spendableBalance <= 0) {
+        // This selector re-emits on every LND action, and enable()/disable() raise valueChanges
+        // even when the state is unchanged — so only touch the control on an actual flip,
+        // otherwise the handler above clears an amount the user is still typing.
+        if (this.spendableBalance <= 0 && this.channelFormGroup.controls.fundMax.enabled) {
           this.channelFormGroup.controls.fundMax.setValue(false);
           this.channelFormGroup.controls.fundMax.disable();
-        } else {
+        } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
           this.channelFormGroup.controls.fundMax.enable();
         }
       });
