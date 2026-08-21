@@ -84,7 +84,12 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       withLatestFrom(this.store.select(rootSelectedNode))).
       subscribe(([infoStatusSelector, nodeSettings]: [{ information: GetInfo | null, apiCallStatus: ApiCallStatusPayload }, nodeSettings: Node]) => {
         this.selNode = nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
+        // This selector re-emits on every LND action, so re-seeding the node default would
+        // undo a choice the user has already made — a failed open leaves the stepper up and
+        // dispatches exactly such an action before they retry.
+        if (this.channelFormGroup.controls.isPrivate.pristine) {
+          this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
+        }
         this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.17.0');
         // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
         this.isFundMaxAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.16.0');
@@ -217,14 +222,15 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Distinguishes the two ways a funded-looking wallet can have nothing spendable: coins the
+  // node will not draw on yet, which the user can release, and the anchor reserve, which
+  // nothing releases. Only the first has a remedy worth naming.
+  get unconfirmedWouldHelp(): boolean {
+    return this.spendableBalance <= 0 && !this.channelFormGroup.controls.spendUnconfirmed.value && this.commonService.getSpendableBalance(this.walletBalance, true) > 0;
+  }
+
   private updateSpendableBalance() {
-    // fund_max is computed over the coins that meet the node's min-confs policy, so
-    // unconfirmed coins only count when the user has asked to spend them. Either pool still
-    // includes the reserve LND holds back for anchor channels, so a wallet can read as funded
-    // while nothing is actually spendable — fund max would then fail in the node with a
-    // negative-amount error.
-    const usableBalance = this.channelFormGroup.controls.spendUnconfirmed.value ? +(this.walletBalance.total_balance || 0) : +(this.walletBalance.confirmed_balance || 0);
-    this.spendableBalance = usableBalance - +(this.walletBalance.reserved_balance_anchor_chan || 0);
+    this.spendableBalance = this.commonService.getSpendableBalance(this.walletBalance, !!this.channelFormGroup.controls.spendUnconfirmed.value);
     // The balance selector re-emits on every LND action, and enable()/disable() raise
     // valueChanges even when the state is unchanged — so only touch the control on an actual
     // flip, otherwise the fund max handler clears an amount the user is still typing.

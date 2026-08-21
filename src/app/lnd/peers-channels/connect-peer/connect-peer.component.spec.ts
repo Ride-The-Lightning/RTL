@@ -1,5 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { By } from '@angular/platform-browser';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
@@ -7,11 +9,11 @@ import { LNDReducer } from '../../../lnd/store/lnd.reducers';
 import { CLNReducer } from '../../../cln/store/cln.reducers';
 import { ECLReducer } from '../../../eclair/store/ecl.reducers';
 import { APICallStatusEnum, LNDActions } from '../../../shared/services/consts-enums-functions';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { ConsoleLoggerService, LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
-import { setBalanceBlockchain, updateLNDAPICallStatus } from '../../store/lnd.actions';
+import { setBalanceBlockchain, setInfo, updateLNDAPICallStatus } from '../../store/lnd.actions';
 import { ConnectPeerComponent } from './connect-peer.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects, mockDataService } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -33,7 +35,8 @@ describe('ConnectPeerComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        CommonService, LoggerService,
+        CommonService,
+        { provide: LoggerService, useClass: ConsoleLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { message: {} } },
         { provide: LNDEffects, useClass: mockLNDEffects },
@@ -173,6 +176,49 @@ describe('ConnectPeerComponent', () => {
 
     component.channelFormGroup.controls.spendUnconfirmed.setValue(false);
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
+  });
+
+  it('should offer fund max on LND 0.16.0 and above', () => {
+    // fund_max landed in 0.16.0; the template hides the whole row behind this flag, so it is
+    // the only thing keeping the control off a node that would reject it.
+    TestBed.inject(Store).dispatch(setInfo({ payload: <any>{ version: '0.18.3-beta commit=v0.18.3-beta' } }));
+    fixture.detectChanges();
+    expect(component.isFundMaxAvailable).toBe(true);
+    expect(fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      map((el) => el.componentInstance).some((toggle) => toggle.name === 'fundMax')).toBe(true);
+  });
+
+  it('should not offer fund max below LND 0.16.0', () => {
+    TestBed.inject(Store).dispatch(setInfo({ payload: <any>{ version: '0.15.5-beta commit=v0.15.5-beta' } }));
+    fixture.detectChanges();
+    expect(component.isFundMaxAvailable).toBe(false);
+    expect(fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      map((el) => el.componentInstance).some((toggle) => toggle.name === 'fundMax')).toBe(false);
+  });
+
+  it('should keep the private channel choice across an unrelated LND action', () => {
+    const store = TestBed.inject(Store);
+    const privateToggle = fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+      find((el) => el.componentInstance.name === 'isPrivate');
+    privateToggle.nativeElement.querySelector('button').click();
+    fixture.detectChanges();
+    const chosen = component.channelFormGroup.controls.isPrivate.value;
+
+    // The node-info selector re-emits on every LND action, and re-seeding the node default
+    // here would silently undo the choice before the user retries a failed open.
+    store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewChannel', status: APICallStatusEnum.ERROR, message: 'Insufficient funds' } }));
+
+    expect(component.channelFormGroup.controls.isPrivate.value).toBe(chosen);
+  });
+
+  it('should name spend unconfirmed as the remedy only when unconfirmed coins would help', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 500000, confirmed_balance: 0, unconfirmed_balance: 500000, reserved_balance_anchor_chan: 0 } }));
+    expect(component.unconfirmedWouldHelp).toBe(true);
+
+    // Nothing releases the anchor reserve, so there is no remedy to name.
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, unconfirmed_balance: 0, reserved_balance_anchor_chan: 40000 } }));
+    expect(component.unconfirmedWouldHelp).toBe(false);
   });
 
   it('should not open the channel without an amount when fund max is off', () => {

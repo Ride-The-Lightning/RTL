@@ -151,3 +151,79 @@ test('postChannel funds the max when the amount field is present but empty', asy
     await node.close();
   }
 });
+
+// A urlencoded body cannot carry a boolean, so the flag arrives spelled however the client
+// writes it: an HTML checkbox posts 'on', scripts post '1' or 'True', and a field repeated in
+// the body arrives as an array. A spelling the controller does not recognize must not fall
+// through to the amount branch -- for a caller that sent only the flag that leaves LND with
+// neither funding field, and paired with an amount it opens a channel for that amount while
+// the caller believed the whole wallet was committed.
+for (const spelling of ['on', '1', 'True', 'TRUE', ' true ', 'yes']) {
+  test('postChannel funds the max for fund_max=' + JSON.stringify(spelling), async () => {
+    const node = await startFakeLnd('macaroon-A');
+    try {
+      const res = buildResponse();
+      postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: spelling, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+      await res.done;
+
+      assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+      const sent = node.seen[0].body;
+      assert.equal(sent.fund_max, true);
+      assert.ok(!('local_funding_amount' in sent), JSON.stringify(sent));
+    } finally {
+      await node.close();
+    }
+  });
+}
+
+for (const spelling of ['off', 'no', '0', 'FALSE']) {
+  test('postChannel uses the amount for fund_max=' + JSON.stringify(spelling), async () => {
+    const node = await startFakeLnd('macaroon-A');
+    try {
+      const res = buildResponse();
+      postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: spelling, local_funding_amount: 250000, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+      await res.done;
+
+      assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+      const sent = node.seen[0].body;
+      assert.equal(sent.local_funding_amount, 250000);
+      assert.ok(!('fund_max' in sent), 'a false spelling must not commit the whole wallet: ' + JSON.stringify(sent));
+    } finally {
+      await node.close();
+    }
+  });
+}
+
+// Neither list matches, so there is no reading of the request that is safe to guess at.
+for (const spelling of ['maybe', ['true', 'true'], { on: true }, 2]) {
+  test('postChannel refuses an unrecognized fund_max=' + JSON.stringify(spelling), async () => {
+    const node = await startFakeLnd('macaroon-A');
+    try {
+      const res = buildResponse();
+      postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: spelling, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+      await res.done;
+
+      assert.equal(res.statusCode, 400, JSON.stringify(res.body));
+      assert.match(res.body.error, /must be true or false/);
+      assert.equal(node.seen.length, 0, 'nothing may reach the node for a rejected body');
+    } finally {
+      await node.close();
+    }
+  });
+}
+
+// A zero amount cannot open a channel, so like an empty string it is an untouched form field
+// rather than a second instruction contradicting fund_max.
+test('postChannel funds the max when the amount field is present but zero', async () => {
+  const node = await startFakeLnd('macaroon-A');
+  try {
+    const res = buildResponse();
+    postChannel(buildRequest(node, { node_pubkey: 'peer-1', fund_max: true, local_funding_amount: 0, private: false, spend_unconfirmed: false, trans_type: '0', trans_type_value: '' }), res, null);
+    await res.done;
+
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    assert.equal(node.seen[0].body.fund_max, true);
+  } finally {
+    await node.close();
+  }
+});
