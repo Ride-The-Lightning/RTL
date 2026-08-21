@@ -83,14 +83,21 @@ describe('OpenChannelComponent fund max', () => {
     TestBed.resetTestingModule();
   });
 
+  // The template hides the whole toggle row behind this flag, so it is the only thing keeping
+  // the control off a node that would reject fund_max.
+  const fundMaxToggleRendered = () => fixture.debugElement.queryAll(By.directive(MatSlideToggle)).
+    map((el) => el.componentInstance).some((toggle) => toggle.name === 'fundMax');
+
   it('should offer fund max on LND 0.16.0 and above', async () => {
     await buildComponent('0.18.3-beta commit=v0.18.3-beta');
     expect(component.isFundMaxAvailable).toBe(true);
+    expect(fundMaxToggleRendered()).toBe(true);
   });
 
   it('should not offer fund max below LND 0.16.0', async () => {
     await buildComponent('0.15.5-beta commit=v0.15.5-beta');
     expect(component.isFundMaxAvailable).toBe(false);
+    expect(fundMaxToggleRendered()).toBe(false);
   });
 
   it('should open the channel with fund max and no funding amount when the toggle is on', async () => {
