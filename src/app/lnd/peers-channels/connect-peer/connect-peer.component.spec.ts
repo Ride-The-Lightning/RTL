@@ -118,6 +118,44 @@ describe('ConnectPeerComponent', () => {
     expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
   });
 
+  it('should keep a typed amount when the wallet drops to all anchor reserve', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    component.channelFormGroup.controls.fundingAmount.setValue(250000);
+
+    // The toggle is off here, so disabling it must not emit — the fund max handler would
+    // clear the amount the user typed against the manual path.
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
+    expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
+    expect(component.channelFormGroup.controls.fundingAmount.enabled).toBe(true);
+  });
+
+  it('should release the amount field when the wallet drops out while fund max is on', () => {
+    const store = TestBed.inject(Store);
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    component.channelFormGroup.controls.fundMax.setValue(true);
+    expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(true);
+
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+
+    expect(component.channelFormGroup.controls.fundMax.value).toBe(false);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
+    expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
+  });
+
+  it('should label the channel step with the fund max state', () => {
+    component.channelFormGroup.controls.fundMax.setValue(true);
+    component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
+    expect(component.channelFormLabel).toEqual('Opening Channel for the Entire Wallet Balance');
+
+    component.channelFormGroup.controls.fundMax.setValue(false);
+    component.channelFormGroup.controls.fundingAmount.setValue(250000);
+    component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
+    expect(component.channelFormLabel).toEqual('Opening Channel for 250000 Sats');
+  });
+
   it('should not open the channel without an amount when fund max is off', () => {
     const dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
     component.newlyAddedPeer = { pub_key: 'peer-pubkey' };
