@@ -265,6 +265,25 @@ In `docker-compose.yml` the `$` must be written `$$` to escape Compose interpola
 before she can route to carol. The seed waits for this; anything you script yourself
 should too.
 
+**Mining needs `-rpcwallet=rtldev`.** Two wallets are loaded — `rtldev`, which holds the
+mined coins, and `eclair`, which the eclair node drives — so bitcoind refuses to guess
+which one a wallet command means. A bare `bin/b-cli -generate 6` fails with
+`error code: -19  Multiple wallets are loaded`. The trap is that piping the call into
+anything takes the error with it, leaving what looks like a successful mine that produced
+no blocks; the symptom shows up later as a channel that will not confirm.
+
+```bash
+ADDR=$(bin/b-cli -rpcwallet=rtldev getnewaddress)
+bin/b-cli -rpcwallet=rtldev generatetoaddress 6 "$ADDR"
+```
+
+**An idle network reports itself out of sync.** LND decides it is out of sync from the
+age of the chain tip, not from its height, so `synced_to_chain` turns false once the last
+block is a few hours old even though the node matches bitcoind exactly — RTL's home page
+then shows a red "Not Synced to Chain". A fixture left running overnight always looks like
+this in the morning. Mine one block and it clears. Real chains never trip it, because
+blocks keep arriving.
+
 **Core Lightning auth uses a rune.** RTL talks to `cln` over clnrest and authenticates
 with a rune, not a macaroon. `cln/create-rune.sh` — run from the `cln` healthcheck —
 creates a master rune once the RPC is up and writes it as `LIGHTNING_RUNE="…"` to
