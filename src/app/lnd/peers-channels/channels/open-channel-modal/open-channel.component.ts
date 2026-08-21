@@ -14,7 +14,7 @@ import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/s
 import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
-import { blockchainBalance } from '../../../store/lnd.selector';
+import { blockchainBalance, getSpendableBalance } from '../../../store/lnd.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
 import { Node } from '../../../../shared/models/RTLconfig';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -149,11 +149,11 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   // node will not draw on yet, which the user can release, and the anchor reserve, which
   // nothing releases. Only the first has a remedy worth naming.
   get unconfirmedWouldHelp(): boolean {
-    return this.spendableBalance <= 0 && !this.spendUnconfirmed && this.commonService.getSpendableBalance(this.walletBalance, true) > 0;
+    return this.spendableBalance <= 0 && !this.spendUnconfirmed && getSpendableBalance(this.walletBalance, true) > 0;
   }
 
   updateSpendableBalance() {
-    this.spendableBalance = this.commonService.getSpendableBalance(this.walletBalance, this.spendUnconfirmed);
+    this.spendableBalance = getSpendableBalance(this.walletBalance, this.spendUnconfirmed);
     // A disabled toggle keeps whatever it was left on, so turn it off too.
     if (this.spendableBalance <= 0) { this.fundMax = false; }
   }

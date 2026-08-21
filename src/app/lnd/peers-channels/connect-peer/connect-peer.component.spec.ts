@@ -196,6 +196,20 @@ describe('ConnectPeerComponent', () => {
       map((el) => el.componentInstance).some((toggle) => toggle.name === 'fundMax')).toBe(false);
   });
 
+  it('should default the version gates to unavailable when node information is absent', () => {
+    TestBed.inject(Store).dispatch(setInfo({ payload: <any>{ version: '0.18.3-beta' } }));
+    fixture.detectChanges();
+    expect(component.isFundMaxAvailable).toBe(true);
+
+    // A throw here would land inside the subscriber and tear it down for the dialog's
+    // lifetime, freezing the gate on and leaving the isPrivate re-seed dead.
+    TestBed.inject(Store).dispatch(setInfo({ payload: <any>null }));
+    fixture.detectChanges();
+    expect(component.isFundMaxAvailable).toBe(false);
+    expect(component.isTaprootAvailable).toBe(false);
+    expect(component.channelFormGroup.controls.fundMax).toBeDefined();
+  });
+
   it('should keep the private channel choice across an unrelated LND action', () => {
     const store = TestBed.inject(Store);
     const privateToggle = fixture.debugElement.queryAll(By.directive(MatSlideToggle)).

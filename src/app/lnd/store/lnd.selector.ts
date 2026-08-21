@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { LNDState } from './lnd.state';
+import { BlockchainBalance } from '../../shared/models/lndModels';
 
 export const lndState = createFeatureSelector<LNDState>('lnd');
 export const lndPageSettings = createSelector(lndState, (state: LNDState) => ({ pageSettings: state.pageSettings, apiCallStatus: state.apisCallStatus.FetchPageSettings }));
@@ -23,3 +24,16 @@ export const networkInfo = createSelector(lndState, (state: LNDState) => ({ netw
 export const allLightningTransactions = createSelector(lndState, (state: LNDState) => ({ allLightningTransactions: state.allLightningTransactions, apiCallStatus: state.apisCallStatus.FetchLightningTransactions }));
 export const allChannels = createSelector(lndState, (state: LNDState) => ({ channels: state.channels, pendingChannels: state.pendingChannels, closedChannels: state.closedChannels }));
 export const nodeInfoAndAPIStatus = createSelector(lndState, (state: LNDState) => ({ information: state.information, apiCallStatus: state.apisCallStatus.FetchInfo }));
+
+// LND's fund_max draws on the coins that meet the node's min-confs policy -- 1 by default,
+// 0 only when spend_unconfirmed is set -- so unconfirmed coins count only when the user has
+// asked to spend them. Either pool still includes the reserve LND holds back for anchor
+// channels, so a wallet can read as funded while nothing is actually spendable.
+// A necessary condition, not a sufficient one: LND also deducts the on-chain funding fee and
+// applies a minimum channel size, so a positive result here can still be refused by the node.
+// The node stays authoritative; this only keeps the toggle off a wallet that plainly has
+// nothing to commit.
+export const getSpendableBalance = (walletBalance: BlockchainBalance, spendUnconfirmed: boolean): number => {
+  const usableBalance = spendUnconfirmed ? +(walletBalance?.total_balance || 0) : +(walletBalance?.confirmed_balance || 0);
+  return usableBalance - +(walletBalance?.reserved_balance_anchor_chan || 0);
+};
