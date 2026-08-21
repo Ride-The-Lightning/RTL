@@ -56,11 +56,12 @@ bcli() {
     -rpcuser="$BITCOIN_RPC_USER" -rpcpassword="$BITCOIN_RPC_PASSWORD" "$@"
 }
 
-# 'docker compose exec' lands as root, whose HOME is /root, but lnd's datadir is
-# /home/lnd/.lnd -- so lncli must be told where to find the cert and macaroon.
+# --lnddir is passed explicitly rather than relying on lncli's ~/.lnd default, so this
+# keeps working if the image's datadir moves again -- Polar used /home/lnd/.lnd, and
+# without the flag lncli looks for the TLS cert and macaroon in the wrong place.
 lncli() {
   local node=$1; shift
-  docker compose exec -T "$node" lncli --network=regtest --lnddir=/home/lnd/.lnd "$@"
+  docker compose exec -T "$node" lncli --network=regtest --lnddir=/root/.lnd "$@"
 }
 
 # Core Lightning cli. Runs inside the cln container against the regtest node.

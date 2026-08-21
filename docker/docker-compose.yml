@@ -21,8 +21,11 @@ volumes:
   rtl_sso_config:
   rtl_sso_cookie:
 
+# No image here: the nodes deliberately run different LND versions, so each pins its own.
+# lightninglabs/lnd rather than Polar because Polar publishes nothing newer than 0.20.0-beta.
+# Its entrypoint is already `lnd`, so the command lists below start at the first flag, and its
+# datadir is /root/.lnd (Polar used /home/lnd/.lnd) -- bin/ln-cli and scripts/seed.sh pass it.
 x-lnd: &lnd
-  image: polarlightning/lnd:0.20.0-beta
   restart: unless-stopped
   depends_on:
     - bitcoind
@@ -63,9 +66,9 @@ services:
   # (https://alice:8080) or TLS validation fails.
   alice:
     <<: *lnd
+    image: lightninglabs/lnd:v0.21.2-beta
     container_name: ${COMPOSE_PROJECT_NAME}_alice
     command:
-      - lnd
       - --noseedbackup
       - --trickledelay=5000
       - --alias=alice
@@ -89,13 +92,13 @@ services:
     ports:
       - "${ALICE_REST_PORT}:${LIGHTNING_REST_PORT}"
     volumes:
-      - alice_data:/home/lnd/.lnd
+      - alice_data:/root/.lnd
 
   bob:
     <<: *lnd
+    image: lightninglabs/lnd:v0.20.3-beta
     container_name: ${COMPOSE_PROJECT_NAME}_bob
     command:
-      - lnd
       - --noseedbackup
       - --trickledelay=5000
       - --alias=bob
@@ -119,13 +122,13 @@ services:
     ports:
       - "${BOB_REST_PORT}:${LIGHTNING_REST_PORT}"
     volumes:
-      - bob_data:/home/lnd/.lnd
+      - bob_data:/root/.lnd
 
   carol:
     <<: *lnd
+    image: lightninglabs/lnd:v0.21.2-beta
     container_name: ${COMPOSE_PROJECT_NAME}_carol
     command:
-      - lnd
       - --noseedbackup
       - --trickledelay=5000
       - --alias=carol
@@ -149,7 +152,7 @@ services:
     ports:
       - "${CAROL_REST_PORT}:${LIGHTNING_REST_PORT}"
     volumes:
-      - carol_data:/home/lnd/.lnd
+      - carol_data:/root/.lnd
 
   # Core Lightning node. Unlike the LND nodes it talks to RTL over clnrest (the
   # built-in REST plugin) using rune auth, so it needs --clnrest-* options and a
