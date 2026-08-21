@@ -25,6 +25,7 @@ export interface BlockchainBalance {
   total_balance?: number;
   confirmed_balance?: number;
   unconfirmed_balance?: number;
+  reserved_balance_anchor_chan?: number;
   account_balance?: any;
 }
 

@@ -9,7 +9,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
-import { GetInfo, Peer } from '../../../shared/models/lndModels';
+import { GetInfo, Peer, BlockchainBalance } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
@@ -18,7 +18,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
-import { nodeInfoAndAPIStatus } from '../../store/lnd.selector';
+import { blockchainBalance, nodeInfoAndAPIStatus } from '../../store/lnd.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -46,6 +46,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public flgEditable = true;
   public isTaprootAvailable = false;
   public isFundMaxAvailable = false;
+  public spendableBalance = 0;
   public peerConnectionError = '';
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
@@ -98,6 +99,19 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.fundingAmount.setValidators([Validators.required, Validators.min(1), Validators.max(this.totalBalance)]);
       }
     });
+    // total_balance still counts the reserve LND holds back for anchor channels, so a wallet
+    // can read as funded while nothing is actually spendable — and fund max would then fail
+    // in the node with a negative-amount error.
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
+        this.spendableBalance = +(bcBalanceSelector.blockchainBalance.total_balance || 0) - +(bcBalanceSelector.blockchainBalance.reserved_balance_anchor_chan || 0);
+        if (this.spendableBalance <= 0) {
+          this.channelFormGroup.controls.fundMax.setValue(false);
+          this.channelFormGroup.controls.fundMax.disable();
+        } else {
+          this.channelFormGroup.controls.fundMax.enable();
+        }
+      });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
