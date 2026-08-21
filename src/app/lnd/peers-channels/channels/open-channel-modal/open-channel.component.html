@@ -37,7 +37,7 @@
           </div>
           <div *ngIf="isFundMaxAvailable" fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mt-1">
             <mat-slide-toggle color="primary" name="fundMax" [disabled]="spendableBalance <= 0" [(ngModel)]="fundMax" (change)="onFundMaxChange()">Use Entire Wallet Balance</mat-slide-toggle>
-            <span *ngIf="spendableBalance <= 0" class="ml-1 foreground-secondary-text">No spendable balance</span>
+            <span *ngIf="spendableBalance <= 0" class="ml-1 foreground-secondary-text">No spendable balance{{unconfirmedWouldHelp ? ' — turn on Spend Unconfirmed Output to use unconfirmed coins' : ''}}</span>
           </div>
           <mat-expansion-panel fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>

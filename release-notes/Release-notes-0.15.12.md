@@ -24,9 +24,11 @@ this release should add its entry under the appropriate section below.
   narrower than the wallet balance in two ways: `total_balance` still counts the
   anchor-channel reserve, and it counts unconfirmed coins that `fund_max` will not draw on
   unless "Spend Unconfirmed Output" is on — either way the wallet looks funded while fund max
-  would fail inside LND with a negative-amount error. A request carrying both `fund_max` and
-  `local_funding_amount` is ambiguous by the whole wallet, so it is refused with a 400 rather
-  than resolved by branch order. Core Lightning already had the equivalent (`amount: "all"`);
+  would fail inside LND with a negative-amount error. `fund_max` itself is matched against explicit true and
+  false spellings — a urlencoded body cannot carry a boolean, so the flag arrives as `'true'`,
+  a checkbox's `'on'`, or a repeated field's array — and anything outside both lists, or a body
+  carrying `local_funding_amount` as well, is refused with a 400 rather than resolved by branch
+  order: every wrong guess misstates the amount by the whole on-chain wallet. Core Lightning already had the equivalent (`amount: "all"`);
   Eclair's `/open` has no fund-max option and is unchanged. Covered by backend tests
   (`test/backend/lnd-channels.test.mjs`) that pin which of the two fields reaches the node,
   and by component specs for the version gate and the dispatched payload.

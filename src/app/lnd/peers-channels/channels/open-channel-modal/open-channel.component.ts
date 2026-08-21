@@ -145,14 +145,15 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.dialogRef.close(false);
   }
 
+  // Distinguishes the two ways a funded-looking wallet can have nothing spendable: coins the
+  // node will not draw on yet, which the user can release, and the anchor reserve, which
+  // nothing releases. Only the first has a remedy worth naming.
+  get unconfirmedWouldHelp(): boolean {
+    return this.spendableBalance <= 0 && !this.spendUnconfirmed && this.commonService.getSpendableBalance(this.walletBalance, true) > 0;
+  }
+
   updateSpendableBalance() {
-    // fund_max is computed over the coins that meet the node's min-confs policy, so
-    // unconfirmed coins only count when the user has asked to spend them. Either pool still
-    // includes the reserve LND holds back for anchor channels, so a wallet can read as funded
-    // while nothing is actually spendable — fund max would then fail in the node with a
-    // negative-amount error.
-    const usableBalance = this.spendUnconfirmed ? +(this.walletBalance.total_balance || 0) : +(this.walletBalance.confirmed_balance || 0);
-    this.spendableBalance = usableBalance - +(this.walletBalance.reserved_balance_anchor_chan || 0);
+    this.spendableBalance = this.commonService.getSpendableBalance(this.walletBalance, this.spendUnconfirmed);
     // A disabled toggle keeps whatever it was left on, so turn it off too.
     if (this.spendableBalance <= 0) { this.fundMax = false; }
   }
