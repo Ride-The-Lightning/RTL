@@ -112,7 +112,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
           this.channelFormGroup.controls.fundMax.setValue(false);
           this.channelFormGroup.controls.fundMax.disable();
         } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
-          this.channelFormGroup.controls.fundMax.enable();
+          // Silently: the toggle is off here, so the amount field is already released, and an
+          // emission would only clear it. The branch above must keep emitting to release it.
+          this.channelFormGroup.controls.fundMax.enable({ emitEvent: false });
         }
       });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
