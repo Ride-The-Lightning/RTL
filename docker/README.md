@@ -55,11 +55,27 @@ routing screens something to show. Two nodes would leave them empty. The `cln`
 clnrest with rune auth. The `eclair` node does the same for RTL's Eclair screens —
 RTL talks to its HTTP API with basic auth.
 
-LND, bitcoind and Eclair images come from [Polar](https://lightningpolar.com); the Core
-Lightning image is the official [`elementsproject/lightningd`](https://hub.docker.com/r/elementsproject/lightningd).
+bitcoind and Eclair images come from [Polar](https://lightningpolar.com); the Core Lightning
+image is the official [`elementsproject/lightningd`](https://hub.docker.com/r/elementsproject/lightningd)
+and the LND nodes use the official [`lightninglabs/lnd`](https://hub.docker.com/r/lightninglabs/lnd).
 All are multi-arch (amd64 + arm64) and nothing is built locally, so this works on
 Apple Silicon. (The official `acinq/eclair` image is amd64-only and its versioned tags
 are years stale, which is why Polar's build of the same source is used instead.)
+
+**The three LND nodes deliberately run two different versions**, so that version-gated UI can be
+checked against a node on either side of a gate without editing the fixture:
+
+| Node    | LND version    |
+|---------|----------------|
+| `alice` | `v0.21.2-beta` |
+| `bob`   | `v0.20.3-beta` |
+| `carol` | `v0.21.2-beta` |
+
+`bob` is the one held back because it is the routing middle node, so every forwarded payment in
+the fixture crosses a version boundary. LND comes from `lightninglabs/lnd` rather than Polar
+because Polar publishes nothing newer than `0.20.0-beta`; that image's entrypoint is already
+`lnd`, so the `command:` lists start at the first flag, and its datadir is `/root/.lnd` rather
+than Polar's `/home/lnd/.lnd` — which is why `bin/ln-cli` and `scripts/seed.sh` pass `--lnddir`.
 
 ## Requirements
 

@@ -7,9 +7,9 @@
 #   bin/ln-cli bob listchannels
 #   bin/ln-cli carol addinvoice --amt=1000
 #
-# --lnddir is passed explicitly: 'docker compose exec' lands as root, whose HOME
-# is /root, but lnd's datadir is /home/lnd/.lnd. Without it lncli looks for the
-# TLS cert in the wrong place and fails.
+# --lnddir is passed explicitly so this keeps working whatever the image's default
+# is: lightninglabs/lnd stores data in /root/.lnd, Polar used /home/lnd/.lnd, and
+# without it lncli looks for the TLS cert in the wrong place and fails.
 
 set -euo pipefail
 
@@ -28,5 +28,5 @@ esac
 
 exec docker compose exec -T "$node" lncli \
   --network=regtest \
-  --lnddir=/home/lnd/.lnd \
+  --lnddir=/root/.lnd \
   "$@"
