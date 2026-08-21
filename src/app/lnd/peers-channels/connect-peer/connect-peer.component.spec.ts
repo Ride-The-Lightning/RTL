@@ -64,7 +64,6 @@ describe('ConnectPeerComponent', () => {
 
     component.channelFormGroup.controls.fundMax.setValue(false);
     expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
-    component.channelFormGroup.controls.fundingAmount.updateValueAndValidity();
     expect(component.channelFormGroup.controls.fundingAmount.errors?.required).toBeTruthy();
   });
 
@@ -83,18 +82,18 @@ describe('ConnectPeerComponent', () => {
 
   it('should disable the fund max control when the wallet is all anchor reserve', () => {
     const store = TestBed.inject(Store);
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
     expect(component.spendableBalance).toEqual(0);
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
 
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     expect(component.spendableBalance).toEqual(4715574);
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
   });
 
   it('should keep a typed amount when an unrelated LND action re-emits the balance', () => {
     const store = TestBed.inject(Store);
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     component.channelFormGroup.controls.fundingAmount.setValue(250000);
 
     // A failed open leaves the dialog open and dispatches an API status update; the balance
@@ -107,12 +106,12 @@ describe('ConnectPeerComponent', () => {
 
   it('should keep a typed amount when a deposit makes the wallet spendable again', () => {
     const store = TestBed.inject(Store);
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
     component.channelFormGroup.controls.fundingAmount.setValue(250000);
 
     // A deposit confirming while the stepper is open releases the toggle; the amount the user
     // typed against the manual path must survive it.
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
 
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
     expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
@@ -120,12 +119,12 @@ describe('ConnectPeerComponent', () => {
 
   it('should keep a typed amount when the wallet drops to all anchor reserve', () => {
     const store = TestBed.inject(Store);
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     component.channelFormGroup.controls.fundingAmount.setValue(250000);
 
     // The toggle is off here, so disabling it must not emit — the fund max handler would
     // clear the amount the user typed against the manual path.
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
 
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
     expect(component.channelFormGroup.controls.fundingAmount.value).toEqual(250000);
@@ -134,26 +133,46 @@ describe('ConnectPeerComponent', () => {
 
   it('should release the amount field when the wallet drops out while fund max is on', () => {
     const store = TestBed.inject(Store);
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 4745574, confirmed_balance: 4745574, reserved_balance_anchor_chan: 30000 } }));
     component.channelFormGroup.controls.fundMax.setValue(true);
     expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(true);
 
-    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 40000, confirmed_balance: 40000, reserved_balance_anchor_chan: 40000 } }));
 
     expect(component.channelFormGroup.controls.fundMax.value).toBe(false);
     expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
     expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
   });
 
-  it('should label the channel step with the fund max state', () => {
-    component.channelFormGroup.controls.fundMax.setValue(true);
+  it('should label the channel step from the form, without waiting for a step change', () => {
+    // The channel step is entered once, before anything is filled in, and flgEditable then
+    // blocks a return — so a label only written on selectionChange never shows a choice.
     component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
+    expect(component.channelFormLabel).toEqual('Open Channel (Optional)');
+
+    component.channelFormGroup.controls.fundMax.setValue(true);
     expect(component.channelFormLabel).toEqual('Opening Channel for the Entire Wallet Balance');
 
     component.channelFormGroup.controls.fundMax.setValue(false);
     component.channelFormGroup.controls.fundingAmount.setValue(250000);
-    component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
     expect(component.channelFormLabel).toEqual('Opening Channel for 250000 Sats');
+  });
+
+  it('should not offer fund max while the only balance is unconfirmed', () => {
+    const store = TestBed.inject(Store);
+    // fund_max draws on coins meeting the node's min-confs policy, so an unconfirmed-only
+    // wallet reads as funded but has nothing fund max can commit.
+    store.dispatch(setBalanceBlockchain({ payload: { total_balance: 500000, confirmed_balance: 0, unconfirmed_balance: 500000, reserved_balance_anchor_chan: 0 } }));
+    expect(component.spendableBalance).toEqual(0);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
+
+    // Asking to spend unconfirmed output moves min-confs to 0, so those coins now count.
+    component.channelFormGroup.controls.spendUnconfirmed.setValue(true);
+    expect(component.spendableBalance).toEqual(500000);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(false);
+
+    component.channelFormGroup.controls.spendUnconfirmed.setValue(false);
+    expect(component.channelFormGroup.controls.fundMax.disabled).toBe(true);
   });
 
   it('should not open the channel without an amount when fund max is off', () => {
