@@ -29,8 +29,8 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
-  <div *ngIf="!selNode.settings.themeColor" class="rtl-spinner">
-    <mat-spinner color="accent" />
+  <div *ngIf="!selNode.settings.themeColor" class="rtl-spinner" role="status">
+    <mat-spinner color="accent" aria-hidden="true" />
     <h4>Loading RTL...</h4>
   </div>
 </div>
