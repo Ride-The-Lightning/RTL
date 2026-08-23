@@ -153,14 +153,14 @@ test('addSecureData honors a fresh seed only when the server holds no live seed'
 test('addSecureData strips credential paths from new nodes and pins existing-node paths by index', () => {
   seedAppConfig();
   Common.appConfig.nodes = [
-    { index: 1, authentication: { macaroonPath: '/server/lnd/admin', configPath: '/server/lnd/lnd.conf' }, settings: { lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' } }
+    { index: 1, authentication: { macaroonPath: '/server/lnd/admin', configPath: '/server/lnd/lnd.conf', swapMacaroonPath: '/server/loop' }, settings: { lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' } }
   ];
   // index "1" arrives as a string in the JSON payload; it must match the numeric server
   // index, so the existing node's paths are pinned while the new node keeps none.
   const config = Common.addSecureData({
     nodes: [
-      { index: '1', authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', swapMacaroonPath: '/loop/swap' }, settings: { lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', themeMode: 'NIGHT' } },
-      { index: '2', authentication: { macaroonPath: '/evil/new', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd' }, settings: { lnServerUrl: 'https://new.example', themeMode: 'DAY' } }
+      { index: '1', authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', swapMacaroonPath: '/loop/swap', boltzMacaroonPath: '/boltz/evil' }, settings: { lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', themeMode: 'NIGHT' } },
+      { index: '2', authentication: { macaroonPath: '/evil/new', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', swapMacaroonPath: '/loop/new' }, settings: { lnServerUrl: 'https://new.example', themeMode: 'DAY' } }
     ]
   });
   const existingNode = config.nodes[0];
@@ -169,7 +169,10 @@ test('addSecureData strips credential paths from new nodes and pins existing-nod
   assert.equal(existingNode.authentication.configPath, '/server/lnd/lnd.conf');
   assert.equal(existingNode.authentication.runePath, undefined);
   assert.equal(existingNode.authentication.lnApiPassword, undefined);
-  assert.equal(existingNode.authentication.swapMacaroonPath, '/loop/swap');
+  // The swap macaroon path is read from disk and sent as an auth header to the swap
+  // server, so it is pinned to the server-held value like every other credential anchor.
+  assert.equal(existingNode.authentication.swapMacaroonPath, '/server/loop');
+  assert.equal(existingNode.authentication.boltzMacaroonPath, undefined);
   assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
   assert.equal(existingNode.settings.swapServerUrl, 'https://swap:8081');
   assert.equal(existingNode.settings.boltzServerUrl, 'https://boltz:9003');
@@ -182,6 +185,7 @@ test('addSecureData strips credential paths from new nodes and pins existing-nod
   assert.equal(newNode.authentication.runePath, undefined);
   assert.equal(newNode.authentication.lnApiPassword, undefined);
   assert.equal(newNode.authentication.configPath, undefined);
+  assert.equal(newNode.authentication.swapMacaroonPath, undefined);
   assert.equal(newNode.settings.lnServerUrl, 'https://new.example');
 });
 

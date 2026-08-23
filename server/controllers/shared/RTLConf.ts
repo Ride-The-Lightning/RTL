@@ -16,11 +16,13 @@ const common: CommonService = Common;
 const wsServer = WSServer;
 const databaseService: DatabaseService = Database;
 // The settings API echoes the whole config back, so these are the only per-node fields
-// accepted from the request body. Credential paths and runtime-only fields are not here;
-// addSecureData re-pins the credential paths for existing nodes and strips them for new
-// ones. Anything else arriving under authentication/settings is discarded.
+// accepted from the request body. Credential paths, server URLs and runtime-only fields
+// are not here; addSecureData re-pins them to the server-held values for existing nodes.
+// logFile is excluded because config.ts overwrites it unconditionally at boot, so
+// accepting it buys nothing. Anything else arriving under authentication/settings is
+// discarded.
 const NODE_SETTINGS_ALLOWLIST = [
-  'blockExplorerUrl', 'logLevel', 'logFile', 'userPersona', 'themeMode', 'themeColor',
+  'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
   'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap',
   'lnServerUrl', 'swapServerUrl', 'boltzServerUrl', 'bitcoindConfigPath', 'channelBackupPath'
 ];
@@ -30,15 +32,6 @@ const NODE_AUTH_ALLOWLIST = ['swapMacaroonPath', 'boltzMacaroonPath'];
 // discarded so it can never be persisted alongside a node in RTL-Config.json.
 const NODE_ALLOWLIST = ['index', 'lnNode', 'lnImplementation', 'authentication', 'settings'];
 const indexKey = (node) => +node.index;
-const isValidServerUrl = (url) => {
-  if (typeof url !== 'string' || url.trim() === '') { return false; }
-  try {
-    const parsed = new URL(url);
-    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && !!parsed.hostname;
-  } catch {
-    return false;
-  }
-};
 // Set local block explorer URL after first API call
 // if the selected node block explorer has working REST API suite
 // otherwise set it to mempool.space
@@ -316,6 +309,17 @@ export const updateApplicationSettings = (req, res, next) => {
       }
       return filteredNode;
     });
+    // Nodes are never provisioned through this endpoint: there is no add-node UI for it,
+    // and a caller-supplied credential path or server URL would be persisted to the config
+    // file and loaded back into the runtime nodes at the next restart. Drop any node whose
+    // index the server does not already know — addSecureData and the merge below answer
+    // known-vs-unknown from this same runtime list.
+    const knownIndexes = new Set(common.appConfig.nodes?.map((node) => indexKey(node)) || []);
+    requestBody.nodes = requestBody.nodes?.filter((node) => {
+      if (knownIndexes.has(indexKey(node))) { return true; }
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'RTLConf', msg: 'Ignoring unknown node index in application settings; nodes cannot be added through this endpoint', data: { index: node?.index } });
+      return false;
+    });
     const config = common.addSecureData(requestBody);
     const runtimeConfig = oldConfig;
     Object.keys(config).forEach((key) => {
@@ -324,9 +328,8 @@ export const updateApplicationSettings = (req, res, next) => {
       }
     });
     if (config.nodes && config.nodes.length > 0) {
-      const oldNodes = (common.appConfig.nodes && common.appConfig.nodes.length > 0) ? common.appConfig.nodes : (oldConfig.nodes || []);
       const newNodesMap = new Map(config.nodes.map((node) => [indexKey(node), node]));
-      const updatedAndExistingNodes = oldNodes.map((oldNode) => {
+      const updatedAndExistingNodes = common.appConfig.nodes.map((oldNode) => {
         const newNode = newNodesMap.get(indexKey(oldNode));
         newNodesMap.delete(indexKey(oldNode));
         const node = newNode ? {
@@ -342,20 +345,7 @@ export const updateApplicationSettings = (req, res, next) => {
         node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
         return node;
       });
-      const newOnlyNodes = [...newNodesMap.values()].map((newNode) => {
-        const node = JSON.parse(JSON.stringify(newNode));
-        node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
-        return node;
-      });
-      // A node unknown to the server cannot be provisioned with credentials through this
-      // endpoint; validate the only server anchor it may carry before persisting.
-      const invalidNewNode = newOnlyNodes.find((node) => node.settings?.lnServerUrl && !isValidServerUrl(node.settings.lnServerUrl));
-      if (invalidNewNode) {
-        const errMsg = 'Invalid lnServerUrl format for node index ' + invalidNewNode.index;
-        const err = common.handleError({ statusCode: 400, message: errMsg, error: errMsg }, 'RTLConf', 'Update Default Node Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.error, error: err.error });
-      }
-      runtimeConfig.nodes = [...updatedAndExistingNodes, ...newOnlyNodes];
+      runtimeConfig.nodes = updatedAndExistingNodes;
     }
     const newAppConfig = JSON.parse(JSON.stringify({
       ...runtimeConfig,
