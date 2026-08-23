@@ -28,7 +28,7 @@ test('updateApplicationSettings preserves indexed node auth and sanitizes only p
         index: 2,
         lnNode: 'cln-secondary',
         lnImplementation: 'CLN',
-        authentication: { runePath: '/cln/rune' },
+        authentication: { runePath: '/cln/rune', swapMacaroonPath: '/loop/cln' },
         settings: { userPersona: 'MERCHANT', themeMode: 'NIGHT', blockExplorerUrl: 'https://old.example' }
       }
     ]
@@ -109,7 +109,9 @@ test('updateApplicationSettings preserves indexed node auth and sanitizes only p
     );
 
     assert.equal(responseStatus, 201);
-    assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0, 2, 5]);
+    // Node index 5 is unknown to the server, so it is dropped rather than provisioned;
+    // only the known indexes survive in the runtime config and the file.
+    assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0, 2]);
 
     const runtimeClnNode = Common.appConfig.nodes[1];
     assert.equal(runtimeClnNode.authentication.runePath, '/cln/rune');
@@ -121,7 +123,7 @@ test('updateApplicationSettings preserves indexed node auth and sanitizes only p
     assert.equal(runtimeClnNode.settings.blockExplorerUrl, 'https://old.example');
 
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
-    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 2, 5]);
+    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 2]);
     assert.equal(fileConfig.rtlPass, undefined);
     assert.equal(fileConfig.rtlConfFilePath, undefined);
     assert.equal(fileConfig.selectedNodeIndex, undefined);
@@ -516,7 +518,7 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
         index: 0,
         lnNode: 'lnd-main',
         lnImplementation: 'LND',
-        authentication: { macaroonPath: '/server/lnd/admin', configPath: '' },
+        authentication: { macaroonPath: '/server/lnd/admin', configPath: '', swapMacaroonPath: '/server/loop', boltzMacaroonPath: '/server/boltz' },
         settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' }
       }
     ]
@@ -555,8 +557,8 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
         lnNode: 'lnd-main',
         lnImplementation: 'LND',
         macaroonPath: '/etc/shadow',
-        authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', runeValue: 'evil-rune', macaroonValue: 'evil-macaroon', options: { headers: { 'Grpc-Metadata-macaroon': 'evil' } } },
-        settings: { themeMode: 'NIGHT', lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', evilSetting: 'smuggled' }
+        authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', runeValue: 'evil-rune', macaroonValue: 'evil-macaroon', options: { headers: { 'Grpc-Metadata-macaroon': 'evil' } }, swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz' },
+        settings: { themeMode: 'NIGHT', logFile: '/tmp/evil.log', lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', evilSetting: 'smuggled' }
       },
       {
         index: 5,
@@ -601,6 +603,10 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(existingNode.authentication.runeValue, undefined);
     assert.equal(existingNode.authentication.macaroonValue, undefined);
     assert.equal(existingNode.macaroonPath, undefined);
+    // The swap/boltz macaroon paths are read from disk and sent as auth headers, so the
+    // attacker-supplied ones are pinned back to the server-held values.
+    assert.equal(existingNode.authentication.swapMacaroonPath, '/server/loop');
+    assert.equal(existingNode.authentication.boltzMacaroonPath, '/server/boltz');
     // Runtime-only auth state carried by the pre-existing node survives the save.
     assert.deepEqual(existingNode.authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
     assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
@@ -610,28 +616,22 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(existingNode.settings.channelBackupPath, '/server/backups');
     assert.equal(existingNode.settings.themeMode, 'NIGHT');
     assert.equal(existingNode.settings.evilSetting, undefined);
-    const newNode = Common.appConfig.nodes[1];
-    assert.equal(newNode.index, 5);
-    assert.equal(newNode.authentication.macaroonPath, undefined);
-    assert.equal(newNode.authentication.runePath, undefined);
-    assert.equal(newNode.authentication.lnApiPassword, undefined);
-    assert.equal(newNode.authentication.configPath, undefined);
-    assert.equal(newNode.macaroonPath, undefined);
-    assert.equal(newNode.settings.lnServerUrl, 'https://new.example');
-    assert.equal(newNode.settings.themeMode, 'DAY');
+    // logFile is not accepted: config.ts rewrites it unconditionally at boot.
+    assert.equal(existingNode.settings.logFile, undefined);
+    // The unknown-index node is dropped rather than provisioned; nothing about it
+    // survives anywhere.
+    assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0]);
 
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
-    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 5]);
+    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0]);
     assert.equal(fileConfig.nodes[0].authentication.macaroonPath, '/server/lnd/admin');
     assert.equal(fileConfig.nodes[0].authentication.options, undefined);
     assert.equal(fileConfig.nodes[0].authentication.runeValue, undefined);
+    assert.equal(fileConfig.nodes[0].authentication.swapMacaroonPath, '/server/loop');
     assert.equal(fileConfig.nodes[0].settings.lnServerUrl, 'https://server:8080');
     assert.equal(fileConfig.nodes[0].settings.themeMode, 'NIGHT');
     assert.equal(fileConfig.nodes[0].settings.evilSetting, undefined);
     assert.equal(fileConfig.nodes[0].macaroonPath, undefined);
-    assert.equal(fileConfig.nodes[1].authentication.macaroonPath, undefined);
-    assert.equal(fileConfig.nodes[1].macaroonPath, undefined);
-    assert.equal(fileConfig.nodes[1].settings.lnServerUrl, 'https://new.example');
     assert.equal(responseBody.nodes[0].authentication.macaroonPath, undefined);
     assert.equal(responseBody.nodes[0].macaroonPath, undefined);
     assert.equal(responseBody.nodes[0].settings.lnServerUrl, 'https://server:8080');
@@ -725,7 +725,7 @@ test('updateApplicationSettings normalizes string node indexes when merging', ()
   }
 });
 
-test('updateApplicationSettings rejects an invalid lnServerUrl on a new node without persisting', () => {
+test('updateApplicationSettings drops unknown-index nodes instead of provisioning them', () => {
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-url-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -757,8 +757,15 @@ test('updateApplicationSettings rejects an invalid lnServerUrl on a new node wit
     allowPasswordUpdate: true,
     SSO: { rtlSSO: 0, rtlCookiePath: '/cookie-path', logoutRedirectLink: '' },
     nodes: [
-      { index: 0, lnNode: 'lnd-main', lnImplementation: 'LND', authentication: {}, settings: {} },
-      { index: 9, lnNode: 'rogue-node', lnImplementation: 'LND', authentication: {}, settings: { lnServerUrl: 'not-a-valid-url' } }
+      { index: 0, lnNode: 'lnd-main', lnImplementation: 'LND', authentication: {}, settings: { themeMode: 'DAY' } },
+      {
+        index: 9,
+        lnNode: 'rogue-node',
+        lnImplementation: 'LND',
+        macaroonPath: '/etc/shadow',
+        authentication: { macaroonPath: '/evil/lnd', swapMacaroonPath: '/evil/loop', configPath: '/etc/passwd' },
+        settings: { lnServerUrl: 'https://evil.example', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', logFile: '/tmp/evil.log', themeMode: 'DAY' }
+      }
     ]
   };
 
@@ -785,11 +792,16 @@ test('updateApplicationSettings rejects an invalid lnServerUrl on a new node wit
       null
     );
 
-    assert.equal(responseStatus, 400);
-    assert.equal(JSON.stringify(responseBody).includes('Invalid lnServerUrl'), true);
-    // The failed validation must not have touched the runtime config or the file.
+    // The unknown node is dropped rather than provisioned — a caller-chosen credential
+    // path or server URL would otherwise be persisted and loaded back into the runtime
+    // nodes at the next restart — and the save itself still succeeds.
+    assert.equal(responseStatus, 201);
     assert.deepEqual(Common.appConfig.nodes.map((node) => node.index), [0]);
-    assert.equal(JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes.length, 1);
+    assert.deepEqual(responseBody.nodes.map((node) => node.index), [0]);
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0]);
+    assert.equal(fileConfig.nodes.some((node) => JSON.stringify(node).includes('evil')), false);
+    assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
