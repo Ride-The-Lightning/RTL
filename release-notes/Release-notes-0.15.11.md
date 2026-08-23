@@ -20,21 +20,6 @@ this release should add its entry under the appropriate section below.
   state. Two backend regression tests (`test/backend/lnd-peers.test.mjs`) reproduce the race
   against fake LND nodes and fail on the pre-fix code.
 
-- **Hardening: application-settings save can no longer re-point credentials or server URLs**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
-  [#1660](https://github.com/Ride-The-Lightning/RTL/issues/1660)).
-  `updateApplicationSettings` merged the request body's per-node `authentication` and
-  `settings` wholesale, so an authenticated caller could inject a `macaroonPath`, `runePath`,
-  `lnApiPassword`, `configPath` or `lnServerUrl` and re-point credentialed requests or the
-  `getConfig`/`getFile` file reads at attacker-controlled values — a confused-deputy vector.
-  The endpoint now allowlists the node fields it accepts from the body (mirroring
-  `updateNodeSettings`), pins server URLs and credential paths to the server-held values for
-  existing nodes, strips credential paths from any node the server does not already know,
-  and rejects a malformed `lnServerUrl` on such a node. Node indexes are normalized to
-  numbers so a string-indexed payload merges into the existing node instead of duplicating
-  it, and a live 2FA seed can no longer be overwritten by a request-supplied seed. Backend
-  regression tests cover the allowlist, the index normalization and the 2FA-seed guard.
-
 ## Enhancements
 
 - **2FA login: password managers can offer the one-time code**

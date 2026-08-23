@@ -144,6 +144,12 @@ export class CommonService {
         node.authentication.runePath = appConfigNode.authentication?.runePath;
         node.authentication.lnApiPassword = appConfigNode.authentication?.lnApiPassword;
         node.authentication.configPath = appConfigNode.authentication?.configPath;
+        // swap/boltz macaroon paths are read from disk and sent as auth headers to their
+        // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
+        // like every other credential anchor here; the node settings endpoint is where
+        // they are legitimately edited.
+        node.authentication.swapMacaroonPath = appConfigNode.authentication?.swapMacaroonPath;
+        node.authentication.boltzMacaroonPath = appConfigNode.authentication?.boltzMacaroonPath;
         node.settings = (node.settings || {}) as Settings;
         node.settings.lnServerUrl = appConfigNode.settings?.lnServerUrl;
         node.settings.swapServerUrl = appConfigNode.settings?.swapServerUrl;
@@ -151,13 +157,16 @@ export class CommonService {
         node.settings.bitcoindConfigPath = appConfigNode.settings?.bitcoindConfigPath;
         node.settings.channelBackupPath = appConfigNode.settings?.channelBackupPath;
       } else {
-        // New node: there is no UI "add node" flow through the settings API, so no
-        // credential path can be legitimately supplied here; strip any that arrive.
+        // New node: this endpoint never provisions nodes (the controller drops unknown
+        // indexes before we get here), so any credential path that still arrives can only
+        // be an injection; strip it.
         if (node.authentication) {
           delete node.authentication.macaroonPath;
           delete node.authentication.runePath;
           delete node.authentication.lnApiPassword;
           delete node.authentication.configPath;
+          delete node.authentication.swapMacaroonPath;
+          delete node.authentication.boltzMacaroonPath;
         }
       }
     });
