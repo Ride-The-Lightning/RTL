@@ -51,10 +51,40 @@ export const invoiceLookup = (req, res, next) => {
 export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting List Invoices..' });
   options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset +
-    '&reversed=' + req.query.reversed;
-  request(options).then((body) => {
+  if (options.error) {
+    return res.status(options.statusCode).json({ message: options.message, error: options.error });
+  }
+  const qs: Record<string, any> = {};
+  if (req.query.num_max_invoices !== undefined) {
+    const raw = String(req.query.num_max_invoices).trim();
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      return res.status(400).json({ message: 'num_max_invoices must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      return res.status(400).json({ message: 'num_max_invoices must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    qs.num_max_invoices = num;
+  }
+  if (req.query.index_offset !== undefined) {
+    const raw = String(req.query.index_offset).trim();
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    qs.index_offset = num;
+  }
+  if (req.query.reversed !== undefined) {
+    const raw = String(req.query.reversed).trim().toLowerCase();
+    if (raw !== 'true' && raw !== 'false' && raw !== '1' && raw !== '0' && raw !== 't' && raw !== 'f') {
+      return res.status(400).json({ message: 'reversed must be a boolean', error: 'Invalid query parameter' });
+    }
+    qs.reversed = raw === 'true' || raw === '1' || raw === 't';
+  }
+  request({ ...options, url: req.session.selectedNode.settings.lnServerUrl + '/v1/invoices', qs }).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: body });
     if (body.invoices && body.invoices.length > 0) {
       body.invoices.forEach((invoice) => {
