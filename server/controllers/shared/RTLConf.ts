@@ -305,6 +305,21 @@ export const updateApplicationSettings = (req, res, next) => {
       }
       if (filteredNode && filteredNode.settings && typeof filteredNode.settings === 'object') {
         filteredNode.settings = Object.fromEntries(Object.entries(filteredNode.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
+        // Validate blockExplorerUrl to reject obviously malformed values. This is format
+        // validation only — it prevents non-URL strings and non-HTTP schemes from being
+        // persisted, but does not prevent SSRF (pointing at internal IPs). A user-chosen
+        // block explorer is an intended RTL feature (self-hosted mempool instances), so
+        // this field is not pinned to the server-held value.
+        if (filteredNode.settings.blockExplorerUrl !== undefined) {
+          try {
+            const parsed = new URL(filteredNode.settings.blockExplorerUrl);
+            if (!['http:', 'https:'].includes(parsed.protocol)) {
+              delete filteredNode.settings.blockExplorerUrl;
+            }
+          } catch {
+            delete filteredNode.settings.blockExplorerUrl;
+          }
+        }
       }
       return filteredNode;
     });
