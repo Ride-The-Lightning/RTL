@@ -125,39 +125,47 @@ export class CommonService {
             config.enable2FA = !!config.secret2FA;
             // Node indexes arrive as strings in JSON payloads; normalize them to numbers so the
             // map lookups below (and the persisted config) use a single representation.
-            const indexKey = (node) => +node.index;
-            const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [indexKey(node), node]) || []);
+            const indexKey = (node) => {
+                const val = node?.index;
+                return (val !== undefined && val !== null) ? +val : undefined;
+            };
+            // Pin from the authoritative runtime node list (this.nodes), not this.appConfig.nodes.
+            // After the first application-settings save, common.appConfig is a fresh clone while
+            // common.nodes retains the live state (options, runeValue) and is updated in place by
+            // updateNodeSettings via replaceNode — so pinning from appConfig.nodes would silently
+            // revert a user's legitimate Node Settings edit to the previous value.
+            const runtimeNodes = new Map(this.nodes?.map((node) => [indexKey(node), node]) || []);
             config.nodes?.forEach((node) => {
                 node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
-                const appConfigNode = appConfigNodes.get(indexKey(node));
-                if (appConfigNode) {
+                const runtimeNode = runtimeNodes.get(indexKey(node));
+                if (runtimeNode) {
                     // Existing node: pin credential paths and credentialed-request anchors to the
                     // server-held values. The client only ever echoes these (removeSecureData strips
                     // the credentials, so a client cannot have a legitimate new value for them), and
                     // accepting them would let an authenticated caller re-point credential file reads
                     // or credentialed requests — the confused-deputy vector this pins down.
                     node.authentication = node.authentication || {};
-                    node.authentication.macaroonPath = appConfigNode.authentication?.macaroonPath;
-                    node.authentication.runePath = appConfigNode.authentication?.runePath;
-                    node.authentication.lnApiPassword = appConfigNode.authentication?.lnApiPassword;
-                    node.authentication.configPath = appConfigNode.authentication?.configPath;
+                    node.authentication.macaroonPath = runtimeNode.authentication?.macaroonPath;
+                    node.authentication.runePath = runtimeNode.authentication?.runePath;
+                    node.authentication.lnApiPassword = runtimeNode.authentication?.lnApiPassword;
+                    node.authentication.configPath = runtimeNode.authentication?.configPath;
                     // swap/boltz macaroon paths are read from disk and sent as auth headers to their
                     // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
                     // like every other credential anchor here; the node settings endpoint is where
                     // they are legitimately edited.
-                    node.authentication.swapMacaroonPath = appConfigNode.authentication?.swapMacaroonPath;
-                    node.authentication.boltzMacaroonPath = appConfigNode.authentication?.boltzMacaroonPath;
+                    node.authentication.swapMacaroonPath = runtimeNode.authentication?.swapMacaroonPath;
+                    node.authentication.boltzMacaroonPath = runtimeNode.authentication?.boltzMacaroonPath;
                     node.settings = (node.settings || {});
-                    node.settings.lnServerUrl = appConfigNode.settings?.lnServerUrl;
-                    node.settings.swapServerUrl = appConfigNode.settings?.swapServerUrl;
-                    node.settings.boltzServerUrl = appConfigNode.settings?.boltzServerUrl;
-                    node.settings.bitcoindConfigPath = appConfigNode.settings?.bitcoindConfigPath;
-                    node.settings.channelBackupPath = appConfigNode.settings?.channelBackupPath;
+                    node.settings.lnServerUrl = runtimeNode.settings?.lnServerUrl;
+                    node.settings.swapServerUrl = runtimeNode.settings?.swapServerUrl;
+                    node.settings.boltzServerUrl = runtimeNode.settings?.boltzServerUrl;
+                    node.settings.bitcoindConfigPath = runtimeNode.settings?.bitcoindConfigPath;
+                    node.settings.channelBackupPath = runtimeNode.settings?.channelBackupPath;
                 }
                 else {
-                    // New node: this endpoint never provisions nodes (the controller drops unknown
-                    // indexes before we get here), so any credential path that still arrives can only
-                    // be an injection; strip it.
+                    // Unknown node: this endpoint never provisions nodes (the controller drops
+                    // unknown indexes before we get here), so any credential path or settings anchor
+                    // that still arrives can only be an injection; strip them all.
                     if (node.authentication) {
                         delete node.authentication.macaroonPath;
                         delete node.authentication.runePath;
@@ -165,6 +173,13 @@ export class CommonService {
                         delete node.authentication.configPath;
                         delete node.authentication.swapMacaroonPath;
                         delete node.authentication.boltzMacaroonPath;
+                    }
+                    if (node.settings) {
+                        delete node.settings.lnServerUrl;
+                        delete node.settings.swapServerUrl;
+                        delete node.settings.boltzServerUrl;
+                        delete node.settings.bitcoindConfigPath;
+                        delete node.settings.channelBackupPath;
                     }
                 }
             });
