@@ -915,6 +915,90 @@ test('updateNodeSettings strips sensitive settings fields via allowlist', () => 
   }
 });
 
+test('updateApplicationSettings validates blockExplorerUrl format and rejects malformed values', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-blockexplorer-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', blockExplorerUrl: 'https://mempool.space' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: 0, settings: { blockExplorerUrl: 'not-a-url', themeMode: 'NIGHT' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // The malformed URL is rejected; the server-held value is preserved.
+    assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.space');
+    // Other settings still merge.
+    assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'NIGHT');
+
+    // Now test a valid URL is accepted.
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: 0, settings: { blockExplorerUrl: 'https://mempool.example', themeMode: 'DAY' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.example');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
 test('updateApplicationSettings filters unknown top-level payload keys', () => {
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-toplevel-'));
   const oldConfig = {
