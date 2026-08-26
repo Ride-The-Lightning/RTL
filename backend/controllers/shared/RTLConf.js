@@ -14,23 +14,31 @@ const logger = Logger;
 const common = Common;
 const wsServer = WSServer;
 const databaseService = Database;
-// The settings API echoes the whole config back, so these are the only per-node fields
-// accepted from the request body. Credential paths, server URLs and runtime-only fields
-// are not here; addSecureData re-pins them to the server-held values for existing nodes.
-// logFile is excluded because config.ts overwrites it unconditionally at boot, so
-// accepting it buys nothing. Anything else arriving under authentication/settings is
-// discarded.
+// The settings API echoes the whole config back, so these are the only per-node settings
+// fields accepted from the request body. Credential paths, server URLs, runtime-only
+// fields (options, runeValue) and logFile (config.ts overwrites it at boot) are not here;
+// addSecureData re-pins them to the server-held values for existing nodes, and strips
+// them from unknown nodes entirely. Anything else arriving under settings is discarded.
 const NODE_SETTINGS_ALLOWLIST = [
     'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
-    'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap',
-    'lnServerUrl', 'swapServerUrl', 'boltzServerUrl', 'bitcoindConfigPath', 'channelBackupPath'
+    'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap'
 ];
-const NODE_AUTH_ALLOWLIST = ['swapMacaroonPath', 'boltzMacaroonPath'];
 // Top-level keys accepted on a node object. authentication and settings are themselves
 // filtered by the allowlists above; any other key (e.g. a root-level macaroonPath) is
 // discarded so it can never be persisted alongside a node in RTL-Config.json.
 const NODE_ALLOWLIST = ['index', 'lnNode', 'lnImplementation', 'authentication', 'settings'];
-const indexKey = (node) => +node.index;
+// Top-level keys accepted from the request body on the application-settings endpoint.
+// Anything not here is discarded; this prevents caller-invented keys from being persisted
+// into RTL-Config.json and re-parsed at every save and boot.
+const TOP_LEVEL_ALLOWLIST = [
+    'defaultNodeIndex', 'selectedNodeIndex', 'enable2FA', 'allowPasswordUpdate',
+    'dbDirectoryPath', 'disableAuth', 'multiPass', 'multiPassHashed', 'secret2FA',
+    'SSO', 'nodes'
+];
+const indexKey = (node) => {
+    const val = node?.index;
+    return (val !== undefined && val !== null) ? +val : undefined;
+};
 // Set local block explorer URL after first API call
 // if the selected node block explorer has working REST API suite
 // otherwise set it to mempool.space
@@ -234,47 +242,20 @@ export const updateNodeSettings = (req, res, next) => {
         const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
         const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
         if (node && node.settings) {
-            // channelBackupPath anchors getFile's containment root and is documented as a
-            // config-file-only setting; accepting it from the API would let the caller being
-            // contained choose the containment base. Pin it to the server-held value.
-            const serverChannelBackupPath = node.settings.channelBackupPath;
-            node.settings = { ...node.settings, ...req.body.settings };
-            node.settings.channelBackupPath = serverChannelBackupPath;
-            if (node.authentication && req.body.authentication) {
-                if (req.body.authentication.boltzMacaroonPath) {
-                    node.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
-                }
-                else {
-                    delete node.authentication.boltzMacaroonPath;
-                }
-                if (req.body.authentication.swapMacaroonPath) {
-                    node.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
-                }
-                else {
-                    delete node.authentication.swapMacaroonPath;
-                }
-            }
+            // Allowlist incoming settings to the same set updateApplicationSettings uses, then
+            // pin file-read and credentialed-request anchors so the caller cannot re-point
+            // credential file reads (bitcoindConfigPath), the channel-backup containment root
+            // (channelBackupPath), or credentialed HTTP destinations (lnServerUrl, swapServerUrl,
+            // boltzServerUrl). These fields are not in NODE_SETTINGS_ALLOWLIST, so the
+            // allowlisting above already strips them; the runtime merge below pins them too.
+            const allowedSettings = Object.fromEntries(Object.entries(req.body.settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
+            node.settings = { ...node.settings, ...allowedSettings };
         }
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         const selectedNode = common.findNode(req.session.selectedNode.index);
         if (selectedNode && selectedNode.settings) {
-            const serverChannelBackupPath = selectedNode.settings.channelBackupPath;
-            selectedNode.settings = { ...selectedNode.settings, ...req.body.settings };
-            selectedNode.settings.channelBackupPath = serverChannelBackupPath;
-            if (selectedNode.authentication && req.body.authentication) {
-                if (req.body.authentication.boltzMacaroonPath) {
-                    selectedNode.authentication.boltzMacaroonPath = req.body.authentication.boltzMacaroonPath;
-                }
-                else {
-                    delete selectedNode.authentication.boltzMacaroonPath;
-                }
-                if (req.body.authentication.swapMacaroonPath) {
-                    selectedNode.authentication.swapMacaroonPath = req.body.authentication.swapMacaroonPath;
-                }
-                else {
-                    delete selectedNode.authentication.swapMacaroonPath;
-                }
-            }
+            const allowedSettings = Object.fromEntries(Object.entries(req.body.settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
+            selectedNode.settings = { ...selectedNode.settings, ...allowedSettings };
             common.replaceNode(req, selectedNode);
         }
         let responseNode = JSON.parse(JSON.stringify(common.selectedNode));
@@ -295,15 +276,25 @@ export const updateApplicationSettings = (req, res, next) => {
         const oldConfig = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
         // Allowlist the per-node payload before addSecureData runs, so an injected credential
         // path, runeValue/options, unknown setting or unknown top-level node key (such as a
-        // root-level macaroonPath) can never reach the runtime config or the file — the same
-        // strategy updateNodeSettings applies to its settings merge.
+        // root-level macaroonPath) can never reach the runtime config or the file.
         const requestBody = JSON.parse(JSON.stringify(req.body));
+        // Filter top-level keys to prevent caller-invented fields from being persisted into
+        // RTL-Config.json and re-parsed at every save and boot.
+        for (const key of Object.keys(requestBody)) {
+            if (!TOP_LEVEL_ALLOWLIST.includes(key)) {
+                delete requestBody[key];
+            }
+        }
         requestBody.nodes = requestBody.nodes?.map((node) => {
             const filteredNode = (node && typeof node === 'object') ?
                 Object.fromEntries(Object.entries(node).filter(([key]) => NODE_ALLOWLIST.includes(key))) :
                 node;
-            if (filteredNode && filteredNode.authentication && typeof filteredNode.authentication === 'object') {
-                filteredNode.authentication = Object.fromEntries(Object.entries(filteredNode.authentication).filter(([key]) => NODE_AUTH_ALLOWLIST.includes(key)));
+            // Strip authentication entirely: addSecureData re-pins all credential paths from
+            // the server-held node, so any caller-supplied authentication value (runeValue,
+            // options, macaroonPath, etc.) is dead weight that must not reach the runtime config
+            // or the file.
+            if (filteredNode && typeof filteredNode === 'object') {
+                delete filteredNode.authentication;
             }
             if (filteredNode && filteredNode.settings && typeof filteredNode.settings === 'object') {
                 filteredNode.settings = Object.fromEntries(Object.entries(filteredNode.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
@@ -315,9 +306,10 @@ export const updateApplicationSettings = (req, res, next) => {
         // file and loaded back into the runtime nodes at the next restart. Drop any node whose
         // index the server does not already know — addSecureData and the merge below answer
         // known-vs-unknown from this same runtime list.
-        const knownIndexes = new Set(common.appConfig.nodes?.map((node) => indexKey(node)) || []);
+        const knownIndexes = new Set(common.appConfig.nodes?.map((node) => indexKey(node)).filter((idx) => Number.isFinite(idx)) || []);
         requestBody.nodes = requestBody.nodes?.filter((node) => {
-            if (knownIndexes.has(indexKey(node))) {
+            const idx = indexKey(node);
+            if (Number.isFinite(idx) && knownIndexes.has(idx)) {
                 return true;
             }
             logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'RTLConf', msg: 'Ignoring unknown node index in application settings; nodes cannot be added through this endpoint', data: { index: node?.index } });
@@ -330,8 +322,8 @@ export const updateApplicationSettings = (req, res, next) => {
                 runtimeConfig[key] = config[key];
             }
         });
-        if (config.nodes && config.nodes.length > 0) {
-            const newNodesMap = new Map(config.nodes.map((node) => [indexKey(node), node]));
+        if (common.appConfig.nodes && common.appConfig.nodes.length > 0) {
+            const newNodesMap = new Map(config.nodes?.map((node) => [indexKey(node), node]) || []);
             const updatedAndExistingNodes = common.appConfig.nodes.map((oldNode) => {
                 const newNode = newNodesMap.get(indexKey(oldNode));
                 newNodesMap.delete(indexKey(oldNode));
