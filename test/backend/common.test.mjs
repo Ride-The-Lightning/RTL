@@ -152,9 +152,11 @@ test('addSecureData honors a fresh seed only when the server holds no live seed'
 
 test('addSecureData strips credential paths from new nodes and pins existing-node paths by index', () => {
   seedAppConfig();
-  Common.appConfig.nodes = [
+  const serverNodes = [
     { index: 1, authentication: { macaroonPath: '/server/lnd/admin', configPath: '/server/lnd/lnd.conf', swapMacaroonPath: '/server/loop' }, settings: { lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' } }
   ];
+  Common.appConfig.nodes = serverNodes;
+  Common.nodes = JSON.parse(JSON.stringify(serverNodes));
   // index "1" arrives as a string in the JSON payload; it must match the numeric server
   // index, so the existing node's paths are pinned while the new node keeps none.
   const config = Common.addSecureData({
@@ -186,7 +188,12 @@ test('addSecureData strips credential paths from new nodes and pins existing-nod
   assert.equal(newNode.authentication.lnApiPassword, undefined);
   assert.equal(newNode.authentication.configPath, undefined);
   assert.equal(newNode.authentication.swapMacaroonPath, undefined);
-  assert.equal(newNode.settings.lnServerUrl, 'https://new.example');
+  // F9: settings anchors are stripped from unknown nodes too, not just auth fields.
+  assert.equal(newNode.settings.lnServerUrl, undefined);
+  assert.equal(newNode.settings.swapServerUrl, undefined);
+  assert.equal(newNode.settings.boltzServerUrl, undefined);
+  assert.equal(newNode.settings.bitcoindConfigPath, undefined);
+  assert.equal(newNode.settings.channelBackupPath, undefined);
 });
 
 test('addSecureData restores an omitted TOTP seed and derives enable2FA from the seed', () => {

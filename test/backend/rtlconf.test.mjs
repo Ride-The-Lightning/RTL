@@ -859,6 +859,297 @@ test('updateNodeSettings pins channelBackupPath to the server-held value', () =>
   }
 });
 
+test('updateNodeSettings strips sensitive settings fields via allowlist', () => {
+  // lnServerUrl, swapServerUrl, boltzServerUrl, bitcoindConfigPath and channelBackupPath
+  // are not in NODE_SETTINGS_ALLOWLIST; they must be silently dropped from the request.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-allowlist-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({ ...oldConfig, rtlConfFilePath: tempDir });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateNodeSettings(
+      {
+        body: { settings: { themeMode: 'NIGHT', lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil' } },
+        session: { selectedNode: Common.nodes[0] }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+    assert.equal(fileNode.settings.themeMode, 'NIGHT');
+    assert.equal(fileNode.settings.lnServerUrl, 'https://server:8080');
+    assert.equal(fileNode.settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(fileNode.settings.boltzServerUrl, 'https://boltz:9003');
+    assert.equal(fileNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
+    assert.equal(fileNode.settings.channelBackupPath, '/server/backups');
+    assert.equal(Common.nodes[0].settings.themeMode, 'NIGHT');
+    assert.equal(Common.nodes[0].settings.lnServerUrl, 'https://server:8080');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings filters unknown top-level payload keys', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-toplevel-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), evilTopLevel: 'injected', dbDirectoryPath: '/etc/shadow', selectedNodeIndex: 0 },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.evilTopLevel, undefined);
+    assert.equal(Common.appConfig.dbDirectoryPath, '/db');
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(fileConfig.evilTopLevel, undefined);
+    assert.equal(fileConfig.dbDirectoryPath, '/db');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings preserves runtime-only auth state when all payload nodes are dropped', () => {
+  // When every payload node has an unknown index, config.nodes is empty and the rebuild
+  // block must still use the server-held node list — not the stale on-disk copy — so
+  // runtime-only fields (options, runeValue) survive.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-empty-nodes-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const runtimeConfig = clone({
+    ...oldConfig,
+    selectedNodeIndex: 0,
+    enable2FA: false,
+    allowPasswordUpdate: true,
+    rtlConfFilePath: tempDir,
+    rtlPass: 'hashed-password',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' },
+    nodes: [
+      {
+        ...oldConfig.nodes[0],
+        authentication: {
+          ...oldConfig.nodes[0].authentication,
+          options: { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } }
+        }
+      }
+    ]
+  });
+
+  try {
+    Common.appConfig = clone(runtimeConfig);
+    Common.nodes = clone(runtimeConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: 9, lnNode: 'rogue', lnImplementation: 'LND', settings: { themeMode: 'NIGHT' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // The unknown node was dropped; the existing node's runtime-only auth state survives.
+    assert.deepEqual(Common.appConfig.nodes.map((n) => n.index), [0]);
+    assert.deepEqual(Common.appConfig.nodes[0].authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings treats non-numeric indexes as unknown and drops them', () => {
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nan-index-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: null, lnNode: 'null-index', settings: { themeMode: 'NIGHT' } }, { index: 'abc', lnNode: 'non-numeric-index', settings: { themeMode: 'NIGHT' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // null coerces to 0 via +null, which IS a known index — the node merges with node 0.
+    // 'abc' coerces to NaN, which is not finite, so it is dropped as unknown.
+    // Neither crashes the endpoint.
+    assert.equal(Common.appConfig.nodes.length, 1);
+    assert.equal(Common.appConfig.nodes[0].index, 0);
+    assert.equal(Common.appConfig.nodes[0].lnNode, 'lnd-main');
+    assert.deepEqual(Common.appConfig.nodes.map((n) => n.index), [0]);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateNodeSettings strips sensitive authentication fields via addSecureData', () => {
+  // boltzMacaroonPath and swapMacaroonPath are not in NODE_AUTH_ALLOWLIST; the node
+  // settings endpoint should not allow changing them.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-auth-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin', swapMacaroonPath: '/server/loop', boltzMacaroonPath: '/server/boltz' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({ ...oldConfig, rtlConfFilePath: tempDir });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateNodeSettings(
+      {
+        body: { settings: { themeMode: 'NIGHT' }, authentication: { swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz' } },
+        session: { selectedNode: Common.nodes[0] }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+    assert.equal(fileNode.settings.themeMode, 'NIGHT');
+    // The auth fields should not have been modified by the request body authentication.
+    assert.equal(fileNode.authentication.swapMacaroonPath, '/server/loop');
+    assert.equal(fileNode.authentication.boltzMacaroonPath, '/server/boltz');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
 test('getFile contains caller paths to the channel backup directory', async () => {
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-getfile-'));
   const backupDir = join(tempDir, 'backups');
