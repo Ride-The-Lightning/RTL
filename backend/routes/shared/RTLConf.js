@@ -10,6 +10,6 @@ router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', isAuthenticated, upda
 router.get('/config/:nodeType', isAuthenticated, getConfig);
 router.post('/node', isAuthenticated, updateNodeSettings);
 router.post('/application', isAuthenticated, updateApplicationSettings);
-router.get('/explorerFeesRecommended', getExplorerFeesRecommended);
-router.get('/explorerTransaction/:txid', getExplorerTransaction);
+router.get('/explorerFeesRecommended', isAuthenticated, getExplorerFeesRecommended);
+router.get('/explorerTransaction/:txid', isAuthenticated, getExplorerTransaction);
 export default router;

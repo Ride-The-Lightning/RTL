@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import express from 'express';
 
@@ -53,4 +56,47 @@ test('GET /api/conf/updateSelNode rejects a request without a session token', as
     const body = await res.json();
     assert.equal(body.error, 'Authentication Failed! Please Login First!');
   });
+});
+
+test('GET /api/conf stays reachable without a session token', async () => {
+  // The login page depends on this one: it is where the node's name and theme come from.
+  await withRouter('/api/conf', rtlConfRoutes, async (base) => {
+    const res = await fetch(base + '/api/conf/');
+    assert.notEqual(res.status, 401);
+  });
+});
+
+// Routes the logged-out login page needs. Everything else registered under server/routes
+// must carry isAuthenticated; a new route missing it shows up here rather than in a
+// disclosure.
+const PUBLIC_ROUTES = new Set([
+  'shared/authenticate POST /',
+  'shared/authenticate POST /token',
+  'shared/authenticate GET /logout',
+  'shared/RTLConf GET /',
+  'shared/RTLConf GET /rates'
+]);
+
+test('every route outside the login page set carries isAuthenticated', async () => {
+  const routesDir = join(dirname(fileURLToPath(import.meta.url)), '../../backend/routes');
+  const unguarded = [];
+  let seen = 0;
+  for (const tree of ['lnd', 'cln', 'eclair', 'shared']) {
+    for (const file of readdirSync(join(routesDir, tree)).filter((f) => f.endsWith('.js') && f !== 'index.js')) {
+      const router = (await import(pathToFileURL(join(routesDir, tree, file)).href)).default;
+      for (const layer of router.stack) {
+        if (!layer.route) { continue; }
+        for (const method of Object.keys(layer.route.methods)) {
+          seen++;
+          const key = tree + '/' + file.replace(/\.js$/, '') + ' ' + method.toUpperCase() + ' ' + layer.route.path;
+          const guarded = layer.route.stack.some((handler) => handler.name === 'isAuthenticated');
+          if (!guarded && !PUBLIC_ROUTES.has(key)) { unguarded.push(key); }
+          if (guarded && PUBLIC_ROUTES.has(key)) { unguarded.push(key + ' (listed public but guarded)'); }
+        }
+      }
+    }
+  }
+  clearInterval(WSServer.pingInterval);
+  assert.ok(seen > 100, 'expected to walk the whole API, saw ' + seen + ' routes');
+  assert.deepEqual(unguarded, []);
 });
