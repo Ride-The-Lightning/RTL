@@ -44,8 +44,9 @@ this release should add its entry under the appropriate section below.
   `explorerTransaction/:txid`) are only ever called from logged-in dialogs and now carry it
   too. `test/backend/route-guards.test.mjs` mounts the real routers and exercises them over a
   socket, and also walks every route module under `server/routes/` asserting that everything
-  outside the five routes the login page needs (`authenticate`, `conf`, `conf/rates`) is
-  guarded — so a future route added without the middleware fails the suite. The frontend used to call `updateSelNode` once before
+  outside the five routes the login page needs (`authenticate`, `conf`, `conf/rates`) has the
+  guard as its first handler, and that the index routers mount nothing but the modules
+  walked — so a future route added without the middleware fails the suite. The frontend used to call `updateSelNode` once before
   login, from the initial config fetch; there is no server-side session to switch at that
   point, and the login page only needs the node's name and theme, which the config response
   already carries, so that call is now resolved locally and the server is only asked once a
