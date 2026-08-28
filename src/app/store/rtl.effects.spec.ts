@@ -116,8 +116,13 @@ describe('RTL Root Effects', () => {
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse) => {
       expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
       httpTestingController.expectNone(API_END_POINTS.CONF_API + '/updateSelNode/1/-1');
+      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(openSpinner({ payload: UI_MESSAGES.NO_SPINNER }));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
       expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(closeSpinner({ payload: UI_MESSAGES.NO_SPINNER }));
       expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(resetRootStore({ payload: mockActionsData.setSelectedNode }));
+      // The store's selNode must be a copy: the node handed in is an element of appConfig.nodes.
+      expect((storeDispatchSpy.calls.all()[4].args[0] as any).payload).not.toBe(mockActionsData.setSelectedNode);
       expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore());
       // No token, so no node data is fetched: the reset actions are the last ones.
       expect(storeDispatchSpy).toHaveBeenCalledTimes(8);

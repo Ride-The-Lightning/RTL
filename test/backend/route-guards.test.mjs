@@ -67,8 +67,10 @@ test('GET /api/conf stays reachable without a session token', async () => {
 });
 
 // Routes the logged-out login page needs. Everything else registered under server/routes
-// must carry isAuthenticated; a new route missing it shows up here rather than in a
-// disclosure.
+// must carry isAuthenticated as its first handler; a new route missing it shows up here
+// rather than in a disclosure. The walk runs over the compiled backend/ (npm run test
+// builds it first), and checks the four index routers mount nothing but the leaf routers
+// it walked, so a route declared on an index router or a nested sub-router cannot slip past.
 const PUBLIC_ROUTES = new Set([
   'shared/authenticate POST /',
   'shared/authenticate POST /token',
@@ -77,26 +79,35 @@ const PUBLIC_ROUTES = new Set([
   'shared/RTLConf GET /rates'
 ]);
 
-test('every route outside the login page set carries isAuthenticated', async () => {
+test('every route outside the login page set carries isAuthenticated first', async () => {
   const routesDir = join(dirname(fileURLToPath(import.meta.url)), '../../backend/routes');
   const unguarded = [];
-  let seen = 0;
+  const leafRouters = new Set();
+  const seen = {};
   for (const tree of ['lnd', 'cln', 'eclair', 'shared']) {
+    seen[tree] = 0;
     for (const file of readdirSync(join(routesDir, tree)).filter((f) => f.endsWith('.js') && f !== 'index.js')) {
       const router = (await import(pathToFileURL(join(routesDir, tree, file)).href)).default;
+      leafRouters.add(router);
       for (const layer of router.stack) {
-        if (!layer.route) { continue; }
+        assert.ok(layer.route, tree + '/' + file + ' registers a non-route layer; extend the walk before relying on it');
         for (const method of Object.keys(layer.route.methods)) {
-          seen++;
+          seen[tree]++;
           const key = tree + '/' + file.replace(/\.js$/, '') + ' ' + method.toUpperCase() + ' ' + layer.route.path;
-          const guarded = layer.route.stack.some((handler) => handler.name === 'isAuthenticated');
+          // Position matters: express runs handlers in registration order, so a guard
+          // registered after the controller guards nothing.
+          const guarded = layer.route.stack[0].name === 'isAuthenticated';
           if (!guarded && !PUBLIC_ROUTES.has(key)) { unguarded.push(key); }
           if (guarded && PUBLIC_ROUTES.has(key)) { unguarded.push(key + ' (listed public but guarded)'); }
         }
       }
     }
+    const index = (await import(pathToFileURL(join(routesDir, tree, 'index.js')).href)).default;
+    for (const layer of index.stack) {
+      assert.ok(!layer.route && leafRouters.has(layer.handle), tree + '/index.js mounts something other than a walked leaf router');
+    }
   }
   clearInterval(WSServer.pingInterval);
-  assert.ok(seen > 100, 'expected to walk the whole API, saw ' + seen + ' routes');
+  for (const tree of Object.keys(seen)) { assert.ok(seen[tree] > 0, 'walked no routes under ' + tree); }
   assert.deepEqual(unguarded, []);
 });
