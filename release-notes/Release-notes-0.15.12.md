@@ -36,7 +36,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Align route middleware across the API**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1688](https://github.com/Ride-The-Lightning/RTL/pull/1688)).
   `POST /api/ecl/channels/circularRebalance` and `GET /api/conf/updateSelNode/:curr/:prev`
   were the only two state-changing routes registered without the `isAuthenticated`
   middleware the rest of the API uses; both now carry it and answer 401 without a session
