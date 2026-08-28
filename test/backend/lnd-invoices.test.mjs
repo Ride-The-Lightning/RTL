@@ -4,7 +4,6 @@ import test from 'node:test';
 
 import { listInvoices } from '../../backend/controllers/lnd/invoices.js';
 
-// Fake LND server that records every request it receives.
 const startFakeLnd = async (macaroon, invoices) => {
   const seen = [];
   const server = createServer((req, res) => {
@@ -21,7 +20,6 @@ const startFakeLnd = async (macaroon, invoices) => {
   };
 };
 
-// Build a mock Express req object with the session shape common.getOptions expects.
 const buildRequest = (node, query = {}) => ({
   session: {
     selectedNode: {
@@ -42,7 +40,6 @@ const buildRequest = (node, query = {}) => ({
   query
 });
 
-// Build a mock Express res object that resolves a promise when .json() is called.
 const buildResponse = () => {
   const out = { statusCode: null, body: null, headersSent: false };
   out.done = new Promise((resolve) => {
@@ -52,7 +49,7 @@ const buildResponse = () => {
   return out;
 };
 
-test('listInvoices: empty query omits all params from upstream URL', async () => {
+test('listInvoices: empty query uses default page size', async () => {
   const lnd = await startFakeLnd('macaroon-test', []);
   try {
     const res = buildResponse();
@@ -62,10 +59,21 @@ test('listInvoices: empty query omits all params from upstream URL', async () =>
     assert.equal(res.statusCode, 200);
     assert.equal(lnd.seen.length, 1);
     assert.ok(!lnd.seen[0].path.includes('undefined'), `URL contained undefined: ${lnd.seen[0].path}`);
-    assert.equal(lnd.seen[0].path, '/v1/invoices');
+    assert.equal(lnd.seen[0].path, '/v1/invoices?num_max_invoices=100');
   } finally {
     await lnd.close();
   }
+});
+
+test('listInvoices: zero num_max_invoices uses default', async () => {
+  const lnd = await startFakeLnd('macaroon-test', []);
+  try {
+    const res = buildResponse();
+    listInvoices(buildRequest(lnd, { num_max_invoices: '0' }), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 200);
+    assert.equal(lnd.seen[0].path, '/v1/invoices?num_max_invoices=100');
+  } finally { await lnd.close(); }
 });
 
 test('listInvoices: valid params are forwarded correctly', async () => {
@@ -151,7 +159,7 @@ test('listInvoices: reversed 1 is coerced to true', async () => {
     listInvoices(buildRequest(lnd, { reversed: '1' }), res, null);
     await res.done;
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/invoices?reversed=true');
+    assert.equal(lnd.seen[0].path, '/v1/invoices?num_max_invoices=100&reversed=true');
   } finally { await lnd.close(); }
 });
 
@@ -162,7 +170,7 @@ test('listInvoices: reversed 0 is coerced to false', async () => {
     listInvoices(buildRequest(lnd, { reversed: '0' }), res, null);
     await res.done;
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/invoices?reversed=false');
+    assert.equal(lnd.seen[0].path, '/v1/invoices?num_max_invoices=100&reversed=false');
   } finally { await lnd.close(); }
 });
 
@@ -187,5 +195,17 @@ test('listInvoices: index_offset validation works', async () => {
     assert.equal(res.statusCode, 400);
     assert.equal(lnd.seen.length, 0);
     assert.equal(res.body.message, 'index_offset must be a non-negative integer');
+  } finally { await lnd.close(); }
+});
+
+test('listInvoices: oversized num_max_invoices returns 400', async () => {
+  const lnd = await startFakeLnd('macaroon-test', []);
+  try {
+    const res = buildResponse();
+    listInvoices(buildRequest(lnd, { num_max_invoices: '99999999999999999999' }), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 400);
+    assert.equal(lnd.seen.length, 0);
+    assert.equal(res.body.message, 'num_max_invoices exceeds maximum safe integer');
   } finally { await lnd.close(); }
 });

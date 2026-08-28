@@ -58,30 +58,38 @@ export const getPayments = (req, res, next) => {
     }
     const qs = {};
     if (req.query.max_payments !== undefined) {
-        const raw = String(req.query.max_payments).trim();
-        if (raw === '' || !/^\d+$/.test(raw)) {
+        const raw = typeof req.query.max_payments === 'string' ? req.query.max_payments.trim() : '';
+        if (raw === '' || !(/^\d+$/).test(raw)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid max_payments query param' });
             return res.status(400).json({ message: 'max_payments must be a non-negative integer', error: 'Invalid query parameter' });
         }
         const num = Number(raw);
         if (!Number.isSafeInteger(num)) {
-            return res.status(400).json({ message: 'max_payments must be a non-negative integer', error: 'Invalid query parameter' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'max_payments exceeds safe integer range' });
+            return res.status(400).json({ message: 'max_payments exceeds maximum safe integer', error: 'Invalid query parameter' });
         }
-        qs.max_payments = num;
+        qs.max_payments = num === 0 ? 100 : num;
+    }
+    else {
+        qs.max_payments = 100;
     }
     if (req.query.index_offset !== undefined) {
-        const raw = String(req.query.index_offset).trim();
-        if (raw === '' || !/^\d+$/.test(raw)) {
+        const raw = typeof req.query.index_offset === 'string' ? req.query.index_offset.trim() : '';
+        if (raw === '' || !(/^\d+$/).test(raw)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid index_offset query param' });
             return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
         }
         const num = Number(raw);
         if (!Number.isSafeInteger(num)) {
-            return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'index_offset exceeds safe integer range' });
+            return res.status(400).json({ message: 'index_offset exceeds maximum safe integer', error: 'Invalid query parameter' });
         }
         qs.index_offset = num;
     }
     if (req.query.reversed !== undefined) {
-        const raw = String(req.query.reversed).trim().toLowerCase();
+        const raw = typeof req.query.reversed === 'string' ? req.query.reversed.trim().toLowerCase() : '';
         if (raw !== 'true' && raw !== 'false' && raw !== '1' && raw !== '0' && raw !== 't' && raw !== 'f') {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid reversed query param' });
             return res.status(400).json({ message: 'reversed must be a boolean', error: 'Invalid query parameter' });
         }
         qs.reversed = raw === 'true' || raw === '1' || raw === 't';

@@ -59,7 +59,7 @@ test('getPayments: empty query omits all params from upstream URL', async () => 
     assert.equal(res.statusCode, 200);
     assert.equal(lnd.seen.length, 1);
     assert.ok(!lnd.seen[0].path.includes('undefined'), `URL contained undefined: ${lnd.seen[0].path}`);
-    assert.equal(lnd.seen[0].path, '/v1/payments');
+    assert.equal(lnd.seen[0].path, '/v1/payments?max_payments=100');
   } finally {
     await lnd.close();
   }
@@ -148,7 +148,7 @@ test('getPayments: reversed 1 is coerced to true', async () => {
     getPayments(buildRequest(lnd, { reversed: '1' }), res, null);
     await res.done;
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/payments?reversed=true');
+    assert.equal(lnd.seen[0].path, '/v1/payments?max_payments=100&reversed=true');
   } finally { await lnd.close(); }
 });
 
@@ -159,7 +159,7 @@ test('getPayments: reversed 0 is coerced to false', async () => {
     getPayments(buildRequest(lnd, { reversed: '0' }), res, null);
     await res.done;
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/payments?reversed=false');
+    assert.equal(lnd.seen[0].path, '/v1/payments?max_payments=100&reversed=false');
   } finally { await lnd.close(); }
 });
 
@@ -184,5 +184,28 @@ test('getPayments: index_offset validation works', async () => {
     assert.equal(res.statusCode, 400);
     assert.equal(lnd.seen.length, 0);
     assert.equal(res.body.message, 'index_offset must be a non-negative integer');
+  } finally { await lnd.close(); }
+});
+
+test('getPayments: oversized max_payments returns 400', async () => {
+  const lnd = await startFakeLnd('macaroon-test', []);
+  try {
+    const res = buildResponse();
+    getPayments(buildRequest(lnd, { max_payments: '99999999999999999999' }), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 400);
+    assert.equal(lnd.seen.length, 0);
+    assert.equal(res.body.message, 'max_payments exceeds maximum safe integer');
+  } finally { await lnd.close(); }
+});
+
+test('getPayments: absent max_payments uses default', async () => {
+  const lnd = await startFakeLnd('macaroon-test', []);
+  try {
+    const res = buildResponse();
+    getPayments(buildRequest(lnd, {}), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 200);
+    assert.equal(lnd.seen[0].path, '/v1/payments?max_payments=100');
   } finally { await lnd.close(); }
 });

@@ -56,30 +56,37 @@ export const listInvoices = (req, res, next) => {
   }
   const qs: Record<string, any> = {};
   if (req.query.num_max_invoices !== undefined) {
-    const raw = String(req.query.num_max_invoices).trim();
+    const raw = typeof req.query.num_max_invoices === 'string' ? req.query.num_max_invoices.trim() : '';
     if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Invalid num_max_invoices query param' });
       return res.status(400).json({ message: 'num_max_invoices must be a non-negative integer', error: 'Invalid query parameter' });
     }
     const num = Number(raw);
     if (!Number.isSafeInteger(num)) {
-      return res.status(400).json({ message: 'num_max_invoices must be a non-negative integer', error: 'Invalid query parameter' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'num_max_invoices exceeds safe integer range' });
+      return res.status(400).json({ message: 'num_max_invoices exceeds maximum safe integer', error: 'Invalid query parameter' });
     }
-    qs.num_max_invoices = num;
+    qs.num_max_invoices = num === 0 ? 100 : num;
+  } else {
+    qs.num_max_invoices = 100;
   }
   if (req.query.index_offset !== undefined) {
-    const raw = String(req.query.index_offset).trim();
+    const raw = typeof req.query.index_offset === 'string' ? req.query.index_offset.trim() : '';
     if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Invalid index_offset query param' });
       return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
     }
     const num = Number(raw);
     if (!Number.isSafeInteger(num)) {
-      return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'index_offset exceeds safe integer range' });
+      return res.status(400).json({ message: 'index_offset exceeds maximum safe integer', error: 'Invalid query parameter' });
     }
     qs.index_offset = num;
   }
   if (req.query.reversed !== undefined) {
-    const raw = String(req.query.reversed).trim().toLowerCase();
+    const raw = typeof req.query.reversed === 'string' ? req.query.reversed.trim().toLowerCase() : '';
     if (raw !== 'true' && raw !== 'false' && raw !== '1' && raw !== '0' && raw !== 't' && raw !== 'f') {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Invalid reversed query param' });
       return res.status(400).json({ message: 'reversed must be a boolean', error: 'Invalid query parameter' });
     }
     qs.reversed = raw === 'true' || raw === '1' || raw === 't';
