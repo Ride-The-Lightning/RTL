@@ -64,7 +64,6 @@ export class ExpressApplication {
       // from the header and the _csrf cookie it must match.
       const csrfToken = req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : '';
       res.cookie('XSRF-TOKEN', csrfToken); // RTL Angular Frontend
-      res.setHeader('XSRF-TOKEN', csrfToken); // RTL Quickpay JQuery
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
     this.app.use((err, req, res, next) => {
@@ -94,7 +93,6 @@ export class ExpressApplication {
         try {
           const csrfToken = CSRF.reMintToken(req, res);
           res.cookie('XSRF-TOKEN', csrfToken);
-          res.setHeader('XSRF-TOKEN', csrfToken);
         } catch (csrfError) {
           this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'CSRF Token Re-Mint Failed', error: csrfError });
         }
