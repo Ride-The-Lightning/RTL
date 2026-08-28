@@ -33,6 +33,22 @@ this release should add its entry under the appropriate section below.
   (`test/backend/lnd-channels.test.mjs`) that pin which of the two fields reaches the node,
   and by component specs for the version gate and the dispatched payload.
 
+## Code Health
+
+- **Align route middleware across the API**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  `POST /api/ecl/channels/circularRebalance` and `GET /api/conf/updateSelNode/:curr/:prev`
+  were the only two state-changing routes registered without the `isAuthenticated`
+  middleware the rest of the API uses; both now carry it and answer 401 without a session
+  token, pinned by `test/backend/route-guards.test.mjs`, which mounts the real routers and
+  exercises them over a socket. The frontend used to call `updateSelNode` once before
+  login, from the initial config fetch; there is no server-side session to switch at that
+  point, and the login page only needs the node's name and theme, which the config response
+  already carries, so that call is now resolved locally and the server is only asked once a
+  token exists. The `XSRF-TOKEN` *response header* — set alongside the cookie for the
+  RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
+  Angular frontend reads is unchanged.
+
 ## Developer Tooling
 
 - **Declare a minimum Node.js version**

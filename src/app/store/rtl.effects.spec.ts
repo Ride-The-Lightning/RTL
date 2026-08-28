@@ -103,6 +103,29 @@ describe('RTL Root Effects', () => {
     expect(req.request.method).toEqual('GET');
   });
 
+  it('should set selected node locally without calling the server when logged out', (done) => {
+    const sessionService = TestBed.inject(SessionService);
+    spyOn(sessionService, 'getItem').and.returnValue(null);
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    actions = new ReplaySubject(1);
+    const setSelectedNodeAction = {
+      type: RTLActions.SET_SELECTED_NODE,
+      payload: { uiMessage: UI_MESSAGES.NO_SPINNER, prevLnNodeIndex: -1, currentLnNode: mockActionsData.setSelectedNode, isInitialSetup: true }
+    };
+    actions.next(setSelectedNodeAction);
+    const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse) => {
+      expect(setSelectedNodeResponse).toEqual({ type: RTLActions.VOID });
+      httpTestingController.expectNone(API_END_POINTS.CONF_API + '/updateSelNode/1/-1');
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(resetRootStore({ payload: mockActionsData.setSelectedNode }));
+      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(resetECLStore());
+      // No token, so no node data is fetched: the reset actions are the last ones.
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(8);
+      done();
+      setTimeout(() => sub.unsubscribe());
+    });
+  });
+
   it('should throw error on dispatch set selected node', (done) => {
     const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
     const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(throwError(() => mockResponseData.error));

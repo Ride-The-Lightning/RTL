@@ -9,7 +9,7 @@ router.get('/', isAuthenticated, getChannels);
 router.get('/stats', isAuthenticated, getChannelStats);
 router.post('/', isAuthenticated, openChannel);
 router.post('/updateRelayFee', isAuthenticated, updateChannelRelayFee);
-router.post('/circularRebalance', circularRebalance);
+router.post('/circularRebalance', isAuthenticated, circularRebalance);
 router.delete('/', isAuthenticated, closeChannel);
 
 export default router;

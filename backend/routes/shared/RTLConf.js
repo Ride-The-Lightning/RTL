@@ -6,7 +6,7 @@ const router = Router();
 router.get('/', getApplicationSettings);
 router.get('/rates', getCurrencyRates);
 router.get('/file', isAuthenticated, getFile);
-router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', updateSelectedNode);
+router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', isAuthenticated, updateSelectedNode);
 router.get('/config/:nodeType', isAuthenticated, getConfig);
 router.post('/node', isAuthenticated, updateNodeSettings);
 router.post('/application', isAuthenticated, updateApplicationSettings);
