@@ -5,7 +5,7 @@ import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, QueryRoutes, Transaction,
   SendPaymentOnChain, Invoice, PaymentReceived, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel, GetQueryRoutes,
-  CreateInvoice, SendPayment, PaymentRelayed } from '../../shared/models/eclModels';
+  CreateInvoice, SendPayment, PaymentRelayed, ListInvoices } from '../../shared/models/eclModels';
 import { PageSettings } from '../../shared/models/pageSettings';
 
 export const updateECLAPICallStatus = createAction(ECLActions.UPDATE_API_CALL_STATUS_ECL, props<{ payload: ApiCallStatusPayload }>());
@@ -90,7 +90,7 @@ export const sendOnchainFundsRes = createAction(ECLActions.SEND_ONCHAIN_FUNDS_RE
 
 export const fetchInvoices = createAction(ECLActions.FETCH_INVOICES_ECL, props<{ payload: { count: number, skip: number } }>());
 
-export const setInvoices = createAction(ECLActions.SET_INVOICES_ECL, props<{ payload: Invoice[] }>());
+export const setInvoices = createAction(ECLActions.SET_INVOICES_ECL, props<{ payload: ListInvoices }>());
 
 export const createInvoice = createAction(ECLActions.CREATE_INVOICE_ECL, props<{ payload: CreateInvoice }>());
 

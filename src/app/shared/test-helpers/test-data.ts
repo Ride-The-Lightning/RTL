@@ -48732,6 +48732,7 @@ export const mockRTLStoreState = {
     peers: [],
     payments: {},
     transactions: [],
-    invoices: []
+    invoices: [],
+    totalInvoices: 0
   }
 };

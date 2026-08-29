@@ -107,23 +107,20 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
         this.colWidth = this.displayedColumns.length ? ((this.commonService.getContainerSize().width / this.displayedColumns.length) / 14) + 'rem' : '20rem';
         if (!this.flgInit) {
           this.flgInit = true;
-          // Uncomment after paginator api is fixed
-          // this.store.dispatch(fetchInvoices({ payload : { count: this.pageSize, skip: 0 } }));
-          // Remove below one line after paginator api is fixed
-          this.store.dispatch(fetchInvoices({ payload : { count: 1000000, skip: 0 } }));
+          // Server-side paging: the backend serves one newest-first page and the total (#1067).
+          this.store.dispatch(fetchInvoices({ payload : { count: this.pageSize, skip: 0 } }));
         }
         this.logger.info(this.displayedColumns);
       });
     this.store.select(invoices).pipe(takeUntil(this.unSubs[3])).
-      subscribe((invoicesSelector: { invoices: Invoice[], apiCallStatus: ApiCallStatusPayload }) => {
+      subscribe((invoicesSelector: { invoices: Invoice[], totalInvoices: number, apiCallStatus: ApiCallStatusPayload }) => {
         this.errorMessage = '';
         this.apiCallStatus = invoicesSelector.apiCallStatus;
         if (this.apiCallStatus.status === APICallStatusEnum.ERROR) {
           this.errorMessage = !this.apiCallStatus.message ? '' : (typeof (this.apiCallStatus.message) === 'object') ? JSON.stringify(this.apiCallStatus.message) : this.apiCallStatus.message;
         }
         this.invoiceJSONArr = (invoicesSelector.invoices && invoicesSelector.invoices.length > 0) ? invoicesSelector.invoices : [];
-        // Uncomment after paginator api is fixed
-        // this.totalRecords = invoicesSelector.invoices.totalRecords;
+        this.totalRecords = invoicesSelector.totalInvoices || 0;
         if (this.invoiceJSONArr && this.sort && this.paginator && this.displayedColumns.length > 0) {
           this.loadInvoicesTable(this.invoiceJSONArr);
         }
@@ -238,8 +235,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     this.invoices = invs ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sort = this.sort;
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => ((data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null);
-    // Remove below one line after paginator api is fixed
-    this.invoices.paginator = this.paginator;
+    // The paginator drives the server-side page (onPageChange); sort and filter apply within it.
     this.setFilterPredicate();
     this.applyFilter();
   }
@@ -268,7 +264,8 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
   }
 
   onPageChange(event: PageEvent) {
-    this.store.dispatch(fetchInvoices({ payload : { count: this.pageSize, skip: event.pageIndex * event.pageSize } }));
+    this.pageSize = event.pageSize;
+    this.store.dispatch(fetchInvoices({ payload : { count: event.pageSize, skip: event.pageIndex * event.pageSize } }));
   }
 
   onDownloadCSV() {

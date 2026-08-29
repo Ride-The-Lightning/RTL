@@ -3,6 +3,31 @@
 This document collects the changes that go into the 0.15.12 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Bug Fixes
+
+- **Eclair: invoices are paged instead of fetched whole**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1067](https://github.com/Ride-The-Lightning/RTL/issues/1067)).
+  Opening the Eclair dashboard or Transactions page asked the node for every invoice it had
+  ever issued (`count=1000000`) and then called `/getreceivedinfo` once per invoice, all at
+  once — on a node with hundreds of thousands of invoices that pinned Eclair at 100% CPU
+  until the request timed out and RTL retried. Eclair's `listinvoices` has offered
+  `count`/`skip` since 2022, but it returns oldest-first and never reports a total, and the
+  request for one ([eclair#2855](https://github.com/ACINQ/eclair/issues/2855)) was closed,
+  so the paging RTL had plumbed in #1393 stayed switched off. The backend now derives the
+  total itself — a handful of single-row probes (gallop, then bisect: O(log n) calls that each
+  cost Eclair one `LIMIT 1 OFFSET n` query) — and serves one newest-first page as
+  `{ invoices, totalInvoices }`. The page size defaults to 10 and is capped at 100 whatever
+  the client asks for, so the per-invoice status fan-out is bounded by the page; the separate
+  unbounded `listpendinginvoices` call is gone, since `/getreceivedinfo` already reports
+  `pending`. Malformed `count`/`skip` values are refused with a 400 rather than forwarded.
+  The invoices table pages server-side with an exact total; sort and the filter box apply
+  within the current page. The transactions report, which had summed received amounts from
+  the full invoice list, now uses the audit's received payments, which the payments fetch
+  already loads. Tested against Eclair 0.13.1 in the docker fixture; the fixture's Eclair
+  is one minor behind the current release, tracked in
+  [#1689](https://github.com/Ride-The-Lightning/RTL/issues/1689).
+
 ## Enhancements
 
 - **LND: open a channel with the entire wallet balance**

@@ -18,6 +18,7 @@ export interface ECLState {
   payments: Payments;
   transactions: Transaction[];
   invoices: Invoice[];
+  totalInvoices: number;
 }
 
 export const initECLState: ECLState = {
@@ -49,5 +50,6 @@ export const initECLState: ECLState = {
   peers: [],
   payments: {},
   transactions: [],
-  invoices: []
+  invoices: [],
+  totalInvoices: 0
 };

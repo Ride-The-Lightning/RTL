@@ -122,12 +122,14 @@ export const ECLReducer = createReducer(initECLState,
     newInvoices?.unshift(payload);
     return {
       ...state,
-      invoices: newInvoices
+      invoices: newInvoices,
+      totalInvoices: (state.totalInvoices || 0) + 1
     };
   }),
   on(setInvoices, (state, { payload }) => ({
     ...state,
-    invoices: payload
+    invoices: payload.invoices || [],
+    totalInvoices: payload.totalInvoices || 0
   })),
   on(updateInvoice, (state, { payload }) => {
     let modifiedInvoices = state.invoices;

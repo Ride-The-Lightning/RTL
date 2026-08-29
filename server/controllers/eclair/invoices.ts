@@ -5,32 +5,64 @@ import { SelectedNode } from '../../models/config.model.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
-let pendingInvoices = [];
 
-export const getReceivedPaymentInfo = (lnServerUrl, invoice) => {
-  let idx = -1;
+// Page-size bounds for listInvoices. Every invoice on a page costs one /getreceivedinfo
+// round trip to eclair, so the cap is what keeps that fan-out bounded; 100 matches the
+// largest page the UI offers.
+export const DEFAULT_INVOICE_PAGE_SIZE = 10;
+export const MAX_INVOICE_PAGE_SIZE = 100;
+
+// Eclair returns the status of an invoice as pending (unpaid, not yet expired), received or
+// expired; RTL's UI calls the first of those 'unpaid'.
+export const getReceivedPaymentInfo = (baseOptions, lnServerUrl, invoice) => {
   invoice.expiresAt = (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
   if (invoice.amount) { invoice.amount = Math.round(invoice.amount / 1000); }
-  idx = pendingInvoices.findIndex((pendingInvoice) => invoice.serialized === pendingInvoice.serialized);
-  if (idx < 0) {
-    options.url = lnServerUrl + '/getreceivedinfo';
-    options.form = { paymentHash: invoice.paymentHash };
-    return request(options).then((response) => {
-      invoice.status = response.status.type;
-      if (response.status && response.status.type === 'received') {
-        invoice.amountSettled = response.status.amount ? Math.round(response.status.amount / 1000) : 0;
-        invoice.receivedAt = response.status.receivedAt.unix ? response.status.receivedAt.unix : 0;
-      }
-      return invoice;
-    }).catch((err) => {
-      invoice.status = 'unknown';
-      return invoice;
-    });
-  } else {
-    pendingInvoices.splice(idx, 1);
-    invoice.status = 'unpaid';
+  const infoOptions = JSON.parse(JSON.stringify(baseOptions));
+  infoOptions.url = lnServerUrl + '/getreceivedinfo';
+  infoOptions.form = { paymentHash: invoice.paymentHash };
+  return request(infoOptions).then((response) => {
+    invoice.status = (response.status && response.status.type === 'pending') ? 'unpaid' : response.status.type;
+    if (response.status && response.status.type === 'received') {
+      invoice.amountSettled = response.status.amount ? Math.round(response.status.amount / 1000) : 0;
+      invoice.receivedAt = response.status.receivedAt.unix ? response.status.receivedAt.unix : 0;
+    }
     return invoice;
-  }
+  }).catch((err) => {
+    invoice.status = 'unknown';
+    return invoice;
+  });
+};
+
+// A non-negative integer given as a decimal string; anything else (hex, exponent, sign,
+// fraction, repeated field) is rejected so it can never reach eclair or Number().
+const parsePagingParam = (value) => {
+  if (value === undefined) { return undefined; }
+  if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) { return NaN; }
+  const num = Number(value.trim());
+  return Number.isSafeInteger(num) ? num : NaN;
+};
+
+const fetchInvoicePage = (baseOptions, lnServerUrl, from, to, count, skip) => {
+  const pageOptions = JSON.parse(JSON.stringify(baseOptions));
+  pageOptions.url = lnServerUrl + '/listinvoices';
+  pageOptions.form = { from, to, count, skip };
+  return request(pageOptions).then((invoices) => (Array.isArray(invoices) ? invoices : []));
+};
+
+// Eclair's listinvoices is oldest-first and never reports a total, so the newest page can only
+// be addressed once the total is known. Derive it with single-row probes: gallop past the end,
+// then bisect — O(log n) calls that each cost eclair one LIMIT 1 OFFSET n query, instead of
+// the full-table fetch that pinned a node with hundreds of thousands of invoices (#1067).
+export const countInvoices = (baseOptions, lnServerUrl, from, to): Promise<number> => {
+  const hasInvoiceAt = (skip: number) => fetchInvoicePage(baseOptions, lnServerUrl, from, to, 1, skip).then((page) => page.length > 0);
+  // `present` is an offset known to hold an invoice, `absent` one known to be past the end.
+  const bisect = (present: number, absent: number): Promise<number> => {
+    if (absent - present <= 1) { return Promise.resolve(absent); }
+    const mid = present + Math.floor((absent - present) / 2);
+    return hasInvoiceAt(mid).then((found) => (found ? bisect(mid, absent) : bisect(present, mid)));
+  };
+  const gallop = (present: number, absent: number): Promise<number> => hasInvoiceAt(absent).then((found) => (found ? gallop(absent, absent * 2) : bisect(present, absent)));
+  return hasInvoiceAt(0).then((found) => (found ? gallop(0, 1) : 0));
 };
 
 export const getInvoice = (req, res, next) => {
@@ -74,41 +106,42 @@ export const listInvoices = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Getting List Invoices..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
-  const options1 = JSON.parse(JSON.stringify(options));
-  options1.url = req.session.selectedNode.settings.lnServerUrl + '/listinvoices';
-  options1.form = { from: 0, to: tillToday };
-  if (req.query.count) { options1.form.count = req.query.count; }
-  if (req.query.skip) { options1.form.skip = req.query.skip; }
-  const options2 = JSON.parse(JSON.stringify(options));
-  options2.url = req.session.selectedNode.settings.lnServerUrl + '/listpendinginvoices';
-  options2.form = { from: 0, to: tillToday };
+  // `skip` is the offset from the newest invoice; `count` is the page size.
+  const requestedCount = parsePagingParam(req.query.count);
+  const requestedSkip = parsePagingParam(req.query.skip);
+  if (Number.isNaN(requestedCount) || Number.isNaN(requestedSkip)) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoices', msg: 'Invalid count/skip query param' });
+    return res.status(400).json({ message: 'count and skip must be non-negative integers', error: 'Invalid query parameter' });
+  }
+  const count = Math.min(requestedCount === undefined || requestedCount === 0 ? DEFAULT_INVOICE_PAGE_SIZE : requestedCount, MAX_INVOICE_PAGE_SIZE);
+  const skip = requestedSkip || 0;
+  const lnServerUrl = req.session.selectedNode.settings.lnServerUrl;
+  const from = 0;
+  const to = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
+  const baseOptions = JSON.parse(JSON.stringify(options));
   if (common.read_dummy_data) {
-    return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then(([invoices, pendingInvoicesRes]: any[]) => {
-      pendingInvoices = pendingInvoicesRes;
-      return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
-        then((values) => res.status(200).json(invoices));
-    });
+    return common.getDummyData('Invoices', req.session.selectedNode.lnImplementation).then(([invoices]: any[]) => Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(baseOptions, lnServerUrl, invoice))).
+      then((values) => res.status(200).json({ invoices: values, totalInvoices: values.length })));
   } else {
-    return Promise.all([request(options1), request(options2)]).
-      then(([invoices, pendingInvoicesRes]) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: invoices });
-        // pendingInvoices will be used to get the status (paid/unpaid) of the invoice via getReceivedPaymentInfo
-        pendingInvoices = pendingInvoicesRes;
-        if (invoices && invoices.length > 0) {
-          return Promise.all(invoices?.map((invoice) => getReceivedPaymentInfo(req.session.selectedNode.settings.lnServerUrl, invoice))).
-            then((values) => {
-              logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
-              return res.status(200).json(invoices);
-            }).
-            catch((errRes) => {
-              const err = common.handleError(errRes, 'Invoices', 'List Invoices Error', req.session.selectedNode);
-              return res.status(err.statusCode).json({ message: err.message, error: err.error });
-            });
-        } else {
+    return countInvoices(baseOptions, lnServerUrl, from, to).
+      then((totalInvoices) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoices', msg: 'Total Invoices', data: totalInvoices });
+        // Map the newest-first window onto eclair's oldest-first offsets.
+        const pageCount = Math.min(count, totalInvoices - skip);
+        if (pageCount <= 0) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Empty List Invoice Received' });
-          return res.status(200).json([]);
+          return res.status(200).json({ invoices: [], totalInvoices });
         }
+        const pageSkip = totalInvoices - skip - pageCount;
+        return fetchInvoicePage(baseOptions, lnServerUrl, from, to, pageCount, pageSkip).
+          then((invoices) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received', data: invoices });
+            return Promise.all(invoices.reverse().map((invoice) => getReceivedPaymentInfo(baseOptions, lnServerUrl, invoice)));
+          }).
+          then((invoices) => {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Sorted Invoices List Received', data: invoices });
+            return res.status(200).json({ invoices, totalInvoices });
+          });
       }).
       catch((errRes) => {
         const err = common.handleError(errRes, 'Invoices', 'List Invoices Error', req.session.selectedNode);
