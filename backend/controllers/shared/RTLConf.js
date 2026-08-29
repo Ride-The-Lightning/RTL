@@ -15,29 +15,98 @@ const common = Common;
 const wsServer = WSServer;
 const databaseService = Database;
 // The settings API echoes the whole config back, so these are the only per-node settings
-// fields accepted from the request body. Credential paths, server URLs, runtime-only
-// fields (options, runeValue) and logFile (config.ts overwrites it at boot) are not here;
-// addSecureData re-pins them to the server-held values for existing nodes, and strips
-// them from unknown nodes entirely. Anything else arriving under settings is discarded.
+// fields accepted from the application-settings request body. Credential paths, LN server
+// URLs, runtime-only fields (options, runeValue) and logFile (config.ts overwrites it at
+// boot) are not here; addSecureData re-pins credential paths and LN server URLs to the
+// server-held values for existing nodes, and strips them from unknown nodes entirely.
+// Anything else arriving under settings is discarded.
 const NODE_SETTINGS_ALLOWLIST = [
     'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
     'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap'
 ];
+// Loop and Boltz server URLs are service settings, edited from the node-config Services
+// page through the node-settings endpoint only (their macaroon paths are edited the same
+// way). They are deliberately not in NODE_SETTINGS_ALLOWLIST: the application-settings
+// endpoint re-pins them, so accepting them there would be dead weight.
+const NODE_SERVICE_SETTINGS_ALLOWLIST = ['swapServerUrl', 'boltzServerUrl'];
 // Top-level keys accepted on a node object. authentication and settings are themselves
-// filtered by the allowlists above; any other key (e.g. a root-level macaroonPath) is
-// discarded so it can never be persisted alongside a node in RTL-Config.json.
-const NODE_ALLOWLIST = ['index', 'lnNode', 'lnImplementation', 'authentication', 'settings'];
+// filtered by the allowlists above; lnImplementation is deliberately absent — it selects
+// which credential the server attaches to the (pinned) LN server URL, so letting the
+// caller rewrite it would silently break the node connection after the next boot. Any
+// other key (e.g. a root-level macaroonPath) is discarded so it can never be persisted
+// alongside a node in RTL-Config.json.
+const NODE_ALLOWLIST = ['index', 'lnNode', 'authentication', 'settings'];
 // Top-level keys accepted from the request body on the application-settings endpoint.
 // Anything not here is discarded; this prevents caller-invented keys from being persisted
-// into RTL-Config.json and re-parsed at every save and boot.
+// into RTL-Config.json and re-parsed at every save and boot. multiPass is not accepted:
+// the plaintext password is hashed into multiPassHashed at boot and never sent back to
+// the client, so no honest flow supplies it (addSecureData also pins it defensively).
 const TOP_LEVEL_ALLOWLIST = [
     'defaultNodeIndex', 'selectedNodeIndex', 'enable2FA', 'allowPasswordUpdate',
-    'dbDirectoryPath', 'disableAuth', 'multiPass', 'multiPassHashed', 'secret2FA',
+    'dbDirectoryPath', 'disableAuth', 'multiPassHashed', 'secret2FA',
     'SSO', 'nodes'
 ];
 const indexKey = (node) => {
     const val = node?.index;
-    return (val !== undefined && val !== null) ? +val : undefined;
+    if (typeof val === 'number') {
+        return val;
+    }
+    // Empty or whitespace-only strings must not coerce to 0 (node 0 is a real node).
+    if (typeof val === 'string' && val.trim() !== '') {
+        return +val;
+    }
+    return undefined;
+};
+// Reject malformed URLs and non-HTTP schemes. User-chosen block explorers and Loop/Boltz
+// servers are intended RTL features (self-hosted instances), so this is format validation
+// only — it does not prevent a caller from pointing at an internal host.
+const isValidHttpUrl = (value) => {
+    if (typeof value !== 'string') {
+        return false;
+    }
+    try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    }
+    catch {
+        return false;
+    }
+};
+// Allowlist a settings payload and drop URL-valued fields that fail isValidHttpUrl.
+// The node-settings endpoint additionally accepts the Loop/Boltz service URLs
+// (allowServiceUrls); the application-settings endpoint does not. Both handlers share this
+// so a malformed blockExplorerUrl/swapServerUrl/boltzServerUrl can never reach the
+// outbound request built from the live node's settings.
+const filterNodeSettings = (settings, allowServiceUrls = false) => {
+    const allowed = Object.fromEntries(Object.entries(settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key) ||
+        (allowServiceUrls && NODE_SERVICE_SETTINGS_ALLOWLIST.includes(key))));
+    for (const urlKey of ['blockExplorerUrl', 'swapServerUrl', 'boltzServerUrl']) {
+        if (allowed[urlKey] !== undefined && !isValidHttpUrl(allowed[urlKey])) {
+            delete allowed[urlKey];
+        }
+    }
+    return allowed;
+};
+// The Loop/Boltz service macaroon paths are edited from the Services page and remain
+// writable through the node-settings endpoint; an absent or empty value clears the field.
+// The LN credential paths (macaroonPath, runePath, lnApiPassword, configPath) are not
+// handled here and can never be set through this endpoint.
+const applyWritableServiceMacaroonPaths = (target, source) => {
+    if (!target || !source) {
+        return;
+    }
+    if (source.boltzMacaroonPath) {
+        target.boltzMacaroonPath = source.boltzMacaroonPath;
+    }
+    else {
+        delete target.boltzMacaroonPath;
+    }
+    if (source.swapMacaroonPath) {
+        target.swapMacaroonPath = source.swapMacaroonPath;
+    }
+    else {
+        delete target.swapMacaroonPath;
+    }
 };
 // Set local block explorer URL after first API call
 // if the selected node block explorer has working REST API suite
@@ -116,7 +185,11 @@ export const getFile = (req, res, next) => {
         file = resolved;
     }
     else {
-        file = channelBackupPath + sep + 'channel-' + req.query.channel?.replace(':', '-') + '.bak';
+        // The channel value is concatenated into the backup file name; neutralize path
+        // separators and '..' so a crafted channel cannot walk out of the backup directory
+        // (the UI only ever sends a channel point, "funding_txid:output").
+        const channel = req.query.channel?.replace(/[:/\\]/g, '-').replace(/\.\./g, '-');
+        file = channelBackupPath + sep + 'channel-' + channel + '.bak';
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'File Path', data: file });
@@ -242,20 +315,20 @@ export const updateNodeSettings = (req, res, next) => {
         const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
         const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
         if (node && node.settings) {
-            // Allowlist incoming settings to the same set updateApplicationSettings uses, then
-            // pin file-read and credentialed-request anchors so the caller cannot re-point
-            // credential file reads (bitcoindConfigPath), the channel-backup containment root
-            // (channelBackupPath), or credentialed HTTP destinations (lnServerUrl, swapServerUrl,
-            // boltzServerUrl). These fields are not in NODE_SETTINGS_ALLOWLIST, so the
-            // allowlisting above already strips them; the runtime merge below pins them too.
-            const allowedSettings = Object.fromEntries(Object.entries(req.body.settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
-            node.settings = { ...node.settings, ...allowedSettings };
+            // Allowlist incoming settings to the same set updateApplicationSettings uses, plus
+            // the Loop/Boltz service URLs (swapServerUrl, boltzServerUrl), which the Services
+            // page edits; URL fields get the same http/https format validation. Credential and
+            // LN server anchors — bitcoindConfigPath, channelBackupPath, lnServerUrl, logFile —
+            // stay out of the allowlist, so they are neither edited here nor persisted.
+            node.settings = { ...node.settings, ...filterNodeSettings(req.body.settings, true) };
+            // Loop/Boltz macaroon paths are a Services-page feature and stay editable here.
+            applyWritableServiceMacaroonPaths(node.authentication, req.body.authentication);
         }
         fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
         const selectedNode = common.findNode(req.session.selectedNode.index);
         if (selectedNode && selectedNode.settings) {
-            const allowedSettings = Object.fromEntries(Object.entries(req.body.settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
-            selectedNode.settings = { ...selectedNode.settings, ...allowedSettings };
+            selectedNode.settings = { ...selectedNode.settings, ...filterNodeSettings(req.body.settings, true) };
+            applyWritableServiceMacaroonPaths(selectedNode.authentication, req.body.authentication);
             common.replaceNode(req, selectedNode);
         }
         let responseNode = JSON.parse(JSON.stringify(common.selectedNode));
@@ -297,32 +370,18 @@ export const updateApplicationSettings = (req, res, next) => {
                 delete filteredNode.authentication;
             }
             if (filteredNode && filteredNode.settings && typeof filteredNode.settings === 'object') {
-                filteredNode.settings = Object.fromEntries(Object.entries(filteredNode.settings).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
-                // Validate blockExplorerUrl to reject obviously malformed values. This is format
-                // validation only — it prevents non-URL strings and non-HTTP schemes from being
-                // persisted, but does not prevent SSRF (pointing at internal IPs). A user-chosen
-                // block explorer is an intended RTL feature (self-hosted mempool instances), so
-                // this field is not pinned to the server-held value.
-                if (filteredNode.settings.blockExplorerUrl !== undefined) {
-                    try {
-                        const parsed = new URL(filteredNode.settings.blockExplorerUrl);
-                        if (!['http:', 'https:'].includes(parsed.protocol)) {
-                            delete filteredNode.settings.blockExplorerUrl;
-                        }
-                    }
-                    catch {
-                        delete filteredNode.settings.blockExplorerUrl;
-                    }
-                }
+                filteredNode.settings = filterNodeSettings(filteredNode.settings);
             }
             return filteredNode;
         });
         // Nodes are never provisioned through this endpoint: there is no add-node UI for it,
         // and a caller-supplied credential path or server URL would be persisted to the config
         // file and loaded back into the runtime nodes at the next restart. Drop any node whose
-        // index the server does not already know — addSecureData and the merge below answer
-        // known-vs-unknown from this same runtime list.
-        const knownIndexes = new Set(common.appConfig.nodes?.map((node) => indexKey(node)).filter((idx) => Number.isFinite(idx)) || []);
+        // index the server does not already know. Known-vs-unknown resolves against the single
+        // authoritative runtime list (common.nodes) — the same list addSecureData pins from and
+        // updateNodeSettings mutates in place. common.appConfig.nodes is a fresh clone after
+        // every save and goes stale, so resolving against it would misclassify nodes.
+        const knownIndexes = new Set(common.nodes?.map((node) => indexKey(node)).filter((idx) => Number.isFinite(idx)) || []);
         requestBody.nodes = requestBody.nodes?.filter((node) => {
             const idx = indexKey(node);
             if (Number.isFinite(idx) && knownIndexes.has(idx)) {
@@ -338,9 +397,9 @@ export const updateApplicationSettings = (req, res, next) => {
                 runtimeConfig[key] = config[key];
             }
         });
-        if (common.appConfig.nodes && common.appConfig.nodes.length > 0) {
+        if (common.nodes && common.nodes.length > 0) {
             const newNodesMap = new Map(config.nodes?.map((node) => [indexKey(node), node]) || []);
-            const updatedAndExistingNodes = common.appConfig.nodes.map((oldNode) => {
+            const updatedAndExistingNodes = common.nodes.map((oldNode) => {
                 const newNode = newNodesMap.get(indexKey(oldNode));
                 newNodesMap.delete(indexKey(oldNode));
                 const node = newNode ? {

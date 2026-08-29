@@ -56,7 +56,7 @@ this release should add its entry under the appropriate section below.
   trusted-proxy configuration and is left open.
 
 - **Hardening: application-settings save can no longer re-point credentials or server URLs**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1683](https://github.com/Ride-The-Lightning/RTL/pull/1683), fixes
   [#1660](https://github.com/Ride-The-Lightning/RTL/issues/1660)).
   `updateApplicationSettings` merged the request body's per-node `authentication` and
   `settings` wholesale, so an authenticated caller could inject a `macaroonPath`, `runePath`,
@@ -72,7 +72,12 @@ this release should add its entry under the appropriate section below.
   are normalized to numbers so a string-indexed payload merges into the existing node
   instead of duplicating it, and a live 2FA seed can no longer be overwritten by a
   request-supplied seed. Backend regression tests cover the allowlist, the unknown-node
-  drop, the index normalization and the 2FA-seed guard.
+  drop, the index normalization and the 2FA-seed guard. The Node Settings endpoint
+  (Services page) continues to accept the Loop/Boltz server URLs and macaroon paths, which
+  are intentionally editable features, but now runs them through the same `http(s)` format
+  validation; a plaintext `multiPass` in the body is discarded, and a crafted channel value
+  on the channel-backup file read is sanitized so it can no longer walk out of the backup
+  directory.
 
 ## Enhancements
 

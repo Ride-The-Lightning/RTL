@@ -240,6 +240,46 @@ test('addSecureData pins multiPassHashed when the server holds one', () => {
   assert.equal(config.multiPassHashed, 'server-hash-value');
 });
 
+test('addSecureData never persists a caller-supplied multiPass when the server holds no plaintext password', () => {
+  // Normal post-boot state: the password exists only as multiPassHashed, so a multiPass in
+  // the request body is attacker-supplied and must be discarded, not persisted and
+  // re-parsed at the next boot/save.
+  seedAppConfig();
+  Common.appConfig.multiPass = undefined;
+  Common.appConfig.multiPassHashed = 'server-hash-value';
+  const config = Common.addSecureData({ multiPass: 'attacker-password', nodes: [] });
+  assert.equal(config.multiPass, undefined);
+  assert.equal(config.multiPassHashed, 'server-hash-value');
+});
+
+test('addSecureData pins existing-node anchors from the runtime node list, not the stale appConfig copy', () => {
+  // F12/F20: runtimeNodes is built from this.nodes — the live list addSecureData must pin
+  // from — never from this.appConfig.nodes, which is a fresh clone at every save and can
+  // go stale (that is the list the controller's application-settings rebuild also uses).
+  // Pinning from the stale copy would silently regress an edit made through the
+  // node-settings endpoint to the previous value.
+  seedAppConfig();
+  Common.appConfig.nodes = [
+    { index: 1, authentication: { macaroonPath: '/stale/lnd/admin' }, settings: { lnServerUrl: 'https://stale:8080', swapServerUrl: 'https://stale-swap:8081' } }
+  ];
+  Common.nodes = JSON.parse(JSON.stringify(Common.appConfig.nodes));
+  Common.nodes[0].authentication.macaroonPath = '/live/lnd/admin';
+  Common.nodes[0].settings.lnServerUrl = 'https://live:8080';
+  Common.nodes[0].settings.swapServerUrl = 'https://live-swap:8081';
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { macaroonPath: '/evil/lnd' }, settings: { lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', themeMode: 'NIGHT' } }
+    ]
+  });
+  const node = config.nodes[0];
+  assert.equal(node.index, 1);
+  assert.equal(node.authentication.macaroonPath, '/live/lnd/admin');
+  assert.equal(node.settings.lnServerUrl, 'https://live:8080');
+  assert.equal(node.settings.swapServerUrl, 'https://live-swap:8081');
+  // Non-anchor settings still merge from the payload.
+  assert.equal(node.settings.themeMode, 'NIGHT');
+});
+
 test('addSecureData pins allowPasswordUpdate and dbDirectoryPath to server-held values', () => {
   // allowPasswordUpdate is false precisely when the password is environment-managed, and
   // dbDirectoryPath redirects the runtime database — neither is writable from the UI.

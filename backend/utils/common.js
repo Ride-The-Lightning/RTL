@@ -104,6 +104,12 @@ export class CommonService {
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
             }
+            else {
+                // Normal post-boot state has no plaintext password (it is hashed into
+                // multiPassHashed); a caller-supplied multiPass must never survive into the live
+                // auth config. The control layer also rejects the key, this is the defense in depth.
+                delete config.multiPass;
+            }
             // A live TOTP seed must never be swapped for a client-supplied one: only the settings
             // UI's disable flow (an empty seed with enable2FA false) may wipe it, and an empty
             // seed while 2FA is still claimed on is an omission that restores the server seed.
@@ -124,16 +130,25 @@ export class CommonService {
             // so the two fields can never diverge after a save.
             config.enable2FA = !!config.secret2FA;
             // Node indexes arrive as strings in JSON payloads; normalize them to numbers so the
-            // map lookups below (and the persisted config) use a single representation.
+            // map lookups below (and the persisted config) use a single representation. Empty or
+            // non-numeric values must not coerce to 0 — that is a real node index.
             const indexKey = (node) => {
                 const val = node?.index;
-                return (val !== undefined && val !== null) ? +val : undefined;
+                if (typeof val === 'number') {
+                    return val;
+                }
+                if (typeof val === 'string' && val.trim() !== '') {
+                    return +val;
+                }
+                return undefined;
             };
             // Pin from the authoritative runtime node list (this.nodes), not this.appConfig.nodes.
             // After the first application-settings save, common.appConfig is a fresh clone while
             // common.nodes retains the live state (options, runeValue) and is updated in place by
             // updateNodeSettings via replaceNode — so pinning from appConfig.nodes would silently
-            // revert a user's legitimate Node Settings edit to the previous value.
+            // revert a user's legitimate Node Settings edit to the previous value. The controller
+            // answers known-vs-unknown from this same list (common.nodes), so the two layers can
+            // never disagree about which node is which.
             const runtimeNodes = new Map(this.nodes?.map((node) => [indexKey(node), node]) || []);
             config.nodes?.forEach((node) => {
                 node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
@@ -151,8 +166,8 @@ export class CommonService {
                     node.authentication.configPath = runtimeNode.authentication?.configPath;
                     // swap/boltz macaroon paths are read from disk and sent as auth headers to their
                     // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
-                    // like every other credential anchor here; the node settings endpoint is where
-                    // they are legitimately edited.
+                    // like every other credential anchor here; this endpoint cannot edit them, the
+                    // node-config Services page can (through updateNodeSettings on /node).
                     node.authentication.swapMacaroonPath = runtimeNode.authentication?.swapMacaroonPath;
                     node.authentication.boltzMacaroonPath = runtimeNode.authentication?.boltzMacaroonPath;
                     node.settings = (node.settings || {});
