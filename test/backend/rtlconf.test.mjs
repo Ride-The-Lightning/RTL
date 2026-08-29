@@ -859,9 +859,12 @@ test('updateNodeSettings pins channelBackupPath to the server-held value', () =>
   }
 });
 
-test('updateNodeSettings strips sensitive settings fields via allowlist', () => {
-  // lnServerUrl, swapServerUrl, boltzServerUrl, bitcoindConfigPath and channelBackupPath
-  // are not in NODE_SETTINGS_ALLOWLIST; they must be silently dropped from the request.
+test('updateNodeSettings allowlists settings, applies valid service URLs and pins LN credential anchors', () => {
+  // lnServerUrl, bitcoindConfigPath and channelBackupPath are not in the node-settings
+  // allowlist — they must be silently dropped from the request. swapServerUrl and
+  // boltzServerUrl are legitimately edited here (the node-config Services page sends
+  // them), so valid http(s) values are applied; malformed or non-HTTP values are dropped
+  // by the same format validation the application-settings endpoint uses.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-allowlist-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -903,12 +906,32 @@ test('updateNodeSettings strips sensitive settings fields via allowlist', () => 
     const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
     assert.equal(fileNode.settings.themeMode, 'NIGHT');
     assert.equal(fileNode.settings.lnServerUrl, 'https://server:8080');
-    assert.equal(fileNode.settings.swapServerUrl, 'https://swap:8081');
-    assert.equal(fileNode.settings.boltzServerUrl, 'https://boltz:9003');
+    // Valid service URLs are applied.
+    assert.equal(fileNode.settings.swapServerUrl, 'https://evil.swap');
+    assert.equal(fileNode.settings.boltzServerUrl, 'https://evil.boltz');
     assert.equal(fileNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
     assert.equal(fileNode.settings.channelBackupPath, '/server/backups');
     assert.equal(Common.nodes[0].settings.themeMode, 'NIGHT');
     assert.equal(Common.nodes[0].settings.lnServerUrl, 'https://server:8080');
+
+    // Malformed or non-HTTP service URLs are dropped, keeping the previously applied value.
+    updateNodeSettings(
+      {
+        body: { settings: { swapServerUrl: 'not-a-url', boltzServerUrl: 'file:///etc/passwd' } },
+        session: { selectedNode: Common.nodes[0] }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+    assert.equal(responseStatus, 201);
+    const fileNodeAfterInvalid = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+    assert.equal(fileNodeAfterInvalid.settings.swapServerUrl, 'https://evil.swap');
+    assert.equal(fileNodeAfterInvalid.settings.boltzServerUrl, 'https://evil.boltz');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
@@ -927,7 +950,7 @@ test('updateApplicationSettings validates blockExplorerUrl format and rejects ma
         lnNode: 'lnd-main',
         lnImplementation: 'LND',
         authentication: { macaroonPath: '/lnd/admin' },
-        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', blockExplorerUrl: 'https://mempool.space' }
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', blockExplorerUrl: 'https://mempool.space', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003' }
       }
     ]
   };
@@ -993,6 +1016,44 @@ test('updateApplicationSettings validates blockExplorerUrl format and rejects ma
 
     assert.equal(responseStatus, 201);
     assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.example');
+    // Service URLs are not accepted on the application-settings endpoint; they are pinned
+    // back to the server-held values.
+    assert.equal(Common.appConfig.nodes[0].settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(Common.appConfig.nodes[0].settings.boltzServerUrl, 'https://boltz:9003');
+
+    // A parseable but non-HTTP scheme (file:///etc/passwd) is rejected too — it would
+    // otherwise be persisted and re-loaded into the runtime config, or copied into the
+    // outbound request built from the live node's settings.
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: 0, settings: { blockExplorerUrl: 'file:///etc/passwd', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', themeMode: 'DAY' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.space');
+    assert.equal(Common.appConfig.nodes[0].settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(Common.appConfig.nodes[0].settings.boltzServerUrl, 'https://boltz:9003');
+    assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
@@ -1124,7 +1185,140 @@ test('updateApplicationSettings preserves runtime-only auth state when all paylo
   }
 });
 
-test('updateApplicationSettings treats non-numeric indexes as unknown and drops them', () => {
+test('updateApplicationSettings drops a caller-supplied multiPass', () => {
+  // The plaintext password is hashed into multiPassHashed at boot and never sent back to
+  // the client (getApplicationSettings serves the file masked), so a multiPass arriving in
+  // the request body can only be attacker-supplied. It is rejected at the allowlist and
+  // must not be persisted to RTL-Config.json.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-multipass-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), selectedNodeIndex: 0, multiPass: 'attacker-password' },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.multiPass, undefined);
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(fileConfig.multiPass, undefined);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings rebuilds and filters against the runtime node list (common.nodes), not the stale on-disk copy', () => {
+  // F12: both known-vs-unknown and the node rebuild — the two sides of the same decision —
+  // resolve against common.nodes, the single authoritative runtime list (addSecureData
+  // pins from it; updateNodeSettings mutates it in place). If the controller resolved
+  // against common.appConfig.nodes — a fresh clone at every save that can go stale — a
+  // settings edit made through the node-settings endpoint (swapServerUrl below) would be
+  // silently reverted to the stale on-disk value, and a runtime node could be dropped as
+  // unknown. Here the on-disk file (and the stale appConfig copy) predate the runtime
+  // state; the edit must survive the application-settings save.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-runtime-nodes-'));
+  const staleFile = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+  const runtimeNodes = clone(staleFile.nodes);
+  runtimeNodes[0].settings.swapServerUrl = 'https://swap:8081';
+  runtimeNodes[0].settings.themeMode = 'NIGHT';
+  runtimeNodes[0].authentication.options = { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } };
+
+  try {
+    Common.appConfig = clone({
+      ...staleFile,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(runtimeNodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(staleFile, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(staleFile), selectedNodeIndex: 0, nodes: [{ index: 0, settings: { themeMode: 'DAY' } }, { index: 9, lnNode: 'rogue', lnImplementation: 'LND', settings: { themeMode: 'NIGHT' } }] },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // The unknown node is dropped and only node 0 remains.
+    assert.deepEqual(Common.appConfig.nodes.map((n) => n.index), [0]);
+    // The runtime-only service URL edit made via updateNodeSettings survives the rebuild.
+    assert.equal(Common.appConfig.nodes[0].settings.swapServerUrl, 'https://swap:8081');
+    // Runtime-only auth state survives too.
+    assert.deepEqual(Common.appConfig.nodes[0].authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
+    // The payload edit is applied.
+    assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings treats empty, null, boolean and array indexes as unknown and drops them', () => {
+  // indexKey rejects anything that is not a number or a non-blank numeric string. Under a
+  // naive +val coercion ''/false/[]/null would all become 0 — a real node — and would
+  // merge into (and REWRITE) the operator's node as 'empty-index'/'bool-index'/etc.; they
+  // must instead be dropped as unknown. 'abc' → NaN → not finite → dropped too.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nan-index-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -1156,7 +1350,17 @@ test('updateApplicationSettings treats non-numeric indexes as unknown and drops 
     let responseStatus = null;
     updateApplicationSettings(
       {
-        body: { ...clone(oldConfig), selectedNodeIndex: 0, nodes: [{ index: null, lnNode: 'null-index', settings: { themeMode: 'NIGHT' } }, { index: 'abc', lnNode: 'non-numeric-index', settings: { themeMode: 'NIGHT' } }] },
+        body: {
+          ...clone(oldConfig),
+          selectedNodeIndex: 0,
+          nodes: [
+            { index: null, lnNode: 'null-index', settings: { themeMode: 'NIGHT' } },
+            { index: '', lnNode: 'empty-index', settings: { themeMode: 'NIGHT' } },
+            { index: false, lnNode: 'bool-index', settings: { themeMode: 'NIGHT' } },
+            { index: [], lnNode: 'array-index', settings: { themeMode: 'NIGHT' } },
+            { index: 'abc', lnNode: 'non-numeric-index', settings: { themeMode: 'NIGHT' } }
+          ]
+        },
         session: { selectedNode: Common.selectedNode }
       },
       {
@@ -1169,9 +1373,7 @@ test('updateApplicationSettings treats non-numeric indexes as unknown and drops 
     );
 
     assert.equal(responseStatus, 201);
-    // null coerces to 0 via +null, which IS a known index — the node merges with node 0.
-    // 'abc' coerces to NaN, which is not finite, so it is dropped as unknown.
-    // Neither crashes the endpoint.
+    // None of the coerced-to-0 candidates may merge with the real node 0.
     assert.equal(Common.appConfig.nodes.length, 1);
     assert.equal(Common.appConfig.nodes[0].index, 0);
     assert.equal(Common.appConfig.nodes[0].lnNode, 'lnd-main');
@@ -1182,9 +1384,12 @@ test('updateApplicationSettings treats non-numeric indexes as unknown and drops 
   }
 });
 
-test('updateNodeSettings strips sensitive authentication fields via addSecureData', () => {
-  // boltzMacaroonPath and swapMacaroonPath are not in NODE_AUTH_ALLOWLIST; the node
-  // settings endpoint should not allow changing them.
+test('updateNodeSettings applies Loop/Boltz service macaroon paths but never the LN credential paths', () => {
+  // The node-config Services page edits the swap and Boltz macaroon paths through this
+  // endpoint (the client holds them — removeSecureData keeps them), so they are applied;
+  // an empty value clears the field. The LN credential anchors (macaroonPath, runePath,
+  // lnApiPassword, configPath) have no writable path through any endpoint and must stay
+  // pinned to the server value.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-auth-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -1210,7 +1415,7 @@ test('updateNodeSettings strips sensitive authentication fields via addSecureDat
     let responseStatus = null;
     updateNodeSettings(
       {
-        body: { settings: { themeMode: 'NIGHT' }, authentication: { swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz' } },
+        body: { settings: { themeMode: 'NIGHT' }, authentication: { swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz', macaroonPath: '/evil/lnd', configPath: '/etc/passwd' } },
         session: { selectedNode: Common.nodes[0] }
       },
       {
@@ -1225,9 +1430,32 @@ test('updateNodeSettings strips sensitive authentication fields via addSecureDat
     assert.equal(responseStatus, 201);
     const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
     assert.equal(fileNode.settings.themeMode, 'NIGHT');
-    // The auth fields should not have been modified by the request body authentication.
-    assert.equal(fileNode.authentication.swapMacaroonPath, '/server/loop');
-    assert.equal(fileNode.authentication.boltzMacaroonPath, '/server/boltz');
+    // The service macaroon paths are applied from the request body.
+    assert.equal(fileNode.authentication.swapMacaroonPath, '/evil/loop');
+    assert.equal(fileNode.authentication.boltzMacaroonPath, '/evil/boltz');
+    // The LN credential paths are untouched.
+    assert.equal(fileNode.authentication.macaroonPath, '/lnd/admin');
+    assert.equal(fileNode.authentication.configPath, undefined);
+
+    // An empty service path clears the field.
+    updateNodeSettings(
+      {
+        body: { authentication: { swapMacaroonPath: '', boltzMacaroonPath: '' } },
+        session: { selectedNode: Common.nodes[0] }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+    assert.equal(responseStatus, 201);
+    const clearedNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+    assert.equal(clearedNode.authentication.swapMacaroonPath, undefined);
+    assert.equal(clearedNode.authentication.boltzMacaroonPath, undefined);
+    assert.equal(clearedNode.authentication.macaroonPath, '/lnd/admin');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
@@ -1273,6 +1501,27 @@ test('getFile contains caller paths to the channel backup directory', async () =
     });
     assert.equal(missing.statusCode, 500);
     assert.equal(JSON.stringify(missing.body).includes(backupDir), false);
+
+    // The channel branch derives the backup file name from the channel value.
+    const channelServed = mockRes();
+    await new Promise((resolve) => {
+      const res = { status: (code) => { channelServed.statusCode = code; return { json: (body) => { channelServed.body = body; resolve(); } }; } };
+      getFile({ query: { channel: '1x2x3' }, session }, res, null);
+    });
+    assert.equal(channelServed.statusCode, 200);
+    assert.equal(channelServed.body, 'backup-data');
+
+    // A channel carrying path separators would otherwise concatenate into an escaping file
+    // name (secret.bak lives outside the backup dir); the sanitizer neutralizes them, so
+    // the read stays contained and fails on the missing file rather than serving the
+    // out-of-tree contents.
+    const channelTraversal = mockRes();
+    await new Promise((resolve) => {
+      const res = { status: (code) => { channelTraversal.statusCode = code; return { json: (body) => { channelTraversal.body = body; resolve(); } }; } };
+      getFile({ query: { channel: '../secret' }, session }, res, null);
+    });
+    assert.equal(channelTraversal.statusCode, 500);
+    assert.equal(JSON.stringify(channelTraversal.body).includes('top-secret'), false);
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
