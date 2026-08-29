@@ -72,7 +72,11 @@ this release should add its entry under the appropriate section below.
   are normalized to numbers so a string-indexed payload merges into the existing node
   instead of duplicating it, and a live 2FA seed can no longer be overwritten by a
   request-supplied seed. Backend regression tests cover the allowlist, the unknown-node
-  drop, the index normalization and the 2FA-seed guard. The Node Settings endpoint
+  drop, the index normalization and the 2FA-seed guard. The `defaultNodeIndex` and
+  `selectedNodeIndex` scalars are validated against the known node set like the node
+  entries themselves, so an out-of-range value cannot be persisted and survive a restart.
+  CLN's live rune (`authentication.runeValue`) is pinned for existing nodes and stripped
+  for unknown nodes like every other credential. The Node Settings endpoint
   (Services page) continues to accept the Loop/Boltz server URLs and macaroon paths, which
   are intentionally editable features, but now runs them through the same `http(s)` format
   validation; a plaintext `multiPass` in the body is discarded, and a crafted channel value
