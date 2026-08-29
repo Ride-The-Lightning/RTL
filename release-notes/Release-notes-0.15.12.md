@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Eclair: invoices are paged instead of fetched whole**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1690](https://github.com/Ride-The-Lightning/RTL/pull/1690), fixes
   [#1067](https://github.com/Ride-The-Lightning/RTL/issues/1067)).
   Opening the Eclair dashboard or Transactions page asked the node for every invoice it had
   ever issued (`count=1000000`) and then called `/getreceivedinfo` once per invoice, all at
