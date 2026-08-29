@@ -1314,6 +1314,126 @@ test('updateApplicationSettings rebuilds and filters against the runtime node li
   }
 });
 
+test('updateApplicationSettings drops invalid defaultNodeIndex and selectedNodeIndex values', () => {
+  // Both scalars pass TOP_LEVEL_ALLOWLIST, but they must carry the same known-index
+  // discipline as nodes[]: defaultNodeIndex is persisted (unlike selectedNodeIndex it is
+  // not stripped from the file config), so a body value that is unknown (999) or
+  // unparseable ('abc') would survive a restart. They are dropped and the server-held
+  // values win.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-index-scalars-'));
+  const oldConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...oldConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(oldConfig.nodes);
+    Common.selectedNode = Common.nodes[0];
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(oldConfig), defaultNodeIndex: 999, selectedNodeIndex: 'abc' },
+        session: { selectedNode: Common.selectedNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    assert.equal(Common.appConfig.defaultNodeIndex, 0);
+    assert.equal(Common.appConfig.selectedNodeIndex, 0);
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(fileConfig.defaultNodeIndex, 0);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings does not silently discard the payload when the runtime node list is empty', () => {
+  // The node rebuild is guarded on common.nodes being non-empty. If it is empty (cannot
+  // happen after a normal boot — common.nodes is built from the file at boot — but the
+  // guard must not be silent), the allowlisted-and-pinned payload must become the saved
+  // nodes instead of the unmodified on-disk copy pretending a save happened.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-empty-runtime-'));
+  const staleFile = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...staleFile,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = [];
+    Common.selectedNode = null;
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(staleFile, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: { ...clone(staleFile), selectedNodeIndex: 0, nodes: [{ index: 9, lnNode: 'rogue', lnImplementation: 'LND', settings: { themeMode: 'NIGHT' } }] },
+        session: { selectedNode: null }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // With no known runtime nodes, nothing is known; the payload node (index 9) is dropped
+    // and the save records exactly that instead of keeping the stale on-disk node.
+    assert.deepEqual(Common.appConfig.nodes, []);
+    const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.deepEqual(fileConfig.nodes, []);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
 test('updateApplicationSettings treats empty, null, boolean and array indexes as unknown and drops them', () => {
   // indexKey rejects anything that is not a number or a non-blank numeric string. Under a
   // naive +val coercion ''/false/[]/null would all become 0 — a real node — and would

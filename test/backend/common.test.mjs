@@ -280,6 +280,27 @@ test('addSecureData pins existing-node anchors from the runtime node list, not t
   assert.equal(node.settings.themeMode, 'NIGHT');
 });
 
+test('addSecureData pins runeValue symmetrically with the other CLN credentials', () => {
+  // runeValue is CLN's live rune — setOptions sends it verbatim as the request header —
+  // so the known-node pin and the unknown-node strip must cover it like every other
+  // credential, not just the runePath pointer.
+  seedAppConfig();
+  Common.appConfig.nodes = [];
+  Common.nodes = [{ index: 1, authentication: { runePath: '/server/cln/rune', runeValue: 'server-rune-value' } }];
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { runePath: '/evil/rune', runeValue: 'evil-rune-value' } },
+      { index: '2', authentication: { runePath: '/evil/new', runeValue: 'evil-rune' } }
+    ]
+  });
+  const knownNode = config.nodes[0];
+  assert.equal(knownNode.authentication.runePath, '/server/cln/rune');
+  assert.equal(knownNode.authentication.runeValue, 'server-rune-value');
+  const unknownNode = config.nodes[1];
+  assert.equal(unknownNode.authentication.runePath, undefined);
+  assert.equal(unknownNode.authentication.runeValue, undefined);
+});
+
 test('addSecureData pins allowPasswordUpdate and dbDirectoryPath to server-held values', () => {
   // allowPasswordUpdate is false precisely when the password is environment-managed, and
   // dbDirectoryPath redirects the runtime database — neither is writable from the UI.
