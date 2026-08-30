@@ -5,6 +5,8 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- LND invoices/payments controllers send literal "undefined" upstream for missing query params [#1678](https://github.com/Ride-The-Lightning/RTL/issues/1678).
+
 - **Eclair: invoices are paged instead of fetched whole**
   ([#1690](https://github.com/Ride-The-Lightning/RTL/pull/1690), fixes
   [#1067](https://github.com/Ride-The-Lightning/RTL/issues/1067)).
@@ -98,6 +100,12 @@ this release should add its entry under the appropriate section below.
   socket, and also walks every route module under `server/routes/` asserting that everything
   outside the five routes the login page needs (`authenticate`, `conf`, `conf/rates`) has the
   guard as its first handler, and that the index routers mount nothing but the modules
+  walked — so a future route added without the middleware fails the suite. The frontend used to call
+  `updateSelNode` once before login, from the initial config fetch; there is no server-side
+  session to switch at that point, and the login page only needs the node's name and theme, which the
+  config response already carries, so that call is now resolved locally and the server is only
+  asked once a token exists. The `XSRF-TOKEN` *response header* — set alongside the cookie for
+  the RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
   walked — so a future route added without the middleware fails the suite. The frontend used to call `updateSelNode` once before
   login, from the initial config fetch; there is no server-side session to switch at that
   point, and the login page only needs the node's name and theme, which the config response
@@ -119,4 +127,5 @@ this release should add its entry under the appropriate section below.
   replaced `request`/`request-promise` with axios in 0.15.9.) `engines.node` is now
   `>=20.19.0`, the floor the Angular 20 toolchain requires, so npm prints an `EBADENGINE`
   warning at install time instead. The docs said `v14 & above` in `CONTRIBUTING.md` and gave
+  no version at all in the README; both now state the same floor.
   no version at all in the README; both now state the same floor.
