@@ -206,7 +206,21 @@ test('the number of tracked addresses is bounded', () => {
   for (let i = 0; i < MAX_TRACKED_ADDRESSES; i++) {
     getFailedInfo('bound-' + i, now + 1 + i);
   }
-  assert.equal(getFailedInfo(first, now + 1).count, 0, 'the oldest entry was evicted to make room');
+  assert.equal(getFailedInfo(first, now + 1).count, 0, 'the oldest of the entries inserted here was evicted to make room');
+});
+
+test('resetting an expired counter moves it to the back of the eviction order', () => {
+  const now = Date.now();
+  const stale = 'evict-stale';
+  const fresh = 'evict-fresh';
+  getFailedInfo(stale, now);
+  getFailedInfo(fresh, now + 1);
+  // Reset the stale entry after expiry: it must now outlive the untouched fresh one.
+  getFailedInfo(stale, now + LOCKING_PERIOD + 2).count = 4;
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES - 1; i++) {
+    getFailedInfo('evict-' + i, now + LOCKING_PERIOD + 3 + i);
+  }
+  assert.equal(getFailedInfo(stale, now + LOCKING_PERIOD + 3).count, 4, 'the reset entry survived');
 });
 
 test('failed-attempt counters are keyed safely against prototype names', () => {
