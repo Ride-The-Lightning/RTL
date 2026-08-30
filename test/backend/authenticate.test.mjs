@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
-import { authenticateUser } from '../../backend/controllers/shared/authenticate.js';
+import { authenticateUser, getFailedInfo, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
 
 const { authenticator } = otplib;
@@ -168,4 +168,52 @@ test('does not enforce a token when 2FA is enabled without a secret', () => {
   authenticateUser(mockRequest({ twoFAToken: undefined }), res, null);
   assert.equal(res.statusCode, 200);
   assert.equal(typeof res.body.token, 'string');
+});
+
+// Lockout bookkeeping (issue #1656). getFailedInfo is the unit that decides whether a
+// stored counter is still live, so it is exercised directly with an explicit clock.
+test('a failed-attempt counter expires after the locking period', () => {
+  const ip = nextIP();
+  const start = Date.now();
+  const failed = getFailedInfo(ip, start);
+  failed.count = ALLOWED_LOGIN_ATTEMPTS;
+  failed.lastTried = start;
+  assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD).count, ALLOWED_LOGIN_ATTEMPTS, 'still locked inside the period');
+  assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD + 1).count, 0, 'unlocked once the period has elapsed');
+});
+
+test('a locked-out address can log in again once the locking period has elapsed', () => {
+  setupAppConfig(false, '');
+  const ip = nextIP();
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+    authenticateUser(mockRequest({ ip: ip, password: 'wrong' }), mockResponse(), null);
+  }
+  const locked = mockResponse();
+  authenticateUser(mockRequest({ ip: ip }), locked, null);
+  assert.equal(locked.statusCode, 401);
+  assert.match(locked.body.error, /locked/);
+  // Age the stored entry past the locking period instead of waiting for it.
+  getFailedInfo(ip, Date.now()).lastTried = Date.now() - LOCKING_PERIOD - 1;
+  const res = mockResponse();
+  authenticateUser(mockRequest({ ip: ip }), res, null);
+  assert.equal(res.statusCode, 200);
+});
+
+test('the number of tracked addresses is bounded', () => {
+  const now = Date.now();
+  const first = 'bound-first';
+  getFailedInfo(first, now).count = 3;
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES; i++) {
+    getFailedInfo('bound-' + i, now + 1 + i);
+  }
+  assert.equal(getFailedInfo(first, now + 1).count, 0, 'the oldest entry was evicted to make room');
+});
+
+test('failed-attempt counters are keyed safely against prototype names', () => {
+  const now = Date.now();
+  assert.equal(getFailedInfo('__proto__', now).count, 0);
+  assert.equal(getFailedInfo('constructor', now).count, 0);
+  getFailedInfo('__proto__', now).count = 2;
+  assert.equal(getFailedInfo('__proto__', now).count, 2);
+  assert.equal(getFailedInfo('toString', now).count, 0);
 });

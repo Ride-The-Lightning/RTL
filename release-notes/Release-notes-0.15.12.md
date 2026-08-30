@@ -28,6 +28,22 @@ this release should add its entry under the appropriate section below.
   is one minor behind the current release, tracked in
   [#1689](https://github.com/Ride-The-Lightning/RTL/issues/1689).
 
+- **Login lockout never expired, and its counter table grew without bound**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  [#1656](https://github.com/Ride-The-Lightning/RTL/issues/1656)).
+  After five failed logins RTL locks the requesting address for 30 minutes — but the expiry
+  check compared the clock against a freshly created entry rather than the stored one, so it
+  never fired, and the periodic sweeper called `clearInterval` on itself the first time it
+  deleted anything. An address that hit the limit stayed locked until the process restarted,
+  even with the correct password: five bad attempts from an operator's address denied them
+  their own node indefinitely. Counters were also kept in a plain object keyed by the client
+  address, with no size bound and the usual `__proto__`/`constructor` key hazards. The stored
+  entry is now what expiry is tested against, the sweeper keeps running, and counters live in
+  a `Map` capped at 1000 addresses (oldest entry evicted). Covered by backend tests in
+  `test/backend/authenticate.test.mjs`. The third finding in #1656 — the counter keys on
+  `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
+  trusted-proxy configuration and is left open.
+
 ## Enhancements
 
 - **LND: open a channel with the entire wallet balance**
