@@ -234,6 +234,31 @@ test('while locked, the response does not depend on whether the password was cor
   assert.equal(getFailedInfo(ip, Date.now()).lastTried, shifted, 'neither probe moved the deadline');
 });
 
+test('a successful login clears a partial streak of failures', () => {
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const ip = nextIP();
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS - 1; i++) {
+    authenticateUser(mockRequest({ ip: ip, password: 'wrong' }), mockResponse(), null);
+  }
+  assert.equal(getFailedInfo(ip, Date.now()).count, ALLOWED_LOGIN_ATTEMPTS - 1);
+  const res = mockResponse();
+  authenticateUser(mockRequest({ ip: ip }), res, null);
+  assert.equal(res.statusCode, 200);
+  assert.equal(trackedAddresses(), 0, 'the entry is gone, not merely zeroed');
+  assert.equal(getFailedInfo(ip, Date.now()).count, 0);
+});
+
+test('recordFailedAttempt guards the stored entry, not the object it was handed', () => {
+  const ip = nextIP();
+  const start = Date.now();
+  failTimes(ip, ALLOWED_LOGIN_ATTEMPTS, start);
+  // A stale, detached object for a locked address must not replace the live lockout.
+  recordFailedAttempt(ip, { count: 0, lastTried: start }, start + 1);
+  assert.equal(getFailedInfo(ip, start + 1).count, ALLOWED_LOGIN_ATTEMPTS, 'the lockout survived');
+  assert.equal(getFailedInfo(ip, start + 1).lastTried, start, 'the deadline did not move');
+});
+
 test('a single sweep removes every expired counter', () => {
   clearFailedAttempts();
   const start = Date.now();

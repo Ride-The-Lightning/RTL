@@ -44,6 +44,10 @@ export const getFailedInfo = (reqIP, currentTime) => {
 };
 
 export const recordFailedAttempt = (reqIP, failed, currentTime) => {
+  // Guard the stored entry, not the argument: a live lockout is immutable whatever the
+  // caller holds. The argument only seeds the table when nothing live is stored for reqIP.
+  const stored = failedLoginAttempts.get(reqIP);
+  if (stored && !hasExpired(stored, currentTime)) { failed = stored; }
   // A locked address records nothing more: the 401 it gets must depend on the lockout
   // alone, never on the credential offered (a moving deadline would tell a wrong guess
   // from a right one), and the window is fixed rather than extendable by more failures.
@@ -127,7 +131,7 @@ export const authenticateUser = (req, res, next) => {
     const reqIP = common.getRequestIP(req);
     const failed = getFailedInfo(reqIP, currentTime);
     const password = authenticationValue;
-    if (common.appConfig.rtlPass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
+    if (common.appConfig.rtlPass === password && !isLocked(failed, currentTime)) {
       // Gate on the server-side 2FA configuration, not on the request: when 2FA is
       // enabled a token is mandatory, so a request omitting twoFAToken is rejected
       // instead of silently skipping verification. The login UI keys its token prompt
