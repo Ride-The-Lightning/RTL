@@ -33,8 +33,10 @@ export const getFailedInfo = (reqIP, currentTime) => {
         return existing;
     }
     const failed = { count: 0, lastTried: currentTime };
-    if (!existing && failedLoginAttempts.size >= MAX_TRACKED_ADDRESSES) {
-        // Map iterates in insertion order, so the first key is the oldest entry.
+    // Delete before set so a reset entry moves to the back: Map iterates in insertion
+    // order, which makes the first key the least recently reset entry to evict.
+    failedLoginAttempts.delete(reqIP);
+    if (failedLoginAttempts.size >= MAX_TRACKED_ADDRESSES) {
         failedLoginAttempts.delete(failedLoginAttempts.keys().next().value);
     }
     failedLoginAttempts.set(reqIP, failed);
