@@ -29,7 +29,7 @@ this release should add its entry under the appropriate section below.
   [#1689](https://github.com/Ride-The-Lightning/RTL/issues/1689).
 
 - **Login lockout never expired, and its counter table grew without bound**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), part of
+  ([#1691](https://github.com/Ride-The-Lightning/RTL/pull/1691), part of
   [#1656](https://github.com/Ride-The-Lightning/RTL/issues/1656)).
   After five failed logins RTL locks the requesting address for 30 minutes — but the expiry
   check compared the clock against a freshly created entry rather than the stored one, so it
