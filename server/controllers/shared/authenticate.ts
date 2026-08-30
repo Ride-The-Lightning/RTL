@@ -18,29 +18,46 @@ const failedLoginAttempts = new Map<string, { count: number, lastTried: number }
 const databaseService: DatabaseService = Database;
 
 const hasExpired = (failed, currentTime) => currentTime > (failed.lastTried + LOCKING_PERIOD);
+const isLocked = (failed, currentTime) => failed.count >= ALLOWED_LOGIN_ATTEMPTS && !hasExpired(failed, currentTime);
 
-const loginInterval = setInterval(() => {
-  const now = new Date().getTime();
+export const sweepExpiredAttempts = (currentTime) => {
   for (const [ip, failed] of failedLoginAttempts) {
-    if (hasExpired(failed, now)) { failedLoginAttempts.delete(ip); }
+    if (hasExpired(failed, currentTime)) { failedLoginAttempts.delete(ip); }
   }
-}, LOCKING_PERIOD);
+};
+
+export const clearFailedAttempts = () => failedLoginAttempts.clear();
+export const trackedAddresses = () => failedLoginAttempts.size;
+
+const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime()), LOCKING_PERIOD);
 // The sweeper must not hold the event loop open on its own (it would keep
 // `node --test` or a CLI invocation alive for the full 30-minute period).
 loginInterval.unref();
 
+// Read-only: a lookup never stores anything, so first-contact visitors and successful
+// logins do not consume a slot in the bounded table. Only recordFailedAttempt inserts.
 export const getFailedInfo = (reqIP, currentTime) => {
   const existing = failedLoginAttempts.get(reqIP);
-  if (existing && !hasExpired(existing, currentTime)) { return existing; }
-  const failed = { count: 0, lastTried: currentTime };
-  // Delete before set so a reset entry moves to the back: Map iterates in insertion
-  // order, which makes the first key the least recently reset entry to evict.
+  return (existing && !hasExpired(existing, currentTime)) ? existing : { count: 0, lastTried: currentTime };
+};
+
+export const recordFailedAttempt = (reqIP, failed, currentTime) => {
+  failed.count = failed.count + 1;
+  failed.lastTried = currentTime;
+  // Delete before set so the entry moves to the back: Map iterates in insertion order,
+  // so the head is the least recently failed address.
   failedLoginAttempts.delete(reqIP);
   if (failedLoginAttempts.size >= MAX_TRACKED_ADDRESSES) {
-    failedLoginAttempts.delete(failedLoginAttempts.keys().next().value);
+    // Evict the least recently failed address that is not currently locked out, so
+    // table pressure cannot flush a live lockout; only when every tracked address is
+    // locked does the oldest lockout go.
+    let evict = failedLoginAttempts.keys().next().value;
+    for (const [ip, entry] of failedLoginAttempts) {
+      if (!isLocked(entry, currentTime)) { evict = ip; break; }
+    }
+    failedLoginAttempts.delete(evict);
   }
   failedLoginAttempts.set(reqIP, failed);
-  return failed;
 };
 
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
@@ -115,8 +132,7 @@ export const authenticateUser = (req, res, next) => {
       if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req)) {
         if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
-          failed.count = failed.count + 1;
-          failed.lastTried = currentTime;
+          recordFailedAttempt(reqIP, failed, currentTime);
           return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
         }
       }
@@ -127,8 +143,8 @@ export const authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else {
       logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: { error: 'Invalid password.' } });
-      failed.count = common.appConfig.rtlPass !== password ? (failed.count + 1) : failed.count;
-      failed.lastTried = common.appConfig.rtlPass !== password ? currentTime : failed.lastTried;
+      // A correct password against a live lockout is not a further failure.
+      if (common.appConfig.rtlPass !== password) { recordFailedAttempt(reqIP, failed, currentTime); }
       return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
     }
   }
