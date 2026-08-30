@@ -132,6 +132,11 @@ export const authenticateUser = (req, res, next) => {
     const reqIP = common.getRequestIP(req);
     const failed = getFailedInfo(reqIP, currentTime);
     const password = authenticationValue;
+    // When a second factor is required, neither 401 may say which credential failed:
+    // the password check runs first, so a distinct "invalid token" reply would confirm a
+    // correct password to a caller without the token.
+    const twoFARequired = common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req);
+    const errMsg = twoFARequired ? 'Invalid Password or 2FA Token!' : 'Invalid Password!';
     if (common.appConfig.rtlPass === password && !isLocked(failed, currentTime)) {
       // Gate on the server-side 2FA configuration, not on the request: when 2FA is
       // enabled a token is mandatory, so a request omitting twoFAToken is rejected
@@ -140,10 +145,10 @@ export const authenticateUser = (req, res, next) => {
       // must not lock the operator out of a UI that never prompts for a token.
       // Requests with a valid session token (in-app re-authorization, e.g. the
       // password prompt before on-chain sends) are exempt from the TOTP requirement.
-      if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req)) {
+      if (twoFARequired) {
         if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
-          return res.status(401).json(handleMultipleFailedAttemptsError(recordFailedAttempt(reqIP, currentTime), currentTime, 'Invalid 2FA Token!'));
+          return res.status(401).json(handleMultipleFailedAttemptsError(recordFailedAttempt(reqIP, currentTime), currentTime, errMsg));
         }
       }
       if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
@@ -156,7 +161,7 @@ export const authenticateUser = (req, res, next) => {
       const wrongPassword = common.appConfig.rtlPass !== password;
       logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: (wrongPassword ? 'Invalid Password! Failed IP ' : 'Locked Out! Failed IP ') + reqIP, error: { error: wrongPassword ? 'Invalid password.' : 'Address locked out.' } });
       const recorded = wrongPassword ? recordFailedAttempt(reqIP, currentTime) : failed;
-      return res.status(401).json(handleMultipleFailedAttemptsError(recorded, currentTime, 'Invalid Password!'));
+      return res.status(401).json(handleMultipleFailedAttemptsError(recorded, currentTime, errMsg));
     }
   }
 };

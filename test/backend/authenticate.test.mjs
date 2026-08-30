@@ -262,6 +262,19 @@ test('recordFailedAttempt derives the entry from the table and returns what it s
   assert.equal(revived, getFailedInfo(ip, start + LOCKING_PERIOD + 1), 'the returned entry is the stored one');
 });
 
+test('with 2FA enabled, the 401 does not reveal whether the password was correct', () => {
+  setupAppConfig(true, TOTP_SECRET);
+  const wrongPassword = mockResponse();
+  authenticateUser(mockRequest({ twoFAToken: '000000', password: 'wrong' }), wrongPassword, null);
+  const wrongToken = mockResponse();
+  authenticateUser(mockRequest({ twoFAToken: '000000' }), wrongToken, null);
+  const noToken = mockResponse();
+  authenticateUser(mockRequest({}), noToken, null);
+  assert.equal(wrongPassword.statusCode, 401);
+  assert.deepEqual(wrongToken.body, wrongPassword.body, 'a right password with a wrong token reads like a wrong password');
+  assert.deepEqual(noToken.body, wrongPassword.body, 'a right password with no token reads like a wrong password');
+});
+
 test('a single sweep removes every expired counter', () => {
   clearFailedAttempts();
   const start = Date.now();
