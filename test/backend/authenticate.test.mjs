@@ -203,6 +203,37 @@ test('a locked-out address can log in again once the locking period has elapsed'
   assert.equal(res.statusCode, 200);
 });
 
+test('a locked address ignores further failures, so the window cannot be extended', () => {
+  const ip = nextIP();
+  const start = Date.now();
+  failTimes(ip, ALLOWED_LOGIN_ATTEMPTS, start);
+  const late = start + LOCKING_PERIOD - 1;
+  recordFailedAttempt(ip, getFailedInfo(ip, late), late);
+  assert.equal(getFailedInfo(ip, late).lastTried, start, 'the deadline did not move');
+  assert.equal(getFailedInfo(ip, late).count, ALLOWED_LOGIN_ATTEMPTS, 'the count did not grow');
+  assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD + 1).count, 0, 'the original deadline still lifts the lock');
+});
+
+test('while locked, the response does not depend on whether the password was correct', () => {
+  setupAppConfig(false, '');
+  const ip = nextIP();
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+    authenticateUser(mockRequest({ ip: ip, password: 'wrong' }), mockResponse(), null);
+  }
+  const deadline = getFailedInfo(ip, Date.now()).lastTried;
+  // Make the clock visibly move between the two probes; a leaked lastTried would differ by this.
+  getFailedInfo(ip, Date.now()).lastTried = deadline - 10 * 60 * 1000;
+  const shifted = getFailedInfo(ip, Date.now()).lastTried;
+  const right = mockResponse();
+  authenticateUser(mockRequest({ ip: ip }), right, null);
+  const wrong = mockResponse();
+  authenticateUser(mockRequest({ ip: ip, password: 'wrong' }), wrong, null);
+  assert.equal(right.statusCode, 401);
+  assert.equal(wrong.statusCode, 401);
+  assert.deepEqual(wrong.body, right.body, 'identical body for a right and a wrong guess');
+  assert.equal(getFailedInfo(ip, Date.now()).lastTried, shifted, 'neither probe moved the deadline');
+});
+
 test('a single sweep removes every expired counter', () => {
   clearFailedAttempts();
   const start = Date.now();
@@ -212,7 +243,8 @@ test('a single sweep removes every expired counter', () => {
   failTimes(live, 1, start + LOCKING_PERIOD);
   assert.equal(trackedAddresses(), 3);
   sweepExpiredAttempts(start + LOCKING_PERIOD + 1);
-  // Both expired entries are gone in one pass -- the old sweeper stopped itself after the first.
+  // Both expired entries go in one pass. The actual regression -- clearInterval inside the
+  // callback cancelling every later pass -- is in the 30-minute unref'd timer and is not driven here.
   assert.equal(trackedAddresses(), 1);
   assert.equal(getFailedInfo(live, start + LOCKING_PERIOD + 1).count, 1, 'a live entry survives the sweep');
 });
