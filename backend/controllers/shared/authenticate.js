@@ -7,15 +7,20 @@ import { Common } from '../../utils/common.js';
 const logger = Logger;
 const common = Common;
 const ONE_MINUTE = 60000;
-const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
-const ALLOWED_LOGIN_ATTEMPTS = 5;
-const failedLoginAttempts = {};
+export const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
+export const ALLOWED_LOGIN_ATTEMPTS = 5;
+export const MAX_TRACKED_ADDRESSES = 1000;
+// Keyed by request IP. A Map (not a plain object) so client-supplied keys such as
+// "__proto__" cannot collide with Object.prototype, and bounded so an attacker
+// rotating addresses cannot grow it without limit (issue #1656).
+const failedLoginAttempts = new Map();
 const databaseService = Database;
+const hasExpired = (failed, currentTime) => currentTime > (failed.lastTried + LOCKING_PERIOD);
 const loginInterval = setInterval(() => {
-    for (const ip in failedLoginAttempts) {
-        if (new Date().getTime() > (failedLoginAttempts[ip].lastTried + LOCKING_PERIOD)) {
-            delete failedLoginAttempts[ip];
-            clearInterval(loginInterval);
+    const now = new Date().getTime();
+    for (const [ip, failed] of failedLoginAttempts) {
+        if (hasExpired(failed, now)) {
+            failedLoginAttempts.delete(ip);
         }
     }
 }, LOCKING_PERIOD);
@@ -23,14 +28,16 @@ const loginInterval = setInterval(() => {
 // `node --test` or a CLI invocation alive for the full 30-minute period).
 loginInterval.unref();
 export const getFailedInfo = (reqIP, currentTime) => {
-    let failed = { count: 0, lastTried: currentTime };
-    if ((!failedLoginAttempts[reqIP]) || (currentTime > (failed.lastTried + LOCKING_PERIOD))) {
-        failed = { count: 0, lastTried: currentTime };
-        failedLoginAttempts[reqIP] = failed;
+    const existing = failedLoginAttempts.get(reqIP);
+    if (existing && !hasExpired(existing, currentTime)) {
+        return existing;
     }
-    else {
-        failed = failedLoginAttempts[reqIP];
+    const failed = { count: 0, lastTried: currentTime };
+    if (!existing && failedLoginAttempts.size >= MAX_TRACKED_ADDRESSES) {
+        // Map iterates in insertion order, so the first key is the oldest entry.
+        failedLoginAttempts.delete(failedLoginAttempts.keys().next().value);
     }
+    failedLoginAttempts.set(reqIP, failed);
     return failed;
 };
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
@@ -120,7 +127,7 @@ export const authenticateUser = (req, res, next) => {
             if (!req.session.selectedNode) {
                 req.session.selectedNode = common.selectedNode;
             }
-            delete failedLoginAttempts[reqIP];
+            failedLoginAttempts.delete(reqIP);
             const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
             res.status(200).json({ token: token });
