@@ -39,8 +39,12 @@ this release should add its entry under the appropriate section below.
   their own node indefinitely. Counters were also kept in a plain object keyed by the client
   address, with no size bound and the usual `__proto__`/`constructor` key hazards. The stored
   entry is now what expiry is tested against, the sweeper keeps running, and counters live in
-  a `Map` capped at 1000 addresses (oldest entry evicted). Covered by backend tests in
-  `test/backend/authenticate.test.mjs`. The third finding in #1656 — the counter keys on
+  a `Map` capped at 1000 addresses. Only a failed attempt takes a slot — lookups and
+  successful logins store nothing — and when the table is full the least recently failed
+  address that is *not* currently locked out is evicted, so churn from other addresses cannot
+  flush a live lockout; only when every tracked address is locked does the oldest lockout go.
+  Covered by backend tests in `test/backend/authenticate.test.mjs`, including the sweeper and
+  the eviction policy. The third finding in #1656 — the counter keys on
   `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
   trusted-proxy configuration and is left open.
 
