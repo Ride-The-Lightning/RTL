@@ -209,3 +209,10 @@ test('listInvoices: oversized num_max_invoices returns 400', async () => {
     assert.equal(res.body.message, 'num_max_invoices exceeds maximum safe integer');
   } finally { await lnd.close(); }
 });
+import { WSServer } from '../../backend/utils/webSocketServer.js';
+
+test('cleanup websocket timer', () => {
+  if (WSServer.pingInterval) {
+    clearInterval(WSServer.pingInterval);
+  }
+});

@@ -25,6 +25,7 @@ export interface BlockchainBalance {
   total_balance?: number;
   confirmed_balance?: number;
   unconfirmed_balance?: number;
+  reserved_balance_anchor_chan?: number;
   account_balance?: any;
 }
 
@@ -522,7 +523,8 @@ export interface SaveInvoice {
 
 export interface SaveChannel {
   selectedPeerPubkey: string;
-  fundingAmount: number;
+  fundingAmount: number | null;
+  fundMax: boolean;
   private: boolean;
   transType: string;
   transTypeValue: string;

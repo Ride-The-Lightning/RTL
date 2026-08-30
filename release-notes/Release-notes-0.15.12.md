@@ -106,6 +106,12 @@ this release should add its entry under the appropriate section below.
   config response already carries, so that call is now resolved locally and the server is only
   asked once a token exists. The `XSRF-TOKEN` *response header* — set alongside the cookie for
   the RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
+  walked — so a future route added without the middleware fails the suite. The frontend used to call `updateSelNode` once before
+  login, from the initial config fetch; there is no server-side session to switch at that
+  point, and the login page only needs the node's name and theme, which the config response
+  already carries, so that call is now resolved locally and the server is only asked once a
+  token exists. The `XSRF-TOKEN` *response header* — set alongside the cookie for the
+  RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
   Angular frontend reads is unchanged.
 
 ## Developer Tooling
@@ -121,4 +127,5 @@ this release should add its entry under the appropriate section below.
   replaced `request`/`request-promise` with axios in 0.15.9.) `engines.node` is now
   `>=20.19.0`, the floor the Angular 20 toolchain requires, so npm prints an `EBADENGINE`
   warning at install time instead. The docs said `v14 & above` in `CONTRIBUTING.md` and gave
+  no version at all in the README; both now state the same floor.
   no version at all in the README; both now state the same floor.

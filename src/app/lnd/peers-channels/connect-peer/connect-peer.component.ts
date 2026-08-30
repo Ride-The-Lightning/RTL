@@ -9,7 +9,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
-import { GetInfo, Peer } from '../../../shared/models/lndModels';
+import { GetInfo, Peer, BlockchainBalance } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
@@ -18,7 +18,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
 import { rootSelectedNode } from '../../../store/rtl.selector';
 import { fetchGraphNode, saveNewChannel, saveNewPeer } from '../../store/lnd.actions';
-import { nodeInfoAndAPIStatus } from '../../store/lnd.selector';
+import { blockchainBalance, nodeInfoAndAPIStatus, getSpendableBalance } from '../../store/lnd.selector';
 import { Node } from '../../../shared/models/RTLconfig';
 import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -45,6 +45,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public newlyAddedPeer: Peer | null = null;
   public flgEditable = true;
   public isTaprootAvailable = false;
+  public isFundMaxAvailable = false;
+  public spendableBalance = 0;
+  private walletBalance: BlockchainBalance = {};
   public peerConnectionError = '';
   public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
@@ -53,7 +56,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   peerFormGroup: UntypedFormGroup;
   channelFormGroup: UntypedFormGroup;
   statusFormGroup: UntypedFormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert,
     private store: Store<RTLState>, private lndEffects: LNDEffects, private formBuilder: UntypedFormBuilder,
@@ -72,6 +75,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       selTransType: [TRANS_TYPES[0].id],
       transTypeValue: [{ value: '', disabled: true }],
       taprootChannel: [false],
+      fundMax: [false],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });
@@ -80,9 +84,45 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       withLatestFrom(this.store.select(rootSelectedNode))).
       subscribe(([infoStatusSelector, nodeSettings]: [{ information: GetInfo | null, apiCallStatus: ApiCallStatusPayload }, nodeSettings: Node]) => {
         this.selNode = nodeSettings;
-        this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
-        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information.version, '0.17.0');
+        // This selector re-emits on every LND action, so re-seeding the node default would
+        // undo a choice the user has already made — a failed open leaves the stepper up and
+        // dispatches exactly such an action before they retry.
+        if (this.channelFormGroup.controls.isPrivate.pristine) {
+          this.channelFormGroup.controls.isPrivate.setValue(!!nodeSettings?.settings.unannouncedChannels);
+        }
+        this.isTaprootAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information?.version, '0.17.0');
+        // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
+        this.isFundMaxAvailable = this.commonService.isVersionCompatible(infoStatusSelector.information?.version, '0.16.0');
       });
+    this.channelFormGroup.controls.fundMax.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe((fundMax) => {
+      this.channelFormGroup.controls.fundingAmount.setValue('');
+      this.channelFormGroup.controls.fundingAmount.setErrors(null);
+      if (fundMax) {
+        this.channelFormGroup.controls.fundingAmount.disable();
+        this.channelFormGroup.controls.fundingAmount.setValidators(null);
+      } else {
+        this.channelFormGroup.controls.fundingAmount.enable();
+        this.channelFormGroup.controls.fundingAmount.setValidators([Validators.required, Validators.min(1), Validators.max(this.totalBalance)]);
+      }
+      // setValidators does not revalidate, and enable() ran against the previous set — without
+      // this the control reports valid while empty until the template's [required] binding
+      // happens to trigger it.
+      this.channelFormGroup.controls.fundingAmount.updateValueAndValidity({ emitEvent: false });
+      this.setChannelFormLabel();
+    });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[5])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
+        this.walletBalance = bcBalanceSelector.blockchainBalance;
+        this.updateSpendableBalance();
+      });
+    this.channelFormGroup.controls.fundingAmount.valueChanges.pipe(takeUntil(this.unSubs[7])).subscribe(() => {
+      this.setChannelFormLabel();
+    });
+    // Which pool fund max draws on depends on this toggle, so the guard has to be recomputed
+    // when it flips, not only when a new balance arrives.
+    this.channelFormGroup.controls.spendUnconfirmed.valueChanges.pipe(takeUntil(this.unSubs[6])).subscribe(() => {
+      this.updateSpendableBalance();
+    });
     this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe((transType) => {
       if (transType === TRANS_TYPES[0].id) {
         this.channelFormGroup.controls.transTypeValue.setValue('');
@@ -151,9 +191,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       this.channelFormGroup.controls.transTypeValue.setErrors({ minimum: true });
       return true;
     }
+    const fundMax = !!this.channelFormGroup.controls.fundMax.value;
     if (
-      !this.channelFormGroup.controls.fundingAmount.value ||
-      ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) ||
+      (!fundMax && (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0))) ||
       (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) ||
       (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)
     ) {
@@ -163,7 +203,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
-        selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
+        selectedPeerPubkey: this.newlyAddedPeer?.pub_key!, fundingAmount: (fundMax ? null : this.channelFormGroup.controls.fundingAmount.value), fundMax: fundMax, private: this.channelFormGroup.controls.isPrivate.value,
         transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value, commitmentType: (!!this.channelFormGroup.controls.taprootChannel.value ? 5 : null)
       }
     }));
@@ -182,6 +222,47 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Distinguishes the two ways a funded-looking wallet can have nothing spendable: coins the
+  // node will not draw on yet, which the user can release, and the anchor reserve, which
+  // nothing releases. Only the first has a remedy worth naming.
+  get unconfirmedWouldHelp(): boolean {
+    return this.spendableBalance <= 0 && !this.channelFormGroup.controls.spendUnconfirmed.value && getSpendableBalance(this.walletBalance, true) > 0;
+  }
+
+  private updateSpendableBalance() {
+    this.spendableBalance = getSpendableBalance(this.walletBalance, !!this.channelFormGroup.controls.spendUnconfirmed.value);
+    // The balance selector re-emits on every LND action, and enable()/disable() raise
+    // valueChanges even when the state is unchanged — so only touch the control on an actual
+    // flip, otherwise the fund max handler clears an amount the user is still typing.
+    if (this.spendableBalance <= 0 && this.channelFormGroup.controls.fundMax.enabled) {
+      if (this.channelFormGroup.controls.fundMax.value) {
+        // Only a toggle that was actually on has an amount field to release, and this write
+        // is the emission that releases it.
+        this.channelFormGroup.controls.fundMax.setValue(false);
+      }
+      // Silently: either the write above already emitted, or the toggle was off all along and
+      // an emission would clear an amount the user is part-way through typing.
+      this.channelFormGroup.controls.fundMax.disable({ emitEvent: false });
+    } else if (this.spendableBalance > 0 && this.channelFormGroup.controls.fundMax.disabled) {
+      // Silently: the toggle is off here, so the amount field is already released, and an
+      // emission would only clear it. The branch above must keep emitting to release it.
+      this.channelFormGroup.controls.fundMax.enable({ emitEvent: false });
+    }
+  }
+
+  private setChannelFormLabel() {
+    // Driven from the form rather than from the stepper's selectionChange: the channel step is
+    // entered once, before anything has been filled in, and flgEditable then blocks a return,
+    // so a label only written on selection can never show what was chosen.
+    if (this.channelFormGroup.controls.fundMax.value) {
+      this.channelFormLabel = 'Opening Channel for the Entire Wallet Balance';
+    } else if (this.channelFormGroup.controls.fundingAmount.value) {
+      this.channelFormLabel = 'Opening Channel for ' + this.channelFormGroup.controls.fundingAmount.value + ' Sats';
+    } else {
+      this.channelFormLabel = 'Open Channel (Optional)';
+    }
+  }
+
   onClose() {
     this.dialogRef.close(false);
   }
@@ -193,26 +274,16 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormLabel = 'Open Channel (Optional)';
         break;
 
+      // The stepper has two steps, so the channel step is index 1; case 2 is kept folded in
+      // for a stepper that grows a third.
       case 1:
-        if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
-        } else {
-          this.peerFormLabel = 'Peer Details';
-        }
-        this.channelFormLabel = 'Open Channel (Optional)';
-        break;
-
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
           this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
         } else {
           this.peerFormLabel = 'Peer Details';
         }
-        if (this.channelFormGroup.controls.fundingAmount.value) {
-          this.channelFormLabel = 'Opening Channel for ' + this.channelFormGroup.controls.fundingAmount.value + ' Sats';
-        } else {
-          this.channelFormLabel = 'Open Channel (Optional)';
-        }
+        this.setChannelFormLabel();
         break;
 
       default:

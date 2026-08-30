@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { PaymentSent, Invoice, Payments } from '../../../shared/models/eclModels';
@@ -9,7 +9,7 @@ import { APICallStatusEnum, ECL_DEFAULT_PAGE_SETTINGS, MONTHS, PAGE_SIZE, Screen
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
-import { eclPageSettings, invoices, payments } from '../../store/ecl.selector';
+import { eclPageSettings, payments } from '../../store/ecl.selector';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { PageSettings, TableSetting } from '../../../shared/models/pageSettings';
@@ -67,11 +67,16 @@ export class ECLTransactionsReportComponent implements OnInit, OnDestroy {
         this.logger.info(this.displayedColumns);
       });
 
-    this.store.select(payments).pipe(takeUntil(this.unSubs[1]),
-      withLatestFrom(this.store.select(invoices))).
-      subscribe(([paymentsSelector, invoicesSelector]: [({ payments: Payments, apiCallStatus: ApiCallStatusPayload }), ({ invoices: Invoice[], apiCallStatus: ApiCallStatusPayload })]) => {
+    this.store.select(payments).pipe(takeUntil(this.unSubs[1])).
+      subscribe((paymentsSelector: { payments: Payments, apiCallStatus: ApiCallStatusPayload }) => {
         this.payments = paymentsSelector.payments.sent ? paymentsSelector.payments.sent : [];
-        this.invoices = invoicesSelector.invoices ? invoicesSelector.invoices : [];
+        // The invoice list is served one page at a time (#1067), so the received side of the
+        // report comes from the audit's received payments, which the payments fetch already loads.
+        this.invoices = (paymentsSelector.payments.received || []).map((received) => ({
+          status: 'received',
+          timestamp: Math.floor((received.firstPartTimestamp || 0) / 1000),
+          amountSettled: received.parts?.reduce((total, part) => total + (part.amount || 0), 0) || 0
+        }));
         if (this.payments.length > 0 || this.invoices.length > 0) {
           this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
           this.transactionsNonZeroReportData = this.prepareTableData();

@@ -7,13 +7,14 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { Peer, GetInfo, BlockchainBalance } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, LNDActions, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
+import { blockchainBalance, getSpendableBalance } from '../../../store/lnd.selector';
 import { saveNewChannel } from '../../../store/lnd.actions';
 import { Node } from '../../../../shared/models/RTLconfig';
 import { CommonService } from '../../../../shared/services/common.service';
@@ -49,11 +50,15 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public selTransType = '0';
   public isTaprootAvailable = false;
   public taprootChannel = false;
+  public isFundMaxAvailable = false;
+  public fundMax = false;
   public spendUnconfirmed = false;
   public transTypeValue = '';
   public transTypes = TRANS_TYPES;
   public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  public spendableBalance = 0;
+  private walletBalance: BlockchainBalance = {};
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, public dialogRef: MatDialogRef<OpenChannelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<RTLState>,
@@ -66,12 +71,15 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       this.peer = this.data.message.peer || null;
       this.peers = this.data.message.peers || [];
       this.isTaprootAvailable = this.commonService.isVersionCompatible(this.information.version, '0.17.0');
+      // fund_max on OpenChannelRequest landed in LND 0.16.0 (lightningnetwork/lnd#6903).
+      this.isFundMaxAvailable = this.commonService.isVersionCompatible(this.information.version, '0.16.0');
     } else {
       this.information = {};
       this.totalBalance = 0;
       this.peer = null;
       this.peers = [];
       this.isTaprootAvailable = false;
+      this.isFundMaxAvailable = false;
     }
     this.alertTitle = this.data.alertTitle || 'Alert';
     this.store.select(rootSelectedNode).pipe(takeUntil(this.unSubs[0])).
@@ -97,6 +105,11 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
       y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
+    this.store.select(blockchainBalance).pipe(takeUntil(this.unSubs[4])).
+      subscribe((bcBalanceSelector: { blockchainBalance: BlockchainBalance }) => {
+        this.walletBalance = bcBalanceSelector.blockchainBalance;
+        this.updateSpendableBalance();
+      });
     this.filteredPeers = this.selectedPeer.valueChanges.pipe(
       takeUntil(this.unSubs[2]), startWith(''),
       map((peer) => (typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key)),
@@ -132,12 +145,27 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.dialogRef.close(false);
   }
 
+  // Distinguishes the two ways a funded-looking wallet can have nothing spendable: coins the
+  // node will not draw on yet, which the user can release, and the anchor reserve, which
+  // nothing releases. Only the first has a remedy worth naming.
+  get unconfirmedWouldHelp(): boolean {
+    return this.spendableBalance <= 0 && !this.spendUnconfirmed && getSpendableBalance(this.walletBalance, true) > 0;
+  }
+
+  updateSpendableBalance() {
+    this.spendableBalance = getSpendableBalance(this.walletBalance, this.spendUnconfirmed);
+    // A disabled toggle keeps whatever it was left on, so turn it off too.
+    if (this.spendableBalance <= 0) { this.fundMax = false; }
+  }
+
   resetData() {
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
     this.isPrivate = !!this.selNode?.settings.unannouncedChannels;
     this.taprootChannel = false;
+    this.fundMax = false;
     this.spendUnconfirmed = false;
+    this.updateSpendableBalance();
     this.selTransType = '0';
     this.transTypeValue = '';
     this.channelConnectionError = '';
@@ -145,11 +173,17 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
+  onFundMaxChange() {
+    if (this.fundMax) {
+      this.fundingAmount = null;
+    }
+  }
+
   onOpenChannel(): boolean | void {
     if (
       (!this.peer && !this.selectedPubkey) ||
-      (!this.fundingAmount ||
-      ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue)) ||
+      (!this.fundMax && (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) ||
+      ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue) ||
       (this.selTransType === '2' && this.recommendedFee.minimumFee > +this.transTypeValue)
     ) {
       return true;
@@ -157,7 +191,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     // Taproot channel's commitment type is 5
     this.store.dispatch(saveNewChannel({
       payload: {
-        selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
+        selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: (this.fundMax ? null : this.fundingAmount), fundMax: this.fundMax, private: this.isPrivate,
         transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed, commitmentType: (this.taprootChannel ? 5 : null)
       }
     }));

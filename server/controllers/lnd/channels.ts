@@ -133,18 +133,59 @@ export const getClosedChannels = (req, res, next) => {
   });
 };
 
+// A urlencoded body cannot carry a boolean, so the flag arrives spelled however the client
+// writes it — 'true' from RTL's own form, 'on' from a bare HTML checkbox, '1' or 'True' from a
+// script — and a field repeated in the body reaches Express as an array. Every one of those is
+// truthy as a string, so the value is matched rather than tested, and anything outside both
+// lists returns null for the caller to reject: guessing either way misstates the amount by the
+// whole on-chain wallet.
+const FUND_MAX_TRUE = ['true', 'on', 'yes', '1'];
+const FUND_MAX_FALSE = ['false', 'off', 'no', '0', ''];
+
+const parseFundMax = (value) => {
+  if (value === undefined || value === null) { return false; }
+  if (typeof value === 'boolean') { return value; }
+  if (typeof value === 'number') { return value === 1 ? true : value === 0 ? false : null; }
+  if (typeof value !== 'string') { return null; }
+  const spelling = value.trim().toLowerCase();
+  return FUND_MAX_TRUE.includes(spelling) ? true : FUND_MAX_FALSE.includes(spelling) ? false : null;
+};
+
+// An amount field left untouched by a form posts as an empty string, and a zero is not an
+// amount any channel can be opened for, so neither contradicts a request to fund the maximum.
+const hasFundingAmount = (amount) => amount !== undefined && amount !== null && amount !== '' && +amount !== 0;
+
 export const postChannel = (req, res, next) => {
-  const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, trans_type, trans_type_value, commitment_type } = req.body;
+  const { node_pubkey, private: privateChannel, spend_unconfirmed, local_funding_amount, fund_max, trans_type, trans_type_value, commitment_type } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels';
   options.form = {
     node_pubkey_string: node_pubkey,
-    local_funding_amount: local_funding_amount,
     private: privateChannel,
     spend_unconfirmed: spend_unconfirmed
   };
+  // LND rejects a request carrying both, and computes the maximum itself: the wallet
+  // balance less the on-chain fee and the reserve it keeps back for anchor channels.
+  const fundMaxRequested = parseFundMax(fund_max);
+  if (fundMaxRequested === null) {
+    // Neither a true nor a false spelling. Reading it as false would open a channel for an
+    // amount the caller did not mean, and reading it as true would commit the whole wallet.
+    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: 'Unrecognized fund_max value' });
+    return res.status(400).json({ message: 'Open Channel Error', error: 'fund_max must be true or false.' });
+  }
+  if (fundMaxRequested && hasFundingAmount(local_funding_amount)) {
+    // Contradictory, and the two readings differ by the whole wallet, so fail closed rather
+    // than pick one and drop the amount the caller asked for without saying so.
+    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error', error: 'Both fund_max and local_funding_amount received' });
+    return res.status(400).json({ message: 'Open Channel Error', error: 'Send either fund_max or local_funding_amount, not both.' });
+  }
+  if (fundMaxRequested) {
+    options.form.fund_max = true;
+  } else {
+    options.form.local_funding_amount = local_funding_amount;
+  }
   if (trans_type === '1') {
     options.form.target_conf = trans_type_value;
   } else if (trans_type === '2') {

@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.15.11-beta",
+  "version": "0.15.12-beta",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -21,6 +21,9 @@
     "lint": "eslint"
   },
   "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "dependencies": {
     "@ngrx/effects": "21.0.1",
     "@ngrx/store": "21.0.1",

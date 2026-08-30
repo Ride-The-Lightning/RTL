@@ -200,6 +200,12 @@ export interface Invoice {
   features?: { activated: Feature[], unknown: Feature[] };
 }
 
+// One newest-first page of invoices plus the node's total, as served by RTL's backend.
+export interface ListInvoices {
+  invoices?: Invoice[];
+  totalInvoices?: number;
+}
+
 export interface LookupNode {
   signature?: string;
   features?: { activated?: Feature[], unknown?: any[] };

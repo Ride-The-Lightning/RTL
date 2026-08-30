@@ -7,34 +7,71 @@ import { Common } from '../../utils/common.js';
 const logger = Logger;
 const common = Common;
 const ONE_MINUTE = 60000;
-const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
-const ALLOWED_LOGIN_ATTEMPTS = 5;
-const failedLoginAttempts = {};
+export const LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
+export const ALLOWED_LOGIN_ATTEMPTS = 5;
+export const MAX_TRACKED_ADDRESSES = 1000;
+// Keyed by request IP. A Map (not a plain object) so client-supplied keys such as
+// "__proto__" cannot collide with Object.prototype, and bounded so an attacker
+// rotating addresses cannot grow it without limit (issue #1656).
+const failedLoginAttempts = new Map();
 const databaseService = Database;
-const loginInterval = setInterval(() => {
-    for (const ip in failedLoginAttempts) {
-        if (new Date().getTime() > (failedLoginAttempts[ip].lastTried + LOCKING_PERIOD)) {
-            delete failedLoginAttempts[ip];
-            clearInterval(loginInterval);
+const hasExpired = (failed, currentTime) => currentTime > (failed.lastTried + LOCKING_PERIOD);
+const isLocked = (failed, currentTime) => failed.count >= ALLOWED_LOGIN_ATTEMPTS && !hasExpired(failed, currentTime);
+export const sweepExpiredAttempts = (currentTime) => {
+    for (const [ip, failed] of failedLoginAttempts) {
+        if (hasExpired(failed, currentTime)) {
+            failedLoginAttempts.delete(ip);
         }
     }
-}, LOCKING_PERIOD);
+};
+export const clearFailedAttempts = () => failedLoginAttempts.clear();
+export const trackedAddresses = () => failedLoginAttempts.size;
+const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime()), LOCKING_PERIOD);
 // The sweeper must not hold the event loop open on its own (it would keep
 // `node --test` or a CLI invocation alive for the full 30-minute period).
 loginInterval.unref();
+// A lookup never stores anything, so first-contact visitors and successful logins do not
+// consume a slot in the bounded table; only recordFailedAttempt inserts. The return value is
+// the live table entry when one exists (mutating it mutates the table) and a detached
+// object otherwise, which only becomes tracked once handed to recordFailedAttempt.
 export const getFailedInfo = (reqIP, currentTime) => {
-    let failed = { count: 0, lastTried: currentTime };
-    if ((!failedLoginAttempts[reqIP]) || (currentTime > (failed.lastTried + LOCKING_PERIOD))) {
-        failed = { count: 0, lastTried: currentTime };
-        failedLoginAttempts[reqIP] = failed;
+    const existing = failedLoginAttempts.get(reqIP);
+    return (existing && !hasExpired(existing, currentTime)) ? existing : { count: 0, lastTried: currentTime };
+};
+// Records one failure for reqIP and returns the entry now stored for it. Derives the
+// entry itself rather than trusting a caller-held object, so a live lockout is immutable
+// and an expired one is dropped whatever the caller holds.
+export const recordFailedAttempt = (reqIP, currentTime) => {
+    const failed = getFailedInfo(reqIP, currentTime);
+    // A locked address records nothing more: the 401 it gets must depend on the lockout
+    // alone, never on the credential offered (a moving deadline would tell a wrong guess
+    // from a right one), and the window is fixed rather than extendable by more failures.
+    if (isLocked(failed, currentTime)) {
+        return failed;
     }
-    else {
-        failed = failedLoginAttempts[reqIP];
+    failed.count = failed.count + 1;
+    failed.lastTried = currentTime;
+    // Delete before set so the entry moves to the back: Map iterates in insertion order,
+    // so the head is the least recently failed address.
+    failedLoginAttempts.delete(reqIP);
+    if (failedLoginAttempts.size >= MAX_TRACKED_ADDRESSES) {
+        // Evict the least recently failed address that is not currently locked out, so
+        // table pressure cannot flush a live lockout; only when every tracked address is
+        // locked does the oldest lockout go.
+        let evict = failedLoginAttempts.keys().next().value;
+        for (const [ip, entry] of failedLoginAttempts) {
+            if (!isLocked(entry, currentTime)) {
+                evict = ip;
+                break;
+            }
+        }
+        failedLoginAttempts.delete(evict);
     }
+    failedLoginAttempts.set(reqIP, failed);
     return failed;
 };
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
-    if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
+    if (isLocked(failed, currentTime)) {
         return {
             message: 'Multiple Failed Login Attempts!',
             error: 'Application locked for ' + (LOCKING_PERIOD / ONE_MINUTE) + ' minutes due to multiple failed attempts!\nTry again after ' + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD) / 1000) + '!'
@@ -101,7 +138,12 @@ export const authenticateUser = (req, res, next) => {
         const reqIP = common.getRequestIP(req);
         const failed = getFailedInfo(reqIP, currentTime);
         const password = authenticationValue;
-        if (common.appConfig.rtlPass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
+        // When a second factor is required, neither 401 may say which credential failed:
+        // the password check runs first, so a distinct "invalid token" reply would confirm a
+        // correct password to a caller without the token.
+        const twoFARequired = common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req);
+        const errMsg = twoFARequired ? 'Invalid Password or 2FA Token!' : 'Invalid Password!';
+        if (common.appConfig.rtlPass === password && !isLocked(failed, currentTime)) {
             // Gate on the server-side 2FA configuration, not on the request: when 2FA is
             // enabled a token is mandatory, so a request omitting twoFAToken is rejected
             // instead of silently skipping verification. The login UI keys its token prompt
@@ -109,27 +151,26 @@ export const authenticateUser = (req, res, next) => {
             // must not lock the operator out of a UI that never prompts for a token.
             // Requests with a valid session token (in-app re-authorization, e.g. the
             // password prompt before on-chain sends) are exempt from the TOTP requirement.
-            if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req)) {
+            if (twoFARequired) {
                 if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
-                    failed.count = failed.count + 1;
-                    failed.lastTried = currentTime;
-                    return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
+                    return res.status(401).json(handleMultipleFailedAttemptsError(recordFailedAttempt(reqIP, currentTime), currentTime, errMsg));
                 }
             }
             if (!req.session.selectedNode) {
                 req.session.selectedNode = common.selectedNode;
             }
-            delete failedLoginAttempts[reqIP];
+            failedLoginAttempts.delete(reqIP);
             const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
             res.status(200).json({ token: token });
         }
         else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: { error: 'Invalid password.' } });
-            failed.count = common.appConfig.rtlPass !== password ? (failed.count + 1) : failed.count;
-            failed.lastTried = common.appConfig.rtlPass !== password ? currentTime : failed.lastTried;
-            return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
+            // Reached for a wrong password, or for a correct one refused by a live lockout.
+            const wrongPassword = common.appConfig.rtlPass !== password;
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: (wrongPassword ? 'Invalid Password! Failed IP ' : 'Locked Out! Failed IP ') + reqIP, error: { error: wrongPassword ? 'Invalid password.' : 'Address locked out.' } });
+            const recorded = wrongPassword ? recordFailedAttempt(reqIP, currentTime) : failed;
+            return res.status(401).json(handleMultipleFailedAttemptsError(recorded, currentTime, errMsg));
         }
     }
 };

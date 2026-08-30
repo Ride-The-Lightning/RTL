@@ -28,6 +28,7 @@ Helpers and logs:
 
 ```bash
 bin/b-cli getblockcount              # bitcoin-cli
+bin/b-cli -rpcwallet=rtldev generatetoaddress 6 "$ADDR"   # mining needs the wallet named
 bin/ln-cli alice getinfo             # lncli (node name required; handles --lnddir)
 bin/ln-cli bob fwdinghistory
 docker compose logs -f rtl
@@ -64,6 +65,22 @@ Key facts when working with the fixture:
   `RTL-Config.json` because `.gitignore` matches that bare name at any depth.
 - **Payments right after a channel opens fail** until the graph propagates to the sender;
   the seed waits for this and so should anything you script.
+- **Mining needs `-rpcwallet=rtldev`.** Two wallets are loaded — `rtldev` for mining and
+  `eclair` for the eclair node — so a bare `bin/b-cli -generate 6` fails with
+  `error code: -19  Multiple wallets are loaded`. Pipe that call into anything and the
+  error goes with it: it reads as a successful mine that produced no blocks, and you are
+  left wondering why a channel will not confirm.
+
+  ```bash
+  ADDR=$(bin/b-cli -rpcwallet=rtldev getnewaddress)
+  bin/b-cli -rpcwallet=rtldev generatetoaddress 6 "$ADDR"
+  ```
+
+- **An idle network reports itself out of sync.** LND's `synced_to_chain` turns false once
+  the chain tip is a few hours old, even though the node is at the same height as bitcoind,
+  and RTL shows a red "Not Synced to Chain" on the home page. Any fixture left running
+  overnight shows this the next morning. Mine one block and it clears — there is nothing to
+  debug, and it never happens on a real chain because blocks keep arriving.
 - **Eclair node** (`eclair`, `polarlightning/eclair` — the official `acinq/eclair` image is
   amd64-only and stale): RTL talks to its HTTP API with basic auth (`lnApiPassword`). Eclair
   has no wallet of its own — `eclair-wallet-init` creates a dedicated `eclair` bitcoind

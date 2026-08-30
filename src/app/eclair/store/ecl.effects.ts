@@ -13,7 +13,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { GetInfo, OnChainBalance, Peer, Audit, Transaction, Invoice, Channel, ChannelStateUpdate, SaveChannel, UpdateChannel, CloseChannel,
-  GetQueryRoutes, QueryRoutes, SendPayment, SendPaymentOnChain, CreateInvoice } from '../../shared/models/eclModels';
+  GetQueryRoutes, QueryRoutes, SendPayment, SendPaymentOnChain, CreateInvoice, ListInvoices } from '../../shared/models/eclModels';
 import { API_URL, API_END_POINTS, RTLActions, ECLActions, APICallStatusEnum, UI_MESSAGES, ECLWSEventTypeEnum, ECL_DEFAULT_PAGE_SETTINGS } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
@@ -571,9 +571,9 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_INVOICES_ECL),
     mergeMap((action: { type: string, payload: { count: number, skip: number } }) => {
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '?count=' + action.payload.count + '&skip=' + action.payload.skip).
+      return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '?count=' + action.payload.count + '&skip=' + action.payload.skip).
         pipe(
-          map((res: Invoice[]) => {
+          map((res: ListInvoices) => {
             this.logger.info(res);
             this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'FetchInvoices', status: APICallStatusEnum.COMPLETED } }));
             return {

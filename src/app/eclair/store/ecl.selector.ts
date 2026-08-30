@@ -15,6 +15,6 @@ export const inactiveChannelsInfo = createSelector(eclState, (state: ECLState) =
 export const allChannelsInfo = createSelector(eclState, (state: ECLState) => ({ activeChannels: state.activeChannels, pendingChannels: state.pendingChannels, inactiveChannels: state.inactiveChannels,
   lightningBalance: state.lightningBalance, channelsStatus: state.channelsStatus, apiCallStatus: state.apisCallStatus.FetchChannels }));
 export const transactions = createSelector(eclState, (state: ECLState) => ({ transactions: state.transactions, apiCallStatus: state.apisCallStatus.FetchTransactions }));
-export const invoices = createSelector(eclState, (state: ECLState) => ({ invoices: state.invoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));
+export const invoices = createSelector(eclState, (state: ECLState) => ({ invoices: state.invoices, totalInvoices: state.totalInvoices, apiCallStatus: state.apisCallStatus.FetchInvoices }));
 export const peers = createSelector(eclState, (state: ECLState) => ({ peers: state.peers, apiCallStatus: state.apisCallStatus.FetchPeers }));
 export const onchainBalance = createSelector(eclState, (state: ECLState) => ({ onchainBalance: state.onchainBalance, apiCallStatus: state.apisCallStatus.FetchOnchainBalance }));

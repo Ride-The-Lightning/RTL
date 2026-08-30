@@ -485,6 +485,16 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: UpdateSelectedNode }) => {
         this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED } }));
+        if (!this.sessionService.getItem('token')) {
+          // Before login there is no server-side session to switch; the node the login page
+          // needs (name, theme) is already in the config fetched above, so set it locally.
+          this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
+          this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
+          // Hand over a copy, as the HTTP path does: initializeNode writes to its argument before
+          // it becomes the store's selNode, and this one is an element of appConfig.nodes.
+          if (action.payload.currentLnNode) { this.initializeNode(JSON.parse(JSON.stringify(action.payload.currentLnNode)), action.payload.isInitialSetup); }
+          return of({ type: RTLActions.VOID });
+        }
         return this.httpClient.get(API_END_POINTS.CONF_API + '/updateSelNode/' + action.payload.currentLnNode?.index + '/' + action.payload.prevLnNodeIndex).pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
