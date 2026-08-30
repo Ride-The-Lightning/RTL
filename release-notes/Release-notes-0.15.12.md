@@ -46,8 +46,12 @@ this release should add its entry under the appropriate section below.
   A locked address also records nothing further: previously a wrong guess during the lockout
   pushed the "try again after" deadline forward while a correct one did not, which both let
   the window be extended indefinitely and told an unauthenticated caller whether their guess
-  was right. Covered by backend tests in `test/backend/authenticate.test.mjs`, including the
-  sweep pass, the eviction policy and the locked-state response. The third finding in #1656 — the counter keys on
+  was right. In the same spirit, when 2FA is enforced the two failure replies no longer say
+  which credential was wrong: the password is checked first, so a distinct "Invalid 2FA
+  Token" reply confirmed a correct password to a caller who had no token. Both now read
+  "Invalid Password or 2FA Token!" (the server log still records which); without 2FA the
+  message is unchanged. Covered by backend tests in `test/backend/authenticate.test.mjs`,
+  including the sweep pass, the eviction policy and the locked-state and 2FA responses. The third finding in #1656 — the counter keys on
   `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
   trusted-proxy configuration and is left open.
 
