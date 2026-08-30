@@ -43,8 +43,11 @@ this release should add its entry under the appropriate section below.
   successful logins store nothing — and when the table is full the least recently failed
   address that is *not* currently locked out is evicted, so churn from other addresses cannot
   flush a live lockout; only when every tracked address is locked does the oldest lockout go.
-  Covered by backend tests in `test/backend/authenticate.test.mjs`, including the sweeper and
-  the eviction policy. The third finding in #1656 — the counter keys on
+  A locked address also records nothing further: previously a wrong guess during the lockout
+  pushed the "try again after" deadline forward while a correct one did not, which both let
+  the window be extended indefinitely and told an unauthenticated caller whether their guess
+  was right. Covered by backend tests in `test/backend/authenticate.test.mjs`, including the
+  sweep pass, the eviction policy and the locked-state response. The third finding in #1656 — the counter keys on
   `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
   trusted-proxy configuration and is left open.
 

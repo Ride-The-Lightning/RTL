@@ -34,14 +34,20 @@ const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime(
 // `node --test` or a CLI invocation alive for the full 30-minute period).
 loginInterval.unref();
 
-// Read-only: a lookup never stores anything, so first-contact visitors and successful
-// logins do not consume a slot in the bounded table. Only recordFailedAttempt inserts.
+// A lookup never stores anything, so first-contact visitors and successful logins do not
+// consume a slot in the bounded table; only recordFailedAttempt inserts. The return value is
+// the live table entry when one exists (mutating it mutates the table) and a detached
+// object otherwise, which only becomes tracked once handed to recordFailedAttempt.
 export const getFailedInfo = (reqIP, currentTime) => {
   const existing = failedLoginAttempts.get(reqIP);
   return (existing && !hasExpired(existing, currentTime)) ? existing : { count: 0, lastTried: currentTime };
 };
 
 export const recordFailedAttempt = (reqIP, failed, currentTime) => {
+  // A locked address records nothing more: the 401 it gets must depend on the lockout
+  // alone, never on the credential offered (a moving deadline would tell a wrong guess
+  // from a right one), and the window is fixed rather than extendable by more failures.
+  if (isLocked(failed, currentTime)) { return; }
   failed.count = failed.count + 1;
   failed.lastTried = currentTime;
   // Delete before set so the entry moves to the back: Map iterates in insertion order,
@@ -61,7 +67,7 @@ export const recordFailedAttempt = (reqIP, failed, currentTime) => {
 };
 
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
-  if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
+  if (isLocked(failed, currentTime)) {
     return {
       message: 'Multiple Failed Login Attempts!',
       error: 'Application locked for ' + (LOCKING_PERIOD / ONE_MINUTE) + ' minutes due to multiple failed attempts!\nTry again after ' + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD) / 1000) + '!'
@@ -143,7 +149,6 @@ export const authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else {
       logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: { error: 'Invalid password.' } });
-      // A correct password against a live lockout is not a further failure.
       if (common.appConfig.rtlPass !== password) { recordFailedAttempt(reqIP, failed, currentTime); }
       return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
     }
