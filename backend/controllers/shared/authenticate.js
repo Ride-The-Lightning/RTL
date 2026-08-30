@@ -38,18 +38,16 @@ export const getFailedInfo = (reqIP, currentTime) => {
     const existing = failedLoginAttempts.get(reqIP);
     return (existing && !hasExpired(existing, currentTime)) ? existing : { count: 0, lastTried: currentTime };
 };
-export const recordFailedAttempt = (reqIP, failed, currentTime) => {
-    // Guard the stored entry, not the argument: a live lockout is immutable whatever the
-    // caller holds. The argument only seeds the table when nothing live is stored for reqIP.
-    const stored = failedLoginAttempts.get(reqIP);
-    if (stored && !hasExpired(stored, currentTime)) {
-        failed = stored;
-    }
+// Records one failure for reqIP and returns the entry now stored for it. Derives the
+// entry itself rather than trusting a caller-held object, so a live lockout is immutable
+// and an expired one is dropped whatever the caller holds.
+export const recordFailedAttempt = (reqIP, currentTime) => {
+    const failed = getFailedInfo(reqIP, currentTime);
     // A locked address records nothing more: the 401 it gets must depend on the lockout
     // alone, never on the credential offered (a moving deadline would tell a wrong guess
     // from a right one), and the window is fixed rather than extendable by more failures.
     if (isLocked(failed, currentTime)) {
-        return;
+        return failed;
     }
     failed.count = failed.count + 1;
     failed.lastTried = currentTime;
@@ -70,6 +68,7 @@ export const recordFailedAttempt = (reqIP, failed, currentTime) => {
         failedLoginAttempts.delete(evict);
     }
     failedLoginAttempts.set(reqIP, failed);
+    return failed;
 };
 const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
     if (isLocked(failed, currentTime)) {
@@ -150,8 +149,7 @@ export const authenticateUser = (req, res, next) => {
             if (common.appConfig.enable2FA && common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && !hasValidAuthToken(req)) {
                 if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
                     logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
-                    recordFailedAttempt(reqIP, failed, currentTime);
-                    return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid 2FA Token!'));
+                    return res.status(401).json(handleMultipleFailedAttemptsError(recordFailedAttempt(reqIP, currentTime), currentTime, 'Invalid 2FA Token!'));
                 }
             }
             if (!req.session.selectedNode) {
@@ -163,11 +161,11 @@ export const authenticateUser = (req, res, next) => {
             res.status(200).json({ token: token });
         }
         else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: { error: 'Invalid password.' } });
-            if (common.appConfig.rtlPass !== password) {
-                recordFailedAttempt(reqIP, failed, currentTime);
-            }
-            return res.status(401).json(handleMultipleFailedAttemptsError(failed, currentTime, 'Invalid Password!'));
+            // Reached for a wrong password, or for a correct one refused by a live lockout.
+            const wrongPassword = common.appConfig.rtlPass !== password;
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: (wrongPassword ? 'Invalid Password! Failed IP ' : 'Locked Out! Failed IP ') + reqIP, error: { error: wrongPassword ? 'Invalid password.' : 'Address locked out.' } });
+            const recorded = wrongPassword ? recordFailedAttempt(reqIP, currentTime) : failed;
+            return res.status(401).json(handleMultipleFailedAttemptsError(recorded, currentTime, 'Invalid Password!'));
         }
     }
 };

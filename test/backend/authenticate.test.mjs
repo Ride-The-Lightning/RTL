@@ -175,7 +175,7 @@ test('does not enforce a token when 2FA is enabled without a secret', () => {
 // clock. Tests that fill the table call clearFailedAttempts first so ordering between
 // tests carries no hidden state.
 const failTimes = (ip, times, at) => {
-  for (let i = 0; i < times; i++) { recordFailedAttempt(ip, getFailedInfo(ip, at), at); }
+  for (let i = 0; i < times; i++) { recordFailedAttempt(ip, at); }
 };
 
 test('a failed-attempt counter expires after the locking period', () => {
@@ -208,7 +208,7 @@ test('a locked address ignores further failures, so the window cannot be extende
   const start = Date.now();
   failTimes(ip, ALLOWED_LOGIN_ATTEMPTS, start);
   const late = start + LOCKING_PERIOD - 1;
-  recordFailedAttempt(ip, getFailedInfo(ip, late), late);
+  recordFailedAttempt(ip, late);
   assert.equal(getFailedInfo(ip, late).lastTried, start, 'the deadline did not move');
   assert.equal(getFailedInfo(ip, late).count, ALLOWED_LOGIN_ATTEMPTS, 'the count did not grow');
   assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD + 1).count, 0, 'the original deadline still lifts the lock');
@@ -249,14 +249,17 @@ test('a successful login clears a partial streak of failures', () => {
   assert.equal(getFailedInfo(ip, Date.now()).count, 0);
 });
 
-test('recordFailedAttempt guards the stored entry, not the object it was handed', () => {
+test('recordFailedAttempt derives the entry from the table and returns what it stored', () => {
   const ip = nextIP();
   const start = Date.now();
   failTimes(ip, ALLOWED_LOGIN_ATTEMPTS, start);
-  // A stale, detached object for a locked address must not replace the live lockout.
-  recordFailedAttempt(ip, { count: 0, lastTried: start }, start + 1);
-  assert.equal(getFailedInfo(ip, start + 1).count, ALLOWED_LOGIN_ATTEMPTS, 'the lockout survived');
-  assert.equal(getFailedInfo(ip, start + 1).lastTried, start, 'the deadline did not move');
+  const locked = recordFailedAttempt(ip, start + 1);
+  assert.equal(locked, getFailedInfo(ip, start + 1), 'a locked address returns its live, unchanged entry');
+  assert.equal(locked.count, ALLOWED_LOGIN_ATTEMPTS);
+  assert.equal(locked.lastTried, start);
+  const revived = recordFailedAttempt(ip, start + LOCKING_PERIOD + 1);
+  assert.equal(revived.count, 1, 'an expired entry is dropped, not revived');
+  assert.equal(revived, getFailedInfo(ip, start + LOCKING_PERIOD + 1), 'the returned entry is the stored one');
 });
 
 test('a single sweep removes every expired counter', () => {
