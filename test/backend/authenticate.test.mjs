@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
-import { authenticateUser, getFailedInfo, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
+import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
 
 const { authenticator } = otplib;
@@ -170,14 +170,18 @@ test('does not enforce a token when 2FA is enabled without a secret', () => {
   assert.equal(typeof res.body.token, 'string');
 });
 
-// Lockout bookkeeping (issue #1656). getFailedInfo is the unit that decides whether a
-// stored counter is still live, so it is exercised directly with an explicit clock.
+// Lockout bookkeeping (issue #1656). getFailedInfo / recordFailedAttempt are the units that
+// decide whether a stored counter is live, so they are exercised directly with an explicit
+// clock. Tests that fill the table call clearFailedAttempts first so ordering between
+// tests carries no hidden state.
+const failTimes = (ip, times, at) => {
+  for (let i = 0; i < times; i++) { recordFailedAttempt(ip, getFailedInfo(ip, at), at); }
+};
+
 test('a failed-attempt counter expires after the locking period', () => {
   const ip = nextIP();
   const start = Date.now();
-  const failed = getFailedInfo(ip, start);
-  failed.count = ALLOWED_LOGIN_ATTEMPTS;
-  failed.lastTried = start;
+  failTimes(ip, ALLOWED_LOGIN_ATTEMPTS, start);
   assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD).count, ALLOWED_LOGIN_ATTEMPTS, 'still locked inside the period');
   assert.equal(getFailedInfo(ip, start + LOCKING_PERIOD + 1).count, 0, 'unlocked once the period has elapsed');
 });
@@ -199,35 +203,76 @@ test('a locked-out address can log in again once the locking period has elapsed'
   assert.equal(res.statusCode, 200);
 });
 
-test('the number of tracked addresses is bounded', () => {
-  const now = Date.now();
-  const first = 'bound-first';
-  getFailedInfo(first, now).count = 3;
-  for (let i = 0; i < MAX_TRACKED_ADDRESSES; i++) {
-    getFailedInfo('bound-' + i, now + 1 + i);
-  }
-  assert.equal(getFailedInfo(first, now + 1).count, 0, 'the oldest of the entries inserted here was evicted to make room');
+test('a single sweep removes every expired counter', () => {
+  clearFailedAttempts();
+  const start = Date.now();
+  const expired = [nextIP(), nextIP()];
+  const live = nextIP();
+  expired.forEach((ip) => failTimes(ip, 1, start));
+  failTimes(live, 1, start + LOCKING_PERIOD);
+  assert.equal(trackedAddresses(), 3);
+  sweepExpiredAttempts(start + LOCKING_PERIOD + 1);
+  // Both expired entries are gone in one pass -- the old sweeper stopped itself after the first.
+  assert.equal(trackedAddresses(), 1);
+  assert.equal(getFailedInfo(live, start + LOCKING_PERIOD + 1).count, 1, 'a live entry survives the sweep');
 });
 
-test('resetting an expired counter moves it to the back of the eviction order', () => {
+test('a lookup or a successful login does not consume a slot in the table', () => {
+  clearFailedAttempts();
+  setupAppConfig(false, '');
   const now = Date.now();
-  const stale = 'evict-stale';
-  const fresh = 'evict-fresh';
-  getFailedInfo(stale, now);
-  getFailedInfo(fresh, now + 1);
-  // Reset the stale entry after expiry: it must now outlive the untouched fresh one.
-  getFailedInfo(stale, now + LOCKING_PERIOD + 2).count = 4;
-  for (let i = 0; i < MAX_TRACKED_ADDRESSES - 1; i++) {
-    getFailedInfo('evict-' + i, now + LOCKING_PERIOD + 3 + i);
+  const tracked = nextIP();
+  failTimes(tracked, 1, now);
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES + 5; i++) {
+    getFailedInfo('lookup-' + i, now);
+    authenticateUser(mockRequest({ ip: 'login-' + i }), mockResponse(), null);
   }
-  assert.equal(getFailedInfo(stale, now + LOCKING_PERIOD + 3).count, 4, 'the reset entry survived');
+  assert.equal(trackedAddresses(), 1, 'lookups and successful logins stored nothing');
+  assert.equal(getFailedInfo(tracked, now).count, 1, 'nothing above evicted the tracked entry');
+});
+
+test('the number of tracked addresses is bounded, evicting the least recently failed first', () => {
+  clearFailedAttempts();
+  const now = Date.now();
+  const first = 'bound-first';
+  failTimes(first, 1, now);
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES; i++) {
+    failTimes('bound-' + i, 1, now + 1 + i);
+  }
+  assert.equal(trackedAddresses(), MAX_TRACKED_ADDRESSES);
+  assert.equal(getFailedInfo(first, now + 1).count, 0, 'the oldest unlocked entry was evicted to make room');
+  assert.equal(getFailedInfo('bound-0', now + 1).count, 1, 'the next one is still tracked');
+});
+
+test('table pressure evicts unlocked entries before a live lockout', () => {
+  clearFailedAttempts();
+  const now = Date.now();
+  const locked = 'pressure-locked';
+  failTimes(locked, ALLOWED_LOGIN_ATTEMPTS, now); // oldest entry in the table
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES + 10; i++) {
+    failTimes('pressure-' + i, 1, now + 1 + i);
+  }
+  assert.equal(getFailedInfo(locked, now + 1).count, ALLOWED_LOGIN_ATTEMPTS, 'the lockout survived the churn');
+});
+
+test('when every tracked address is locked, the oldest lockout is the one evicted', () => {
+  clearFailedAttempts();
+  const now = Date.now();
+  for (let i = 0; i < MAX_TRACKED_ADDRESSES; i++) {
+    failTimes('all-locked-' + i, ALLOWED_LOGIN_ATTEMPTS, now + i);
+  }
+  failTimes('all-locked-new', 1, now + MAX_TRACKED_ADDRESSES);
+  assert.equal(getFailedInfo('all-locked-0', now + 1).count, 0, 'the oldest lockout went');
+  assert.equal(getFailedInfo('all-locked-1', now + 1).count, ALLOWED_LOGIN_ATTEMPTS, 'the next oldest stayed');
+  assert.equal(getFailedInfo('all-locked-new', now + 1).count, 1, 'the newcomer is tracked');
+  clearFailedAttempts();
 });
 
 test('failed-attempt counters are keyed safely against prototype names', () => {
   const now = Date.now();
   assert.equal(getFailedInfo('__proto__', now).count, 0);
   assert.equal(getFailedInfo('constructor', now).count, 0);
-  getFailedInfo('__proto__', now).count = 2;
+  failTimes('__proto__', 2, now);
   assert.equal(getFailedInfo('__proto__', now).count, 2);
   assert.equal(getFailedInfo('toString', now).count, 0);
 });
