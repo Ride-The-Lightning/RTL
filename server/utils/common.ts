@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
 import request from './request.js';
 import { Logger, LoggerService } from './logger.js';
-import { ApplicationConfig, SelectedNode } from '../models/config.model.js';
+import { ApplicationConfig, SelectedNode, Settings } from '../models/config.model.js';
 
 export class CommonService {
 
@@ -108,30 +108,96 @@ export class CommonService {
     config.SSO = JSON.parse(JSON.stringify(this.appConfig.SSO || {}));
     if (this.appConfig.multiPass) {
       config.multiPass = this.appConfig.multiPass;
+    } else {
+      // Normal post-boot state has no plaintext password (it is hashed into
+      // multiPassHashed); a caller-supplied multiPass must never survive into the live
+      // auth config. The control layer also rejects the key, this is the defense in depth.
+      delete config.multiPass;
     }
-    // Restore the TOTP seed when the client omits it — and when it sends an empty seed
-    // while still claiming 2FA is on (an inconsistent pair no honest flow produces).
-    // The settings UI's enable flow sends a non-empty seed; its disable flow sends an
-    // empty seed with enable2FA false. Both are honored.
-    if (config.secret2FA === undefined || (config.secret2FA === '' && config.enable2FA)) {
+    // A live TOTP seed must never be swapped for a client-supplied one: only the settings
+    // UI's disable flow (an empty seed with enable2FA false) may wipe it, and an empty
+    // seed while 2FA is still claimed on is an omission that restores the server seed.
+    // The enable flow sends a non-empty seed and only ever runs while 2FA is off, so a
+    // non-empty seed reaching a live seed means the seed is being overwritten — pin it.
+    if (this.appConfig.secret2FA) {
+      if (config.secret2FA === '' && !config.enable2FA) {
+        config.secret2FA = '';
+      } else {
+        config.secret2FA = this.appConfig.secret2FA;
+      }
+    } else if (config.secret2FA === undefined || (config.secret2FA === '' && config.enable2FA)) {
       config.secret2FA = this.appConfig.secret2FA;
     }
     // enable2FA derives from the seed, matching the boot-time derivation in config.ts,
     // so the two fields can never diverge after a save.
     config.enable2FA = !!config.secret2FA;
-    const appConfigNodes = new Map(this.appConfig.nodes?.map((node) => [node.index, node]) || []);
+    // Node indexes arrive as strings in JSON payloads; normalize them to numbers so the
+    // map lookups below (and the persisted config) use a single representation. Empty or
+    // non-numeric values must not coerce to 0 — that is a real node index.
+    const indexKey = (node) => {
+      const val = node?.index;
+      if (typeof val === 'number') { return val; }
+      if (typeof val === 'string' && val.trim() !== '') { return +val; }
+      return undefined;
+    };
+    // Pin from the authoritative runtime node list (this.nodes), not this.appConfig.nodes.
+    // After the first application-settings save, common.appConfig is a fresh clone while
+    // common.nodes retains the live state (options, runeValue) and is updated in place by
+    // updateNodeSettings via replaceNode — so pinning from appConfig.nodes would silently
+    // revert a user's legitimate Node Settings edit to the previous value. The controller
+    // answers known-vs-unknown from this same list (common.nodes), so the two layers can
+    // never disagree about which node is which.
+    const runtimeNodes = new Map(this.nodes?.map((node) => [indexKey(node), node]) || []);
     config.nodes?.forEach((node) => {
-      const appConfigNode = appConfigNodes.get(node.index);
-      if (appConfigNode?.authentication) {
+      node.index = Number.isFinite(indexKey(node)) ? indexKey(node) : node.index;
+      const runtimeNode = runtimeNodes.get(indexKey(node));
+      if (runtimeNode) {
+        // Existing node: pin credential paths and credentialed-request anchors to the
+        // server-held values. The client only ever echoes these (removeSecureData strips
+        // the credentials, so a client cannot have a legitimate new value for them), and
+        // accepting them would let an authenticated caller re-point credential file reads
+        // or credentialed requests — the confused-deputy vector this pins down.
         node.authentication = node.authentication || {};
-        if (appConfigNode.authentication.macaroonPath) {
-          node.authentication.macaroonPath = appConfigNode.authentication.macaroonPath;
+        node.authentication.macaroonPath = runtimeNode.authentication?.macaroonPath;
+        node.authentication.runePath = runtimeNode.authentication?.runePath;
+        node.authentication.lnApiPassword = runtimeNode.authentication?.lnApiPassword;
+        node.authentication.configPath = runtimeNode.authentication?.configPath;
+        // runeValue is CLN's live rune (setOptions sends it verbatim as the request
+        // header with no file read), so it is pinned like the other credentials even
+        // though the persisted file is stripped of it at save time.
+        node.authentication.runeValue = runtimeNode.authentication?.runeValue;
+        // swap/boltz macaroon paths are read from disk and sent as auth headers to their
+        // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
+        // like every other credential anchor here; this endpoint cannot edit them, the
+        // node-config Services page can (through updateNodeSettings on /node).
+        node.authentication.swapMacaroonPath = runtimeNode.authentication?.swapMacaroonPath;
+        node.authentication.boltzMacaroonPath = runtimeNode.authentication?.boltzMacaroonPath;
+        node.settings = (node.settings || {}) as Settings;
+        node.settings.lnServerUrl = runtimeNode.settings?.lnServerUrl;
+        node.settings.swapServerUrl = runtimeNode.settings?.swapServerUrl;
+        node.settings.boltzServerUrl = runtimeNode.settings?.boltzServerUrl;
+        node.settings.bitcoindConfigPath = runtimeNode.settings?.bitcoindConfigPath;
+        node.settings.channelBackupPath = runtimeNode.settings?.channelBackupPath;
+      } else {
+        // Unknown node: this endpoint never provisions nodes (the controller drops
+        // unknown indexes before we get here), so any credential path or settings anchor
+        // that still arrives can only be an injection; strip them all.
+        if (node.authentication) {
+          delete node.authentication.macaroonPath;
+          delete node.authentication.runePath;
+          delete node.authentication.lnApiPassword;
+          delete node.authentication.configPath;
+          // The live rune value must be stripped too, not just the path pointer.
+          delete node.authentication.runeValue;
+          delete node.authentication.swapMacaroonPath;
+          delete node.authentication.boltzMacaroonPath;
         }
-        if (appConfigNode.authentication.runePath) {
-          node.authentication.runePath = appConfigNode.authentication.runePath;
-        }
-        if (appConfigNode.authentication.lnApiPassword) {
-          node.authentication.lnApiPassword = appConfigNode.authentication.lnApiPassword;
+        if (node.settings) {
+          delete node.settings.lnServerUrl;
+          delete node.settings.swapServerUrl;
+          delete node.settings.boltzServerUrl;
+          delete node.settings.bitcoindConfigPath;
+          delete node.settings.channelBackupPath;
         }
       }
     });

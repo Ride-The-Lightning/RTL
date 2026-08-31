@@ -133,9 +133,67 @@ test('addSecureData pins disableAuth and the SSO object to server-held values', 
   });
   assert.equal(config.disableAuth, false);
   assert.deepEqual(config.SSO, { rtlSSO: 0, rtlCookiePath: '/server-cookie', logoutRedirectLink: 'https://server-logout', cookieValue: 'server-cookie' });
-  // An explicit non-empty seed is the settings UI's enable flow and is honored.
-  assert.equal(config.secret2FA, 'client-seed');
+  // A live server seed must never be swapped for a client-supplied one; only the
+  // explicit disable flow (empty seed + enable2FA false) may wipe it.
+  assert.equal(config.secret2FA, 'server-seed');
   assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData honors a fresh seed only when the server holds no live seed', () => {
+  // The settings UI's enable flow sends a non-empty seed and only ever runs while 2FA is
+  // off; with no live seed server-side, the client seed is the enable flow and is honored.
+  seedAppConfig();
+  Common.appConfig.secret2FA = '';
+  Common.appConfig.enable2FA = false;
+  const config = Common.addSecureData({ secret2FA: 'fresh-seed', enable2FA: true, nodes: [] });
+  assert.equal(config.secret2FA, 'fresh-seed');
+  assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData strips credential paths from new nodes and pins existing-node paths by index', () => {
+  seedAppConfig();
+  const serverNodes = [
+    { index: 1, authentication: { macaroonPath: '/server/lnd/admin', configPath: '/server/lnd/lnd.conf', swapMacaroonPath: '/server/loop' }, settings: { lnServerUrl: 'https://server:8080', swapServerUrl: 'https://swap:8081', boltzServerUrl: 'https://boltz:9003', bitcoindConfigPath: '/server/bitcoin.conf', channelBackupPath: '/server/backups' } }
+  ];
+  Common.appConfig.nodes = serverNodes;
+  Common.nodes = JSON.parse(JSON.stringify(serverNodes));
+  // index "1" arrives as a string in the JSON payload; it must match the numeric server
+  // index, so the existing node's paths are pinned while the new node keeps none.
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { macaroonPath: '/evil/lnd', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', swapMacaroonPath: '/loop/swap', boltzMacaroonPath: '/boltz/evil' }, settings: { lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', boltzServerUrl: 'https://evil.boltz', bitcoindConfigPath: '/etc/shadow', channelBackupPath: '/tmp/evil', themeMode: 'NIGHT' } },
+      { index: '2', authentication: { macaroonPath: '/evil/new', runePath: '/evil/rune', lnApiPassword: 'evil-pass', configPath: '/etc/passwd', swapMacaroonPath: '/loop/new' }, settings: { lnServerUrl: 'https://new.example', themeMode: 'DAY' } }
+    ]
+  });
+  const existingNode = config.nodes[0];
+  assert.equal(existingNode.index, 1);
+  assert.equal(existingNode.authentication.macaroonPath, '/server/lnd/admin');
+  assert.equal(existingNode.authentication.configPath, '/server/lnd/lnd.conf');
+  assert.equal(existingNode.authentication.runePath, undefined);
+  assert.equal(existingNode.authentication.lnApiPassword, undefined);
+  // The swap macaroon path is read from disk and sent as an auth header to the swap
+  // server, so it is pinned to the server-held value like every other credential anchor.
+  assert.equal(existingNode.authentication.swapMacaroonPath, '/server/loop');
+  assert.equal(existingNode.authentication.boltzMacaroonPath, undefined);
+  assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
+  assert.equal(existingNode.settings.swapServerUrl, 'https://swap:8081');
+  assert.equal(existingNode.settings.boltzServerUrl, 'https://boltz:9003');
+  assert.equal(existingNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
+  assert.equal(existingNode.settings.channelBackupPath, '/server/backups');
+  assert.equal(existingNode.settings.themeMode, 'NIGHT');
+  const newNode = config.nodes[1];
+  assert.equal(newNode.index, 2);
+  assert.equal(newNode.authentication.macaroonPath, undefined);
+  assert.equal(newNode.authentication.runePath, undefined);
+  assert.equal(newNode.authentication.lnApiPassword, undefined);
+  assert.equal(newNode.authentication.configPath, undefined);
+  assert.equal(newNode.authentication.swapMacaroonPath, undefined);
+  // F9: settings anchors are stripped from unknown nodes too, not just auth fields.
+  assert.equal(newNode.settings.lnServerUrl, undefined);
+  assert.equal(newNode.settings.swapServerUrl, undefined);
+  assert.equal(newNode.settings.boltzServerUrl, undefined);
+  assert.equal(newNode.settings.bitcoindConfigPath, undefined);
+  assert.equal(newNode.settings.channelBackupPath, undefined);
 });
 
 test('addSecureData restores an omitted TOTP seed and derives enable2FA from the seed', () => {
@@ -180,6 +238,67 @@ test('addSecureData pins multiPassHashed when the server holds one', () => {
   Common.appConfig.multiPassHashed = 'server-hash-value';
   const config = Common.addSecureData({ multiPassHashed: 'client-value', nodes: [] });
   assert.equal(config.multiPassHashed, 'server-hash-value');
+});
+
+test('addSecureData never persists a caller-supplied multiPass when the server holds no plaintext password', () => {
+  // Normal post-boot state: the password exists only as multiPassHashed, so a multiPass in
+  // the request body is attacker-supplied and must be discarded, not persisted and
+  // re-parsed at the next boot/save.
+  seedAppConfig();
+  Common.appConfig.multiPass = undefined;
+  Common.appConfig.multiPassHashed = 'server-hash-value';
+  const config = Common.addSecureData({ multiPass: 'attacker-password', nodes: [] });
+  assert.equal(config.multiPass, undefined);
+  assert.equal(config.multiPassHashed, 'server-hash-value');
+});
+
+test('addSecureData pins existing-node anchors from the runtime node list, not the stale appConfig copy', () => {
+  // F12/F20: runtimeNodes is built from this.nodes — the live list addSecureData must pin
+  // from — never from this.appConfig.nodes, which is a fresh clone at every save and can
+  // go stale (that is the list the controller's application-settings rebuild also uses).
+  // Pinning from the stale copy would silently regress an edit made through the
+  // node-settings endpoint to the previous value.
+  seedAppConfig();
+  Common.appConfig.nodes = [
+    { index: 1, authentication: { macaroonPath: '/stale/lnd/admin' }, settings: { lnServerUrl: 'https://stale:8080', swapServerUrl: 'https://stale-swap:8081' } }
+  ];
+  Common.nodes = JSON.parse(JSON.stringify(Common.appConfig.nodes));
+  Common.nodes[0].authentication.macaroonPath = '/live/lnd/admin';
+  Common.nodes[0].settings.lnServerUrl = 'https://live:8080';
+  Common.nodes[0].settings.swapServerUrl = 'https://live-swap:8081';
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { macaroonPath: '/evil/lnd' }, settings: { lnServerUrl: 'https://evil.example', swapServerUrl: 'https://evil.swap', themeMode: 'NIGHT' } }
+    ]
+  });
+  const node = config.nodes[0];
+  assert.equal(node.index, 1);
+  assert.equal(node.authentication.macaroonPath, '/live/lnd/admin');
+  assert.equal(node.settings.lnServerUrl, 'https://live:8080');
+  assert.equal(node.settings.swapServerUrl, 'https://live-swap:8081');
+  // Non-anchor settings still merge from the payload.
+  assert.equal(node.settings.themeMode, 'NIGHT');
+});
+
+test('addSecureData pins runeValue symmetrically with the other CLN credentials', () => {
+  // runeValue is CLN's live rune — setOptions sends it verbatim as the request header —
+  // so the known-node pin and the unknown-node strip must cover it like every other
+  // credential, not just the runePath pointer.
+  seedAppConfig();
+  Common.appConfig.nodes = [];
+  Common.nodes = [{ index: 1, authentication: { runePath: '/server/cln/rune', runeValue: 'server-rune-value' } }];
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { runePath: '/evil/rune', runeValue: 'evil-rune-value' } },
+      { index: '2', authentication: { runePath: '/evil/new', runeValue: 'evil-rune' } }
+    ]
+  });
+  const knownNode = config.nodes[0];
+  assert.equal(knownNode.authentication.runePath, '/server/cln/rune');
+  assert.equal(knownNode.authentication.runeValue, 'server-rune-value');
+  const unknownNode = config.nodes[1];
+  assert.equal(unknownNode.authentication.runePath, undefined);
+  assert.equal(unknownNode.authentication.runeValue, undefined);
 });
 
 test('addSecureData pins allowPasswordUpdate and dbDirectoryPath to server-held values', () => {

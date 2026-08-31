@@ -55,6 +55,34 @@ this release should add its entry under the appropriate section below.
   `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
   trusted-proxy configuration and is left open.
 
+- **Hardening: application-settings save can no longer re-point credentials or server URLs**
+  ([#1683](https://github.com/Ride-The-Lightning/RTL/pull/1683), fixes
+  [#1660](https://github.com/Ride-The-Lightning/RTL/issues/1660)).
+  `updateApplicationSettings` merged the request body's per-node `authentication` and
+  `settings` wholesale, so an authenticated caller could inject a `macaroonPath`, `runePath`,
+  `lnApiPassword`, `configPath` or `lnServerUrl` and re-point credentialed requests or the
+  `getConfig`/`getFile` file reads at attacker-controlled values — a confused-deputy vector.
+  The endpoint now allowlists the node fields it accepts from the body (mirroring
+  `updateNodeSettings`) and pins server URLs and credential paths — including the swap and
+  Boltz macaroon paths, which reach outbound requests as auth headers — to the server-held
+  values for existing nodes. A node whose index the server does not already know is dropped
+  with a warning instead of being provisioned: there is no add-node flow through this
+  endpoint, and a caller-chosen path or URL would otherwise be persisted to
+  `RTL-Config.json` and loaded back into the runtime nodes at the next restart. Node indexes
+  are normalized to numbers so a string-indexed payload merges into the existing node
+  instead of duplicating it, and a live 2FA seed can no longer be overwritten by a
+  request-supplied seed. Backend regression tests cover the allowlist, the unknown-node
+  drop, the index normalization and the 2FA-seed guard. The `defaultNodeIndex` and
+  `selectedNodeIndex` scalars are validated against the known node set like the node
+  entries themselves, so an out-of-range value cannot be persisted and survive a restart.
+  CLN's live rune (`authentication.runeValue`) is pinned for existing nodes and stripped
+  for unknown nodes like every other credential. The Node Settings endpoint
+  (Services page) continues to accept the Loop/Boltz server URLs and macaroon paths, which
+  are intentionally editable features, but now runs them through the same `http(s)` format
+  validation; a plaintext `multiPass` in the body is discarded, and a crafted channel value
+  on the channel-backup file read is sanitized so it can no longer walk out of the backup
+  directory.
+
 ## Enhancements
 
 - **LND: open a channel with the entire wallet balance**
