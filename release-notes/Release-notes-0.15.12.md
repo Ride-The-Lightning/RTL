@@ -55,6 +55,17 @@ this release should add its entry under the appropriate section below.
   `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
   trusted-proxy configuration and is left open.
 
+- **Eclair: the Public Key dialog now offers the node URI**
+  ([#PR_NUMBER](https://github.com/Ride-The-Lightning/RTL/pull/PR_NUMBER)).
+  On an Eclair node the dialog behind the pubkey in the side menu only ever showed the pubkey;
+  the "Info Type" dropdown that offers the node URI on LND and Core Lightning never appeared.
+  The dialog shows it when `uris` is non-empty, and the Eclair store passed `info.uris` through
+  as-is — but Eclair's `getinfo` has never had that field; it reports `nodeId` and
+  `publicAddresses` separately. LND returns `uris` itself and the Core Lightning backend builds
+  them from `id` and `address`; the Eclair backend now does the same, `nodeId@host:port` for
+  each public address. A node with no public address still gets an empty list, so the dialog
+  stays pubkey-only there rather than showing a URI nobody can reach.
+
 ## Enhancements
 
 - **LND: open a channel with the entire wallet balance**
