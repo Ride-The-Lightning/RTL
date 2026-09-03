@@ -15,13 +15,17 @@ export const simplifyAllChannels = (selNode: SelectedNode, channels) => {
   const simplifiedChannels = [];
   channels.forEach((channel) => {
     channelNodeIds = channelNodeIds + ',' + channel.nodeId;
+    // A channel that is still being opened, or that failed before funding and is on its way out, has no
+    // commitments yet. Eclair lists it anyway, so read its balances as zero instead of throwing on the
+    // missing object and turning the whole channel list into an error.
+    const spec = channel.data?.commitments?.active?.[0]?.localCommit?.spec;
     simplifiedChannels.push({
       nodeId: channel.nodeId ? channel.nodeId : '',
       channelId: channel.channelId ? channel.channelId : '',
       state: channel.state ? channel.state : '',
       announceChannel: channel.data && channel.data.commitments && channel.data.commitments.params && channel.data.commitments.params.channelFlags && channel.data.commitments.params.channelFlags.announceChannel ? channel.data.commitments.params.channelFlags.announceChannel : false,
-      toLocal: (channel.data.commitments.active[0].localCommit.spec.toLocal) ? Math.round(+channel.data.commitments.active[0].localCommit.spec.toLocal / 1000) : 0,
-      toRemote: (channel.data.commitments.active[0].localCommit.spec.toRemote) ? Math.round(+channel.data.commitments.active[0].localCommit.spec.toRemote / 1000) : 0,
+      toLocal: (spec && spec.toLocal) ? Math.round(+spec.toLocal / 1000) : 0,
+      toRemote: (spec && spec.toRemote) ? Math.round(+spec.toRemote / 1000) : 0,
       shortChannelId: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.shortChannelId ? channel.data.channelUpdate.shortChannelId : '',
       isInitiator: channel.data && channel.data.commitments && channel.data.commitments.params && channel.data.commitments.params.localParams && channel.data.commitments.params.localParams.isInitiator ? channel.data.commitments.params.localParams.isInitiator : false,
       feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
@@ -110,6 +114,14 @@ export const openChannel = (req, res, next) => {
   options.form = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params', data: options.form });
   request.post(options).then((body) => {
+    // Eclair answers /open with HTTP 200 whatever happened. Only 'created channel <id> ...' means a channel
+    // was opened; anything else is the reason it was not ('wallet error: Insufficient funds (code: -4)',
+    // 'peer aborted the channel funding flow: ...', 'disconnected', 'open channel cancelled, took too long').
+    if (typeof body !== 'string' || !body.startsWith('created channel')) {
+      const reason = typeof body === 'string' ? body : JSON.stringify(body);
+      const err = common.handleError({ statusCode: 500, message: reason, error: reason }, 'Channels', 'Open Channel Error', req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel Opened', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
