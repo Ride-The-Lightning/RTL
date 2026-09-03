@@ -34,6 +34,10 @@ export const getInfo = (req, res, next) => {
             return request.post(options).then((body) => {
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Connecting to the Eclair\'s Websocket Server.' });
                 body.lnImplementation = 'Eclair';
+                // Eclair's getinfo has no uris field; it reports nodeId and publicAddresses (host:port strings)
+                // separately. Build the URIs here, as the Core Lightning handler does, so the Public Key
+                // dialog can offer them.
+                body.uris = (body.publicAddresses || []).map((address) => body.nodeId + '@' + address);
                 req.session.selectedNode.lnVersion = body.version.split('-')[0] || '';
                 eclWsClient.updateSelectedNode(req.session.selectedNode);
                 logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'GetInfo', msg: 'Node Information Received', data: body });
