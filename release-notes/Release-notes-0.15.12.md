@@ -170,6 +170,17 @@ this release should add its entry under the appropriate section below.
   still builds `?payment_hash=` by concatenation, as do `newAddress.ts`, `channels.ts` and
   `wallet.ts`.
 
+- **Eclair: the Public Key dialog now offers the node URI**
+  ([#1694](https://github.com/Ride-The-Lightning/RTL/pull/1694)).
+  On an Eclair node the dialog behind the pubkey in the side menu only ever showed the pubkey;
+  the "Info Type" dropdown that offers the node URI on LND and Core Lightning never appeared.
+  The dialog shows it when `uris` is non-empty, and the Eclair store passed `info.uris` through
+  as-is — but Eclair's `getinfo` has never had that field; it reports `nodeId` and
+  `publicAddresses` separately. LND returns `uris` itself and the Core Lightning backend builds
+  them from `id` and `address`; the Eclair backend now does the same, `nodeId@host:port` for
+  each public address. A node with no public address still gets an empty list, so the dialog
+  stays pubkey-only there rather than showing a URI nobody can reach.
+
 ## Enhancements
 
 - **Loop and Boltz connection settings are configured in the config file or environment only**
