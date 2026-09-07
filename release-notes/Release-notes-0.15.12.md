@@ -181,6 +181,23 @@ this release should add its entry under the appropriate section below.
   RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
   Angular frontend reads is unchanged.
 
+- **The websocket ping timer no longer holds the process open**
+  ([#1699](https://github.com/Ride-The-Lightning/RTL/pull/1699), fixes
+  [#1697](https://github.com/Ride-The-Lightning/RTL/issues/1697)).
+  `RTLWebSocketServer.pingInterval` is created in a class-field initializer, so the hourly
+  timer starts as a side effect of *importing* `server/utils/webSocketServer.ts` — and it was
+  never `unref()`'d. Any process that merely pulled the module in stayed alive for the full
+  hour. That is not a problem for the running server, which its own HTTP listener keeps up,
+  but it hung `npm run testbackend`: `test/backend/lnd-invoices.test.mjs` imports the LND
+  invoice controller, which reaches the module through `webSocketClient.ts`, so a suite whose
+  tests had all passed simply never exited, with no failing assertion to point at. The timer is
+  now `unref()`'d in the constructor, matching what `authenticate.ts` already does for the
+  login-lockout sweeper; it still fires normally in the running server. The 28 manual
+  `clearInterval(WSServer.pingInterval)` calls that had accumulated in
+  `route-guards.test.mjs`, `rtlconf.test.mjs` and `lnd-invoices.test.mjs` to work around it are
+  gone, and `test/backend/websocket-server.test.mjs` asserts the timer is unreferenced so the
+  trap cannot come back.
+
 ## Developer Tooling
 
 - **Declare a minimum Node.js version**
