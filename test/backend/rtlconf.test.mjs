@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import test from 'node:test';
 
-import { updateApplicationSettings, updateNodeSettings, getFile } from '../../backend/controllers/shared/RTLConf.js';
+import { updateApplicationSettings, updateNodeSettings, getFile, getExplorerTransaction } from '../../backend/controllers/shared/RTLConf.js';
 import { Common } from '../../backend/utils/common.js';
 import { WSServer } from '../../backend/utils/webSocketServer.js';
 
@@ -1374,11 +1375,12 @@ test('updateApplicationSettings drops invalid defaultNodeIndex and selectedNodeI
   }
 });
 
-test('updateApplicationSettings does not silently discard the payload when the runtime node list is empty', () => {
+test('updateApplicationSettings keeps the on-disk node list when the runtime node list is empty', () => {
   // The node rebuild is guarded on common.nodes being non-empty. If it is empty (cannot
-  // happen after a normal boot — common.nodes is built from the file at boot — but the
-  // guard must not be silent), the allowlisted-and-pinned payload must become the saved
-  // nodes instead of the unmodified on-disk copy pretending a save happened.
+  // happen after a normal boot — common.nodes is built from the file at boot and only
+  // mutated in place afterwards), knownIndexes is empty too, so every payload node is
+  // dropped as unknown. There is then nothing to merge, and the on-disk node list must
+  // survive untouched rather than being overwritten with an empty array.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-empty-runtime-'));
   const staleFile = {
     defaultNodeIndex: 0,
@@ -1423,11 +1425,91 @@ test('updateApplicationSettings does not silently discard the payload when the r
     );
 
     assert.equal(responseStatus, 201);
-    // With no known runtime nodes, nothing is known; the payload node (index 9) is dropped
-    // and the save records exactly that instead of keeping the stale on-disk node.
-    assert.deepEqual(Common.appConfig.nodes, []);
+    // With no known runtime nodes the payload node (index 9) is dropped; the on-disk node
+    // list is neither replaced by it nor wiped.
+    assert.deepEqual(Common.appConfig.nodes, staleFile.nodes);
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
-    assert.deepEqual(fileConfig.nodes, []);
+    assert.deepEqual(fileConfig.nodes, staleFile.nodes);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('updateApplicationSettings publishes allowlisted node edits to the live runtime node list', () => {
+  // common.appConfig is reassigned on every save, but common.nodes is the list the
+  // session, the explorer requests and the next save read from. A saved setting must land
+  // there too, or it takes effect only after a restart and the next save reverts it.
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-live-nodes-'));
+  const fileConfig = {
+    defaultNodeIndex: 0,
+    dbDirectoryPath: '/db',
+    SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '' },
+    nodes: [
+      {
+        index: 0,
+        lnNode: 'lnd-main',
+        lnImplementation: 'LND',
+        authentication: { macaroonPath: '/lnd/admin' },
+        settings: { userPersona: 'OPERATOR', themeMode: 'DAY', lnServerUrl: 'https://lnd.internal:8080', blockExplorerUrl: 'https://old.example' }
+      }
+    ]
+  };
+
+  try {
+    Common.appConfig = clone({
+      ...fileConfig,
+      selectedNodeIndex: 0,
+      rtlConfFilePath: tempDir,
+      rtlPass: 'hashed-password',
+      SSO: { rtlSSO: 0, rtlCookiePath: '', logoutRedirectLink: '', cookieValue: '' }
+    });
+    Common.nodes = clone(fileConfig.nodes);
+    Common.nodes[0].authentication.options = { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } };
+    const liveNode = Common.nodes[0];
+    Common.selectedNode = liveNode;
+    writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(fileConfig, null, 2), 'utf-8');
+
+    let responseStatus = null;
+    updateApplicationSettings(
+      {
+        body: {
+          ...clone(fileConfig),
+          selectedNodeIndex: 0,
+          nodes: [{ index: 0, lnNode: 'lnd-renamed', lnImplementation: 'LND', settings: { themeMode: 'NIGHT', blockExplorerUrl: 'https://new.example', lnServerUrl: 'https://attacker.example' } }]
+        },
+        session: { selectedNode: liveNode }
+      },
+      {
+        status: (status) => {
+          responseStatus = status;
+          return { json: () => {} };
+        }
+      },
+      null
+    );
+
+    assert.equal(responseStatus, 201);
+    // The live node object (still the same one the session holds) carries the edit.
+    assert.equal(Common.nodes[0], liveNode);
+    assert.equal(liveNode.settings.themeMode, 'NIGHT');
+    assert.equal(liveNode.settings.blockExplorerUrl, 'https://new.example');
+    assert.equal(liveNode.lnNode, 'lnd-renamed');
+    // Pinned anchors and runtime-only auth state are untouched.
+    assert.equal(liveNode.settings.lnServerUrl, 'https://lnd.internal:8080');
+    assert.equal(liveNode.authentication.macaroonPath, '/lnd/admin');
+    assert.deepEqual(liveNode.authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
+    // A second save that omits the setting must not revert it.
+    updateApplicationSettings(
+      { body: { ...clone(fileConfig), selectedNodeIndex: 0, nodes: [{ index: 0, settings: { userPersona: 'MERCHANT' } }] }, session: { selectedNode: liveNode } },
+      { status: () => ({ json: () => {} }) },
+      null
+    );
+    assert.equal(liveNode.settings.themeMode, 'NIGHT');
+    assert.equal(liveNode.settings.userPersona, 'MERCHANT');
+    const persisted = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.equal(persisted.nodes[0].settings.themeMode, 'NIGHT');
+    assert.equal(persisted.nodes[0].settings.userPersona, 'MERCHANT');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
@@ -1645,5 +1727,71 @@ test('getFile contains caller paths to the channel backup directory', async () =
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('getFile refuses an empty backup root and a non-string channel instead of widening the read', async () => {
+  const mockRes = () => {
+    const res = { statusCode: null, body: null };
+    res.status = (code) => {
+      res.statusCode = code;
+      return { json: (body) => { res.body = body; } };
+    };
+    return res;
+  };
+  const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-getfile-guard-'));
+  const backupDir = join(tempDir, 'backups');
+  mkdirSync(backupDir);
+  writeFileSync(join(backupDir, 'channel-1x2x3.bak'), 'backup-data', 'utf-8');
+
+  try {
+    // resolve('') is the working directory, so an unset backup path would silently make
+    // the whole install tree the containment root. Refuse before any read.
+    for (const emptyRoot of ['', undefined]) {
+      const session = { selectedNode: { lnImplementation: 'LND', settings: { channelBackupPath: emptyRoot } } };
+      const rejected = mockRes();
+      getFile({ query: { path: join(process.cwd(), 'package.json') }, session }, rejected, null);
+      assert.equal(rejected.statusCode, 500);
+      assert.equal(JSON.stringify(rejected.body).includes('"name"'), false);
+      const rejectedChannel = mockRes();
+      getFile({ query: { channel: '1x2x3' }, session }, rejectedChannel, null);
+      assert.equal(rejectedChannel.statusCode, 500);
+    }
+
+    // Express parses ?channel=a&channel=b into an array and ?channel[x]=y into an object;
+    // neither has .replace, and the handler has no try/catch, so this used to throw.
+    const session = { selectedNode: { lnImplementation: 'LND', settings: { channelBackupPath: backupDir } } };
+    for (const badChannel of [['1x2x3', '4x5x6'], { x: '1x2x3' }]) {
+      const rejected = mockRes();
+      assert.doesNotThrow(() => getFile({ query: { channel: badChannel }, session }, rejected, null));
+      assert.equal(rejected.statusCode, 400);
+    }
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    rmSync(tempDir, { force: true, recursive: true });
+  }
+});
+
+test('getExplorerTransaction URL-encodes the txid path segment', async () => {
+  const seen = [];
+  const server = createServer((req, res) => {
+    seen.push(req.url);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ ok: true }));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const explorer = 'http://127.0.0.1:' + server.address().port;
+  const session = { selectedNode: { index: 7, lnImplementation: 'LND', settings: { blockExplorerUrl: explorer } } };
+
+  try {
+    const body = await new Promise((resolve) => {
+      const res = { status: () => ({ json: (payload) => resolve(payload) }) };
+      getExplorerTransaction({ params: { txid: 'abc/../../api/v1/fees?x=1#f' }, session }, res, null);
+    });
+    assert.deepEqual(body, { ok: true });
+    assert.deepEqual(seen, ['/api/tx/' + encodeURIComponent('abc/../../api/v1/fees?x=1#f')]);
+  } finally {
+    clearInterval(WSServer.pingInterval);
+    await new Promise((resolve) => server.close(resolve));
   }
 });
