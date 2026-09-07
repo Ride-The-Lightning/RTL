@@ -56,8 +56,45 @@ export const getPayments = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/payments?max_payments=' + req.query.max_payments + '&index_offset=' + req.query.index_offset + '&reversed=' + req.query.reversed;
-    request(options).then((body) => {
+    const qs = {};
+    if (req.query.max_payments !== undefined) {
+        const raw = typeof req.query.max_payments === 'string' ? req.query.max_payments.trim() : '';
+        if (raw === '' || !(/^\d+$/).test(raw)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid max_payments query param' });
+            return res.status(400).json({ message: 'max_payments must be a non-negative integer', error: 'Invalid query parameter' });
+        }
+        const num = Number(raw);
+        if (!Number.isSafeInteger(num)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'max_payments exceeds safe integer range' });
+            return res.status(400).json({ message: 'max_payments exceeds maximum safe integer', error: 'Invalid query parameter' });
+        }
+        qs.max_payments = num === 0 ? 100 : num;
+    }
+    else {
+        qs.max_payments = 100;
+    }
+    if (req.query.index_offset !== undefined) {
+        const raw = typeof req.query.index_offset === 'string' ? req.query.index_offset.trim() : '';
+        if (raw === '' || !(/^\d+$/).test(raw)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid index_offset query param' });
+            return res.status(400).json({ message: 'index_offset must be a non-negative integer', error: 'Invalid query parameter' });
+        }
+        const num = Number(raw);
+        if (!Number.isSafeInteger(num)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'index_offset exceeds safe integer range' });
+            return res.status(400).json({ message: 'index_offset exceeds maximum safe integer', error: 'Invalid query parameter' });
+        }
+        qs.index_offset = num;
+    }
+    if (req.query.reversed !== undefined) {
+        const raw = typeof req.query.reversed === 'string' ? req.query.reversed.trim().toLowerCase() : '';
+        if (raw !== 'true' && raw !== 'false' && raw !== '1' && raw !== '0' && raw !== 't' && raw !== 'f') {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Payments', msg: 'Invalid reversed query param' });
+            return res.status(400).json({ message: 'reversed must be a boolean', error: 'Invalid query parameter' });
+        }
+        qs.reversed = raw === 'true' || raw === '1' || raw === 't';
+    }
+    request({ ...options, url: req.session.selectedNode.settings.lnServerUrl + '/v1/payments', qs }).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body });
         res.status(200).json(body);
     }).catch((errRes) => {
