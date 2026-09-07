@@ -182,7 +182,7 @@ this release should add its entry under the appropriate section below.
   Angular frontend reads is unchanged.
 
 - **The websocket ping timer no longer holds the process open**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1699](https://github.com/Ride-The-Lightning/RTL/pull/1699), fixes
   [#1697](https://github.com/Ride-The-Lightning/RTL/issues/1697)).
   `RTLWebSocketServer.pingInterval` is created in a class-field initializer, so the hourly
   timer starts as a side effect of *importing* `server/utils/webSocketServer.ts` — and it was
