@@ -172,8 +172,8 @@ export class CommonService {
         node.authentication.options = runtimeNode.authentication?.options;
         // swap/boltz macaroon paths are read from disk and sent as auth headers to their
         // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
-        // like every other credential anchor here; this endpoint cannot edit them, the
-        // node-config Services page can (through updateNodeSettings on /node).
+        // like every other credential anchor here; no endpoint edits them, they are
+        // configured in RTL-Config.json or the environment only.
         node.authentication.swapMacaroonPath = runtimeNode.authentication?.swapMacaroonPath;
         node.authentication.boltzMacaroonPath = runtimeNode.authentication?.boltzMacaroonPath;
         node.settings = (node.settings || {}) as Settings;

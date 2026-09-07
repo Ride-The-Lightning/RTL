@@ -25,11 +25,10 @@ const NODE_SETTINGS_ALLOWLIST = [
   'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
   'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap'
 ];
-// Loop and Boltz server URLs are service settings, edited from the node-config Services
-// page through the node-settings endpoint only (their macaroon paths are edited the same
-// way). They are deliberately not in NODE_SETTINGS_ALLOWLIST: the application-settings
-// endpoint re-pins them, so accepting them there would be dead weight.
-const NODE_SERVICE_SETTINGS_ALLOWLIST = ['swapServerUrl', 'boltzServerUrl'];
+// The Loop and Boltz server URLs and macaroon directories are configured in
+// RTL-Config.json or the environment only, like the LN server URL and credential paths:
+// the macaroon is read from disk and sent to that URL as an auth header, so no session may
+// choose either half. Neither endpoint accepts them.
 // Top-level keys accepted on a node object. authentication and settings are themselves
 // filtered by the allowlists above; lnImplementation is deliberately absent — it selects
 // which credential the server attaches to the (pinned) LN server URL, so letting the
@@ -66,39 +65,17 @@ const isValidHttpUrl = (value) => {
     return false;
   }
 };
-// Allowlist a settings payload and drop URL-valued fields that fail isValidHttpUrl.
-// The node-settings endpoint additionally accepts the Loop/Boltz service URLs
-// (allowServiceUrls); the application-settings endpoint does not. Both handlers share this
-// so a malformed blockExplorerUrl/swapServerUrl/boltzServerUrl can never reach the
-// outbound request built from the live node's settings.
-const filterNodeSettings = (settings, allowServiceUrls = false) => {
+// Allowlist a settings payload and drop a blockExplorerUrl that fails isValidHttpUrl.
+// Both settings handlers share this so a malformed value can never reach the outbound
+// request built from the live node's settings.
+const filterNodeSettings = (settings) => {
   const allowed = Object.fromEntries(
-    Object.entries(settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key) ||
-      (allowServiceUrls && NODE_SERVICE_SETTINGS_ALLOWLIST.includes(key)))
+    Object.entries(settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key))
   );
-  for (const urlKey of ['blockExplorerUrl', 'swapServerUrl', 'boltzServerUrl']) {
-    if (allowed[urlKey] !== undefined && !isValidHttpUrl(allowed[urlKey])) {
-      delete allowed[urlKey];
-    }
+  if (allowed.blockExplorerUrl !== undefined && !isValidHttpUrl(allowed.blockExplorerUrl)) {
+    delete allowed.blockExplorerUrl;
   }
   return allowed;
-};
-// The Loop/Boltz service macaroon paths are edited from the Services page and remain
-// writable through the node-settings endpoint; an absent or empty value clears the field.
-// The LN credential paths (macaroonPath, runePath, lnApiPassword, configPath) are not
-// handled here and can never be set through this endpoint.
-const applyWritableServiceMacaroonPaths = (target, source) => {
-  if (!target || !source) { return; }
-  if (source.boltzMacaroonPath) {
-    target.boltzMacaroonPath = source.boltzMacaroonPath;
-  } else {
-    delete target.boltzMacaroonPath;
-  }
-  if (source.swapMacaroonPath) {
-    target.swapMacaroonPath = source.swapMacaroonPath;
-  } else {
-    delete target.swapMacaroonPath;
-  }
 };
 // Remember, per node, which block explorer answered the last call: the node's own once
 // its REST API suite has worked, mempool.space after a failure. Keyed by node index so one
@@ -325,20 +302,17 @@ export const updateNodeSettings = (req, res, next) => {
     const config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
     if (node && node.settings) {
-      // Allowlist incoming settings to the same set updateApplicationSettings uses, plus
-      // the Loop/Boltz service URLs (swapServerUrl, boltzServerUrl), which the Services
-      // page edits; URL fields get the same http/https format validation. Credential and
-      // LN server anchors — bitcoindConfigPath, channelBackupPath, lnServerUrl, logFile —
-      // stay out of the allowlist, so they are neither edited here nor persisted.
-      node.settings = { ...node.settings, ...filterNodeSettings(req.body.settings, true) };
-      // Loop/Boltz macaroon paths are a Services-page feature and stay editable here.
-      applyWritableServiceMacaroonPaths(node.authentication, req.body.authentication);
+      // Allowlist incoming settings to the same set updateApplicationSettings uses. Server
+      // URLs and path anchors — lnServerUrl, swapServerUrl, boltzServerUrl,
+      // bitcoindConfigPath, channelBackupPath, logFile — stay out of the allowlist, and
+      // req.body.authentication is ignored entirely: every credential path is configured
+      // in RTL-Config.json or the environment, never through a session.
+      node.settings = { ...node.settings, ...filterNodeSettings(req.body.settings) };
     }
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     const selectedNode = common.findNode(req.session.selectedNode.index);
     if (selectedNode && selectedNode.settings) {
-      selectedNode.settings = { ...selectedNode.settings, ...filterNodeSettings(req.body.settings, true) };
-      applyWritableServiceMacaroonPaths(selectedNode.authentication, req.body.authentication);
+      selectedNode.settings = { ...selectedNode.settings, ...filterNodeSettings(req.body.settings) };
       common.replaceNode(req, selectedNode);
     }
     let responseNode = JSON.parse(JSON.stringify(common.selectedNode));

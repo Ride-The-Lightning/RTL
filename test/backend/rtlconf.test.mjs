@@ -860,12 +860,12 @@ test('updateNodeSettings pins channelBackupPath to the server-held value', () =>
   }
 });
 
-test('updateNodeSettings allowlists settings, applies valid service URLs and pins LN credential anchors', () => {
-  // lnServerUrl, bitcoindConfigPath and channelBackupPath are not in the node-settings
-  // allowlist — they must be silently dropped from the request. swapServerUrl and
-  // boltzServerUrl are legitimately edited here (the node-config Services page sends
-  // them), so valid http(s) values are applied; malformed or non-HTTP values are dropped
-  // by the same format validation the application-settings endpoint uses.
+test('updateNodeSettings allowlists settings and pins every server URL and path anchor', () => {
+  // lnServerUrl, swapServerUrl, boltzServerUrl, bitcoindConfigPath and channelBackupPath
+  // are not in the node-settings allowlist — they must be silently dropped from the
+  // request. The Loop/Boltz server URLs are configured in RTL-Config.json or the
+  // environment only: they name the host a macaroon read from disk is sent to, so no
+  // session may choose them.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-allowlist-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -907,32 +907,14 @@ test('updateNodeSettings allowlists settings, applies valid service URLs and pin
     const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
     assert.equal(fileNode.settings.themeMode, 'NIGHT');
     assert.equal(fileNode.settings.lnServerUrl, 'https://server:8080');
-    // Valid service URLs are applied.
-    assert.equal(fileNode.settings.swapServerUrl, 'https://evil.swap');
-    assert.equal(fileNode.settings.boltzServerUrl, 'https://evil.boltz');
+    assert.equal(fileNode.settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(fileNode.settings.boltzServerUrl, 'https://boltz:9003');
     assert.equal(fileNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
     assert.equal(fileNode.settings.channelBackupPath, '/server/backups');
     assert.equal(Common.nodes[0].settings.themeMode, 'NIGHT');
     assert.equal(Common.nodes[0].settings.lnServerUrl, 'https://server:8080');
-
-    // Malformed or non-HTTP service URLs are dropped, keeping the previously applied value.
-    updateNodeSettings(
-      {
-        body: { settings: { swapServerUrl: 'not-a-url', boltzServerUrl: 'file:///etc/passwd' } },
-        session: { selectedNode: Common.nodes[0] }
-      },
-      {
-        status: (status) => {
-          responseStatus = status;
-          return { json: () => {} };
-        }
-      },
-      null
-    );
-    assert.equal(responseStatus, 201);
-    const fileNodeAfterInvalid = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
-    assert.equal(fileNodeAfterInvalid.settings.swapServerUrl, 'https://evil.swap');
-    assert.equal(fileNodeAfterInvalid.settings.boltzServerUrl, 'https://evil.boltz');
+    assert.equal(Common.nodes[0].settings.swapServerUrl, 'https://swap:8081');
+    assert.equal(Common.nodes[0].settings.boltzServerUrl, 'https://boltz:9003');
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
@@ -1599,12 +1581,11 @@ test('updateApplicationSettings treats empty, null, boolean and array indexes as
   }
 });
 
-test('updateNodeSettings applies Loop/Boltz service macaroon paths but never the LN credential paths', () => {
-  // The node-config Services page edits the swap and Boltz macaroon paths through this
-  // endpoint (the client holds them — removeSecureData keeps them), so they are applied;
-  // an empty value clears the field. The LN credential anchors (macaroonPath, runePath,
-  // lnApiPassword, configPath) have no writable path through any endpoint and must stay
-  // pinned to the server value.
+test('updateNodeSettings never applies any authentication field from the request', () => {
+  // Every credential path — the LN anchors (macaroonPath, runePath, lnApiPassword,
+  // configPath) and the Loop/Boltz macaroon directories — is configured in
+  // RTL-Config.json or the environment only. The endpoint ignores req.body.authentication
+  // entirely: a caller can neither re-point a path nor clear one.
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-nodesettings-auth-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -1620,6 +1601,7 @@ test('updateNodeSettings applies Loop/Boltz service macaroon paths but never the
       }
     ]
   };
+  const serverAuth = clone(oldConfig.nodes[0].authentication);
 
   try {
     Common.appConfig = clone({ ...oldConfig, rtlConfFilePath: tempDir });
@@ -1628,49 +1610,30 @@ test('updateNodeSettings applies Loop/Boltz service macaroon paths but never the
     writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
 
     let responseStatus = null;
-    updateNodeSettings(
-      {
-        body: { settings: { themeMode: 'NIGHT' }, authentication: { swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz', macaroonPath: '/evil/lnd', configPath: '/etc/passwd' } },
-        session: { selectedNode: Common.nodes[0] }
-      },
-      {
-        status: (status) => {
-          responseStatus = status;
-          return { json: () => {} };
-        }
-      },
-      null
-    );
-
-    assert.equal(responseStatus, 201);
-    const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
-    assert.equal(fileNode.settings.themeMode, 'NIGHT');
-    // The service macaroon paths are applied from the request body.
-    assert.equal(fileNode.authentication.swapMacaroonPath, '/evil/loop');
-    assert.equal(fileNode.authentication.boltzMacaroonPath, '/evil/boltz');
-    // The LN credential paths are untouched.
-    assert.equal(fileNode.authentication.macaroonPath, '/lnd/admin');
-    assert.equal(fileNode.authentication.configPath, undefined);
-
-    // An empty service path clears the field.
-    updateNodeSettings(
-      {
-        body: { authentication: { swapMacaroonPath: '', boltzMacaroonPath: '' } },
-        session: { selectedNode: Common.nodes[0] }
-      },
-      {
-        status: (status) => {
-          responseStatus = status;
-          return { json: () => {} };
-        }
-      },
-      null
-    );
-    assert.equal(responseStatus, 201);
-    const clearedNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
-    assert.equal(clearedNode.authentication.swapMacaroonPath, undefined);
-    assert.equal(clearedNode.authentication.boltzMacaroonPath, undefined);
-    assert.equal(clearedNode.authentication.macaroonPath, '/lnd/admin');
+    for (const authentication of [
+      { swapMacaroonPath: '/evil/loop', boltzMacaroonPath: '/evil/boltz', macaroonPath: '/evil/lnd', configPath: '/etc/passwd' },
+      { swapMacaroonPath: '', boltzMacaroonPath: '' },
+      {}
+    ]) {
+      updateNodeSettings(
+        {
+          body: { settings: { themeMode: 'NIGHT' }, authentication },
+          session: { selectedNode: Common.nodes[0] }
+        },
+        {
+          status: (status) => {
+            responseStatus = status;
+            return { json: () => {} };
+          }
+        },
+        null
+      );
+      assert.equal(responseStatus, 201);
+      const fileNode = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8')).nodes[0];
+      assert.equal(fileNode.settings.themeMode, 'NIGHT');
+      assert.deepEqual(fileNode.authentication, serverAuth);
+      assert.deepEqual(Common.nodes[0].authentication, serverAuth);
+    }
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });

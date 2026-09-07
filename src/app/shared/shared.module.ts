@@ -62,11 +62,6 @@ import { NodeConfigComponent } from './components/node-config/node-config.compon
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
 import { PageSettingsComponent } from './components/node-config/page-settings/page-settings.component';
-import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
-import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
-import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
-import { PeerswapServiceSettingsComponent } from './components/node-config/services-settings/peerswap-service-settings/peerswap-service-settings.component';
-import { NoServiceFoundComponent } from './components/node-config/services-settings/no-service-found/no-service-found.component';
 import { ExperimentalSettingsComponent } from './components/node-config/experimental-settings/experimental-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
@@ -250,11 +245,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LNPConfigComponent,
     NodeSettingsComponent,
     PageSettingsComponent,
-    ServicesSettingsComponent,
-    LoopServiceSettingsComponent,
-    BoltzServiceSettingsComponent,
-    PeerswapServiceSettingsComponent,
-    NoServiceFoundComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
@@ -289,11 +279,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LNPConfigComponent,
     NodeSettingsComponent,
     PageSettingsComponent,
-    ServicesSettingsComponent,
-    LoopServiceSettingsComponent,
-    BoltzServiceSettingsComponent,
-    PeerswapServiceSettingsComponent,
-    NoServiceFoundComponent,
     ExperimentalSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
