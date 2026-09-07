@@ -402,13 +402,17 @@ export const updateApplicationSettings = (req, res, next) => {
     // same known-index discipline as nodes[]: defaultNodeIndex is persisted (unlike
     // selectedNodeIndex it is not stripped from the file config), so an unparseable value
     // or one naming a dropped node would survive a restart. Drop any such value; the
-    // server-held current index wins (selectedNodeIndex falls back in newAppConfig).
+    // server-held current index wins (selectedNodeIndex falls back in newAppConfig). A
+    // valid value is stored as a number: every consumer compares strictly (findNode,
+    // getApplicationSettings), so a persisted string would match no node after a restart.
     for (const scalarKey of ['defaultNodeIndex', 'selectedNodeIndex']) {
       if (requestBody[scalarKey] !== undefined) {
         const idx = indexKey({ index: requestBody[scalarKey] });
         if (!Number.isFinite(idx) || !knownIndexes.has(idx)) {
           logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'RTLConf', msg: `Ignoring invalid ${scalarKey} in application settings; it must be the index of a known node`, data: { value: requestBody[scalarKey] } });
           delete requestBody[scalarKey];
+        } else {
+          requestBody[scalarKey] = idx;
         }
       }
     }

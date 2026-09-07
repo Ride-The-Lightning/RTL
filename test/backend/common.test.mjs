@@ -301,6 +301,28 @@ test('addSecureData pins runeValue symmetrically with the other CLN credentials'
   assert.equal(unknownNode.authentication.runeValue, undefined);
 });
 
+test('addSecureData pins authentication.options symmetrically with runeValue', () => {
+  // authentication.options.headers is where LND's macaroon hex and ECL's Basic
+  // authorization value live — the credential itself, not a pointer to it. The known-node
+  // pin and the unknown-node strip must cover it like runeValue does for CLN.
+  seedAppConfig();
+  Common.appConfig.nodes = [];
+  const serverOptions = { headers: { 'Grpc-Metadata-macaroon': 'server-macaroon-hex' } };
+  Common.nodes = [{ index: 1, authentication: { macaroonPath: '/server/lnd', options: serverOptions } }];
+  const config = Common.addSecureData({
+    nodes: [
+      { index: '1', authentication: { macaroonPath: '/evil/lnd', options: { headers: { 'Grpc-Metadata-macaroon': 'evil-hex' } } } },
+      { index: '2', authentication: { macaroonPath: '/evil/new', options: { headers: { authorization: 'Basic evil' } } } }
+    ]
+  });
+  const knownNode = config.nodes[0];
+  assert.equal(knownNode.authentication.macaroonPath, '/server/lnd');
+  assert.deepEqual(knownNode.authentication.options, serverOptions);
+  const unknownNode = config.nodes[1];
+  assert.equal(unknownNode.authentication.macaroonPath, undefined);
+  assert.equal(unknownNode.authentication.options, undefined);
+});
+
 test('addSecureData pins allowPasswordUpdate and dbDirectoryPath to server-held values', () => {
   // allowPasswordUpdate is false precisely when the password is environment-managed, and
   // dbDirectoryPath redirects the runtime database — neither is writable from the UI.
