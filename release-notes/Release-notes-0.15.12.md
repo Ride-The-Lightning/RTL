@@ -88,7 +88,9 @@ this release should add its entry under the appropriate section below.
   resolve to the working directory) and a non-string `channel` query (which threw), the
   block-explorer transaction lookup URL-encodes the caller-supplied txid and caches the
   working explorer per node rather than in one process-wide variable, and the config temp
-  file is created `0600` rather than narrowed after the fact.
+  file is created `0600` rather than narrowed after the fact. `defaultNodeIndex` and
+  `selectedNodeIndex` are stored as numbers when they arrive as strings, and the live
+  request headers (`authentication.options`) are pinned and stripped like `runeValue`.
 
 ## Enhancements
 

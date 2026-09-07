@@ -168,6 +168,10 @@ export class CommonService {
                     // header with no file read), so it is pinned like the other credentials even
                     // though the persisted file is stripped of it at save time.
                     node.authentication.runeValue = runtimeNode.authentication?.runeValue;
+                    // options.headers carries LND's macaroon hex and ECL's Basic authorization value —
+                    // the credential itself for those two implementations, as runeValue is for CLN —
+                    // so it is pinned the same way (the persisted file is stripped of it at save time).
+                    node.authentication.options = runtimeNode.authentication?.options;
                     // swap/boltz macaroon paths are read from disk and sent as auth headers to their
                     // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
                     // like every other credential anchor here; this endpoint cannot edit them, the
@@ -192,6 +196,7 @@ export class CommonService {
                         delete node.authentication.configPath;
                         // The live rune value must be stripped too, not just the path pointer.
                         delete node.authentication.runeValue;
+                        delete node.authentication.options;
                         delete node.authentication.swapMacaroonPath;
                         delete node.authentication.boltzMacaroonPath;
                     }

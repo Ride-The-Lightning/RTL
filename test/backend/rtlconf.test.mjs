@@ -1369,6 +1369,19 @@ test('updateApplicationSettings drops invalid defaultNodeIndex and selectedNodeI
     assert.equal(Common.appConfig.selectedNodeIndex, 0);
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
     assert.equal(fileConfig.defaultNodeIndex, 0);
+
+    // A valid index arriving as a JSON string is normalized to a number, like the node
+    // entries are: every consumer compares strictly (findNode, getApplicationSettings),
+    // so a persisted "0" would match no node after a restart.
+    updateApplicationSettings(
+      { body: { ...clone(oldConfig), defaultNodeIndex: '0', selectedNodeIndex: '0' }, session: { selectedNode: Common.selectedNode } },
+      { status: () => ({ json: () => {} }) },
+      null
+    );
+    assert.strictEqual(Common.appConfig.defaultNodeIndex, 0);
+    assert.strictEqual(Common.appConfig.selectedNodeIndex, 0);
+    const normalized = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
+    assert.strictEqual(normalized.defaultNodeIndex, 0);
   } finally {
     clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
