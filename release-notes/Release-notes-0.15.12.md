@@ -81,7 +81,14 @@ this release should add its entry under the appropriate section below.
   are intentionally editable features, but now runs them through the same `http(s)` format
   validation; a plaintext `multiPass` in the body is discarded, and a crafted channel value
   on the channel-backup file read is sanitized so it can no longer walk out of the backup
-  directory.
+  directory. A saved node setting is now applied to the live runtime node as well as the
+  config, so it takes effect without a restart and a later save cannot revert it; with no
+  runtime nodes to merge against the on-disk node list is left untouched instead of being
+  emptied. The channel-backup read refuses an unset backup path (which would otherwise
+  resolve to the working directory) and a non-string `channel` query (which threw), the
+  block-explorer transaction lookup URL-encodes the caller-supplied txid and caches the
+  working explorer per node rather than in one process-wide variable, and the config temp
+  file is created `0600` rather than narrowed after the fact.
 
 ## Enhancements
 
