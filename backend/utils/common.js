@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as net from 'net';
 import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
@@ -13,6 +14,9 @@ export class CommonService {
         this.appConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, enable2FA: false, secret2FA: '', SSO: this.ssoInit, nodes: [] };
         this.port = 3000;
         this.host = '';
+        // Proxies whose X-Forwarded-For header is trusted for the client address (issue #1656).
+        // Empty means none: the socket peer is the client.
+        this.trustedProxies = '';
         this.secret_key = crypto.randomBytes(64).toString('hex');
         this.read_dummy_data = false;
         this.baseHref = '/rtl';
@@ -493,11 +497,20 @@ export class CommonService {
             }
             return newErrorObj;
         };
-        this.getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
-            req.ip ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null));
+        // The client address for the login-lockout counter and its log line. req.ip is what
+        // express derives from the socket peer and, only for the proxies listed in
+        // trustedProxies, the X-Forwarded-For chain -- so a client cannot pick its own key by
+        // sending the header (issue #1656). Whatever comes back is still checked to be a
+        // well-formed address before it is used: a misconfigured proxy that forwards the
+        // client's header verbatim would otherwise let arbitrary text reach the log, and the
+        // fallback for anything else is the socket peer, which always is one.
+        this.getRequestIP = (req) => {
+            const ip = req.ip;
+            if (typeof ip === 'string' && net.isIP(ip)) {
+                return ip;
+            }
+            return req.socket?.remoteAddress || req.connection?.remoteAddress || null;
+        };
         this.getDummyData = (dataKey, lnImplementation) => {
             const dummyDataFile = this.appConfig.rtlConfFilePath + sep + 'ECLDummyData.log';
             return new Promise((resolve, reject) => {

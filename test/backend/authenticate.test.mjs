@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { createHash } from 'node:crypto';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test, { after } from 'node:test';
 
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
@@ -29,18 +33,30 @@ const setupAppConfig = (enable2FA, secret2FA) => {
 };
 
 // failedLoginAttempts is module-level state in authenticate.js, keyed by the request IP
-// from common.getRequestIP, which prefers x-forwarded-for (server/utils/common.ts).
-// Unique IPs give each call a fresh counter; tests exercising the counter itself pass an
-// explicit ip to share one key across calls.
+// from common.getRequestIP, which reads req.ip -- what express derives from the socket peer
+// and, only through configured trusted proxies, X-Forwarded-For (see common.test.mjs for
+// that derivation). Unique IPs give each call a fresh counter; tests exercising the counter
+// itself pass an explicit ip to share one key across calls.
 let ipCounter = 0;
-const nextIP = () => '10.0.0.' + (ipCounter = ipCounter + 1);
-const mockRequest = ({ twoFAToken, ip, authToken, password } = {}) => {
-  const headers = { 'x-forwarded-for': ip || nextIP() };
+const nextIP = () => {
+  ipCounter = ipCounter + 1;
+  return '10.' + ((ipCounter >> 16) & 255) + '.' + ((ipCounter >> 8) & 255) + '.' + (ipCounter & 255);
+};
+const mockRequest = (opts = {}) => {
+  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith } = opts;
+  const headers = {};
   if (authToken) { headers.authorization = 'Bearer ' + authToken; }
+  if (forwardedFor) { headers['x-forwarded-for'] = forwardedFor; }
   return {
-    body: { authenticateWith: 'PASSWORD', authenticationValue: password || PASSWORD_HASH, twoFAToken: twoFAToken },
+    body: {
+      authenticateWith: authenticateWith || 'PASSWORD',
+      // authenticationValue is taken verbatim when given, so a test can send a non-string.
+      authenticationValue: ('authenticationValue' in opts) ? opts.authenticationValue : (password || PASSWORD_HASH),
+      twoFAToken: twoFAToken
+    },
     session: {},
     headers: headers,
+    ip: ip || nextIP(),
     connection: {},
     socket: {}
   };
@@ -298,7 +314,7 @@ test('a lookup or a successful login does not consume a slot in the table', () =
   failTimes(tracked, 1, now);
   for (let i = 0; i < MAX_TRACKED_ADDRESSES + 5; i++) {
     getFailedInfo('lookup-' + i, now);
-    authenticateUser(mockRequest({ ip: 'login-' + i }), mockResponse(), null);
+    authenticateUser(mockRequest(), mockResponse(), null);
   }
   assert.equal(trackedAddresses(), 1, 'lookups and successful logins stored nothing');
   assert.equal(getFailedInfo(tracked, now).count, 1, 'nothing above evicted the tracked entry');
@@ -348,4 +364,95 @@ test('failed-attempt counters are keyed safely against prototype names', () => {
   failTimes('__proto__', 2, now);
   assert.equal(getFailedInfo('__proto__', now).count, 2);
   assert.equal(getFailedInfo('toString', now).count, 0);
+});
+
+test('the lockout counter keys on req.ip and ignores X-Forwarded-For', () => {
+  setupAppConfig(false, '');
+  const ip = nextIP();
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+    // Rotating the header used to hand the client a fresh counter per request (issue #1656).
+    authenticateUser(mockRequest({ ip: ip, password: 'wrong', forwardedFor: '203.0.113.' + i }), mockResponse(), null);
+  }
+  const locked = mockResponse();
+  authenticateUser(mockRequest({ ip: ip, forwardedFor: '203.0.113.99' }), locked, null);
+  assert.equal(locked.statusCode, 401);
+  assert.match(locked.body.error, /locked/);
+  // Nor can the header aim a request at another address's counter.
+  const other = mockResponse();
+  authenticateUser(mockRequest({ forwardedFor: ip }), other, null);
+  assert.equal(other.statusCode, 200);
+});
+
+// SSO mode (issue #1656, finding 4). The access key a caller presents is the hex SHA-256 of
+// the cookie file; the tests below drive the same branch verify-sso.sh exercises against
+// the BTCPay harness, with a temporary cookie file so a successful login can rotate it.
+const SSO_COOKIE = 'a'.repeat(64);
+const ssoAccessKey = () => createHash('sha256').update(SSO_COOKIE).digest('hex');
+const ssoTempDirs = [];
+after(() => ssoTempDirs.forEach((dir) => rmSync(dir, { recursive: true, force: true })));
+const setupSSOConfig = () => {
+  setupAppConfig(false, '');
+  const dir = mkdtempSync(join(tmpdir(), 'rtl-sso-'));
+  ssoTempDirs.push(dir);
+  const cookiePath = join(dir, '.cookie');
+  writeFileSync(cookiePath, SSO_COOKIE);
+  Common.appConfig.SSO = { rtlSSO: 1, rtlCookiePath: cookiePath, logoutRedirectLink: '', cookieValue: SSO_COOKIE };
+  // The refusal path logs through handleError against the selected node; before login the
+  // session has none and it falls back to the process-wide one, which app startup sets.
+  Common.selectedNode = { index: 1, lnNode: 'node', lnImplementation: 'LND', settings: { logLevel: 'ERROR' } };
+  return cookiePath;
+};
+
+test('SSO: the access key derived from the cookie is accepted and the cookie rotates', () => {
+  const cookiePath = setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticationValue: ssoAccessKey() }), res, null);
+  assert.equal(res.statusCode, 200);
+  assert.equal(typeof res.body.token, 'string');
+  const rotated = readFileSync(cookiePath, 'utf-8');
+  assert.notEqual(rotated, SSO_COOKIE, 'a used cookie is replaced');
+  assert.equal(Common.appConfig.SSO.cookieValue, rotated, 'and the replacement is what the next login must match');
+});
+
+test('SSO: an access key that is not a 64-byte string is refused with 406, not thrown', () => {
+  setupSSOConfig();
+  // crypto.timingSafeEqual throws RangeError on a length mismatch and Buffer.from throws
+  // TypeError on a non-string; either used to surface as a 400 from the catch-all handler.
+  const key = ssoAccessKey();
+  for (const bad of [undefined, null, 123, ['a'], { key }, '', 'short', key + '0', key.slice(0, 63) + '\u00e9']) {
+    const res = mockResponse();
+    assert.doesNotThrow(() => authenticateUser(mockRequest({ authenticationValue: bad }), res, null));
+    assert.equal(res.statusCode, 406, 'refused: ' + JSON.stringify(bad));
+    assert.match(res.body.error, /SSO Authentication Failed/);
+  }
+});
+
+test('SSO: a well-formed but wrong access key is refused with 406', () => {
+  setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticationValue: 'f'.repeat(64) }), res, null);
+  assert.equal(res.statusCode, 406);
+  assert.match(res.body.error, /SSO Authentication Failed/);
+});
+
+test('SSO: a JWT that does not verify is refused with 406, not thrown', () => {
+  setupSSOConfig();
+  // jwt.verify throws on a missing, malformed or foreign token; that too was a 400.
+  for (const bad of [undefined, '', 'not-a-jwt', jwt.sign({ user: 'NODE_USER' }, 'some-other-secret')]) {
+    const res = mockResponse();
+    assert.doesNotThrow(() => authenticateUser(mockRequest({ authenticateWith: 'JWT', authenticationValue: bad }), res, null));
+    assert.equal(res.statusCode, 406, 'refused: ' + JSON.stringify(bad));
+  }
+  // A token this process minted is recognised, and still told SSO takes no password login.
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticateWith: 'JWT', authenticationValue: mockSessionToken() }), res, null);
+  assert.equal(res.statusCode, 406);
+  assert.match(res.body.error, /not allowed with SSO/);
+});
+
+test('SSO: an unrecognised authenticateWith gets a 406 rather than no reply at all', () => {
+  setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticateWith: 'NOAUTH', authenticationValue: ssoAccessKey() }), res, null);
+  assert.equal(res.statusCode, 406);
 });
