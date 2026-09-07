@@ -56,7 +56,7 @@ this release should add its entry under the appropriate section below.
   next entry.
 
 - **Login lockout could be dodged with `X-Forwarded-For`; malformed SSO logins threw**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1700](https://github.com/Ride-The-Lightning/RTL/pull/1700), closes
   [#1656](https://github.com/Ride-The-Lightning/RTL/issues/1656)).
   The lockout counter was keyed on the first `X-Forwarded-For` address, and the app
   trusted that header from every hop (`trust proxy: true`), so any client could send a
