@@ -94,6 +94,18 @@ this release should add its entry under the appropriate section below.
 
 ## Enhancements
 
+- **Loop and Boltz connection settings are configured in the config file or environment only**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Services tab under
+  Node Config, which edited the Loop and Boltz server URLs and macaroon directories, is
+  removed, and the node-settings endpoint no longer accepts those four fields or any other
+  `authentication` value. They now follow the same rule as the LN server URL and credential
+  paths after #1683: RTL reads a macaroon from the configured directory and sends it to the
+  configured URL, so both are operator settings in `RTL-Config.json` (or the
+  `SWAP_*`/`BOLTZ_*` environment variables), never session settings. The Loop and Boltz
+  pages themselves are unchanged and still appear whenever the corresponding server URL is
+  set. Backend tests assert that the endpoint pins every server URL and ignores every
+  `authentication` field.
+
 - **LND: open a channel with the entire wallet balance**
   ([#1682](https://github.com/Ride-The-Lightning/RTL/pull/1682), fixes
   [#155](https://github.com/Ride-The-Lightning/RTL/issues/155)).

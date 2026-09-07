@@ -9,9 +9,6 @@ import { NodeConfigComponent } from './shared/components/node-config/node-config
 import { LNPConfigComponent } from './shared/components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './shared/components/node-config/node-settings/node-settings.component';
 import { PageSettingsComponent } from './shared/components/node-config/page-settings/page-settings.component';
-import { ServicesSettingsComponent } from './shared/components/node-config/services-settings/services-settings.component';
-import { LoopServiceSettingsComponent } from './shared/components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
-import { BoltzServiceSettingsComponent } from './shared/components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
 import { LNServicesComponent } from './shared/components/ln-services/ln-services.component';
 import { LoopComponent } from './shared/components/ln-services/loop/loop.component';
 import { BoltzRootComponent } from './shared/components/ln-services/boltz/boltz-root.component';
@@ -21,7 +18,6 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 import { ErrorComponent } from './shared/components/error/error.component';
 import { AuthGuard } from './shared/services/auth.guard';
 import { ExperimentalSettingsComponent } from './shared/components/node-config/experimental-settings/experimental-settings.component';
-import { NoServiceFoundComponent } from './shared/components/node-config/services-settings/no-service-found/no-service-found.component';
 
 type PathMatch = 'full' | 'prefix' | undefined;
 
@@ -43,14 +39,6 @@ export const routes: Routes = [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'nodesettings' },
       { path: 'nodesettings', component: NodeSettingsComponent, canActivate: [AuthGuard()] },
       { path: 'pglayout', component: PageSettingsComponent, canActivate: [AuthGuard()] },
-      {
-        path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard()], children: [
-          { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
-          { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard()] },
-          { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard()] },
-          { path: 'noservice', component: NoServiceFoundComponent }
-        ]
-      },
       { path: 'experimental', component: ExperimentalSettingsComponent, canActivate: [AuthGuard()] },
       { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard()] }
     ]
