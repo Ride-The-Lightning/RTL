@@ -33,7 +33,16 @@ export class ExpressApplication {
 
   constructor() {
     this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'App', msg: 'Starting Express Application..' });
-    this.app.set('trust proxy', true);
+    // Only the configured proxies may speak for the client: with none, req.ip is the socket
+    // peer. Trusting every hop (the previous `true`) let any client rotate X-Forwarded-For
+    // to dodge the login lockout (issue #1656). express compiles the list here, so a
+    // malformed entry fails at startup rather than on the first request.
+    try {
+      this.app.set('trust proxy', this.common.trustedProxies ? this.common.trustedProxies : false);
+    } catch (err) {
+      this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'Invalid trustedProxies value "' + this.common.trustedProxies + '": ' + err.message });
+      throw err;
+    }
     this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { secure: false, maxAge: ONE_DAY }, resave: false }));
     this.app.use(cookieParser(this.common.secret_key));
     this.app.use(bodyParser.json({ limit: '25mb' }));

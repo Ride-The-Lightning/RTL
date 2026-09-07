@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
 import test from 'node:test';
+
+import express from 'express';
 
 import { Common } from '../../backend/utils/common.js';
 
@@ -347,4 +350,44 @@ test('maskPasswords does not mutate its input', () => {
   const config = { authentication: { options: { headers: { 'Grpc-Metadata-macaroon': 'deadbeef' } } } };
   Common.maskPasswords(config);
   assert.equal(config.authentication.options.headers['Grpc-Metadata-macaroon'], 'deadbeef');
+});
+
+// getRequestIP keys the login-lockout counter, so it is exercised over a real socket with
+// express computing req.ip under each trust setting app.ts can apply: the question is when
+// the socket peer and when the X-Forwarded-For chain names the client (issue #1656).
+const requestIPWith = async (trustProxy, headers) => {
+  const app = express();
+  app.set('trust proxy', trustProxy);
+  app.get('/', (req, res) => res.json({ ip: Common.getRequestIP(req) }));
+  const server = createServer(app);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const res = await fetch('http://127.0.0.1:' + server.address().port + '/', { headers: headers });
+    return (await res.json()).ip;
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
+  }
+};
+
+test('getRequestIP ignores X-Forwarded-For when no proxy is trusted', async () => {
+  assert.equal(await requestIPWith(false, {}), '127.0.0.1');
+  assert.equal(await requestIPWith(false, { 'x-forwarded-for': '203.0.113.7' }), '127.0.0.1');
+});
+
+test('getRequestIP takes the client from X-Forwarded-For only through a trusted proxy', async () => {
+  // The connection comes from 127.0.0.1, the trusted proxy here, so the address it appended
+  // is the client; a hop the client itself prepended is not walked past.
+  assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': '203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': '198.51.100.1, 203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('127.0.0.1', { 'x-forwarded-for': '203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('10.0.0.0/8', { 'x-forwarded-for': '203.0.113.7' }), '127.0.0.1', 'a peer outside the trusted range is the client');
+});
+
+test('getRequestIP falls back to the socket peer when the forwarded value is not an address', async () => {
+  // A proxy that passes the client's own header through unchanged would otherwise let
+  // arbitrary text into the lockout key and the failed-login log line.
+  for (const junk of ['not an address', '<script>alert(1)</script>', '203.0.113.7:4444', 'unknown']) {
+    assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': junk }), '127.0.0.1', JSON.stringify(junk));
+  }
 });

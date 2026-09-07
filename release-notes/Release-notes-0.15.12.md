@@ -52,8 +52,42 @@ this release should add its entry under the appropriate section below.
   "Invalid Password or 2FA Token!" (the server log still records which); without 2FA the
   message is unchanged. Covered by backend tests in `test/backend/authenticate.test.mjs`,
   including the sweep pass, the eviction policy and the locked-state and 2FA responses. The third finding in #1656 — the counter keys on
-  `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
-  trusted-proxy configuration and is left open.
+  `X-Forwarded-For`, which a client can rotate to dodge the limit — is addressed in the
+  next entry.
+
+- **Login lockout could be dodged with `X-Forwarded-For`; malformed SSO logins threw**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  [#1656](https://github.com/Ride-The-Lightning/RTL/issues/1656)).
+  The lockout counter was keyed on the first `X-Forwarded-For` address, and the app
+  trusted that header from every hop (`trust proxy: true`), so any client could send a
+  different value on each request and get a fresh five-attempt budget every time — or name
+  another address and lock *it* out. The same header reached the failed-login log line
+  unsanitised. RTL now leaves express's `trust proxy` off unless the new
+  `trustedProxies` config key (or `TRUSTED_PROXIES` environment variable) lists the
+  reverse proxies allowed to speak for the client — addresses, CIDR ranges, or the named
+  ranges `loopback`, `linklocal` and `uniquelocal` — and keys the counter on `req.ip`,
+  which express derives from the socket peer and walks through the forwarded chain only
+  past listed proxies. A malformed list fails at startup. Whatever the derivation returns
+  is checked to be a well-formed address before it is used as the key or logged; anything
+  else falls back to the socket peer. **Operators running RTL behind a reverse proxy with
+  RTL's own login should set `trustedProxies`** (e.g. `"loopback"` for a proxy on the same
+  host, `"uniquelocal"` for one on a private/container network): without it every client
+  behind the proxy shares one counter, so five failed attempts by anyone lock the proxy's
+  address out for 30 minutes. That is the same exposure the old code had to a client who
+  simply named the operator's address, now without the bypass. SSO deployments (BTCPay) are
+  unaffected, as the lockout does not apply to the cookie login. Nothing else read `trust
+  proxy`: session cookies are not marked secure and no code consults `req.protocol` or
+  `req.hostname`. In the SSO branch, the access key from the request body was handed to
+  `crypto.timingSafeEqual` with no type or length check, and `timingSafeEqual` throws on
+  unequal lengths (as `Buffer.from` does on a non-string), so any value that was not
+  exactly 64 bytes got a 400 from the catch-all error handler, carrying the thrown error's
+  text, instead of the intended 406;
+  the JWT re-login path had the same shape (`jwt.verify` throws on a bad token), and an
+  `authenticateWith` the branch did not recognise got no reply at all. All three now answer
+  406. Covered by `test/backend/common.test.mjs` (the trust settings, over a real socket)
+  and `test/backend/authenticate.test.mjs` (header ignored for the counter, every malformed
+  SSO input, and cookie rotation on success); `docker/scripts/verify-sso.sh` gains the
+  malformed-body checks against the BTCPay harness.
 
 - **Hardening: application-settings save can no longer re-point credentials or server URLs**
   ([#1683](https://github.com/Ride-The-Lightning/RTL/pull/1683), fixes

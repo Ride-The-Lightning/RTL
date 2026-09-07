@@ -9,6 +9,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
   "disableAuth": "<The flag to disable application authentication, default 'false', Optional>",
   "port": "<port number for the rtl node server, default '3000', Required>",
   "host": "<host for the rtl node server, default 'all IPs', Optional>",
+  "trustedProxies": "<Comma-separated list of reverse-proxy addresses or CIDR ranges (or the named ranges loopback, linklocal, uniquelocal) whose X-Forwarded-For header names the client, so that the login lockout counts failed attempts per client rather than per proxy. List only your own proxies. Default none: the connecting address is the client, Optional>",
   "defaultNodeIndex": <Default index to load when rtl server starts, default 1, Optional>,
   "dbDirectoryPath": "<Complete path of the folder where rtl database file should be saved, defults to RTL root, Optional>",
   "SSO": {
@@ -55,6 +56,7 @@ If the environment variables are set, it will take precedence over the parameter
 <br />
 PORT (port number for the rtl node server, default 3000, Optional)<br />
 HOST (host for the rtl node server, default localhost, Optional)<br />
+TRUSTED_PROXIES (Comma-separated list of reverse-proxy addresses or CIDR ranges, or loopback/linklocal/uniquelocal, whose X-Forwarded-For header names the client for the login lockout. Default none, Optional)<br />
 DB_DIRECTORY_PATH (Path for the folder where rtl database file should be saved, default RTL root directory, Optional)
 APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, only to be used by Vendors providing their own authentication service) (Optional)<br />
 DISABLE_AUTH (Flag to disable authentication, NOT recommended for standalone RTL applications, only to be used by Vendors providing their own authentication service) (Optional)<br /
