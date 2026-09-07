@@ -108,22 +108,21 @@ const applyWritableServiceMacaroonPaths = (target, source) => {
         delete target.swapMacaroonPath;
     }
 };
-// Set local block explorer URL after first API call
-// if the selected node block explorer has working REST API suite
-// otherwise set it to mempool.space
-let blockExplorerUrl = '';
+// Remember, per node, which block explorer answered the last call: the node's own once
+// its REST API suite has worked, mempool.space after a failure. Keyed by node index so one
+// node's explorer (or its fallback) is never reused for another node or session.
+const explorerUrlByNode = new Map();
+const explorerBaseUrl = (req) => explorerUrlByNode.get(req.session.selectedNode.index) || req.session.selectedNode.settings.blockExplorerUrl;
 export const getExplorerFeesRecommended = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Recommended Fee Rates..' });
-    options.url = (blockExplorerUrl === '') ?
-        req.session.selectedNode.settings.blockExplorerUrl + '/api/v1/fees/recommended' :
-        blockExplorerUrl + '/api/v1/fees/recommended';
+    options.url = explorerBaseUrl(req) + '/api/v1/fees/recommended';
     request(options).then((body) => {
-        blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
+        explorerUrlByNode.set(req.session.selectedNode.index, req.session.selectedNode.settings.blockExplorerUrl);
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
         res.status(200).json(JSON.parse(body));
     }).catch((errRes) => {
-        blockExplorerUrl = 'https://mempool.space';
-        options.url = blockExplorerUrl + '/api/v1/fees/recommended';
+        explorerUrlByNode.set(req.session.selectedNode.index, 'https://mempool.space');
+        options.url = 'https://mempool.space/api/v1/fees/recommended';
         return request(options).then((body) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Recommended Fee Rates Received', data: body });
             res.status(200).json(JSON.parse(body));
@@ -136,16 +135,17 @@ export const getExplorerFeesRecommended = (req, res, next) => {
 };
 export const getExplorerTransaction = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Transaction From Block Explorer..' });
-    options.url = (blockExplorerUrl === '') ?
-        req.session.selectedNode.settings.blockExplorerUrl + '/api/tx/' + req.params.txid :
-        blockExplorerUrl + '/api/tx/' + req.params.txid;
+    // The txid is caller-supplied and the explorer's reply is returned to the caller, so
+    // encode it: it must stay a single path segment and cannot carry a query or a '..'.
+    const txid = encodeURIComponent(req.params.txid);
+    options.url = explorerBaseUrl(req) + '/api/tx/' + txid;
     request(options).then((body) => {
-        blockExplorerUrl = req.session.selectedNode.settings.blockExplorerUrl;
+        explorerUrlByNode.set(req.session.selectedNode.index, req.session.selectedNode.settings.blockExplorerUrl);
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
         res.status(200).json(JSON.parse(body));
     }).catch((errRes) => {
-        blockExplorerUrl = 'https://mempool.space';
-        options.url = blockExplorerUrl + '/api/tx/' + req.params.txid;
+        explorerUrlByNode.set(req.session.selectedNode.index, 'https://mempool.space');
+        options.url = 'https://mempool.space/api/tx/' + txid;
         return request(options).then((body) => {
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Transaction From Block Explorer Received', data: body });
             res.status(200).json(JSON.parse(body));
@@ -171,6 +171,14 @@ export const getCurrencyRates = (req, res, next) => {
 export const getFile = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..' });
     const channelBackupPath = req.session.selectedNode.settings.channelBackupPath;
+    // config.ts always assigns a backup path at boot, but resolve('') is the working
+    // directory, so an unset root would silently make the install tree the containment
+    // root. Refuse rather than read from there.
+    if (typeof channelBackupPath !== 'string' || channelBackupPath.trim() === '') {
+        const errMsg = 'Reading File Error';
+        const err = common.handleError({ statusCode: 500, message: errMsg, error: 'Channel backup path is not configured' }, 'RTLConf', errMsg, req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    }
     let file = '';
     if (req.query.path) {
         // The UI only ever requests channel backup files; contain caller paths to the node's
@@ -185,10 +193,17 @@ export const getFile = (req, res, next) => {
         file = resolved;
     }
     else {
+        // Express parses a repeated key into an array and a bracketed key into an object;
+        // reject anything but a string rather than throwing from the sanitizer below.
+        if (typeof req.query.channel !== 'string') {
+            const errMsg = 'Reading File Error';
+            const err = common.handleError({ statusCode: 400, message: errMsg, error: 'Channel must be a string' }, 'RTLConf', errMsg, req.session.selectedNode);
+            return res.status(err.statusCode).json({ message: err.message, error: err.error });
+        }
         // The channel value is concatenated into the backup file name; neutralize path
         // separators and '..' so a crafted channel cannot walk out of the backup directory
         // (the UI only ever sends a channel point, "funding_txid:output").
-        const channel = req.query.channel?.replace(/[:/\\]/g, '-').replace(/\.\./g, '-');
+        const channel = req.query.channel.replace(/[:/\\]/g, '-').replace(/\.\./g, '-');
         file = channelBackupPath + sep + 'channel-' + channel + '.bak';
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'RTLConf', msg: 'Channel Point', data: req.query.channel });
@@ -253,7 +268,8 @@ export const updateSelectedNode = (req, res, next) => {
             databaseService.loadDatabase(req.session);
         }
     }
-    blockExplorerUrl = '';
+    // Retry the node's own explorer on the next call after a switch, as before.
+    explorerUrlByNode.delete(req.session.selectedNode.index);
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated To ' + req.session.selectedNode.lnNode || '' });
     res.status(200).json(common.removeAuthSecureData(JSON.parse(JSON.stringify(req.session.selectedNode))));
 };
@@ -418,11 +434,22 @@ export const updateApplicationSettings = (req, res, next) => {
                 // Unknown-index nodes were dropped above, so every config node has a matching
                 // runtime node; a plain lookup (not a consuming delete) means a duplicate index
                 // in the runtime list cannot leave the payload hanging unmerged.
+                if (newNode) {
+                    // Publish the allowlisted edit to the live runtime node as well: common.nodes is
+                    // what the session, the explorer requests and the next save read from, so a
+                    // setting left only in common.appConfig would take effect after a restart and be
+                    // reverted by the following save. Credential anchors in newNode.settings were
+                    // pinned from this very node by addSecureData, so this cannot move them.
+                    if (newNode.lnNode !== undefined) {
+                        oldNode.lnNode = newNode.lnNode;
+                    }
+                    oldNode.settings = { ...oldNode.settings, ...(newNode.settings || {}) };
+                }
                 const node = newNode ? {
                     ...oldNode,
                     ...newNode,
                     authentication: { ...(oldNode.authentication || {}), ...(newNode.authentication || {}) },
-                    settings: { ...(oldNode.settings || {}), ...(newNode.settings || {}) }
+                    settings: { ...(oldNode.settings || {}) }
                 } : {
                     ...oldNode,
                     authentication: { ...(oldNode.authentication || {}) },
@@ -433,13 +460,11 @@ export const updateApplicationSettings = (req, res, next) => {
             });
             runtimeConfig.nodes = updatedAndExistingNodes;
         }
-        else {
-            // No live runtime nodes to merge with (cannot happen after a normal boot:
-            // common.nodes is built from the file at boot and only mutated in place afterwards).
-            // Record the allowlisted-and-pinned payload rather than silently reverting to the
-            // on-disk copy — the save the caller is told about must be what the file records.
-            runtimeConfig.nodes = config.nodes || [];
-        }
+        // Otherwise there are no live runtime nodes to merge against (cannot happen after a
+        // normal boot: common.nodes is built from the file at boot and only mutated in place
+        // afterwards). knownIndexes was empty too, so every payload node was dropped above and
+        // there is nothing to record; runtimeConfig keeps the on-disk node list untouched
+        // rather than overwriting it with an empty array.
         const newAppConfig = JSON.parse(JSON.stringify({
             ...runtimeConfig,
             selectedNodeIndex: config.selectedNodeIndex !== undefined ?
@@ -469,12 +494,14 @@ export const updateApplicationSettings = (req, res, next) => {
         // Persist atomically (temp file + rename, so a mid-write failure cannot truncate the
         // config) and only then adopt the new runtime config, so a failed write leaves the
         // process on the old one. The temp file inherits the existing file's mode so a
-        // hardened 0600 is not silently downgraded; a fresh file gets 0600. Symlinks and
+        // hardened 0600 is not silently downgraded; a fresh file gets 0600. The temp file is
+        // created 0600 so the secrets it carries (2FA seed, password hash, credential paths)
+        // are never world-readable, even for the instant before chmod. Symlinks and
         // single-file bind mounts cannot be renamed over — fall back to an in-place write,
         // which preserves inode and mode.
         const tempConfigFile = RTLConfFile + '.tmp';
         try {
-            fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), 'utf-8');
+            fs.writeFileSync(tempConfigFile, JSON.stringify(fileConfig, null, 2), { encoding: 'utf-8', mode: 0o600 });
             fs.chmodSync(tempConfigFile, fs.existsSync(RTLConfFile) ? (fs.statSync(RTLConfFile).mode & 0o777) : 0o600);
             fs.renameSync(tempConfigFile, RTLConfFile);
         }
