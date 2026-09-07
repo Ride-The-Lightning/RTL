@@ -95,7 +95,7 @@ this release should add its entry under the appropriate section below.
 ## Enhancements
 
 - **Loop and Boltz connection settings are configured in the config file or environment only**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Services tab under
+  ([#1696](https://github.com/Ride-The-Lightning/RTL/pull/1696)). The Services tab under
   Node Config, which edited the Loop and Boltz server URLs and macaroon directories, is
   removed, and the node-settings endpoint no longer accepts those four fields or any other
   `authentication` value. They now follow the same rule as the LN server URL and credential
