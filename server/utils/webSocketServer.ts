@@ -31,6 +31,15 @@ export class RTLWebSocketServer {
     }
   }, 1000 * 60 * 60); // Terminate broken connections every hour
 
+  constructor() {
+    // The ping timer must not hold the event loop open on its own. Creating this singleton is
+    // a side effect of importing the module, so without this any process that merely pulls in
+    // a controller on the websocket path stays alive for the full hour -- which is what hung
+    // `node --test`. The running server is held up by its own HTTP listener, where the timer
+    // still fires normally.
+    this.pingInterval.unref();
+  }
+
   public mount = (httpServer) => {
     this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connecting Websocket Server..' });
     this.webSocketServer = new WebSocketServer({ noServer: true, path: this.common.baseHref + '/api/ws', verifyClient: (process.env.NODE_ENV === 'development') ? null : verifyWSUser });

@@ -7,7 +7,6 @@ import test from 'node:test';
 
 import { updateApplicationSettings, updateNodeSettings, getFile, getExplorerTransaction } from '../../backend/controllers/shared/RTLConf.js';
 import { Common } from '../../backend/utils/common.js';
-import { WSServer } from '../../backend/utils/webSocketServer.js';
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -136,7 +135,6 @@ test('updateApplicationSettings preserves indexed node auth and sanitizes only p
     assert.equal(fileConfig.nodes[1].authentication.options, undefined);
     assert.equal(responseBody.nodes[1].authentication.runePath, undefined);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -207,7 +205,6 @@ test('updateApplicationSettings keeps the SSO cookie server-side without exposin
     assert.equal(fileConfig.SSO.cookieValue, undefined);
     assert.equal(responseBody.SSO.cookieValue, undefined);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -277,7 +274,6 @@ test('updateApplicationSettings restores omitted secret2FA and merges a trimmed 
     assert.equal(fileConfig.SSO.cookieValue, undefined);
     assert.equal(fileConfig.secret2FA, 'live-totp-seed');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -328,7 +324,6 @@ test('updateApplicationSettings tolerates a request body without an SSO object',
     assert.equal(responseStatus, 201);
     assert.equal(typeof Common.appConfig.SSO, 'object');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -396,7 +391,6 @@ test('updateApplicationSettings leaves the runtime config untouched when the fil
     const onDisk = JSON.parse(readFileSync(confPath, 'utf-8'));
     assert.equal(onDisk.nodes.length, 1);
   } finally {
-    clearInterval(WSServer.pingInterval);
     chmodSync(confPath, 0o644);
     chmodSync(tempDir, 0o755);
     rmSync(tempDir, { force: true, recursive: true });
@@ -449,7 +443,6 @@ test('updateApplicationSettings preserves the config file mode across the atomic
     assert.equal(responseStatus, 201);
     assert.equal(statSync(confPath).mode & 0o777, 0o600);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -503,7 +496,6 @@ test('updateApplicationSettings falls back to an in-place write when the rename 
     assert.equal(statSync(confPath).mode & 0o777, 0o600); // in-place write keeps the inode
     assert.deepEqual(JSON.parse(readFileSync(confPath, 'utf-8')).nodes.length, 1);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -637,7 +629,6 @@ test('updateApplicationSettings strips untrusted credential paths and un-allowli
     assert.equal(responseBody.nodes[0].macaroonPath, undefined);
     assert.equal(responseBody.nodes[0].settings.lnServerUrl, 'https://server:8080');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -721,7 +712,6 @@ test('updateApplicationSettings normalizes string node indexes when merging', ()
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
     assert.deepEqual(fileConfig.nodes.map((node) => node.index), [0, 2]);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -804,7 +794,6 @@ test('updateApplicationSettings drops unknown-index nodes instead of provisionin
     assert.equal(fileConfig.nodes.some((node) => JSON.stringify(node).includes('evil')), false);
     assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -855,7 +844,6 @@ test('updateNodeSettings pins channelBackupPath to the server-held value', () =>
     assert.equal(fileNode.settings.themeMode, 'NIGHT'); // other settings still merge
     assert.equal(Common.nodes[0].settings.channelBackupPath, '/server/backups');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -916,7 +904,6 @@ test('updateNodeSettings allowlists settings and pins every server URL and path 
     assert.equal(Common.nodes[0].settings.swapServerUrl, 'https://swap:8081');
     assert.equal(Common.nodes[0].settings.boltzServerUrl, 'https://boltz:9003');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1038,7 +1025,6 @@ test('updateApplicationSettings validates blockExplorerUrl format and rejects ma
     assert.equal(Common.appConfig.nodes[0].settings.boltzServerUrl, 'https://boltz:9003');
     assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1094,7 +1080,6 @@ test('updateApplicationSettings filters unknown top-level payload keys', () => {
     assert.equal(fileConfig.evilTopLevel, undefined);
     assert.equal(fileConfig.dbDirectoryPath, '/db');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1163,7 +1148,6 @@ test('updateApplicationSettings preserves runtime-only auth state when all paylo
     assert.deepEqual(Common.appConfig.nodes.map((n) => n.index), [0]);
     assert.deepEqual(Common.appConfig.nodes[0].authentication.options, { headers: { 'Grpc-Metadata-macaroon': 'runtime-lnd-macaroon' } });
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1221,7 +1205,6 @@ test('updateApplicationSettings drops a caller-supplied multiPass', () => {
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
     assert.equal(fileConfig.multiPass, undefined);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1292,7 +1275,6 @@ test('updateApplicationSettings rebuilds and filters against the runtime node li
     // The payload edit is applied.
     assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'DAY');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1365,7 +1347,6 @@ test('updateApplicationSettings drops invalid defaultNodeIndex and selectedNodeI
     const normalized = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
     assert.strictEqual(normalized.defaultNodeIndex, 0);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1426,7 +1407,6 @@ test('updateApplicationSettings keeps the on-disk node list when the runtime nod
     const fileConfig = JSON.parse(readFileSync(join(tempDir, 'RTL-Config.json'), 'utf-8'));
     assert.deepEqual(fileConfig.nodes, staleFile.nodes);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1506,7 +1486,6 @@ test('updateApplicationSettings publishes allowlisted node edits to the live run
     assert.equal(persisted.nodes[0].settings.themeMode, 'NIGHT');
     assert.equal(persisted.nodes[0].settings.userPersona, 'MERCHANT');
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1576,7 +1555,6 @@ test('updateApplicationSettings treats empty, null, boolean and array indexes as
     assert.equal(Common.appConfig.nodes[0].lnNode, 'lnd-main');
     assert.deepEqual(Common.appConfig.nodes.map((n) => n.index), [0]);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1635,7 +1613,6 @@ test('updateNodeSettings never applies any authentication field from the request
       assert.deepEqual(Common.nodes[0].authentication, serverAuth);
     }
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1701,7 +1678,6 @@ test('getFile contains caller paths to the channel backup directory', async () =
     assert.equal(channelTraversal.statusCode, 500);
     assert.equal(JSON.stringify(channelTraversal.body).includes('top-secret'), false);
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1743,7 +1719,6 @@ test('getFile refuses an empty backup root and a non-string channel instead of w
       assert.equal(rejected.statusCode, 400);
     }
   } finally {
-    clearInterval(WSServer.pingInterval);
     rmSync(tempDir, { force: true, recursive: true });
   }
 });
@@ -1767,7 +1742,6 @@ test('getExplorerTransaction URL-encodes the txid path segment', async () => {
     assert.deepEqual(body, { ok: true });
     assert.deepEqual(seen, ['/api/tx/' + encodeURIComponent('abc/../../api/v1/fees?x=1#f')]);
   } finally {
-    clearInterval(WSServer.pingInterval);
     await new Promise((resolve) => server.close(resolve));
   }
 });

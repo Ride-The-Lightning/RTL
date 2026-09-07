@@ -10,7 +10,6 @@ import express from 'express';
 import eclChannelsRoutes from '../../backend/routes/eclair/channels.js';
 import rtlConfRoutes from '../../backend/routes/shared/RTLConf.js';
 import { Common } from '../../backend/utils/common.js';
-import { WSServer } from '../../backend/utils/webSocketServer.js';
 
 // The guard's error path logs against the selected node; before login the session has
 // none and handleError falls back to the process-wide one, which app startup normally sets.
@@ -32,7 +31,6 @@ const withRouter = async (mountPath, router, fn) => {
   } finally {
     server.closeAllConnections();
     await new Promise((resolve) => server.close(resolve));
-    clearInterval(WSServer.pingInterval);
   }
 };
 
@@ -107,7 +105,6 @@ test('every route outside the login page set carries isAuthenticated first', asy
       assert.ok(!layer.route && leafRouters.has(layer.handle), tree + '/index.js mounts something other than a walked leaf router');
     }
   }
-  clearInterval(WSServer.pingInterval);
   for (const tree of Object.keys(seen)) { assert.ok(seen[tree] > 0, 'walked no routes under ' + tree); }
   assert.deepEqual(unguarded, []);
 });
