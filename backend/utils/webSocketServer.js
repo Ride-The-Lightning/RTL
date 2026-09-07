@@ -174,6 +174,12 @@ export class RTLWebSocketServer {
         };
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');
         this.getClients = () => this.webSocketServer.clients;
+        // The ping timer must not hold the event loop open on its own. Creating this singleton is
+        // a side effect of importing the module, so without this any process that merely pulls in
+        // a controller on the websocket path stays alive for the full hour -- which is what hung
+        // `node --test`. The running server is held up by its own HTTP listener, where the timer
+        // still fires normally.
+        this.pingInterval.unref();
     }
 }
 export const WSServer = new RTLWebSocketServer();

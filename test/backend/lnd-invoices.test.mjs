@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import test, { after } from 'node:test';
+import test from 'node:test';
 
 import { listInvoices } from '../../backend/controllers/lnd/invoices.js';
-import { WSServer } from '../../backend/utils/webSocketServer.js';
-
-// The controller pulls in the LND websocket client, which instantiates the websocket
-// server singleton and its ping timer; without this the test process never exits.
-after(() => clearInterval(WSServer.pingInterval));
 
 const startFakeLnd = async (macaroon, invoices) => {
   const seen = [];
