@@ -92,6 +92,32 @@ this release should add its entry under the appropriate section below.
   `selectedNodeIndex` are stored as numbers when they arrive as strings, and the live
   request headers (`authentication.options`) are pinned and stripped like `runeValue`.
 
+- **LND: omitted invoice/payment paging parameters were forwarded to the node as the string
+  `undefined`**
+  ([#1687](https://github.com/Ride-The-Lightning/RTL/pull/1687), fixes
+  [#1678](https://github.com/Ride-The-Lightning/RTL/issues/1678)).
+  `listInvoices` and `getPayments` built the upstream REST URL by concatenating `req.query`
+  values straight into it, with no defaults or validation, so a caller that left any of
+  `num_max_invoices`/`max_payments`, `index_offset` or `reversed` out asked LND for
+  `num_max_invoices=undefined&index_offset=undefined&reversed=undefined` — which its REST
+  gateway cannot parse as a `uint64`/`bool`, so the call 400s instead of falling back to
+  LND's own defaults. RTL's own frontend never hit this, because `lnd.effects.ts` fills in
+  `num_max_invoices` before calling; the breakage was for anything driving the route as an
+  API. Concatenating the values raw also meant a parameter containing `&` or `=` was passed
+  through as extra upstream parameters. Both controllers now validate before the call — the
+  counts and `index_offset` must be non-negative integers inside the safe-integer range,
+  `reversed` must be a recognised boolean spelling — and refuse anything else with a 400
+  naming the parameter rather than forwarding it. What is present is passed through the
+  request layer's `qs` option, which encodes it, and what is absent is simply omitted so LND
+  applies its own default; the one exception is the page size, which defaults to 100 (and
+  treats an explicit `0` the same way) rather than letting an unbounded request fetch every
+  invoice or payment the node has. Covered by `test/backend/lnd-invoices.test.mjs` and
+  `test/backend/lnd-payments.test.mjs`, which assert the outgoing query for an empty
+  `req.query` and the 400s for each malformed value. The remaining single-parameter
+  concatenations of the same shape are untouched here: `invoiceLookup`, in this same file,
+  still builds `?payment_hash=` by concatenation, as do `newAddress.ts`, `channels.ts` and
+  `wallet.ts`.
+
 ## Enhancements
 
 - **Loop and Boltz connection settings are configured in the config file or environment only**
