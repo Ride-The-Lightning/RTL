@@ -36,7 +36,9 @@ export class ExpressApplication {
     // Only the configured proxies may speak for the client: with none, req.ip is the socket
     // peer. Trusting every hop (the previous `true`) let any client rotate X-Forwarded-For
     // to dodge the login lockout (issue #1656). express compiles the list here, so a
-    // malformed entry fails at startup rather than on the first request.
+    // malformed entry fails at startup rather than on the first request. The setting also
+    // governs req.protocol/req.secure/req.hostname/req.ips, none of which server/ reads;
+    // both cookies (session, CSRF) are secure:false, so nothing else changes behind TLS.
     try {
       this.app.set('trust proxy', this.common.trustedProxies ? this.common.trustedProxies : false);
     } catch (err) {

@@ -7,8 +7,9 @@ import test, { after } from 'node:test';
 
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
-import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
+import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, resetForwardedHeaderWarning, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
+import { Logger } from '../../backend/utils/logger.js';
 
 const { authenticator } = otplib;
 
@@ -30,6 +31,17 @@ const setupAppConfig = (enable2FA, secret2FA) => {
   };
   Common.selectedNode = null;
   Common.nodes = [];
+  Common.trustedProxies = '';
+};
+
+// Captures what the controller logs while fn runs; the controller reads Logger.log at call
+// time, so swapping the method is enough.
+const captureLog = (fn) => {
+  const lines = [];
+  const original = Logger.log;
+  Logger.log = (entry) => lines.push(entry);
+  try { fn(); } finally { Logger.log = original; }
+  return lines;
 };
 
 // failedLoginAttempts is module-level state in authenticate.js, keyed by the request IP
@@ -43,7 +55,7 @@ const nextIP = () => {
   return '10.' + ((ipCounter >> 16) & 255) + '.' + ((ipCounter >> 8) & 255) + '.' + (ipCounter & 255);
 };
 const mockRequest = (opts = {}) => {
-  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith } = opts;
+  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith, noAddress } = opts;
   const headers = {};
   if (authToken) { headers.authorization = 'Bearer ' + authToken; }
   if (forwardedFor) { headers['x-forwarded-for'] = forwardedFor; }
@@ -56,7 +68,8 @@ const mockRequest = (opts = {}) => {
     },
     session: {},
     headers: headers,
-    ip: ip || nextIP(),
+    // noAddress models a request whose socket is already gone: no req.ip, no peer address.
+    ip: noAddress ? undefined : (ip || nextIP()),
     connection: {},
     socket: {}
   };
@@ -455,4 +468,46 @@ test('SSO: an unrecognised authenticateWith gets a 406 rather than no reply at a
   const res = mockResponse();
   authenticateUser(mockRequest({ authenticateWith: 'NOAUTH', authenticationValue: ssoAccessKey() }), res, null);
   assert.equal(res.statusCode, 406);
+});
+
+test('the first login carrying X-Forwarded-For while no proxy is trusted logs a configuration warning, once', () => {
+  setupAppConfig(false, '');
+  resetForwardedHeaderWarning();
+  const isWarning = (entry) => /trustedProxies/.test(entry.msg);
+  const plain = captureLog(() => authenticateUser(mockRequest(), mockResponse(), null));
+  assert.equal(plain.filter(isWarning).length, 0, 'a request without the header says nothing');
+  const first = captureLog(() => authenticateUser(mockRequest({ ip: '10.9.9.1', forwardedFor: '203.0.113.7' }), mockResponse(), null));
+  assert.equal(first.filter(isWarning).length, 1);
+  assert.match(first.find(isWarning).msg, /10\.9\.9\.1/, 'names the address the lockout is keyed on');
+  const second = captureLog(() => authenticateUser(mockRequest({ forwardedFor: '203.0.113.8' }), mockResponse(), null));
+  assert.equal(second.filter(isWarning).length, 0, 'one-shot');
+  // With a proxy trusted, the header is honoured and there is nothing to warn about.
+  resetForwardedHeaderWarning();
+  Common.trustedProxies = '127.0.0.1';
+  const trusted = captureLog(() => authenticateUser(mockRequest({ forwardedFor: '203.0.113.9' }), mockResponse(), null));
+  assert.equal(trusted.filter(isWarning).length, 0);
+  Common.trustedProxies = '';
+});
+
+test('a login with no determinable client address is refused, not counted under a shared key', () => {
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const res = mockResponse();
+  authenticateUser(mockRequest({ noAddress: true, password: 'wrong' }), res, null);
+  assert.equal(res.statusCode, 401);
+  assert.match(res.body.error, /address could not be determined/);
+  assert.equal(trackedAddresses(), 0, 'nothing was recorded');
+  const right = mockResponse();
+  authenticateUser(mockRequest({ noAddress: true }), right, null);
+  assert.equal(right.statusCode, 401, 'the right password is refused too: the lockout cannot be applied');
+});
+
+test('SSO: the server log names which of the three refusal causes applied', () => {
+  setupSSOConfig();
+  const logged = (opts) => captureLog(() => authenticateUser(mockRequest(opts), mockResponse(), null)).map((e) => e.msg).join('\n');
+  assert.match(logged({ authenticationValue: 'short' }), /access key too short or does not match/);
+  assert.match(logged({ authenticateWith: 'JWT', authenticationValue: 'not-a-jwt' }), /session token did not verify/);
+  const unknown = logged({ authenticateWith: '<script>', authenticationValue: 'x' });
+  assert.match(unknown, /neither PASSWORD nor JWT/);
+  assert.doesNotMatch(unknown, /<script>/, 'the client-supplied mode value is not echoed into the log');
 });
