@@ -278,6 +278,22 @@ this release should add its entry under the appropriate section below.
   gone, and `test/backend/websocket-server.test.mjs` asserts the timer is unreferenced so the
   trap cannot come back.
 
+- **Dependency update batch**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Resolves the open Dependabot alerts in one pass, per the process in `CONTRIBUTING.md`. The
+  Angular CLI line (`@angular/cli`, `@angular/build`, `@angular-devkit/build-angular`) moves
+  from 20.3.34 to 20.3.36, which carries the `webpack-dev-server` 5.2.6, `less` and
+  `image-size` fixes without the Angular 22 migration that Dependabot's own PR #1685 proposed
+  (that PR stays open; Angular 21+ is tracked separately by #1650). `fast-uri` moves to 3.1.7
+  (#1692), `browserslist` to 4.28.9 (#1693) and `qs`, a transitive dependency of express 5,
+  to 6.16.0 for two advisories published since 0.15.11. `npm audit --omit=dev` goes from 1
+  moderate to **0**; the full count goes from 11 (5 high, 6 moderate) to 8 moderate, all in
+  build tooling that never ships: the `webpack-dev-server` → `sockjs` → `uuid` chain, which
+  has no fixed release upstream, and copies of `qs` pinned to `~6.15` by the `body-parser` 1.x
+  that karma and webpack-dev-server's express 4 depend on. The lockfile was regenerated from
+  scratch and the compiled `backend/` and `frontend/` artifacts rebuilt from it; both came
+  out byte-identical to the committed copies, so nothing that ships changed.
+
 ## Developer Tooling
 
 - **Declare a minimum Node.js version**
