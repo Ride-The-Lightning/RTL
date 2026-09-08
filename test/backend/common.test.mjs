@@ -398,7 +398,8 @@ test('getRequestIP takes the client from X-Forwarded-For only through a trusted 
 test('getRequestIP falls back to the socket peer when the forwarded value is not an address', async () => {
   // A proxy that passes the client's own header through unchanged would otherwise let
   // arbitrary text into the lockout key and the failed-login log line.
-  for (const junk of ['not an address', '<script>alert(1)</script>', '203.0.113.7:4444', 'unknown']) {
+  // net.isIP accepts an IPv6 zone id of any length, so an over-long one is also rejected.
+  for (const junk of ['not an address', '<script>alert(1)</script>', '203.0.113.7:4444', 'unknown', '::1%' + 'z'.repeat(100)]) {
     assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': junk }), '127.0.0.1', JSON.stringify(junk));
   }
 });

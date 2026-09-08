@@ -517,12 +517,17 @@ export class CommonService {
   // sending the header (issue #1656). Whatever comes back is still checked to be a
   // well-formed address before it is used: a misconfigured proxy that forwards the
   // client's header verbatim would otherwise let arbitrary text reach the log, and the
-  // fallback for anything else is the socket peer. Returns null only when there is no
-  // socket address at all (the connection is already gone); the caller refuses the login.
+  // fallback for anything else is the socket peer. The length cap keeps an IPv6 zone id,
+  // which net.isIP does not bound, from carrying a header-sized string into the log. A
+  // server listening on a unix socket path (a non-numeric port) has no peer addresses at
+  // all, so every client there shares one fixed key, as before this check existed. Returns
+  // null only when a TCP connection has no address left (it is already gone); the caller
+  // refuses that login.
   public getRequestIP = (req) => {
     const ip = req.ip;
-    if (typeof ip === 'string' && net.isIP(ip)) { return ip; }
-    return req.socket?.remoteAddress || req.connection?.remoteAddress || null;
+    if (typeof ip === 'string' && ip.length <= 64 && net.isIP(ip)) { return ip; }
+    if (req.socket?.remoteAddress) { return req.socket.remoteAddress; }
+    return (typeof this.port === 'string') ? 'unix-socket' : null;
   };
 
   public getDummyData = (dataKey, lnImplementation) => {
