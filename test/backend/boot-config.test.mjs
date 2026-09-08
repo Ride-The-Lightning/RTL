@@ -51,7 +51,7 @@ const boot = (configDir, env = {}) => new Promise((resolve) => {
   // The developer's own RTL variables must not reach the child: config.ts honours them,
   // and an exported TRUSTED_PROXIES or PORT would change what is being tested.
   const cleanEnv = { ...process.env };
-  ['TRUSTED_PROXIES', 'PORT', 'HOST', 'RTL_SSO', 'RTL_COOKIE_PATH', 'APP_PASSWORD', 'DISABLE_AUTH', 'LN_IMPLEMENTATION', 'LN_SERVER_URL', 'MACAROON_PATH']
+  ['TRUSTED_PROXIES', 'PORT', 'HOST', 'RTL_SSO', 'RTL_COOKIE_PATH', 'APP_PASSWORD', 'DISABLE_AUTH', 'LN_IMPLEMENTATION', 'LN_SERVER_URL', 'MACAROON_PATH', 'CHANNEL_BACKUP_PATH']
     .forEach((key) => delete cleanEnv[key]);
   const child = spawn(process.execPath, ['rtl.js'], {
     cwd: repoRoot,

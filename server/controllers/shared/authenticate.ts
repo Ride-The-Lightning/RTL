@@ -37,7 +37,9 @@ export const trackedAddresses = () => failedLoginAttempts.size;
 let forwardedHeaderWarned = false;
 export const resetForwardedHeaderWarning = () => { forwardedHeaderWarned = false; };
 const warnIfForwardedHeaderIgnored = (req, reqIP) => {
-  if (forwardedHeaderWarned || common.trustedProxies || typeof req.headers['x-forwarded-for'] !== 'string') { return; }
+  // A unix-socket listener (string port) has no peer address for any list to match, so the
+  // setting cannot apply there and the advice would be wrong.
+  if (forwardedHeaderWarned || common.trustedProxies || typeof common.port === 'string' || typeof req.headers['x-forwarded-for'] !== 'string') { return; }
   forwardedHeaderWarned = true;
   const msg = 'Configuration warning: a login request carried X-Forwarded-For but no trustedProxies is configured, so the header is ignored ' +
     'and the login lockout keys on the connecting address ' + reqIP + ' for every client behind it. ' +
