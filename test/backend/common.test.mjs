@@ -395,11 +395,19 @@ test('getRequestIP takes the client from X-Forwarded-For only through a trusted 
   assert.equal(await requestIPWith('10.0.0.0/8', { 'x-forwarded-for': '203.0.113.7' }), '127.0.0.1', 'a peer outside the trusted range is the client');
 });
 
-test('getRequestIP falls back to the socket peer when the forwarded value is not an address', async () => {
+test('getRequestIP yields no address when a trusted proxy forwards something that is not one', async () => {
   // A proxy that passes the client's own header through unchanged would otherwise let
-  // arbitrary text into the lockout key and the failed-login log line.
+  // arbitrary text into the lockout key and the failed-login log line; and falling back to
+  // the proxy's own address would let that client fill the proxy's shared counter for free.
   // net.isIP accepts an IPv6 zone id of any length, so an over-long one is also rejected.
   for (const junk of ['not an address', '<script>alert(1)</script>', '203.0.113.7:4444', 'unknown', '::1%' + 'z'.repeat(100)]) {
-    assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': junk }), '127.0.0.1', JSON.stringify(junk));
+    assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': junk }), null, JSON.stringify(junk));
   }
+});
+
+test('overBroadTrustedProxies flags entries that cover more than one host', () => {
+  assert.deepEqual(Common.overBroadTrustedProxies(''), []);
+  assert.deepEqual(Common.overBroadTrustedProxies('127.0.0.1, 172.18.0.5, 10.0.0.1/32, ::1/128'), []);
+  assert.deepEqual(Common.overBroadTrustedProxies('uniquelocal'), ['uniquelocal']);
+  assert.deepEqual(Common.overBroadTrustedProxies('127.0.0.1, loopback, 10.0.0.0/8, fd00::/8, linklocal'), ['loopback', '10.0.0.0/8', 'fd00::/8', 'linklocal']);
 });

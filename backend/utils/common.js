@@ -510,23 +510,40 @@ export class CommonService {
         // trustedProxies, the X-Forwarded-For chain -- so a client cannot pick its own key by
         // sending the header (issue #1656). Whatever comes back is still checked to be a
         // well-formed address before it is used: a misconfigured proxy that forwards the
-        // client's header verbatim would otherwise let arbitrary text reach the log, and the
-        // fallback for anything else is the socket peer. The length cap keeps an IPv6 zone id,
-        // which net.isIP does not bound, from carrying a header-sized string into the log. A
-        // server listening on a unix socket path (a non-numeric port) has no peer addresses at
-        // all, so every client there shares one fixed key, as before this check existed. Returns
-        // null only when a TCP connection has no address left (it is already gone); the caller
-        // refuses that login.
+        // client's header verbatim would otherwise let arbitrary text reach the log, so the
+        // result is null and the caller refuses the login: falling back to the socket peer would
+        // let a client behind such a proxy fill the proxy's shared counter with junk requests
+        // that cost it nothing. (With a proxy that appends its own entry the junk is never
+        // reached, and with no proxy trusted the header is never read.) The length cap keeps an
+        // IPv6 zone id, which net.isIP does not bound, from carrying a header-sized string into
+        // the log. A server listening on a unix socket path (a non-numeric port) has no peer
+        // address on any connection, so no list can match a hop there and every client shares
+        // one fixed key. Null also covers a TCP connection with no address left (already gone).
         this.getRequestIP = (req) => {
             const ip = req.ip;
-            if (typeof ip === 'string' && ip.length <= 64 && net.isIP(ip)) {
-                return ip;
+            if (typeof ip === 'string') {
+                return (ip.length <= 64 && net.isIP(ip)) ? ip : null;
             }
             if (req.socket?.remoteAddress) {
                 return req.socket.remoteAddress;
             }
             return (typeof this.port === 'string') ? 'unix-socket' : null;
         };
+        // Entries of a trustedProxies list that cover more than one host. express trusts every
+        // hop inside the list, so an entry that also contains clients lets them forge their
+        // address; the list is still accepted (it is express's own syntax), but app.ts flags it.
+        this.overBroadTrustedProxies = (list) => list.split(',').map((entry) => entry.trim()).filter((entry) => entry !== '').filter((entry) => {
+            if (entry === 'loopback' || entry === 'linklocal' || entry === 'uniquelocal') {
+                return true;
+            }
+            const slash = entry.indexOf('/');
+            if (slash < 0) {
+                return false;
+            }
+            const bits = parseInt(entry.slice(slash + 1), 10);
+            const family = net.isIP(entry.slice(0, slash));
+            return (family === 4 && bits < 32) || (family === 6 && bits < 128);
+        });
         this.getDummyData = (dataKey, lnImplementation) => {
             const dummyDataFile = this.appConfig.rtlConfFilePath + sep + 'ECLDummyData.log';
             return new Promise((resolve, reject) => {

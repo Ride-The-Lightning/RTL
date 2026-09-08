@@ -26,24 +26,34 @@ export const sweepExpiredAttempts = (currentTime) => {
 };
 export const clearFailedAttempts = () => failedLoginAttempts.clear();
 export const trackedAddresses = () => failedLoginAttempts.size;
-// One-shot: with no trustedProxies configured, req.ip is the socket peer, so every client
-// behind a reverse proxy shares the proxy's counter. The first login request that arrives
-// carrying X-Forwarded-For is the earliest evidence of that setup, and this is the log an
-// operator would read after an unexplained lockout. Logged at ERROR because that is the
-// only level the logger prints before a node's log file is selected.
-let forwardedHeaderWarned = false;
-export const resetForwardedHeaderWarning = () => { forwardedHeaderWarned = false; };
+// Diagnostic for the shared-counter setup: a login request carried X-Forwarded-For but the
+// lockout was keyed on the connecting address anyway, so every client behind that proxy
+// shares one counter. Detected at the call site (the key equals the socket peer) rather
+// than from the config, so a list that names the wrong proxy is caught too. Logged once
+// per keyed address, bounded, so a direct caller cannot spend the warning for everyone
+// else's proxy. ERROR level because that is the only level the logger prints before a
+// node's log file is selected.
+const MAX_WARNED_ADDRESSES = 100;
+const warnedAddresses = new Set();
+export const resetForwardedHeaderWarning = () => warnedAddresses.clear();
 const warnIfForwardedHeaderIgnored = (req, reqIP) => {
-    // A unix-socket listener (string port) has no peer address for any list to match, so the
-    // setting cannot apply there and the advice would be wrong.
-    if (forwardedHeaderWarned || common.trustedProxies || typeof common.port === 'string' || typeof req.headers['x-forwarded-for'] !== 'string') {
+    if (typeof req.headers['x-forwarded-for'] !== 'string') {
         return;
     }
-    forwardedHeaderWarned = true;
-    const msg = 'Configuration warning: a login request carried X-Forwarded-For but no trustedProxies is configured, so the header is ignored ' +
-        'and the login lockout keys on the connecting address ' + reqIP + ' for every client behind it. ' +
+    const keyedOnPeer = reqIP === 'unix-socket' || reqIP === req.socket?.remoteAddress;
+    if (!keyedOnPeer || warnedAddresses.has(reqIP) || warnedAddresses.size >= MAX_WARNED_ADDRESSES) {
+        return;
+    }
+    warnedAddresses.add(reqIP);
+    const reason = (reqIP === 'unix-socket') ?
+        'RTL is listening on a unix socket path, where no connection has a peer address for trustedProxies to match' :
+        (common.trustedProxies ? 'no entry in trustedProxies ("' + common.trustedProxies + '") matches the connecting address ' + reqIP : 'no trustedProxies is configured');
+    const remedy = (reqIP === 'unix-socket') ?
+        'Listen on a TCP loopback port and set trustedProxies to the proxy\'s address for per-client counters.' :
         'If RTL runs behind a reverse proxy, set trustedProxies (or TRUSTED_PROXIES) to that proxy\'s address.';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: msg, error: { error: 'X-Forwarded-For ignored: no trusted proxy configured.' } });
+    const msg = 'Configuration warning: a login request carried X-Forwarded-For but ' + reason + ', so the header is ignored ' +
+        'and the login lockout keys on ' + reqIP + ' for every client behind it. ' + remedy;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: msg, error: { error: 'X-Forwarded-For ignored: no trusted proxy matched.' } });
 };
 const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime()), LOCKING_PERIOD);
 // The sweeper must not hold the event loop open on its own (it would keep
@@ -150,7 +160,7 @@ export const authenticateUser = (req, res, next) => {
     }
     else if (+common.appConfig.SSO.rtlSSO) {
         if (authenticateWith === 'JWT' && isSessionToken(authenticationValue)) {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Password login refused with SSO enabled' });
             res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
         }
         else if (authenticateWith === 'PASSWORD' && matchesSSOCookie(authenticationValue)) {
@@ -178,9 +188,9 @@ export const authenticateUser = (req, res, next) => {
         const currentTime = new Date().getTime();
         const reqIP = common.getRequestIP(req);
         if (!reqIP) {
-            // No socket address (the connection is already gone). The lockout cannot be applied
-            // to an unknown client, so the login is refused rather than counted under a shared
-            // null key.
+            // Either no socket address (the connection is already gone) or a trusted proxy
+            // forwarded something that is not an address. The lockout cannot be applied to an
+            // unknown client, so the login is refused rather than counted under a shared key.
             logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Login refused: client address could not be determined', error: { error: 'No client address.' } });
             return res.status(401).json({ message: 'Authentication Failed!', error: 'Client address could not be determined.' });
         }
