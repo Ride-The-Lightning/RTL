@@ -180,6 +180,23 @@ this release should add its entry under the appropriate section below.
   them from `id` and `address`; the Eclair backend now does the same, `nodeId@host:port` for
   each public address. A node with no public address still gets an empty list, so the dialog
   stays pubkey-only there rather than showing a URI nobody can reach.
+- **Eclair: a failed channel open is reported as a failure**
+  ([#1695](https://github.com/Ride-The-Lightning/RTL/pull/1695)).
+  Eclair answers `/open` with HTTP 200 whatever happened: `created channel …` when a channel was
+  opened, and otherwise the reason it was not — `wallet error: Insufficient funds (code: -4)`,
+  `peer aborted the channel funding flow: …`, `disconnected`. RTL took every 200 as a success, so a
+  failed open showed "Channel Added Successfully!" and refreshed the channel list. That refresh then
+  hit the channel that had just failed, which Eclair keeps listing for about a minute with no
+  `commitments` object, and the channel mapper read `data.commitments.active[0]` without checking;
+  the TypeError serialised to `{}` and reached the page as "Unknown Error". The reason for the
+  failure appeared nowhere but Eclair's own log. The backend now treats any `/open` reply that does
+  not start with `created channel` as an error carrying Eclair's text, so the open dialog shows
+  "wallet error: Insufficient funds (code: -4)" or "wallet error: requirement failed: mining fee is
+  higher than budget (167 sat > 25 sat)" where it used to show success, and the mapper reads the
+  balances of a channel that has no commitments yet as zero — which also covers a channel that is
+  simply still being opened, and dual-funded opens that sit in that state for longer. Seen on an
+  Eclair 0.14.2 node opening to Core Lightning, where three different failures in one session all
+  looked identical from RTL.
 
 ## Enhancements
 
