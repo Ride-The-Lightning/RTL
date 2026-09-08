@@ -29,6 +29,32 @@ export const sweepExpiredAttempts = (currentTime) => {
 export const clearFailedAttempts = () => failedLoginAttempts.clear();
 export const trackedAddresses = () => failedLoginAttempts.size;
 
+// Diagnostic for the shared-counter setup: a login request carried X-Forwarded-For but the
+// lockout was keyed on the connecting address anyway, so every client behind that proxy
+// shares one counter. Detected at the call site (the key equals the socket peer) rather
+// than from the config, so a list that names the wrong proxy is caught too. Logged once
+// per keyed address, bounded, so a direct caller cannot spend the warning for everyone
+// else's proxy. ERROR level because that is the only level the logger prints before a
+// node's log file is selected.
+const MAX_WARNED_ADDRESSES = 100;
+const warnedAddresses = new Set<string>();
+export const resetForwardedHeaderWarning = () => warnedAddresses.clear();
+const warnIfForwardedHeaderIgnored = (req, reqIP) => {
+  if (typeof req.headers['x-forwarded-for'] !== 'string') { return; }
+  const keyedOnPeer = reqIP === 'unix-socket' || reqIP === req.socket?.remoteAddress;
+  if (!keyedOnPeer || warnedAddresses.has(reqIP) || warnedAddresses.size >= MAX_WARNED_ADDRESSES) { return; }
+  warnedAddresses.add(reqIP);
+  const reason = (reqIP === 'unix-socket') ?
+    'RTL is listening on a unix socket path, where no connection has a peer address for trustedProxies to match' :
+    (common.trustedProxies ? 'no entry in trustedProxies ("' + common.trustedProxies + '") matches the connecting address ' + reqIP : 'no trustedProxies is configured');
+  const remedy = (reqIP === 'unix-socket') ?
+    'Listen on a TCP loopback port and set trustedProxies to the proxy\'s address for per-client counters.' :
+    'If RTL runs behind a reverse proxy, set trustedProxies (or TRUSTED_PROXIES) to that proxy\'s address.';
+  const msg = 'Configuration warning: a login request carried X-Forwarded-For but ' + reason + ', so the header is ignored ' +
+    'and the login lockout keys on ' + reqIP + ' for every client behind it. ' + remedy;
+  logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: msg, error: { error: 'X-Forwarded-For ignored: no trusted proxy matched.' } });
+};
+
 const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime()), LOCKING_PERIOD);
 // The sweeper must not hold the event loop open on its own (it would keep
 // `node --test` or a CLI invocation alive for the full 30-minute period).
@@ -87,19 +113,37 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
 
 export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && (otplib as any).authenticator.check(twoFAToken, common.appConfig.secret2FA));
 
-// Mirrors isAuthenticated: a request carrying a valid session JWT has already
-// completed 2FA at login, since tokens are only minted after verification when
-// 2FA is enabled. Used to exempt in-app re-authorization (e.g. the password
-// prompt before on-chain sends) from the TOTP requirement without opening a
-// password-only path.
-const hasValidAuthToken = (req) => {
+// True only for a session JWT this process minted. jwt.verify throws on everything else
+// (missing, malformed, expired, wrong key); a throw from a controller reaches the catch-all
+// error handler, which answers 400 with the serialised error -- never the right reply to a
+// bad credential.
+const isSessionToken = (token) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
     jwt.verify(token, common.secret_key);
     return true;
   } catch (error) {
     return false;
   }
+};
+
+// Mirrors isAuthenticated: a request carrying a valid session JWT has already
+// completed 2FA at login, since tokens are only minted after verification when
+// 2FA is enabled. Used to exempt in-app re-authorization (e.g. the password
+// prompt before on-chain sends) from the TOTP requirement without opening a
+// password-only path.
+const hasValidAuthToken = (req) => isSessionToken(req.headers.authorization?.split(' ')[1]);
+
+// SSO access key check. The key is the hex SHA-256 digest of the cookie file, so a value
+// that is not a string of exactly that byte length can never match -- and must be refused
+// before the comparison: crypto.timingSafeEqual throws on unequal lengths and Buffer.from on
+// a non-string, which the catch-all error handler turned into a 400 carrying the error text
+// instead of the 406 an unauthenticated caller is meant to get (issue #1656).
+const matchesSSOCookie = (accessKey) => {
+  const cookieValue = common.appConfig.SSO.cookieValue;
+  if (typeof cookieValue !== 'string' || cookieValue.trim().length < 32 || typeof accessKey !== 'string') { return false; }
+  const expected = Buffer.from(crypto.createHash('sha256').update(cookieValue).digest('hex'), 'utf-8');
+  const offered = Buffer.from(accessKey, 'utf-8');
+  return offered.length === expected.length && crypto.timingSafeEqual(expected, offered);
 };
 
 export const authenticateUser = (req, res, next) => {
@@ -111,25 +155,37 @@ export const authenticateUser = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Disabled Authentication' });
     res.status(200).json({ token: token });
   } else if (+common.appConfig.SSO.rtlSSO) {
-    if (authenticateWith === 'JWT' && jwt.verify(authenticationValue, common.secret_key)) {
-      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
+    if (authenticateWith === 'JWT' && isSessionToken(authenticationValue)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Password login refused with SSO enabled' });
       res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
-    } else if (authenticateWith === 'PASSWORD') {
-      if (common.appConfig.SSO.cookieValue.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.appConfig.SSO.cookieValue).digest('hex'), 'utf-8'), Buffer.from(authenticationValue, 'utf-8'))) {
-        common.refreshCookie();
-        if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
-        const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
-        res.status(200).json({ token: token });
-      } else {
-        const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
-        const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
-      }
+    } else if (authenticateWith === 'PASSWORD' && matchesSSOCookie(authenticationValue)) {
+      common.refreshCookie();
+      if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
+      const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
+      logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
+      res.status(200).json({ token: token });
+    } else {
+      // Also the reply for a JWT that does not verify and for an unrecognised
+      // authenticateWith, which used to end in a 400 from the error handler and in no response
+      // at all, respectively. The client gets one message for all three; the server log
+      // names the cause (without echoing the client-supplied mode value).
+      const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
+      const cause = (authenticateWith === 'PASSWORD') ? 'access key too short or does not match' :
+        (authenticateWith === 'JWT') ? 'session token did not verify' : 'authenticateWith is neither PASSWORD nor JWT';
+      const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', 'SSO Authentication Failed! ' + cause, req.session.selectedNode);
+      return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
   } else {
     const currentTime = new Date().getTime();
     const reqIP = common.getRequestIP(req);
+    if (!reqIP) {
+      // Either no socket address (the connection is already gone) or a trusted proxy
+      // forwarded something that is not an address. The lockout cannot be applied to an
+      // unknown client, so the login is refused rather than counted under a shared key.
+      logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Login refused: client address could not be determined', error: { error: 'No client address.' } });
+      return res.status(401).json({ message: 'Authentication Failed!', error: 'Client address could not be determined.' });
+    }
+    warnIfForwardedHeaderIgnored(req, reqIP);
     const failed = getFailedInfo(reqIP, currentTime);
     const password = authenticationValue;
     // When a second factor is required, neither 401 may say which credential failed:

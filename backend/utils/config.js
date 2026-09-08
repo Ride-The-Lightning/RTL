@@ -149,6 +149,17 @@ export class ConfigService {
             }
             this.common.port = (process?.env?.PORT) ? this.normalizePort(process?.env?.PORT) : (config.port) ? this.normalizePort(config.port) : 3000;
             this.common.host = (process?.env?.HOST) ? process?.env?.HOST : (config.host) ? config.host : null;
+            // Optional comma-separated list of proxy addresses/CIDRs (express's trust-proxy list
+            // form, which also accepts the named ranges loopback, linklocal and uniquelocal) whose
+            // X-Forwarded-For header identifies the client. Absent or empty means the socket peer
+            // is the client, the safe default for the login-lockout counter; anything that is not a
+            // string is a configuration error. The environment variable wins whenever it is set,
+            // including set to empty: that is how a deployment switches the file's list off.
+            const trustedProxies = (process?.env?.TRUSTED_PROXIES !== undefined) ? process?.env?.TRUSTED_PROXIES : config.trustedProxies;
+            if (trustedProxies !== undefined && trustedProxies !== null && typeof trustedProxies !== 'string') {
+                this.errMsg = this.errMsg + '\ntrustedProxies must be a comma-separated list of proxy addresses (e.g. "127.0.0.1" or "loopback, 10.0.0.0/8").';
+            }
+            this.common.trustedProxies = (typeof trustedProxies === 'string') ? trustedProxies.trim() : '';
             config.dbDirectoryPath = (process?.env?.DB_DIRECTORY_PATH) ? process?.env?.DB_DIRECTORY_PATH : (config.dbDirectoryPath) ? config.dbDirectoryPath : join(dirname(fileURLToPath(import.meta.url)), '..', '..');
             if (config.nodes && config.nodes.length > 0) {
                 config.nodes.forEach((node, idx) => {

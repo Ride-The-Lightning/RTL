@@ -1,10 +1,15 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { createHash } from 'node:crypto';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test, { after } from 'node:test';
 
 import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
-import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
+import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, resetForwardedHeaderWarning, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
+import { Logger } from '../../backend/utils/logger.js';
 
 const { authenticator } = otplib;
 
@@ -26,24 +31,56 @@ const setupAppConfig = (enable2FA, secret2FA) => {
   };
   Common.selectedNode = null;
   Common.nodes = [];
+  Common.trustedProxies = '';
+};
+
+// Captures what the controller logs while fn runs; the controller reads Logger.log at call
+// time, so swapping the method is enough.
+const captureLog = (fn) => {
+  const lines = [];
+  const original = Logger.log;
+  Logger.log = (entry) => lines.push(entry);
+  try { fn(); } finally { Logger.log = original; }
+  return lines;
 };
 
 // failedLoginAttempts is module-level state in authenticate.js, keyed by the request IP
-// from common.getRequestIP, which prefers x-forwarded-for (server/utils/common.ts).
-// Unique IPs give each call a fresh counter; tests exercising the counter itself pass an
-// explicit ip to share one key across calls.
+// from common.getRequestIP, which reads req.ip -- what express derives from the socket peer
+// and, only through configured trusted proxies, X-Forwarded-For (see common.test.mjs for
+// that derivation). Unique IPs give each call a fresh counter; tests exercising the counter
+// itself pass an explicit ip to share one key across calls.
 let ipCounter = 0;
-const nextIP = () => '10.0.0.' + (ipCounter = ipCounter + 1);
-const mockRequest = ({ twoFAToken, ip, authToken, password } = {}) => {
-  const headers = { 'x-forwarded-for': ip || nextIP() };
+const nextIP = () => {
+  ipCounter = ipCounter + 1;
+  return '10.' + ((ipCounter >> 16) & 255) + '.' + ((ipCounter >> 8) & 255) + '.' + (ipCounter & 255);
+};
+const mockRequest = (opts = {}) => {
+  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith, noAddress, peer, rawIP } = opts;
+  const headers = {};
   if (authToken) { headers.authorization = 'Bearer ' + authToken; }
+  if (forwardedFor) { headers['x-forwarded-for'] = forwardedFor; }
   return {
-    body: { authenticateWith: 'PASSWORD', authenticationValue: password || PASSWORD_HASH, twoFAToken: twoFAToken },
+    body: {
+      authenticateWith: authenticateWith || 'PASSWORD',
+      // authenticationValue is taken verbatim when given, so a test can send a non-string.
+      authenticationValue: ('authenticationValue' in opts) ? opts.authenticationValue : (password || PASSWORD_HASH),
+      twoFAToken: twoFAToken
+    },
     session: {},
     headers: headers,
+    // noAddress models a request whose socket is already gone: no req.ip, no peer address.
+    // rawIP is what express would hand over verbatim (a trusted proxy's junk); peer is the
+    // socket address when it differs from req.ip (a trusted proxy that resolved the client).
+    ip: noAddress ? undefined : (rawIP !== undefined ? rawIP : (ip || nextIP())),
     connection: {},
     socket: {}
   };
+};
+// req.ip equals the socket peer unless the test says otherwise.
+const mockRequestWithPeer = (opts = {}) => {
+  const req = mockRequest(opts);
+  if (!opts.noAddress) { req.socket.remoteAddress = opts.peer !== undefined ? opts.peer : req.ip; }
+  return req;
 };
 
 const mockResponse = () => {
@@ -298,7 +335,7 @@ test('a lookup or a successful login does not consume a slot in the table', () =
   failTimes(tracked, 1, now);
   for (let i = 0; i < MAX_TRACKED_ADDRESSES + 5; i++) {
     getFailedInfo('lookup-' + i, now);
-    authenticateUser(mockRequest({ ip: 'login-' + i }), mockResponse(), null);
+    authenticateUser(mockRequest(), mockResponse(), null);
   }
   assert.equal(trackedAddresses(), 1, 'lookups and successful logins stored nothing');
   assert.equal(getFailedInfo(tracked, now).count, 1, 'nothing above evicted the tracked entry');
@@ -348,4 +385,195 @@ test('failed-attempt counters are keyed safely against prototype names', () => {
   failTimes('__proto__', 2, now);
   assert.equal(getFailedInfo('__proto__', now).count, 2);
   assert.equal(getFailedInfo('toString', now).count, 0);
+});
+
+test('the lockout counter keys on req.ip and ignores X-Forwarded-For', () => {
+  setupAppConfig(false, '');
+  const ip = nextIP();
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+    // Rotating the header used to hand the client a fresh counter per request (issue #1656).
+    authenticateUser(mockRequest({ ip: ip, password: 'wrong', forwardedFor: '203.0.113.' + i }), mockResponse(), null);
+  }
+  const locked = mockResponse();
+  authenticateUser(mockRequest({ ip: ip, forwardedFor: '203.0.113.99' }), locked, null);
+  assert.equal(locked.statusCode, 401);
+  assert.match(locked.body.error, /locked/);
+  // Nor can the header aim a request at another address's counter.
+  const other = mockResponse();
+  authenticateUser(mockRequest({ forwardedFor: ip }), other, null);
+  assert.equal(other.statusCode, 200);
+});
+
+// SSO mode (issue #1656, finding 4). The access key a caller presents is the hex SHA-256 of
+// the cookie file; the tests below drive the same branch verify-sso.sh exercises against
+// the BTCPay harness, with a temporary cookie file so a successful login can rotate it.
+const SSO_COOKIE = 'a'.repeat(64);
+const ssoAccessKey = () => createHash('sha256').update(SSO_COOKIE).digest('hex');
+const ssoTempDirs = [];
+after(() => ssoTempDirs.forEach((dir) => rmSync(dir, { recursive: true, force: true })));
+const setupSSOConfig = () => {
+  setupAppConfig(false, '');
+  const dir = mkdtempSync(join(tmpdir(), 'rtl-sso-'));
+  ssoTempDirs.push(dir);
+  const cookiePath = join(dir, '.cookie');
+  writeFileSync(cookiePath, SSO_COOKIE);
+  Common.appConfig.SSO = { rtlSSO: 1, rtlCookiePath: cookiePath, logoutRedirectLink: '', cookieValue: SSO_COOKIE };
+  // The refusal path logs through handleError against the selected node; before login the
+  // session has none and it falls back to the process-wide one, which app startup sets.
+  Common.selectedNode = { index: 1, lnNode: 'node', lnImplementation: 'LND', settings: { logLevel: 'ERROR' } };
+  return cookiePath;
+};
+
+test('SSO: the access key derived from the cookie is accepted and the cookie rotates', () => {
+  const cookiePath = setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticationValue: ssoAccessKey() }), res, null);
+  assert.equal(res.statusCode, 200);
+  assert.equal(typeof res.body.token, 'string');
+  const rotated = readFileSync(cookiePath, 'utf-8');
+  assert.notEqual(rotated, SSO_COOKIE, 'a used cookie is replaced');
+  assert.equal(Common.appConfig.SSO.cookieValue, rotated, 'and the replacement is what the next login must match');
+});
+
+test('SSO: an access key that is not a 64-byte string is refused with 406, not thrown', () => {
+  setupSSOConfig();
+  // crypto.timingSafeEqual throws RangeError on a length mismatch and Buffer.from throws
+  // TypeError on a non-string; either used to surface as a 400 from the catch-all handler.
+  const key = ssoAccessKey();
+  for (const bad of [undefined, null, 123, ['a'], { key }, '', 'short', key + '0', key.slice(0, 63) + '\u00e9']) {
+    const res = mockResponse();
+    assert.doesNotThrow(() => authenticateUser(mockRequest({ authenticationValue: bad }), res, null));
+    assert.equal(res.statusCode, 406, 'refused: ' + JSON.stringify(bad));
+    assert.match(res.body.error, /SSO Authentication Failed/);
+  }
+});
+
+test('SSO: a well-formed but wrong access key is refused with 406', () => {
+  setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticationValue: 'f'.repeat(64) }), res, null);
+  assert.equal(res.statusCode, 406);
+  assert.match(res.body.error, /SSO Authentication Failed/);
+});
+
+test('SSO: a JWT that does not verify is refused with 406, not thrown', () => {
+  setupSSOConfig();
+  // jwt.verify throws on a missing, malformed or foreign token; that too was a 400.
+  for (const bad of [undefined, '', 'not-a-jwt', jwt.sign({ user: 'NODE_USER' }, 'some-other-secret')]) {
+    const res = mockResponse();
+    assert.doesNotThrow(() => authenticateUser(mockRequest({ authenticateWith: 'JWT', authenticationValue: bad }), res, null));
+    assert.equal(res.statusCode, 406, 'refused: ' + JSON.stringify(bad));
+  }
+  // A token this process minted is recognised, and still told SSO takes no password login.
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticateWith: 'JWT', authenticationValue: mockSessionToken() }), res, null);
+  assert.equal(res.statusCode, 406);
+  assert.match(res.body.error, /not allowed with SSO/);
+});
+
+test('SSO: an unrecognised authenticateWith gets a 406 rather than no reply at all', () => {
+  setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticateWith: 'NOAUTH', authenticationValue: ssoAccessKey() }), res, null);
+  assert.equal(res.statusCode, 406);
+});
+
+test('a login carrying X-Forwarded-For that was keyed on the socket peer logs a configuration warning, once per address', () => {
+  setupAppConfig(false, '');
+  resetForwardedHeaderWarning();
+  const isWarning = (entry) => /Configuration warning/.test(entry.msg);
+  const warnings = (opts) => captureLog(() => authenticateUser(mockRequestWithPeer(opts), mockResponse(), null)).filter(isWarning);
+  assert.equal(warnings({}).length, 0, 'a request without the header says nothing');
+  const first = warnings({ ip: '10.9.9.1', forwardedFor: '203.0.113.7' });
+  assert.equal(first.length, 1);
+  assert.match(first[0].msg, /no trustedProxies is configured/);
+  assert.match(first[0].msg, /10\.9\.9\.1/, 'names the address the lockout is keyed on');
+  assert.equal(warnings({ ip: '10.9.9.1', forwardedFor: '203.0.113.8' }).length, 0, 'once per address');
+  assert.equal(warnings({ ip: '10.9.9.2', forwardedFor: '203.0.113.8' }).length, 1, 'a different peer (another proxy, or a direct caller) does not spend it');
+  // A list that names the wrong proxy is the likelier mistake: the key still equals the
+  // peer, so the warning fires and says which list failed to match.
+  resetForwardedHeaderWarning();
+  Common.trustedProxies = '127.0.0.1';
+  const mismatch = warnings({ ip: '172.18.0.5', forwardedFor: '203.0.113.9' });
+  assert.equal(mismatch.length, 1);
+  assert.match(mismatch[0].msg, /no entry in trustedProxies \("127\.0\.0\.1"\) matches the connecting address 172\.18\.0\.5/);
+  // When the proxy did match, express resolved the client and req.ip differs from the peer.
+  assert.equal(warnings({ ip: '203.0.113.9', peer: '127.0.0.1', forwardedFor: '203.0.113.9' }).length, 0);
+  Common.trustedProxies = '';
+});
+
+test('a forwarded value that is not an address is refused, not keyed on the proxy', () => {
+  // A trusted proxy that passes the client's own header through hands express junk as
+  // req.ip. Keying that on the proxy's address would let the client fill the proxy's shared
+  // counter for free; refusing costs only that client.
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const proxy = '172.18.0.5';
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS + 1; i++) {
+    const res = mockResponse();
+    authenticateUser(mockRequestWithPeer({ rawIP: 'garbage-' + i, peer: proxy, password: 'wrong' }), res, null);
+    assert.equal(res.statusCode, 401);
+    assert.match(res.body.error, /address could not be determined/);
+  }
+  assert.equal(trackedAddresses(), 0, 'nothing was recorded against anyone');
+  const res = mockResponse();
+  authenticateUser(mockRequestWithPeer({ ip: proxy }), res, null);
+  assert.equal(res.statusCode, 200, 'the proxy address itself is not locked');
+});
+
+test('a login with no determinable client address is refused, not counted under a shared key', () => {
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const res = mockResponse();
+  authenticateUser(mockRequest({ noAddress: true, password: 'wrong' }), res, null);
+  assert.equal(res.statusCode, 401);
+  assert.match(res.body.error, /address could not be determined/);
+  assert.equal(trackedAddresses(), 0, 'nothing was recorded');
+  const right = mockResponse();
+  authenticateUser(mockRequest({ noAddress: true }), right, null);
+  assert.equal(right.statusCode, 401, 'the right password is refused too: the lockout cannot be applied');
+});
+
+test('on a unix-socket listener every client shares one fixed key instead of being refused', () => {
+  // A path-based listener (non-numeric port) has no peer address on any connection; the
+  // lockout still has to work there, so the key is a constant rather than a refusal.
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const savedPort = Common.port;
+  Common.port = '/tmp/rtl.sock';
+  try {
+    const res = mockResponse();
+    authenticateUser(mockRequest({ noAddress: true }), res, null);
+    assert.equal(res.statusCode, 200);
+    for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+      authenticateUser(mockRequest({ noAddress: true, password: 'wrong' }), mockResponse(), null);
+    }
+    assert.equal(trackedAddresses(), 1, 'one shared counter');
+    const locked = mockResponse();
+    authenticateUser(mockRequest({ noAddress: true }), locked, null);
+    assert.equal(locked.statusCode, 401);
+    assert.match(locked.body.error, /locked/);
+    // trustedProxies cannot match anything here, so the warning says so instead of
+    // recommending it.
+    resetForwardedHeaderWarning();
+    const lines = captureLog(() => authenticateUser(mockRequest({ noAddress: true, forwardedFor: '203.0.113.7' }), mockResponse(), null));
+    const warned = lines.filter((e) => /Configuration warning/.test(e.msg));
+    assert.equal(warned.length, 1);
+    assert.match(warned[0].msg, /unix socket path/);
+    assert.match(warned[0].msg, /Listen on a TCP loopback port/);
+  } finally {
+    Common.port = savedPort;
+    clearFailedAttempts();
+  }
+});
+
+test('SSO: the server log names which of the three refusal causes applied', () => {
+  setupSSOConfig();
+  // Every field of every log entry, so a mode value smuggled into the error payload shows too.
+  const logged = (opts) => captureLog(() => authenticateUser(mockRequest(opts), mockResponse(), null)).map((e) => JSON.stringify(e)).join('\n');
+  assert.match(logged({ authenticationValue: 'short' }), /access key too short or does not match/);
+  assert.match(logged({ authenticateWith: 'JWT', authenticationValue: 'not-a-jwt' }), /session token did not verify/);
+  const unknown = logged({ authenticateWith: '<script>', authenticationValue: 'x' });
+  assert.match(unknown, /neither PASSWORD nor JWT/);
+  assert.doesNotMatch(unknown, /<script>/, 'the client-supplied mode value is not echoed into the log');
 });

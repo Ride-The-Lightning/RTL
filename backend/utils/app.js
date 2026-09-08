@@ -84,7 +84,26 @@ export class ExpressApplication {
             }
         };
         this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'App', msg: 'Starting Express Application..' });
-        this.app.set('trust proxy', true);
+        // Only the configured proxies may speak for the client: with none, req.ip is the socket
+        // peer. Trusting every hop (the previous `true`) let any client rotate X-Forwarded-For
+        // to dodge the login lockout (issue #1656). express compiles the list here, so a
+        // malformed entry fails at startup rather than on the first request. The setting also
+        // governs req.protocol/req.secure/req.hostname/req.ips, none of which server/ reads;
+        // both cookies (session, CSRF) are secure:false, so nothing else changes behind TLS.
+        try {
+            this.app.set('trust proxy', this.common.trustedProxies ? this.common.trustedProxies : false);
+        }
+        catch (err) {
+            this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'Invalid trustedProxies value "' + this.common.trustedProxies + '": ' + err.message });
+            throw err;
+        }
+        const overBroad = this.common.overBroadTrustedProxies(this.common.trustedProxies);
+        if (overBroad.length > 0) {
+            // Logged at ERROR: the only level the logger prints before a node's log is selected.
+            const msg = 'Configuration warning: trustedProxies entries "' + overBroad.join('", "') + '" cover more than one host. ' +
+                'Every client whose address is inside a trusted entry can forge its own address and defeat the login lockout; list the proxy\'s exact address instead';
+            this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: msg });
+        }
         this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { secure: false, maxAge: ONE_DAY }, resave: false }));
         this.app.use(cookieParser(this.common.secret_key));
         this.app.use(bodyParser.json({ limit: '25mb' }));
