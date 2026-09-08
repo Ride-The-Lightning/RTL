@@ -521,6 +521,11 @@ test('on a unix-socket listener every client shares one fixed key instead of bei
     authenticateUser(mockRequest({ noAddress: true }), locked, null);
     assert.equal(locked.statusCode, 401);
     assert.match(locked.body.error, /locked/);
+    // trustedProxies cannot apply here (no peer address to match), so the one-shot advice
+    // to set it stays silent.
+    resetForwardedHeaderWarning();
+    const lines = captureLog(() => authenticateUser(mockRequest({ noAddress: true, forwardedFor: '203.0.113.7' }), mockResponse(), null));
+    assert.equal(lines.filter((e) => /trustedProxies/.test(e.msg)).length, 0);
   } finally {
     Common.port = savedPort;
     clearFailedAttempts();
