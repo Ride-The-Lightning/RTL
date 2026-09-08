@@ -55,7 +55,7 @@ const nextIP = () => {
   return '10.' + ((ipCounter >> 16) & 255) + '.' + ((ipCounter >> 8) & 255) + '.' + (ipCounter & 255);
 };
 const mockRequest = (opts = {}) => {
-  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith, noAddress } = opts;
+  const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith, noAddress, peer, rawIP } = opts;
   const headers = {};
   if (authToken) { headers.authorization = 'Bearer ' + authToken; }
   if (forwardedFor) { headers['x-forwarded-for'] = forwardedFor; }
@@ -69,10 +69,18 @@ const mockRequest = (opts = {}) => {
     session: {},
     headers: headers,
     // noAddress models a request whose socket is already gone: no req.ip, no peer address.
-    ip: noAddress ? undefined : (ip || nextIP()),
+    // rawIP is what express would hand over verbatim (a trusted proxy's junk); peer is the
+    // socket address when it differs from req.ip (a trusted proxy that resolved the client).
+    ip: noAddress ? undefined : (rawIP !== undefined ? rawIP : (ip || nextIP())),
     connection: {},
     socket: {}
   };
+};
+// req.ip equals the socket peer unless the test says otherwise.
+const mockRequestWithPeer = (opts = {}) => {
+  const req = mockRequest(opts);
+  if (!opts.noAddress) { req.socket.remoteAddress = opts.peer !== undefined ? opts.peer : req.ip; }
+  return req;
 };
 
 const mockResponse = () => {
@@ -470,23 +478,47 @@ test('SSO: an unrecognised authenticateWith gets a 406 rather than no reply at a
   assert.equal(res.statusCode, 406);
 });
 
-test('the first login carrying X-Forwarded-For while no proxy is trusted logs a configuration warning, once', () => {
+test('a login carrying X-Forwarded-For that was keyed on the socket peer logs a configuration warning, once per address', () => {
   setupAppConfig(false, '');
   resetForwardedHeaderWarning();
-  const isWarning = (entry) => /trustedProxies/.test(entry.msg);
-  const plain = captureLog(() => authenticateUser(mockRequest(), mockResponse(), null));
-  assert.equal(plain.filter(isWarning).length, 0, 'a request without the header says nothing');
-  const first = captureLog(() => authenticateUser(mockRequest({ ip: '10.9.9.1', forwardedFor: '203.0.113.7' }), mockResponse(), null));
-  assert.equal(first.filter(isWarning).length, 1);
-  assert.match(first.find(isWarning).msg, /10\.9\.9\.1/, 'names the address the lockout is keyed on');
-  const second = captureLog(() => authenticateUser(mockRequest({ forwardedFor: '203.0.113.8' }), mockResponse(), null));
-  assert.equal(second.filter(isWarning).length, 0, 'one-shot');
-  // With a proxy trusted, the header is honoured and there is nothing to warn about.
+  const isWarning = (entry) => /Configuration warning/.test(entry.msg);
+  const warnings = (opts) => captureLog(() => authenticateUser(mockRequestWithPeer(opts), mockResponse(), null)).filter(isWarning);
+  assert.equal(warnings({}).length, 0, 'a request without the header says nothing');
+  const first = warnings({ ip: '10.9.9.1', forwardedFor: '203.0.113.7' });
+  assert.equal(first.length, 1);
+  assert.match(first[0].msg, /no trustedProxies is configured/);
+  assert.match(first[0].msg, /10\.9\.9\.1/, 'names the address the lockout is keyed on');
+  assert.equal(warnings({ ip: '10.9.9.1', forwardedFor: '203.0.113.8' }).length, 0, 'once per address');
+  assert.equal(warnings({ ip: '10.9.9.2', forwardedFor: '203.0.113.8' }).length, 1, 'a different peer (another proxy, or a direct caller) does not spend it');
+  // A list that names the wrong proxy is the likelier mistake: the key still equals the
+  // peer, so the warning fires and says which list failed to match.
   resetForwardedHeaderWarning();
   Common.trustedProxies = '127.0.0.1';
-  const trusted = captureLog(() => authenticateUser(mockRequest({ forwardedFor: '203.0.113.9' }), mockResponse(), null));
-  assert.equal(trusted.filter(isWarning).length, 0);
+  const mismatch = warnings({ ip: '172.18.0.5', forwardedFor: '203.0.113.9' });
+  assert.equal(mismatch.length, 1);
+  assert.match(mismatch[0].msg, /no entry in trustedProxies \("127\.0\.0\.1"\) matches the connecting address 172\.18\.0\.5/);
+  // When the proxy did match, express resolved the client and req.ip differs from the peer.
+  assert.equal(warnings({ ip: '203.0.113.9', peer: '127.0.0.1', forwardedFor: '203.0.113.9' }).length, 0);
   Common.trustedProxies = '';
+});
+
+test('a forwarded value that is not an address is refused, not keyed on the proxy', () => {
+  // A trusted proxy that passes the client's own header through hands express junk as
+  // req.ip. Keying that on the proxy's address would let the client fill the proxy's shared
+  // counter for free; refusing costs only that client.
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const proxy = '172.18.0.5';
+  for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS + 1; i++) {
+    const res = mockResponse();
+    authenticateUser(mockRequestWithPeer({ rawIP: 'garbage-' + i, peer: proxy, password: 'wrong' }), res, null);
+    assert.equal(res.statusCode, 401);
+    assert.match(res.body.error, /address could not be determined/);
+  }
+  assert.equal(trackedAddresses(), 0, 'nothing was recorded against anyone');
+  const res = mockResponse();
+  authenticateUser(mockRequestWithPeer({ ip: proxy }), res, null);
+  assert.equal(res.statusCode, 200, 'the proxy address itself is not locked');
 });
 
 test('a login with no determinable client address is refused, not counted under a shared key', () => {
@@ -521,11 +553,14 @@ test('on a unix-socket listener every client shares one fixed key instead of bei
     authenticateUser(mockRequest({ noAddress: true }), locked, null);
     assert.equal(locked.statusCode, 401);
     assert.match(locked.body.error, /locked/);
-    // trustedProxies cannot apply here (no peer address to match), so the one-shot advice
-    // to set it stays silent.
+    // trustedProxies cannot match anything here, so the warning says so instead of
+    // recommending it.
     resetForwardedHeaderWarning();
     const lines = captureLog(() => authenticateUser(mockRequest({ noAddress: true, forwardedFor: '203.0.113.7' }), mockResponse(), null));
-    assert.equal(lines.filter((e) => /trustedProxies/.test(e.msg)).length, 0);
+    const warned = lines.filter((e) => /Configuration warning/.test(e.msg));
+    assert.equal(warned.length, 1);
+    assert.match(warned[0].msg, /unix socket path/);
+    assert.match(warned[0].msg, /Listen on a TCP loopback port/);
   } finally {
     Common.port = savedPort;
     clearFailedAttempts();

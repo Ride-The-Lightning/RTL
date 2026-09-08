@@ -69,10 +69,12 @@ this release should add its entry under the appropriate section below.
   forwarded chain only past listed proxies. A malformed list fails at startup. Whatever the
   derivation returns is checked to be a well-formed address before it is used as the key
   or logged (an IPv6 zone id is capped at a sane length, since `net.isIP` does not bound
-  it); anything else falls back to the socket peer. A server listening on a unix socket
-  path, where no connection has a peer address, keeps one shared counter for all its
-  clients as before, and a TCP request whose connection is already gone is refused rather
-  than counted under a shared key. **Operators running RTL
+  it); a login whose forwarded value is not an address, or whose connection has no address
+  left, is refused rather than counted under the proxy's shared key, so a client behind a
+  pass-through proxy cannot fill that counter for free. A server listening on a unix socket
+  path has no peer address on any connection for a list to match, so every client there
+  shares one counter (previously the forgeable header keyed them apart); listening on a TCP
+  loopback port with `trustedProxies` set restores per-client counters. **Operators running RTL
   behind a reverse proxy with RTL's own login should set `trustedProxies` to the proxy's
   exact address** (`"127.0.0.1"` for a proxy on the same host, the container's address for
   one on a container network). Exact addresses matter: express trusts every hop whose
@@ -81,8 +83,11 @@ this release should add its entry under the appropriate section below.
   bypass back. Without the setting every client behind the proxy shares one counter, so
   five failed attempts by anyone lock the proxy's address out for 30 minutes; that is the
   same exposure the old code had to a client who simply named the operator's address, now
-  without the bypass, and the first login request that arrives carrying `X-Forwarded-For`
-  while no proxy is trusted logs a configuration warning saying so. SSO deployments
+  without the bypass, and a login request that arrives carrying `X-Forwarded-For` but is
+  keyed on the connecting address anyway (no list, a list that names the wrong proxy, or a
+  unix-socket listener) logs a configuration warning saying so, once per address. A list
+  entry that covers more than one host (a named range or a CIDR wider than a single
+  address) is flagged at startup for the same reason. SSO deployments
   (BTCPay) are unaffected, as the lockout does not apply to the cookie login. Nothing else
   read `trust proxy`: neither cookie is marked secure and no code consults `req.protocol`,
   `req.secure`, `req.hostname` or `req.ips`. The setting is a deployment switch, pinned to
