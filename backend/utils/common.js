@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as net from 'net';
 import { join, dirname, isAbsolute, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 import * as crypto from 'crypto';
@@ -13,6 +14,9 @@ export class CommonService {
         this.appConfig = { defaultNodeIndex: 0, selectedNodeIndex: 0, rtlConfFilePath: '', dbDirectoryPath: join(dirname(fileURLToPath(import.meta.url)), '..', '..'), rtlPass: '', allowPasswordUpdate: true, enable2FA: false, secret2FA: '', SSO: this.ssoInit, nodes: [] };
         this.port = 3000;
         this.host = '';
+        // Proxies whose X-Forwarded-For header is trusted for the client address (issue #1656).
+        // Empty means none: the socket peer is the client.
+        this.trustedProxies = '';
         this.secret_key = crypto.randomBytes(64).toString('hex');
         this.read_dummy_data = false;
         this.baseHref = '/rtl';
@@ -100,6 +104,14 @@ export class CommonService {
             config.disableAuth = this.appConfig.disableAuth;
             config.allowPasswordUpdate = this.appConfig.allowPasswordUpdate;
             config.dbDirectoryPath = this.appConfig.dbDirectoryPath;
+            // trustedProxies decides whose X-Forwarded-For keys the login lockout: a deployment
+            // switch like the ones above, so a settings save can neither set nor drop it.
+            if (this.appConfig.trustedProxies !== undefined) {
+                config.trustedProxies = this.appConfig.trustedProxies;
+            }
+            else {
+                delete config.trustedProxies;
+            }
             config.SSO = JSON.parse(JSON.stringify(this.appConfig.SSO || {}));
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
@@ -493,11 +505,45 @@ export class CommonService {
             }
             return newErrorObj;
         };
-        this.getRequestIP = (req) => ((typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
-            req.ip ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null));
+        // The client address for the login-lockout counter and its log line. req.ip is what
+        // express derives from the socket peer and, only for the proxies listed in
+        // trustedProxies, the X-Forwarded-For chain -- so a client cannot pick its own key by
+        // sending the header (issue #1656). Whatever comes back is still checked to be a
+        // well-formed address before it is used: a misconfigured proxy that forwards the
+        // client's header verbatim would otherwise let arbitrary text reach the log, so the
+        // result is null and the caller refuses the login: falling back to the socket peer would
+        // let a client behind such a proxy fill the proxy's shared counter with junk requests
+        // that cost it nothing. (With a proxy that appends its own entry the junk is never
+        // reached, and with no proxy trusted the header is never read.) The length cap keeps an
+        // IPv6 zone id, which net.isIP does not bound, from carrying a header-sized string into
+        // the log. A server listening on a unix socket path (a non-numeric port) has no peer
+        // address on any connection, so no list can match a hop there and every client shares
+        // one fixed key. Null also covers a TCP connection with no address left (already gone).
+        this.getRequestIP = (req) => {
+            const ip = req.ip;
+            if (typeof ip === 'string') {
+                return (ip.length <= 64 && net.isIP(ip)) ? ip : null;
+            }
+            if (req.socket?.remoteAddress) {
+                return req.socket.remoteAddress;
+            }
+            return (typeof this.port === 'string') ? 'unix-socket' : null;
+        };
+        // Entries of a trustedProxies list that cover more than one host. express trusts every
+        // hop inside the list, so an entry that also contains clients lets them forge their
+        // address; the list is still accepted (it is express's own syntax), but app.ts flags it.
+        this.overBroadTrustedProxies = (list) => list.split(',').map((entry) => entry.trim()).filter((entry) => entry !== '').filter((entry) => {
+            if (entry === 'loopback' || entry === 'linklocal' || entry === 'uniquelocal') {
+                return true;
+            }
+            const slash = entry.indexOf('/');
+            if (slash < 0) {
+                return false;
+            }
+            const bits = parseInt(entry.slice(slash + 1), 10);
+            const family = net.isIP(entry.slice(0, slash));
+            return (family === 4 && bits < 32) || (family === 6 && bits < 128);
+        });
         this.getDummyData = (dataKey, lnImplementation) => {
             const dummyDataFile = this.appConfig.rtlConfFilePath + sep + 'ECLDummyData.log';
             return new Promise((resolve, reject) => {

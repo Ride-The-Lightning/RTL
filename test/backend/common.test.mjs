@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
 import test from 'node:test';
+
+import express from 'express';
 
 import { Common } from '../../backend/utils/common.js';
 
@@ -137,6 +140,17 @@ test('addSecureData pins disableAuth and the SSO object to server-held values', 
   // explicit disable flow (empty seed + enable2FA false) may wipe it.
   assert.equal(config.secret2FA, 'server-seed');
   assert.equal(config.enable2FA, true);
+});
+
+test('addSecureData pins trustedProxies to the server-held value, and drops it when the server holds none', () => {
+  // Whose X-Forwarded-For keys the login lockout is a deployment switch like disableAuth:
+  // a settings save can neither widen the list nor silently lose it.
+  seedAppConfig();
+  Common.appConfig.trustedProxies = '127.0.0.1';
+  assert.equal(Common.addSecureData({ trustedProxies: '0.0.0.0/0, ::/0', nodes: [] }).trustedProxies, '127.0.0.1');
+  assert.equal(Common.addSecureData({ nodes: [] }).trustedProxies, '127.0.0.1', 'an omitted key does not drop the list');
+  delete Common.appConfig.trustedProxies;
+  assert.equal('trustedProxies' in Common.addSecureData({ trustedProxies: '0.0.0.0/0', nodes: [] }), false);
 });
 
 test('addSecureData honors a fresh seed only when the server holds no live seed', () => {
@@ -347,4 +361,53 @@ test('maskPasswords does not mutate its input', () => {
   const config = { authentication: { options: { headers: { 'Grpc-Metadata-macaroon': 'deadbeef' } } } };
   Common.maskPasswords(config);
   assert.equal(config.authentication.options.headers['Grpc-Metadata-macaroon'], 'deadbeef');
+});
+
+// getRequestIP keys the login-lockout counter, so it is exercised over a real socket with
+// express computing req.ip under each trust setting app.ts can apply: the question is when
+// the socket peer and when the X-Forwarded-For chain names the client (issue #1656).
+const requestIPWith = async (trustProxy, headers) => {
+  const app = express();
+  app.set('trust proxy', trustProxy);
+  app.get('/', (req, res) => res.json({ ip: Common.getRequestIP(req) }));
+  const server = createServer(app);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const res = await fetch('http://127.0.0.1:' + server.address().port + '/', { headers: headers });
+    return (await res.json()).ip;
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
+  }
+};
+
+test('getRequestIP ignores X-Forwarded-For when no proxy is trusted', async () => {
+  assert.equal(await requestIPWith(false, {}), '127.0.0.1');
+  assert.equal(await requestIPWith(false, { 'x-forwarded-for': '203.0.113.7' }), '127.0.0.1');
+});
+
+test('getRequestIP takes the client from X-Forwarded-For only through a trusted proxy', async () => {
+  // The connection comes from 127.0.0.1, the trusted proxy here, so the address it appended
+  // is the client; a hop the client itself prepended is not walked past.
+  assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': '203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': '198.51.100.1, 203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('127.0.0.1', { 'x-forwarded-for': '203.0.113.7' }), '203.0.113.7');
+  assert.equal(await requestIPWith('10.0.0.0/8', { 'x-forwarded-for': '203.0.113.7' }), '127.0.0.1', 'a peer outside the trusted range is the client');
+});
+
+test('getRequestIP yields no address when a trusted proxy forwards something that is not one', async () => {
+  // A proxy that passes the client's own header through unchanged would otherwise let
+  // arbitrary text into the lockout key and the failed-login log line; and falling back to
+  // the proxy's own address would let that client fill the proxy's shared counter for free.
+  // net.isIP accepts an IPv6 zone id of any length, so an over-long one is also rejected.
+  for (const junk of ['not an address', '<script>alert(1)</script>', '203.0.113.7:4444', 'unknown', '::1%' + 'z'.repeat(100)]) {
+    assert.equal(await requestIPWith('loopback', { 'x-forwarded-for': junk }), null, JSON.stringify(junk));
+  }
+});
+
+test('overBroadTrustedProxies flags entries that cover more than one host', () => {
+  assert.deepEqual(Common.overBroadTrustedProxies(''), []);
+  assert.deepEqual(Common.overBroadTrustedProxies('127.0.0.1, 172.18.0.5, 10.0.0.1/32, ::1/128'), []);
+  assert.deepEqual(Common.overBroadTrustedProxies('uniquelocal'), ['uniquelocal']);
+  assert.deepEqual(Common.overBroadTrustedProxies('127.0.0.1, loopback, 10.0.0.0/8, fd00::/8, linklocal'), ['loopback', '10.0.0.0/8', 'fd00::/8', 'linklocal']);
 });

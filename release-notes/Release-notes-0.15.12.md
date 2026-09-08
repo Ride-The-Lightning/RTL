@@ -52,8 +52,60 @@ this release should add its entry under the appropriate section below.
   "Invalid Password or 2FA Token!" (the server log still records which); without 2FA the
   message is unchanged. Covered by backend tests in `test/backend/authenticate.test.mjs`,
   including the sweep pass, the eviction policy and the locked-state and 2FA responses. The third finding in #1656 — the counter keys on
-  `X-Forwarded-For`, which a client can rotate to dodge the limit — needs a decision on
-  trusted-proxy configuration and is left open.
+  `X-Forwarded-For`, which a client can rotate to dodge the limit — is addressed in the
+  next entry.
+
+- **Login lockout could be dodged with `X-Forwarded-For`; malformed SSO logins threw**
+  ([#1701](https://github.com/Ride-The-Lightning/RTL/pull/1701), reviewed on [#1700](https://github.com/Ride-The-Lightning/RTL/pull/1700), closes
+  [#1656](https://github.com/Ride-The-Lightning/RTL/issues/1656)).
+  The lockout counter was keyed on the first `X-Forwarded-For` address, and the app
+  trusted that header from every hop (`trust proxy: true`), so any client could send a
+  different value on each request and get a fresh five-attempt budget every time — or name
+  another address and lock *it* out. The same header reached the failed-login log line
+  unsanitised. RTL now leaves express's `trust proxy` off unless the new
+  `trustedProxies` config key (or `TRUSTED_PROXIES` environment variable, which wins even
+  when set empty) lists the reverse proxies allowed to speak for the client, and keys the
+  counter on `req.ip`, which express derives from the socket peer and walks through the
+  forwarded chain only past listed proxies. A malformed list fails at startup. Whatever the
+  derivation returns is checked to be a well-formed address before it is used as the key
+  or logged (an IPv6 zone id is capped at a sane length, since `net.isIP` does not bound
+  it); a login whose forwarded value is not an address, or whose connection has no address
+  left, is refused rather than counted under the proxy's shared key, so a client behind a
+  pass-through proxy cannot fill that counter for free. A server listening on a unix socket
+  path has no peer address on any connection for a list to match, so every client there
+  shares one counter (previously the forgeable header keyed them apart); listening on a TCP
+  loopback port with `trustedProxies` set restores per-client counters. **Operators running RTL
+  behind a reverse proxy with RTL's own login should set `trustedProxies` to the proxy's
+  exact address** (`"127.0.0.1"` for a proxy on the same host, the container's address for
+  one on a container network). Exact addresses matter: express trusts every hop whose
+  address is in the list, so a range that also contains clients (a LAN range, or the named
+  `uniquelocal`/`linklocal` ranges) lets those clients forge their address and brings the
+  bypass back. Without the setting every client behind the proxy shares one counter, so
+  five failed attempts by anyone lock the proxy's address out for 30 minutes; that is the
+  same exposure the old code had to a client who simply named the operator's address, now
+  without the bypass, and a login request that arrives carrying `X-Forwarded-For` but is
+  keyed on the connecting address anyway (no list, a list that names the wrong proxy, or a
+  unix-socket listener) logs a configuration warning saying so, once per address. A list
+  entry that covers more than one host (a named range or a CIDR wider than a single
+  address) is flagged at startup for the same reason. SSO deployments
+  (BTCPay) are unaffected, as the lockout does not apply to the cookie login. Nothing else
+  read `trust proxy`: neither cookie is marked secure and no code consults `req.protocol`,
+  `req.secure`, `req.hostname` or `req.ips`. The setting is a deployment switch, pinned to
+  the server-held value on an application-settings save like `disableAuth` and the SSO
+  block. In the SSO branch, the access key from the request body was handed to
+  `crypto.timingSafeEqual` with no type or length check, and `timingSafeEqual` throws on
+  unequal lengths (as `Buffer.from` does on a non-string), so any value that was not
+  exactly 64 bytes got a 400 from the catch-all error handler, carrying the thrown error's
+  text, instead of the intended 406;
+  the JWT re-login path had the same shape (`jwt.verify` throws on a bad token), and an
+  `authenticateWith` the branch did not recognise got no reply at all. All three now answer
+  406 with one client message, while the server log names which of the three it was.
+  Covered by `test/backend/common.test.mjs` (the trust settings, over a real socket),
+  `test/backend/authenticate.test.mjs` (header ignored for the counter, the one-shot
+  warning, every malformed SSO input, and cookie rotation on success) and
+  `test/backend/boot-config.test.mjs`, which boots `rtl.js` in a child process to assert
+  that a non-string or malformed `trustedProxies` refuses to start;
+  `docker/scripts/verify-sso.sh` gains the malformed-body checks against the BTCPay harness.
 
 - **Hardening: application-settings save can no longer re-point credentials or server URLs**
   ([#1683](https://github.com/Ride-The-Lightning/RTL/pull/1683), fixes
@@ -118,6 +170,16 @@ this release should add its entry under the appropriate section below.
   still builds `?payment_hash=` by concatenation, as do `newAddress.ts`, `channels.ts` and
   `wallet.ts`.
 
+- **Eclair: the Public Key dialog now offers the node URI**
+  ([#1694](https://github.com/Ride-The-Lightning/RTL/pull/1694)).
+  On an Eclair node the dialog behind the pubkey in the side menu only ever showed the pubkey;
+  the "Info Type" dropdown that offers the node URI on LND and Core Lightning never appeared.
+  The dialog shows it when `uris` is non-empty, and the Eclair store passed `info.uris` through
+  as-is — but Eclair's `getinfo` has never had that field; it reports `nodeId` and
+  `publicAddresses` separately. LND returns `uris` itself and the Core Lightning backend builds
+  them from `id` and `address`; the Eclair backend now does the same, `nodeId@host:port` for
+  each public address. A node with no public address still gets an empty list, so the dialog
+  stays pubkey-only there rather than showing a URI nobody can reach.
 - **Eclair: a failed channel open is reported as a failure**
   ([#1695](https://github.com/Ride-The-Lightning/RTL/pull/1695)).
   Eclair answers `/open` with HTTP 200 whatever happened: `created channel …` when a channel was
@@ -198,6 +260,23 @@ this release should add its entry under the appropriate section below.
   token exists. The `XSRF-TOKEN` *response header* — set alongside the cookie for the
   RTL-Quickpay jQuery client, which has since been archived — is gone; the cookie the
   Angular frontend reads is unchanged.
+
+- **The websocket ping timer no longer holds the process open**
+  ([#1699](https://github.com/Ride-The-Lightning/RTL/pull/1699), fixes
+  [#1697](https://github.com/Ride-The-Lightning/RTL/issues/1697)).
+  `RTLWebSocketServer.pingInterval` is created in a class-field initializer, so the hourly
+  timer starts as a side effect of *importing* `server/utils/webSocketServer.ts` — and it was
+  never `unref()`'d. Any process that merely pulled the module in stayed alive for the full
+  hour. That is not a problem for the running server, which its own HTTP listener keeps up,
+  but it hung `npm run testbackend`: `test/backend/lnd-invoices.test.mjs` imports the LND
+  invoice controller, which reaches the module through `webSocketClient.ts`, so a suite whose
+  tests had all passed simply never exited, with no failing assertion to point at. The timer is
+  now `unref()`'d in the constructor, matching what `authenticate.ts` already does for the
+  login-lockout sweeper; it still fires normally in the running server. The 28 manual
+  `clearInterval(WSServer.pingInterval)` calls that had accumulated in
+  `route-guards.test.mjs`, `rtlconf.test.mjs` and `lnd-invoices.test.mjs` to work around it are
+  gone, and `test/backend/websocket-server.test.mjs` asserts the timer is unreferenced so the
+  trap cannot come back.
 
 ## Developer Tooling
 

@@ -101,7 +101,23 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR2" -X POST "$BASE/rtl/api/
 [ "$code" = "406" ] && ok "wrong access-key -> 406" || bad "wrong access-key -> $code (want 406)"
 
 echo
-echo "7. the standalone fixture RTL is unaffected"
+echo "7. a malformed login body is refused the same way, not thrown"
+# A value that is not a 64-byte string used to throw inside the comparison (or inside
+# jwt.verify) and surface as a 400 from the catch-all error handler, and an unknown
+# authenticateWith got no reply at all (issue #1656).
+for body in \
+  '{"authenticateWith":"PASSWORD","authenticationValue":"short"}' \
+  '{"authenticateWith":"PASSWORD","authenticationValue":123}' \
+  '{"authenticateWith":"PASSWORD"}' \
+  '{"authenticateWith":"JWT","authenticationValue":"not-a-jwt"}' \
+  '{"authenticateWith":"NOAUTH","authenticationValue":"x"}'; do
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 -b "$JAR2" -X POST "$BASE/rtl/api/authenticate" \
+    -H 'Content-Type: application/json' -H "X-XSRF-TOKEN: $x2" -d "$body")
+  [ "$code" = "406" ] && ok "$body -> 406" || bad "$body -> $code (want 406)"
+done
+
+echo
+echo "8. the standalone fixture RTL is unaffected"
 code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:${RTL_PORT:-3000}/rtl/")
 [ "$code" = "200" ] && ok "standalone RTL still serving on ${RTL_PORT:-3000}" || bad "standalone RTL -> $code"
 

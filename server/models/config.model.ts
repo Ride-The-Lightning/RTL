@@ -56,6 +56,7 @@ export class ApplicationConfig {
     public dbDirectoryPath?: string,
     public rtlConfFilePath?: string,
     public disableAuth?: boolean,
+    public trustedProxies?: string,
     public rtlPass?: string,
     public multiPass?: string,
     public multiPassHashed?: string,
