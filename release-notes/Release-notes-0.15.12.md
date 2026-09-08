@@ -63,31 +63,41 @@ this release should add its entry under the appropriate section below.
   different value on each request and get a fresh five-attempt budget every time — or name
   another address and lock *it* out. The same header reached the failed-login log line
   unsanitised. RTL now leaves express's `trust proxy` off unless the new
-  `trustedProxies` config key (or `TRUSTED_PROXIES` environment variable) lists the
-  reverse proxies allowed to speak for the client — addresses, CIDR ranges, or the named
-  ranges `loopback`, `linklocal` and `uniquelocal` — and keys the counter on `req.ip`,
-  which express derives from the socket peer and walks through the forwarded chain only
-  past listed proxies. A malformed list fails at startup. Whatever the derivation returns
-  is checked to be a well-formed address before it is used as the key or logged; anything
-  else falls back to the socket peer. **Operators running RTL behind a reverse proxy with
-  RTL's own login should set `trustedProxies`** (e.g. `"loopback"` for a proxy on the same
-  host, `"uniquelocal"` for one on a private/container network): without it every client
-  behind the proxy shares one counter, so five failed attempts by anyone lock the proxy's
-  address out for 30 minutes. That is the same exposure the old code had to a client who
-  simply named the operator's address, now without the bypass. SSO deployments (BTCPay) are
-  unaffected, as the lockout does not apply to the cookie login. Nothing else read `trust
-  proxy`: session cookies are not marked secure and no code consults `req.protocol` or
-  `req.hostname`. In the SSO branch, the access key from the request body was handed to
+  `trustedProxies` config key (or `TRUSTED_PROXIES` environment variable, which wins even
+  when set empty) lists the reverse proxies allowed to speak for the client, and keys the
+  counter on `req.ip`, which express derives from the socket peer and walks through the
+  forwarded chain only past listed proxies. A malformed list fails at startup. Whatever the
+  derivation returns is checked to be a well-formed address before it is used as the key
+  or logged; anything else falls back to the socket peer, and a request with no socket
+  address at all is refused rather than counted under a shared key. **Operators running RTL
+  behind a reverse proxy with RTL's own login should set `trustedProxies` to the proxy's
+  exact address** (`"127.0.0.1"` for a proxy on the same host, the container's address for
+  one on a container network). Exact addresses matter: express trusts every hop whose
+  address is in the list, so a range that also contains clients (a LAN range, or the named
+  `uniquelocal`/`linklocal` ranges) lets those clients forge their address and brings the
+  bypass back. Without the setting every client behind the proxy shares one counter, so
+  five failed attempts by anyone lock the proxy's address out for 30 minutes; that is the
+  same exposure the old code had to a client who simply named the operator's address, now
+  without the bypass, and the first login request that arrives carrying `X-Forwarded-For`
+  while no proxy is trusted logs a configuration warning saying so. SSO deployments
+  (BTCPay) are unaffected, as the lockout does not apply to the cookie login. Nothing else
+  read `trust proxy`: neither cookie is marked secure and no code consults `req.protocol`,
+  `req.secure`, `req.hostname` or `req.ips`. The setting is a deployment switch, pinned to
+  the server-held value on an application-settings save like `disableAuth` and the SSO
+  block. In the SSO branch, the access key from the request body was handed to
   `crypto.timingSafeEqual` with no type or length check, and `timingSafeEqual` throws on
   unequal lengths (as `Buffer.from` does on a non-string), so any value that was not
   exactly 64 bytes got a 400 from the catch-all error handler, carrying the thrown error's
   text, instead of the intended 406;
   the JWT re-login path had the same shape (`jwt.verify` throws on a bad token), and an
   `authenticateWith` the branch did not recognise got no reply at all. All three now answer
-  406. Covered by `test/backend/common.test.mjs` (the trust settings, over a real socket)
-  and `test/backend/authenticate.test.mjs` (header ignored for the counter, every malformed
-  SSO input, and cookie rotation on success); `docker/scripts/verify-sso.sh` gains the
-  malformed-body checks against the BTCPay harness.
+  406 with one client message, while the server log names which of the three it was.
+  Covered by `test/backend/common.test.mjs` (the trust settings, over a real socket),
+  `test/backend/authenticate.test.mjs` (header ignored for the counter, the one-shot
+  warning, every malformed SSO input, and cookie rotation on success) and
+  `test/backend/boot-config.test.mjs`, which boots `rtl.js` in a child process to assert
+  that a non-string or malformed `trustedProxies` refuses to start;
+  `docker/scripts/verify-sso.sh` gains the malformed-body checks against the BTCPay harness.
 
 - **Hardening: application-settings save can no longer re-point credentials or server URLs**
   ([#1683](https://github.com/Ride-The-Lightning/RTL/pull/1683), fixes

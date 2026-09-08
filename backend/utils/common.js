@@ -104,6 +104,14 @@ export class CommonService {
             config.disableAuth = this.appConfig.disableAuth;
             config.allowPasswordUpdate = this.appConfig.allowPasswordUpdate;
             config.dbDirectoryPath = this.appConfig.dbDirectoryPath;
+            // trustedProxies decides whose X-Forwarded-For keys the login lockout: a deployment
+            // switch like the ones above, so a settings save can neither set nor drop it.
+            if (this.appConfig.trustedProxies !== undefined) {
+                config.trustedProxies = this.appConfig.trustedProxies;
+            }
+            else {
+                delete config.trustedProxies;
+            }
             config.SSO = JSON.parse(JSON.stringify(this.appConfig.SSO || {}));
             if (this.appConfig.multiPass) {
                 config.multiPass = this.appConfig.multiPass;
@@ -503,7 +511,8 @@ export class CommonService {
         // sending the header (issue #1656). Whatever comes back is still checked to be a
         // well-formed address before it is used: a misconfigured proxy that forwards the
         // client's header verbatim would otherwise let arbitrary text reach the log, and the
-        // fallback for anything else is the socket peer, which always is one.
+        // fallback for anything else is the socket peer. Returns null only when there is no
+        // socket address at all (the connection is already gone); the caller refuses the login.
         this.getRequestIP = (req) => {
             const ip = req.ip;
             if (typeof ip === 'string' && net.isIP(ip)) {

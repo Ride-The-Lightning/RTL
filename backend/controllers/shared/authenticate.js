@@ -26,6 +26,23 @@ export const sweepExpiredAttempts = (currentTime) => {
 };
 export const clearFailedAttempts = () => failedLoginAttempts.clear();
 export const trackedAddresses = () => failedLoginAttempts.size;
+// One-shot: with no trustedProxies configured, req.ip is the socket peer, so every client
+// behind a reverse proxy shares the proxy's counter. The first login request that arrives
+// carrying X-Forwarded-For is the earliest evidence of that setup, and this is the log an
+// operator would read after an unexplained lockout. Logged at ERROR because that is the
+// only level the logger prints before a node's log file is selected.
+let forwardedHeaderWarned = false;
+export const resetForwardedHeaderWarning = () => { forwardedHeaderWarned = false; };
+const warnIfForwardedHeaderIgnored = (req, reqIP) => {
+    if (forwardedHeaderWarned || common.trustedProxies || typeof req.headers['x-forwarded-for'] !== 'string') {
+        return;
+    }
+    forwardedHeaderWarned = true;
+    const msg = 'Configuration warning: a login request carried X-Forwarded-For but no trustedProxies is configured, so the header is ignored ' +
+        'and the login lockout keys on the connecting address ' + reqIP + ' for every client behind it. ' +
+        'If RTL runs behind a reverse proxy, set trustedProxies (or TRUSTED_PROXIES) to that proxy\'s address.';
+    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: msg, error: { error: 'X-Forwarded-For ignored: no trusted proxy configured.' } });
+};
 const loginInterval = setInterval(() => sweepExpiredAttempts(new Date().getTime()), LOCKING_PERIOD);
 // The sweeper must not hold the event loop open on its own (it would keep
 // `node --test` or a CLI invocation alive for the full 30-minute period).
@@ -146,15 +163,26 @@ export const authenticateUser = (req, res, next) => {
         else {
             // Also the reply for a JWT that does not verify and for an unrecognised
             // authenticateWith, which used to end in a 400 from the error handler and in no response
-            // at all, respectively.
+            // at all, respectively. The client gets one message for all three; the server log
+            // names the cause (without echoing the client-supplied mode value).
             const errMsg = 'SSO Authentication Failed! Access key too short or does not match.';
-            const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
+            const cause = (authenticateWith === 'PASSWORD') ? 'access key too short or does not match' :
+                (authenticateWith === 'JWT') ? 'session token did not verify' : 'authenticateWith is neither PASSWORD nor JWT';
+            const err = common.handleError({ statusCode: 406, message: 'SSO Authentication Error', error: errMsg }, 'Authenticate', 'SSO Authentication Failed! ' + cause, req.session.selectedNode);
             return res.status(err.statusCode).json({ message: err.message, error: err.error });
         }
     }
     else {
         const currentTime = new Date().getTime();
         const reqIP = common.getRequestIP(req);
+        if (!reqIP) {
+            // No socket address (the connection is already gone). The lockout cannot be applied
+            // to an unknown client, so the login is refused rather than counted under a shared
+            // null key.
+            logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Login refused: client address could not be determined', error: { error: 'No client address.' } });
+            return res.status(401).json({ message: 'Authentication Failed!', error: 'Client address could not be determined.' });
+        }
+        warnIfForwardedHeaderIgnored(req, reqIP);
         const failed = getFailedInfo(reqIP, currentTime);
         const password = authenticationValue;
         // When a second factor is required, neither 401 may say which credential failed:

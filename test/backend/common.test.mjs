@@ -142,6 +142,17 @@ test('addSecureData pins disableAuth and the SSO object to server-held values', 
   assert.equal(config.enable2FA, true);
 });
 
+test('addSecureData pins trustedProxies to the server-held value, and drops it when the server holds none', () => {
+  // Whose X-Forwarded-For keys the login lockout is a deployment switch like disableAuth:
+  // a settings save can neither widen the list nor silently lose it.
+  seedAppConfig();
+  Common.appConfig.trustedProxies = '127.0.0.1';
+  assert.equal(Common.addSecureData({ trustedProxies: '0.0.0.0/0, ::/0', nodes: [] }).trustedProxies, '127.0.0.1');
+  assert.equal(Common.addSecureData({ nodes: [] }).trustedProxies, '127.0.0.1', 'an omitted key does not drop the list');
+  delete Common.appConfig.trustedProxies;
+  assert.equal('trustedProxies' in Common.addSecureData({ trustedProxies: '0.0.0.0/0', nodes: [] }), false);
+});
+
 test('addSecureData honors a fresh seed only when the server holds no live seed', () => {
   // The settings UI's enable flow sends a non-empty seed and only ever runs while 2FA is
   // off; with no live seed server-side, the client seed is the enable flow and is honored.
