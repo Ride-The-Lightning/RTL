@@ -48,9 +48,14 @@ const writeConfig = (trustedProxies) => {
 
 // Starts rtl.js and resolves once it exits or prints the listening line (then it is killed).
 const boot = (configDir, env = {}) => new Promise((resolve) => {
+  // The developer's own RTL variables must not reach the child: config.ts honours them,
+  // and an exported TRUSTED_PROXIES or PORT would change what is being tested.
+  const cleanEnv = { ...process.env };
+  ['TRUSTED_PROXIES', 'PORT', 'HOST', 'RTL_SSO', 'RTL_COOKIE_PATH', 'APP_PASSWORD', 'DISABLE_AUTH', 'LN_IMPLEMENTATION', 'LN_SERVER_URL', 'MACAROON_PATH']
+    .forEach((key) => delete cleanEnv[key]);
   const child = spawn(process.execPath, ['rtl.js'], {
     cwd: repoRoot,
-    env: { ...process.env, RTL_CONFIG_PATH: configDir, DB_DIRECTORY_PATH: configDir, ...env }
+    env: { ...cleanEnv, RTL_CONFIG_PATH: configDir, DB_DIRECTORY_PATH: configDir, ...env }
   });
   let stdout = '';
   let stderr = '';
@@ -72,15 +77,14 @@ const boot = (configDir, env = {}) => new Promise((resolve) => {
 
 test('a non-string trustedProxies refuses to start with a message naming the key', async () => {
   const result = await boot(writeConfig(123));
-  assert.notEqual(result.code, 0);
-  assert.notEqual(result.code, 'listening');
+  // Exactly 1: 'timeout' (printed the message, then hung) must not pass either.
+  assert.equal(result.code, 1, 'stderr: ' + result.stderr);
   assert.match(result.stderr, /trustedProxies must be a comma-separated list/);
 });
 
 test('a malformed trustedProxies list refuses to start when express compiles it', async () => {
   const result = await boot(writeConfig('garbage, loopback'));
-  assert.notEqual(result.code, 0);
-  assert.notEqual(result.code, 'listening');
+  assert.equal(result.code, 1, 'stderr: ' + result.stderr);
   assert.match(result.stderr, /Invalid trustedProxies value "garbage, loopback": invalid IP address: garbage/);
 });
 

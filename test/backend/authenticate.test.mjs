@@ -502,9 +502,35 @@ test('a login with no determinable client address is refused, not counted under 
   assert.equal(right.statusCode, 401, 'the right password is refused too: the lockout cannot be applied');
 });
 
+test('on a unix-socket listener every client shares one fixed key instead of being refused', () => {
+  // A path-based listener (non-numeric port) has no peer address on any connection; the
+  // lockout still has to work there, so the key is a constant rather than a refusal.
+  clearFailedAttempts();
+  setupAppConfig(false, '');
+  const savedPort = Common.port;
+  Common.port = '/tmp/rtl.sock';
+  try {
+    const res = mockResponse();
+    authenticateUser(mockRequest({ noAddress: true }), res, null);
+    assert.equal(res.statusCode, 200);
+    for (let i = 0; i < ALLOWED_LOGIN_ATTEMPTS; i++) {
+      authenticateUser(mockRequest({ noAddress: true, password: 'wrong' }), mockResponse(), null);
+    }
+    assert.equal(trackedAddresses(), 1, 'one shared counter');
+    const locked = mockResponse();
+    authenticateUser(mockRequest({ noAddress: true }), locked, null);
+    assert.equal(locked.statusCode, 401);
+    assert.match(locked.body.error, /locked/);
+  } finally {
+    Common.port = savedPort;
+    clearFailedAttempts();
+  }
+});
+
 test('SSO: the server log names which of the three refusal causes applied', () => {
   setupSSOConfig();
-  const logged = (opts) => captureLog(() => authenticateUser(mockRequest(opts), mockResponse(), null)).map((e) => e.msg).join('\n');
+  // Every field of every log entry, so a mode value smuggled into the error payload shows too.
+  const logged = (opts) => captureLog(() => authenticateUser(mockRequest(opts), mockResponse(), null)).map((e) => JSON.stringify(e)).join('\n');
   assert.match(logged({ authenticationValue: 'short' }), /access key too short or does not match/);
   assert.match(logged({ authenticateWith: 'JWT', authenticationValue: 'not-a-jwt' }), /session token did not verify/);
   const unknown = logged({ authenticateWith: '<script>', authenticationValue: 'x' });

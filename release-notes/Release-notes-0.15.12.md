@@ -68,8 +68,11 @@ this release should add its entry under the appropriate section below.
   counter on `req.ip`, which express derives from the socket peer and walks through the
   forwarded chain only past listed proxies. A malformed list fails at startup. Whatever the
   derivation returns is checked to be a well-formed address before it is used as the key
-  or logged; anything else falls back to the socket peer, and a request with no socket
-  address at all is refused rather than counted under a shared key. **Operators running RTL
+  or logged (an IPv6 zone id is capped at a sane length, since `net.isIP` does not bound
+  it); anything else falls back to the socket peer. A server listening on a unix socket
+  path, where no connection has a peer address, keeps one shared counter for all its
+  clients as before, and a TCP request whose connection is already gone is refused rather
+  than counted under a shared key. **Operators running RTL
   behind a reverse proxy with RTL's own login should set `trustedProxies` to the proxy's
   exact address** (`"127.0.0.1"` for a proxy on the same host, the container's address for
   one on a container network). Exact addresses matter: express trusts every hop whose
