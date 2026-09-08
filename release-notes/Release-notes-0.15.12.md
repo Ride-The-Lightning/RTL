@@ -279,7 +279,7 @@ this release should add its entry under the appropriate section below.
   trap cannot come back.
 
 - **Dependency update batch**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1702](https://github.com/Ride-The-Lightning/RTL/pull/1702)).
   Resolves the open Dependabot alerts in one pass, per the process in `CONTRIBUTING.md`. The
   Angular CLI line (`@angular/cli`, `@angular/build`, `@angular-devkit/build-angular`) moves
   from 20.3.34 to 20.3.36, which carries the `webpack-dev-server` 5.2.6, `less` and
