@@ -29,13 +29,26 @@ export const invoiceLookup = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/invoices/lookup';
-  if (req.query.payment_addr) {
-    options.url = options.url + '?payment_addr=' + req.query.payment_addr;
+  const qs: Record<string, any> = {};
+  if (req.query.payment_addr !== undefined) {
+    const raw = typeof req.query.payment_addr === 'string' ? req.query.payment_addr.trim() : '';
+    if (raw === '') {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Invalid payment_addr query param' });
+      return res.status(400).json({ message: 'payment_addr must be a non-empty string', error: 'Invalid query parameter' });
+    }
+    qs.payment_addr = raw;
+  } else if (req.query.payment_hash !== undefined) {
+    const raw = typeof req.query.payment_hash === 'string' ? req.query.payment_hash.trim() : '';
+    if (raw === '') {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Invalid payment_hash query param' });
+      return res.status(400).json({ message: 'payment_hash must be a non-empty string', error: 'Invalid query parameter' });
+    }
+    qs.payment_hash = raw;
   } else {
-    options.url = options.url + '?payment_hash=' + req.query.payment_hash;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoice', msg: 'Missing payment_addr/payment_hash query param' });
+    return res.status(400).json({ message: 'payment_addr or payment_hash is required', error: 'Invalid query parameter' });
   }
-  request(options).then((body) => {
+  request({ ...options, url: req.session.selectedNode.settings.lnServerUrl + '/v2/invoices/lookup', qs }).then((body) => {
     body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
     body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
     body.description_hash = body.description_hash ? Buffer.from(body.description_hash, 'base64').toString('hex') : null;

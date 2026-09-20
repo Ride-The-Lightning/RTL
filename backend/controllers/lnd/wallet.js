@@ -104,14 +104,25 @@ export const getUTXOs = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/utxos';
-    if (common.isVersionCompatible(req.session.selectedNode.lnVersion, '0.14.0')) {
-        options.form = JSON.stringify({ max_confs: req.query.max_confs });
+    const qs = {};
+    if (req.query.max_confs !== undefined) {
+        const raw = typeof req.query.max_confs === 'string' ? req.query.max_confs.trim() : '';
+        if (raw === '' || !(/^\d+$/).test(raw)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Wallet', msg: 'Invalid max_confs query param' });
+            return res.status(400).json({ message: 'max_confs must be a non-negative integer', error: 'Invalid query parameter' });
+        }
+        const num = Number(raw);
+        if (!Number.isSafeInteger(num)) {
+            logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Wallet', msg: 'max_confs exceeds safe integer range' });
+            return res.status(400).json({ message: 'max_confs exceeds maximum safe integer', error: 'Invalid query parameter' });
+        }
+        qs.max_confs = num;
     }
-    else {
-        options.url = options.url + '?max_confs=' + req.query.max_confs;
-    }
-    request.post(options).then((body) => {
+    const url = req.session.selectedNode.settings.lnServerUrl + '/v2/wallet/utxos';
+    const reqOpts = common.isVersionCompatible(req.session.selectedNode.lnVersion, '0.14.0') ?
+        { ...options, url, form: JSON.stringify(qs) } :
+        { ...options, url, qs };
+    request.post(reqOpts).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'UTXOs List Received', data: body });
         res.status(200).json(body.utxos ? body.utxos : []);
     }).catch((errRes) => {

@@ -215,14 +215,44 @@ export const closeChannel = (req, res, next) => {
     options = common.getOptions(req);
     if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
     const channelpoint = req.params.channelPoint?.replace(':', '/');
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
-    if (req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
-    if (req.query.sat_per_vbyte) { options.url = options.url + '&sat_per_vbyte=' + req.query.sat_per_vbyte; }
-    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
-    // Fire-and-forget: LND keeps the close stream open until the closing tx
-    // confirms, so exempt it from the request timeout; the 202 is already sent,
-    // so log a rejection instead of letting it crash the process.
-    request.delete({ ...options, timeout: 0 }).catch((errRes) => {
+    const qs: Record<string, any> = {};
+    if (req.query.force !== undefined) {
+      const raw = typeof req.query.force === 'string' ? req.query.force.trim().toLowerCase() : '';
+      if (raw !== 'true' && raw !== 'false' && raw !== '1' && raw !== '0' && raw !== 't' && raw !== 'f') {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Channels', msg: 'Invalid force query param' });
+        return res.status(400).json({ message: 'force must be a boolean', error: 'Invalid query parameter' });
+      }
+      qs.force = raw === 'true' || raw === '1' || raw === 't';
+    }
+    if (req.query.target_conf !== undefined) {
+      const raw = typeof req.query.target_conf === 'string' ? req.query.target_conf.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Channels', msg: 'Invalid target_conf query param' });
+        return res.status(400).json({ message: 'target_conf must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Channels', msg: 'target_conf exceeds safe integer range' });
+        return res.status(400).json({ message: 'target_conf exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.target_conf = num;
+    }
+    if (req.query.sat_per_vbyte !== undefined) {
+      const raw = typeof req.query.sat_per_vbyte === 'string' ? req.query.sat_per_vbyte.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Channels', msg: 'Invalid sat_per_vbyte query param' });
+        return res.status(400).json({ message: 'sat_per_vbyte must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Channels', msg: 'sat_per_vbyte exceeds safe integer range' });
+        return res.status(400).json({ message: 'sat_per_vbyte exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.sat_per_vbyte = num;
+    }
+    const url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint;
+    logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: { url, qs } });
+    request.delete({ ...options, url, qs, timeout: 0 }).catch((errRes) => {
       const err = common.handleError(errRes, 'Channels', 'Close Channel Error', req.session.selectedNode);
       logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error', error: err });
     });

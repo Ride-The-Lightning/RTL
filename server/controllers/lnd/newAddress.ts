@@ -9,8 +9,16 @@ export const getNewAddress = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/newaddress?type=' + req.query.type;
-  request(options).then((body) => {
+  const qs: Record<string, any> = {};
+  if (req.query.type !== undefined) {
+    const raw = typeof req.query.type === 'string' ? req.query.type.trim() : '';
+    if (raw !== 'p2wkh' && raw !== 'np2wkh' && raw !== 'p2tr') {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'NewAddress', msg: 'Invalid type query param' });
+      return res.status(400).json({ message: 'type must be one of p2wkh, np2wkh, p2tr', error: 'Invalid query parameter' });
+    }
+    qs.type = raw;
+  }
+  request({ ...options, url: req.session.selectedNode.settings.lnServerUrl + '/v1/newaddress', qs }).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'New Address Generated', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {

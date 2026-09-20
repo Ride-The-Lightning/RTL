@@ -46,10 +46,49 @@ export const loopOutTerms = (req, res, next) => {
 
 export const loopOutQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
-  options.uri = '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url });
-  request(options).then((quoteRes) => {
-    quoteRes.amount = +req.params.amount;
+  const amountRaw = typeof req.params.amount === 'string' ? req.params.amount.trim() : '';
+  if (amountRaw === '' || !(/^\d+$/).test(amountRaw)) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid amount path param' });
+    return res.status(400).json({ message: 'amount must be a non-negative integer', error: 'Invalid path parameter' });
+  }
+  const amount = Number(amountRaw);
+  if (!Number.isSafeInteger(amount)) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'amount exceeds safe integer range' });
+    return res.status(400).json({ message: 'amount exceeds maximum safe integer', error: 'Invalid path parameter' });
+  }
+  const qs: Record<string, any> = {};
+  if (req.query.targetConf !== undefined) {
+    const raw = typeof req.query.targetConf === 'string' ? req.query.targetConf.trim() : '';
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid targetConf query param' });
+      return res.status(400).json({ message: 'targetConf must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'targetConf exceeds safe integer range' });
+      return res.status(400).json({ message: 'targetConf exceeds maximum safe integer', error: 'Invalid query parameter' });
+    }
+    qs.conf_target = num;
+  } else {
+    qs.conf_target = 2;
+  }
+  if (req.query.swapPublicationDeadline !== undefined) {
+    const raw = typeof req.query.swapPublicationDeadline === 'string' ? req.query.swapPublicationDeadline.trim() : '';
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid swapPublicationDeadline query param' });
+      return res.status(400).json({ message: 'swapPublicationDeadline must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'swapPublicationDeadline exceeds safe integer range' });
+      return res.status(400).json({ message: 'swapPublicationDeadline exceeds maximum safe integer', error: 'Invalid query parameter' });
+    }
+    qs.swap_publication_deadline = num;
+  }
+  const reqOpts = { ...options, uri: '/v1/loop/out/quote/' + amount, qs };
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: reqOpts.uri });
+  request(reqOpts).then((quoteRes) => {
+    quoteRes.amount = amount;
     quoteRes.swap_payment_dest = quoteRes.swap_payment_dest ? Buffer.from(quoteRes.swap_payment_dest, 'base64').toString('hex') : '';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quote Received', data: quoteRes });
     res.status(200).json(quoteRes);
@@ -64,9 +103,37 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
   options.uri = '/v1/loop/out/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const qs: Record<string, any> = {};
+    if (req.query.targetConf !== undefined) {
+      const raw = typeof req.query.targetConf === 'string' ? req.query.targetConf.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid targetConf query param' });
+        return res.status(400).json({ message: 'targetConf must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'targetConf exceeds safe integer range' });
+        return res.status(400).json({ message: 'targetConf exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.conf_target = num;
+    } else {
+      qs.conf_target = 2;
+    }
+    if (req.query.swapPublicationDeadline !== undefined) {
+      const raw = typeof req.query.swapPublicationDeadline === 'string' ? req.query.swapPublicationDeadline.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid swapPublicationDeadline query param' });
+        return res.status(400).json({ message: 'swapPublicationDeadline must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'swapPublicationDeadline exceeds safe integer range' });
+        return res.status(400).json({ message: 'swapPublicationDeadline exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.swap_publication_deadline = num;
+    }
+    const options1 = { ...options, uri: '/v1/loop/out/quote/' + terms.min_swap_amount, qs };
+    const options2 = { ...options, uri: '/v1/loop/out/quote/' + terms.max_swap_amount, qs };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
@@ -121,10 +188,49 @@ export const loopInTerms = (req, res, next) => {
 
 export const loopInQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
-  options.uri = '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url });
-  request(options).then((body) => {
-    body.amount = +req.params.amount;
+  const amountRaw = typeof req.params.amount === 'string' ? req.params.amount.trim() : '';
+  if (amountRaw === '' || !(/^\d+$/).test(amountRaw)) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid amount path param' });
+    return res.status(400).json({ message: 'amount must be a non-negative integer', error: 'Invalid path parameter' });
+  }
+  const amount = Number(amountRaw);
+  if (!Number.isSafeInteger(amount)) {
+    logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'amount exceeds safe integer range' });
+    return res.status(400).json({ message: 'amount exceeds maximum safe integer', error: 'Invalid path parameter' });
+  }
+  const qs: Record<string, any> = {};
+  if (req.query.targetConf !== undefined) {
+    const raw = typeof req.query.targetConf === 'string' ? req.query.targetConf.trim() : '';
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid targetConf query param' });
+      return res.status(400).json({ message: 'targetConf must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'targetConf exceeds safe integer range' });
+      return res.status(400).json({ message: 'targetConf exceeds maximum safe integer', error: 'Invalid query parameter' });
+    }
+    qs.conf_target = num;
+  } else {
+    qs.conf_target = 2;
+  }
+  if (req.query.swapPublicationDeadline !== undefined) {
+    const raw = typeof req.query.swapPublicationDeadline === 'string' ? req.query.swapPublicationDeadline.trim() : '';
+    if (raw === '' || !(/^\d+$/).test(raw)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid swapPublicationDeadline query param' });
+      return res.status(400).json({ message: 'swapPublicationDeadline must be a non-negative integer', error: 'Invalid query parameter' });
+    }
+    const num = Number(raw);
+    if (!Number.isSafeInteger(num)) {
+      logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'swapPublicationDeadline exceeds safe integer range' });
+      return res.status(400).json({ message: 'swapPublicationDeadline exceeds maximum safe integer', error: 'Invalid query parameter' });
+    }
+    qs.swap_publication_deadline = num;
+  }
+  const reqOpts = { ...options, uri: '/v1/loop/in/quote/' + amount, qs };
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: reqOpts.uri });
+  request(reqOpts).then((body) => {
+    body.amount = amount;
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Qoutes Received', data: body });
     res.status(200).json(body);
@@ -139,9 +245,37 @@ export const loopInTermsAndQuotes = (req, res, next) => {
   options.uri = '/v1/loop/in/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const qs: Record<string, any> = {};
+    if (req.query.targetConf !== undefined) {
+      const raw = typeof req.query.targetConf === 'string' ? req.query.targetConf.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid targetConf query param' });
+        return res.status(400).json({ message: 'targetConf must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'targetConf exceeds safe integer range' });
+        return res.status(400).json({ message: 'targetConf exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.conf_target = num;
+    } else {
+      qs.conf_target = 2;
+    }
+    if (req.query.swapPublicationDeadline !== undefined) {
+      const raw = typeof req.query.swapPublicationDeadline === 'string' ? req.query.swapPublicationDeadline.trim() : '';
+      if (raw === '' || !(/^\d+$/).test(raw)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'Invalid swapPublicationDeadline query param' });
+        return res.status(400).json({ message: 'swapPublicationDeadline must be a non-negative integer', error: 'Invalid query parameter' });
+      }
+      const num = Number(raw);
+      if (!Number.isSafeInteger(num)) {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Loop', msg: 'swapPublicationDeadline exceeds safe integer range' });
+        return res.status(400).json({ message: 'swapPublicationDeadline exceeds maximum safe integer', error: 'Invalid query parameter' });
+      }
+      qs.swap_publication_deadline = num;
+    }
+    const options1 = { ...options, uri: '/v1/loop/in/quote/' + terms.min_swap_amount, qs };
+    const options2 = { ...options, uri: '/v1/loop/in/quote/' + terms.max_swap_amount, qs };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
