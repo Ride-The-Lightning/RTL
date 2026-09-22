@@ -89,9 +89,12 @@ export class ExpressApplication {
       try {
         pathname = posix.normalize(decodeURIComponent(queryAt === -1 ? req.url : req.url.slice(0, queryAt)).replace(/\\/g, '/'));
       } catch {
-        next(); return; // not decodable: send rejects it the same way; fall through
+        next(); return; // not decodable: static falls through too, so the catch-all answers it
       }
-      if (pathname.replace(/\/+$/, '').toLowerCase() === this.common.baseHref + '/index.html') {
+      if (pathname.replace(/\/+$/, '').toLowerCase() === (this.common.baseHref + '/index.html').toLowerCase()) {
+        // A new session's cookie rides on this 301 and it reflects the query string;
+        // a redirect is heuristically cacheable, so forbid storing it.
+        res.set('Cache-Control', 'no-store');
         res.redirect(301, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
         return;
       }
@@ -141,6 +144,7 @@ export class ExpressApplication {
           this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'CSRF Token Re-Mint Failed', error: csrfError });
         }
         this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'Invalid CSRF token. Form tempered.' });
+        res.set('Cache-Control', 'no-store'); // carries the re-minted token pair
         res.status(403).send('Invalid CSRF token, form tempered.');
         break;
       default:

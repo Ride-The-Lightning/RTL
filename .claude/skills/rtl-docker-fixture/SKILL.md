@@ -39,7 +39,7 @@ behind a compose profile, so a plain `up` does not start it:
 
 ```bash
 docker compose --profile sso up -d
-./scripts/verify-sso.sh       # 11 assertions over the whole entry path; non-zero on failure
+./scripts/verify-sso.sh       # 16 assertions over the whole entry path; non-zero on failure
 open "$(bin/sso-url)"         # the link BTCPay renders on its Services page
 ```
 

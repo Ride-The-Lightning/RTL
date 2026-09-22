@@ -164,6 +164,8 @@ test('a login with no token is still refused', async () => {
   // Control: the token has to come from the page; the check itself is intact.
   const res = await login(cookieJar());
   assert.equal(res.status, 403);
+  // The 403 re-mints the token pair for a retry, so it must not be storable either.
+  assert.equal(res.headers.get('cache-control'), 'no-store');
 });
 
 test('a login whose header does not match the signed cookie is still refused', async () => {
@@ -192,6 +194,10 @@ test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still se
   const withQuery = await rawGet('/rtl/index.html?access-key=x');
   assert.equal(withQuery.status, 301);
   assert.equal(withQuery.location, '/rtl/?access-key=x');
+  // The 301 carries a new session's cookie and reflects the query string; a redirect is
+  // heuristically cacheable, so it must say no-store.
+  const redirectHeaders = await fetch(base + '/rtl/index.html', { redirect: 'manual' });
+  assert.equal(redirectHeaders.headers.get('cache-control'), 'no-store');
   // The 32x32 favicon is in frontend/assets; with index: false only the directory index is
   // left to the catch-all, files are still served (a fall-through would return index.html).
   const asset = await fetch(base + '/rtl/assets/images/favicon-light/favicon-32x32.png');
