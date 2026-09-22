@@ -79,7 +79,17 @@ const boot = (dir) => new Promise((resolve, reject) => {
     if (/Server is up and running/.test(stdout)) { clearTimeout(timer); resolve(proc); }
   });
   proc.stderr.on('data', (chunk) => { stderr += chunk; });
+  proc.on('error', (err) => { clearTimeout(timer); reject(err); });
   proc.on('exit', (code) => { clearTimeout(timer); reject(new Error('rtl.js exited with ' + code + ' before listening. stderr: ' + stderr)); });
+});
+
+// SIGTERM, then SIGKILL if it lingers; resolves once the process is gone so the config
+// directory (which it rewrites on startup and keeps its db in) can be removed safely.
+const stop = (proc) => new Promise((resolve) => {
+  if (proc.exitCode !== null || proc.signalCode !== null) { resolve(); return; }
+  const forceKill = setTimeout(() => proc.kill('SIGKILL'), 5000);
+  proc.once('exit', () => { clearTimeout(forceKill); resolve(); });
+  proc.kill();
 });
 
 // Undici's fetch does not keep cookies; collect them from set-cookie and send them back.
@@ -96,13 +106,13 @@ const cookieJar = () => {
   };
 };
 
-const login = (jar) => fetch(base + '/rtl/api/authenticate', {
+const login = (jar, headerToken = jar.get('XSRF-TOKEN') || '') => fetch(base + '/rtl/api/authenticate', {
   method: 'POST',
   headers: {
     'content-type': 'application/json',
     cookie: jar.header(),
     // The Angular XSRF interceptor echoes the readable cookie in this header.
-    'x-xsrf-token': jar.get('XSRF-TOKEN') || ''
+    'x-xsrf-token': headerToken
   },
   body: JSON.stringify({ authenticateWith: 'PASSWORD', authenticationValue: passwordHash })
 });
@@ -114,8 +124,8 @@ before(async () => {
   child = await boot(configDir);
 });
 
-after(() => {
-  if (child) { child.kill(); }
+after(async () => {
+  if (child) { await stop(child); }
   if (configDir) { rmSync(configDir, { recursive: true, force: true }); }
 });
 
@@ -127,6 +137,8 @@ test('GET /rtl/ hands out the CSRF token cookie with the page', async () => {
   jar.absorb(res);
   assert.ok(jar.get('XSRF-TOKEN'), 'no XSRF-TOKEN cookie on GET /rtl/');
   assert.ok(jar.get('_csrf'), 'no _csrf cookie on GET /rtl/');
+  // The page carries a per-client token pair, so no shared cache may store it.
+  assert.equal(res.headers.get('cache-control'), 'no-store');
 });
 
 test('a visitor entering at /rtl/ logs in on the first attempt', async () => {
@@ -139,6 +151,15 @@ test('a visitor entering at /rtl/ logs in on the first attempt', async () => {
 test('a login with no token is still refused', async () => {
   // Control: the token has to come from the page; the check itself is intact.
   const res = await login(cookieJar());
+  assert.equal(res.status, 403);
+});
+
+test('a login whose header does not match the signed cookie is still refused', async () => {
+  // Control for the double-submit pair: a real _csrf cookie from the page with an
+  // attacker-chosen header must not pass, or the check has degraded to token presence.
+  const jar = cookieJar();
+  jar.absorb(await fetch(base + '/rtl/', { redirect: 'manual' }));
+  const res = await login(jar, 'not-the-token-' + jar.get('XSRF-TOKEN'));
   assert.equal(res.status, 403);
 });
 
