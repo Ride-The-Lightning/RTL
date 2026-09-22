@@ -30,6 +30,38 @@ export class CommonService {
 
   constructor() {}
 
+  // A non-negative integer given as a decimal string; anything else (hex, exponent, sign,
+  // fraction, repeated field) is rejected so it can never reach the node or Number().
+  // Returns undefined when the value is absent, NaN when present but malformed.
+  public parseNonNegativeInt = (value) => {
+    if (value === undefined) { return undefined; }
+    if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) { return NaN; }
+    const num = Number(value.trim());
+    return Number.isSafeInteger(num) ? num : NaN;
+  };
+
+  // A boolean spelled the way any RTL client writes one; accepts everything Go's
+  // strconv.ParseBool accepts so previously round-tripping callers keep working.
+  // Returns undefined when absent, null when present but not a recognised spelling.
+  public parseBooleanish = (value) => {
+    if (value === undefined) { return undefined; }
+    if (typeof value !== 'string') { return null; }
+    const s = value.trim().toLowerCase();
+    if (s === 'true' || s === '1' || s === 't') { return true; }
+    if (s === 'false' || s === '0' || s === 'f') { return false; }
+    return null;
+  };
+
+  // A non-empty trimmed string; anything else (empty, whitespace, array, object) is rejected
+  // so a caller-supplied shape cannot be interpolated into an upstream query or path.
+  // Returns undefined when absent, null when present but not a usable string.
+  public parseNonEmptyString = (value) => {
+    if (value === undefined) { return undefined; }
+    if (typeof value !== 'string') { return null; }
+    const s = value.trim();
+    return s === '' ? null : s;
+  };
+
   public maskPasswords = (obj) => {
     // Clone up front: masking a live config object must not blank the credentials LN
     // requests authenticate with (mirrors removeSecureData).

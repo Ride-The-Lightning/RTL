@@ -31,18 +31,6 @@ export const getReceivedPaymentInfo = (baseOptions, lnServerUrl, invoice) => {
         return invoice;
     });
 };
-// A non-negative integer given as a decimal string; anything else (hex, exponent, sign,
-// fraction, repeated field) is rejected so it can never reach eclair or Number().
-const parsePagingParam = (value) => {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) {
-        return NaN;
-    }
-    const num = Number(value.trim());
-    return Number.isSafeInteger(num) ? num : NaN;
-};
 const fetchInvoicePage = (baseOptions, lnServerUrl, from, to, count, skip) => {
     const pageOptions = JSON.parse(JSON.stringify(baseOptions));
     pageOptions.url = lnServerUrl + '/listinvoices';
@@ -114,8 +102,8 @@ export const listInvoices = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     // `skip` is the offset from the newest invoice; `count` is the page size.
-    const requestedCount = parsePagingParam(req.query.count);
-    const requestedSkip = parsePagingParam(req.query.skip);
+    const requestedCount = common.parseNonNegativeInt(req.query.count);
+    const requestedSkip = common.parseNonNegativeInt(req.query.skip);
     if (Number.isNaN(requestedCount) || Number.isNaN(requestedSkip)) {
         logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'Invoices', msg: 'Invalid count/skip query param' });
         return res.status(400).json({ message: 'count and skip must be non-negative integers', error: 'Invalid query parameter' });

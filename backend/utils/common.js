@@ -25,6 +25,51 @@ export class CommonService {
             { name: 'JAN', days: 31 }, { name: 'FEB', days: 28 }, { name: 'MAR', days: 31 }, { name: 'APR', days: 30 }, { name: 'MAY', days: 31 }, { name: 'JUN', days: 30 },
             { name: 'JUL', days: 31 }, { name: 'AUG', days: 31 }, { name: 'SEP', days: 30 }, { name: 'OCT', days: 31 }, { name: 'NOV', days: 30 }, { name: 'DEC', days: 31 }
         ];
+        // A non-negative integer given as a decimal string; anything else (hex, exponent, sign,
+        // fraction, repeated field) is rejected so it can never reach the node or Number().
+        // Returns undefined when the value is absent, NaN when present but malformed.
+        this.parseNonNegativeInt = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) {
+                return NaN;
+            }
+            const num = Number(value.trim());
+            return Number.isSafeInteger(num) ? num : NaN;
+        };
+        // A boolean spelled the way any RTL client writes one; accepts everything Go's
+        // strconv.ParseBool accepts so previously round-tripping callers keep working.
+        // Returns undefined when absent, null when present but not a recognised spelling.
+        this.parseBooleanish = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string') {
+                return null;
+            }
+            const s = value.trim().toLowerCase();
+            if (s === 'true' || s === '1' || s === 't') {
+                return true;
+            }
+            if (s === 'false' || s === '0' || s === 'f') {
+                return false;
+            }
+            return null;
+        };
+        // A non-empty trimmed string; anything else (empty, whitespace, array, object) is rejected
+        // so a caller-supplied shape cannot be interpolated into an upstream query or path.
+        // Returns undefined when absent, null when present but not a usable string.
+        this.parseNonEmptyString = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string') {
+                return null;
+            }
+            const s = value.trim();
+            return s === '' ? null : s;
+        };
         this.maskPasswords = (obj) => {
             // Clone up front: masking a live config object must not blank the credentials LN
             // requests authenticate with (mirrors removeSecureData).
