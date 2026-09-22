@@ -73,7 +73,7 @@ const boot = (dir) => new Promise((resolve, reject) => {
   });
   let stdout = '';
   let stderr = '';
-  const timer = setTimeout(() => { proc.kill(); reject(new Error('rtl.js did not start within 20s. stderr: ' + stderr)); }, 20000);
+  const timer = setTimeout(() => { proc.kill('SIGKILL'); reject(new Error('rtl.js did not start within 20s. stderr: ' + stderr)); }, 20000);
   proc.stdout.on('data', (chunk) => {
     stdout += chunk;
     if (/Server is up and running/.test(stdout)) { clearTimeout(timer); resolve(proc); }
@@ -163,10 +163,15 @@ test('a login whose header does not match the signed cookie is still refused', a
   assert.equal(res.status, 403);
 });
 
-test('/rtl still redirects to /rtl/ and static assets are still served by express.static', async () => {
+test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still served by express.static', async () => {
   const redirect = await fetch(base + '/rtl', { redirect: 'manual' });
   assert.equal(redirect.status, 301);
   assert.equal(new URL(redirect.headers.get('location'), base).pathname, '/rtl/');
+  // An explicit index.html is a plain file to express.static and would be served without
+  // the token pair; it is sent to the directory index instead so there is one entry path.
+  const explicit = await fetch(base + '/rtl/index.html', { redirect: 'manual' });
+  assert.equal(explicit.status, 301);
+  assert.equal(new URL(explicit.headers.get('location'), base).pathname, '/rtl/');
   // The 32x32 favicon is in frontend/assets; with index: false only the directory index is
   // left to the catch-all, files are still served (a fall-through would return index.html).
   const asset = await fetch(base + '/rtl/assets/images/favicon-light/favicon-32x32.png');

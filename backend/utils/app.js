@@ -38,6 +38,9 @@ export class ExpressApplication {
             // index: false leaves the directory index (GET baseHref/) to the catch-all below. Served
             // by express.static it went out without the XSRF-TOKEN cookie, which only the catch-all
             // mints, so a visitor entering at /rtl/ failed their first POST with 403 (issue #1710).
+            // An explicit /index.html is an ordinary file to express.static and would go out the
+            // same tokenless way; send it to the directory index so there is one entry path.
+            this.app.get(this.common.baseHref + '/index.html', (req, res) => { res.redirect(301, this.common.baseHref + '/'); });
             this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend'), { index: false }));
             this.app.use((req, res, next) => {
                 // Generate the token once per request: with csrf-csrf every call mints a
