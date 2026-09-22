@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { get as rawHttpGet } from 'node:http';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -117,6 +118,17 @@ const login = (jar, headerToken = jar.get('XSRF-TOKEN') || '') => fetch(base + '
   body: JSON.stringify({ authenticateWith: 'PASSWORD', authenticationValue: passwordHash })
 });
 
+// fetch() parses the URL the WHATWG way and strips dot segments (including %2e) before
+// the wire, so spellings that only send's decode + normalize collapses to the index
+// file have to be sent verbatim, with node:http and an explicit path.
+const rawGet = (path) => new Promise((resolve, reject) => {
+  const req = rawHttpGet({ hostname: '127.0.0.1', port: base.slice(base.lastIndexOf(':') + 1), path }, (res) => {
+    res.resume();
+    res.on('end', () => resolve({ status: res.statusCode, location: res.headers.location }));
+  });
+  req.on('error', reject);
+});
+
 before(async () => {
   const port = await freePort();
   configDir = writeConfig(port);
@@ -167,11 +179,19 @@ test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still se
   const redirect = await fetch(base + '/rtl', { redirect: 'manual' });
   assert.equal(redirect.status, 301);
   assert.equal(new URL(redirect.headers.get('location'), base).pathname, '/rtl/');
-  // An explicit index.html is a plain file to express.static and would be served without
-  // the token pair; it is sent to the directory index instead so there is one entry path.
-  const explicit = await fetch(base + '/rtl/index.html', { redirect: 'manual' });
-  assert.equal(explicit.status, 301);
-  assert.equal(new URL(explicit.headers.get('location'), base).pathname, '/rtl/');
+  // The index file stays a plain file to express.static under any spelling that send's
+  // decode + normalize collapses back to it; each would be served without the token
+  // pair, so each is sent to the directory index instead — one entry path.
+  for (const spelling of ['/rtl/index.html', '/rtl//index.html', '/rtl///index.html', '/rtl/./index.html',
+    '/rtl/%2e/index.html', '/rtl/%69ndex.html', '/rtl/%2f/index.html', '/rtl/index.html/']) {
+    const res = await rawGet(spelling);
+    assert.equal(res.status, 301, spelling + ' returned ' + res.status);
+    assert.equal(new URL(res.location, base).pathname, '/rtl/', spelling);
+  }
+  // The redirect keeps the query string.
+  const withQuery = await rawGet('/rtl/index.html?access-key=x');
+  assert.equal(withQuery.status, 301);
+  assert.equal(withQuery.location, '/rtl/?access-key=x');
   // The 32x32 favicon is in frontend/assets; with index: false only the directory index is
   // left to the catch-all, files are still served (a fall-through would return index.html).
   const asset = await fetch(base + '/rtl/assets/images/favicon-light/favicon-32x32.png');
