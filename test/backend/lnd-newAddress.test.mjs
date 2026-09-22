@@ -65,44 +65,43 @@ test('getNewAddress: empty query omits type from the URL', async () => {
   }
 });
 
-test('getNewAddress: type=p2tr is forwarded', async () => {
+test('getNewAddress: type=0 (the ID the UI sends) is forwarded', async () => {
   const lnd = await startFakeLnd('macaroon-test');
   try {
     const res = buildResponse();
-    getNewAddress(buildRequest(lnd, { type: 'p2tr' }), res, null);
+    getNewAddress(buildRequest(lnd, { type: '0' }), res, null);
     await res.done;
 
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/newaddress?type=p2tr');
+    assert.equal(lnd.seen[0].path, '/v1/newaddress?type=0');
   } finally {
     await lnd.close();
   }
 });
 
-test('getNewAddress: type=p2wkh is forwarded', async () => {
+test('getNewAddress: type=1 (the ID the UI sends) is forwarded', async () => {
   const lnd = await startFakeLnd('macaroon-test');
   try {
     const res = buildResponse();
-    getNewAddress(buildRequest(lnd, { type: 'p2wkh' }), res, null);
+    getNewAddress(buildRequest(lnd, { type: '1' }), res, null);
     await res.done;
 
     assert.equal(res.statusCode, 200);
-    assert.equal(lnd.seen[0].path, '/v1/newaddress?type=p2wkh');
+    assert.equal(lnd.seen[0].path, '/v1/newaddress?type=1');
   } finally {
     await lnd.close();
   }
 });
 
-test('getNewAddress: unknown type returns 400 without calling LND', async () => {
+test('getNewAddress: type=4 (the ID the UI sends) is forwarded', async () => {
   const lnd = await startFakeLnd('macaroon-test');
   try {
     const res = buildResponse();
-    getNewAddress(buildRequest(lnd, { type: 'p2sh' }), res, null);
+    getNewAddress(buildRequest(lnd, { type: '4' }), res, null);
     await res.done;
 
-    assert.equal(res.statusCode, 400);
-    assert.equal(lnd.seen.length, 0, 'LND should not have been called');
-    assert.equal(res.body.message, 'type must be one of p2wkh, np2wkh, p2tr');
+    assert.equal(res.statusCode, 200);
+    assert.equal(lnd.seen[0].path, '/v1/newaddress?type=4');
   } finally {
     await lnd.close();
   }
@@ -113,6 +112,21 @@ test('getNewAddress: empty type returns 400 without calling LND', async () => {
   try {
     const res = buildResponse();
     getNewAddress(buildRequest(lnd, { type: '' }), res, null);
+    await res.done;
+
+    assert.equal(res.statusCode, 400);
+    assert.equal(lnd.seen.length, 0, 'LND should not have been called');
+    assert.equal(res.body.message, 'type must be a non-empty string');
+  } finally {
+    await lnd.close();
+  }
+});
+
+test('getNewAddress: whitespace type returns 400 without calling LND', async () => {
+  const lnd = await startFakeLnd('macaroon-test');
+  try {
+    const res = buildResponse();
+    getNewAddress(buildRequest(lnd, { type: '   ' }), res, null);
     await res.done;
 
     assert.equal(res.statusCode, 400);

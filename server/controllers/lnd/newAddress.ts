@@ -12,9 +12,9 @@ export const getNewAddress = (req, res, next) => {
   const qs: Record<string, any> = {};
   if (req.query.type !== undefined) {
     const raw = typeof req.query.type === 'string' ? req.query.type.trim() : '';
-    if (raw !== 'p2wkh' && raw !== 'np2wkh' && raw !== 'p2tr') {
+    if (raw === '') {
       logger.log({ selectedNode: req.session.selectedNode, level: 'WARN', fileName: 'NewAddress', msg: 'Invalid type query param' });
-      return res.status(400).json({ message: 'type must be one of p2wkh, np2wkh, p2tr', error: 'Invalid query parameter' });
+      return res.status(400).json({ message: 'type must be a non-empty string', error: 'Invalid query parameter' });
     }
     qs.type = raw;
   }
