@@ -58,3 +58,4 @@ this release should add its entry under the appropriate section below.
   `test/backend/lnd-newAddress.test.mjs`, `test/backend/lnd-getUTXOs.test.mjs`,
   `test/backend/lnd-closeChannel.test.mjs` and `test/backend/loop-quotes.test.mjs`, which
   assert the outgoing query for an empty `req.query` and the 400s for each malformed value.
+
