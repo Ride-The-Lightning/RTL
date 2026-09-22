@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **First login failed with "Invalid CSRF token, form tempered" when entering at `/rtl/`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1711](https://github.com/Ride-The-Lightning/RTL/pull/1711), fixes
   [#1710](https://github.com/Ride-The-Lightning/RTL/issues/1710)).
   The frontend takes its CSRF token from the `XSRF-TOKEN` cookie, which `server/utils/app.ts`
   mints only in the catch-all that serves `index.html` for deep links (`/rtl/login`,
