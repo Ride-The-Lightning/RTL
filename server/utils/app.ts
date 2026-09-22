@@ -2,7 +2,7 @@ import express from 'express';
 import sessions from 'express-session';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import { join, dirname } from 'path';
+import { join, dirname, posix } from 'path';
 import { fileURLToPath } from 'url';
 import CORS from './cors.js';
 import CSRF from './csrf.js';
@@ -78,9 +78,25 @@ export class ExpressApplication {
     // index: false leaves the directory index (GET baseHref/) to the catch-all below. Served
     // by express.static it went out without the XSRF-TOKEN cookie, which only the catch-all
     // mints, so a visitor entering at /rtl/ failed their first POST with 403 (issue #1710).
-    // An explicit /index.html is an ordinary file to express.static and would go out the
-    // same tokenless way; send it to the directory index so there is one entry path.
-    this.app.get(this.common.baseHref + '/index.html', (req, res) => { res.redirect(301, this.common.baseHref + '/'); });
+    // The index file stays reachable as a plain file through any spelling that send's
+    // decode + normalize collapses back to it (//index.html, /./index.html, %2e, %69…),
+    // each the same tokenless entry; send every such spelling to the directory index so
+    // there is one entry path. The redirect keeps the query string.
+    this.app.use((req, res, next) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') { next(); return; }
+      const queryAt = req.url.indexOf('?');
+      let pathname;
+      try {
+        pathname = posix.normalize(decodeURIComponent(queryAt === -1 ? req.url : req.url.slice(0, queryAt)).replace(/\\/g, '/'));
+      } catch {
+        next(); return; // not decodable: send rejects it the same way; fall through
+      }
+      if (pathname.replace(/\/+$/, '').toLowerCase() === this.common.baseHref + '/index.html') {
+        res.redirect(301, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
+        return;
+      }
+      next();
+    });
     this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend'), { index: false }));
     this.app.use((req: any, res, next) => {
       // Generate the token once per request: with csrf-csrf every call mints a
@@ -88,8 +104,9 @@ export class ExpressApplication {
       // from the header and the _csrf cookie it must match.
       const csrfToken = req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : '';
       res.cookie('XSRF-TOKEN', csrfToken); // RTL Angular Frontend
-      // The response carries a per-client token pair; keep it out of any shared cache
-      // (sendFile's default is public, max-age=0, which a proxy may store).
+      // The response carries a per-client token pair. Every response already gets
+      // no-cache from cors.ts, which still lets a shared cache store the pair subject
+      // to revalidation; no-store forbids storing it at all.
       res.set('Cache-Control', 'no-store');
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });

@@ -17,8 +17,10 @@ this release should add its entry under the appropriate section below.
   `/rtl/login`) worked first time. The static handler was that way under `csurf` too, but
   since 0.15.10 tokens are signed with a per-boot secret, so every container restart brought
   the 403 back. `express.static` is now mounted with `index: false`, leaving the directory
-  index to the catch-all like every other page, an explicit `/rtl/index.html` redirects to
-  `/rtl/` so there is one entry path, and that page is sent with `Cache-Control: no-store`
+  index to the catch-all like every other page, and any spelling that resolves to the index
+  file (`/rtl/index.html`, repeated slashes, dot segments, percent-encoded bytes — anything
+  `send`'s decode + normalize collapses to it) redirects to `/rtl/` with the query string
+  preserved, so there is one entry path; that page is sent with `Cache-Control: no-store`
   since it carries a per-client token pair; `/rtl` still redirects to `/rtl/`, static
   assets are served as before, and the BTCPay SSO entry (`/rtl/api/authenticate/cookie`)
   already went through the catch-all and is unchanged. A tab left open across an RTL restart
