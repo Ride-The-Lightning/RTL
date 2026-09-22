@@ -89,9 +89,9 @@ after=$(docker compose --profile sso exec -T rtl-sso cat /RTL/cookie/.cookie | t
 
 echo
 echo "6. a wrong access-key is refused"
-# The token has to come from the catch-all: GET /rtl/ is served by express.static,
-# which mints no XSRF-TOKEN, and the POST would then fail CSRF (403) before it
-# ever reached the access-key comparison this step is checking.
+# Enter the way BTCPay does, through the cookie URL, which falls through to the
+# catch-all that mints XSRF-TOKEN; the POST needs that token or it fails CSRF (403)
+# before it ever reaches the access-key comparison this step is checking.
 curl -s -c "$JAR2" "$BASE/rtl/api/authenticate/cookie?access-key=x" > /dev/null
 x2=$(awk '/XSRF-TOKEN/ {print $7}' "$JAR2")
 badhash=$(printf '%s' "not-the-cookie-value-but-long-enough-to-pass-the-length-check" | shasum -a 256 | cut -d' ' -f1)
