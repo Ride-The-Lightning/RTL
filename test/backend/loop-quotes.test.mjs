@@ -196,14 +196,18 @@ test('loopOutTermsAndQuotes: empty query omits swap_publication_deadline on both
       assert.ok(!req.path.includes('undefined'), `URL contained undefined: ${req.path}`);
     }
     assert.equal(loop.seen[0].path, '/v1/loop/out/terms');
-    assert.equal(loop.seen[1].path, '/v1/loop/out/quote/100000?conf_target=2');
-    assert.equal(loop.seen[2].path, '/v1/loop/out/quote/1000000?conf_target=2');
+    // min and max quotes fire with Promise.all on separate sockets; arrival order is not
+    // guaranteed to match dispatch order, so compare as a set.
+    assert.deepEqual(
+      loop.seen.slice(1).map((s) => s.path).sort(),
+      ['/v1/loop/out/quote/100000?conf_target=2', '/v1/loop/out/quote/1000000?conf_target=2'].sort()
+    );
   } finally {
     await loop.close();
   }
 });
 
-test('loopOutTermsAndQuotes: targetConf=abc returns 400 without calling the quote endpoints', async () => {
+test('loopOutTermsAndQuotes: targetConf=abc returns 400 without calling Loop at all', async () => {
   const loop = await startFakeLoop();
   try {
     await seedOptions(loop);
@@ -212,7 +216,7 @@ test('loopOutTermsAndQuotes: targetConf=abc returns 400 without calling the quot
     await res.done;
 
     assert.equal(res.statusCode, 400);
-    assert.equal(loop.seen.length, 1, 'Only the terms call should have happened');
+    assert.equal(loop.seen.length, 0, 'Loop server should not have been called at all');
   } finally {
     await loop.close();
   }
