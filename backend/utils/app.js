@@ -35,7 +35,10 @@ export class ExpressApplication {
             this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
             this.app.use(this.common.baseHref + '/api/cln', clnRoutes);
             this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
-            this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend')));
+            // index: false leaves the directory index (GET baseHref/) to the catch-all below. Served
+            // by express.static it went out without the XSRF-TOKEN cookie, which only the catch-all
+            // mints, so a visitor entering at /rtl/ failed their first POST with 403 (issue #1710).
+            this.app.use(this.common.baseHref, express.static(join(this.directoryName, '../..', 'frontend'), { index: false }));
             this.app.use((req, res, next) => {
                 // Generate the token once per request: with csrf-csrf every call mints a
                 // new token on a first visit, so calling twice would desync the cookie

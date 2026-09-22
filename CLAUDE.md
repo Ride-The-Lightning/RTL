@@ -111,9 +111,10 @@ standalone login never exercises: a rotating cookie file, an unregistered
 catch-all in `server/utils/app.ts`, and a reverse proxy serving it under `/rtl`. Run
 `docker/scripts/verify-sso.sh` (16 assertions, exits non-zero) after touching
 authentication, CSRF or static serving — none of that path is covered by logging into the
-fixture's own RTL. One trap it encodes: `GET /rtl/` is served by `express.static`, which
-sits above the catch-all and mints no `XSRF-TOKEN`, so a client entering there gets a 403
-on its first POST. That is long-standing behaviour, not a regression.
+fixture's own RTL. `express.static` is mounted with `index: false` so that `GET /rtl/`,
+like every deep link, reaches the catch-all that mints `XSRF-TOKEN`; before that a client
+entering at `/rtl/` got a 403 on its first POST (issue #1710), and
+`test/backend/csrf-landing-page.test.mjs` guards it.
 
 Backend regression tests live in `test/backend/` (plain `node:test`, run against the
 compiled `backend/`). `npm run test` compiles the backend, then runs them
