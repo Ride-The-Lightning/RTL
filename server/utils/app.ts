@@ -85,6 +85,9 @@ export class ExpressApplication {
       // from the header and the _csrf cookie it must match.
       const csrfToken = req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : '';
       res.cookie('XSRF-TOKEN', csrfToken); // RTL Angular Frontend
+      // The response carries a per-client token pair; keep it out of any shared cache
+      // (sendFile's default is public, max-age=0, which a proxy may store).
+      res.set('Cache-Control', 'no-store');
       res.sendFile(join(this.directoryName, '../..', 'frontend', 'index.html'));
     });
     this.app.use((err, req, res, next) => {
