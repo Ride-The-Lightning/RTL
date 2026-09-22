@@ -29,3 +29,32 @@ this release should add its entry under the appropriate section below.
   (where CSRF is off) and asserts the cookie arrives with `GET /rtl/`, that a login after it
   succeeds first time, that a login without a token is still refused, and that the redirect
   and static assets are intact.
+
+- **LND and Loop: the remaining query parameters were forwarded to the upstream as the
+  string `undefined`**
+  ([#1709](https://github.com/Ride-The-Lightning/RTL/pull/1709), fixes
+  [#1698](https://github.com/Ride-The-Lightning/RTL/issues/1698)).
+  Follow-up to [#1687](https://github.com/Ride-The-Lightning/RTL/pull/1687), which fixed
+  `listInvoices` and `getPayments` and left the single-parameter sites of the same shape
+  alone. Five more handlers built the upstream URL by concatenating `req.query.*` or
+  `req.params.*` directly: `invoiceLookup` (`?payment_hash=`), `getNewAddress` (`?type=`),
+  `closeChannel` (`?force=`, `&target_conf=`, `&sat_per_vbyte=`), `getUTXOs` (`?max_confs=`)
+  and the Loop quote handlers (`&swap_publication_deadline=`, plus `req.params.amount`
+  interpolated into the path). An omitted parameter was interpolated as the literal string
+  `undefined` — which LND's REST gateway cannot parse as a `uint64`/`bool` and rejects with
+  a 400, instead of the parameter simply being absent and the node applying its own
+  default — and a value containing `&` or `=` passed through into the query string as extra
+  parameters. Each handler now builds its query through the request layer's `qs` option
+  (which maps to axios `params`, so it encodes and drops empty objects), validates at the
+  boundary — non-negative safe integers for counts, `target_conf`, `sat_per_vbyte`,
+  `max_confs`, `conf_target` and `swap_publication_deadline`; boolean spellings for
+  `force`; a non-empty string for `payment_addr`/`payment_hash` and `type` — and omits a
+  parameter that is absent so LND or Loop applies its own default. `invoiceLookup` also
+  refuses a request carrying neither `payment_addr` nor `payment_hash`. Loop's
+  `loopOutQuote`, `loopInQuote` and the two `*TermsAndQuotes` handlers get the same
+  treatment; the two `TermsAndQuotes` handlers also no longer alias `options1` and
+  `options2` to the same object, which previously sent two identical max-quote requests
+  instead of one min and one max. Covered by `test/backend/lnd-invoiceLookup.test.mjs`,
+  `test/backend/lnd-newAddress.test.mjs`, `test/backend/lnd-getUTXOs.test.mjs`,
+  `test/backend/lnd-closeChannel.test.mjs` and `test/backend/loop-quotes.test.mjs`, which
+  assert the outgoing query for an empty `req.query` and the 400s for each malformed value.
