@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Omitted query parameters were sent upstream as the string `"undefined"`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1713](https://github.com/Ride-The-Lightning/RTL/pull/1713), fixes
   [#1698](https://github.com/Ride-The-Lightning/RTL/issues/1698); follow-up to #1687).
   The remaining handlers that glued `req.query`/`req.params` into the LND or Loop URL —
   `invoiceLookup`, `getNewAddress`, `closeChannel`, `getUTXOs` and the four Loop quote
