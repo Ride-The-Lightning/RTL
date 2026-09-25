@@ -674,11 +674,12 @@ export class CommonService {
             });
         };
         // Query and path values arrive as strings (or arrays/objects when a key is repeated).
-        // Each parser returns undefined when the value is absent, so the controller can leave the
-        // parameter out and let the node apply its own default, and null when it is present but
-        // malformed, so the controller can answer 400 instead of forwarding it upstream (#1698).
+        // Each parser returns undefined when the value is absent or empty (`key=`, which the code
+        // they replace also treated as not given), so the controller can leave the parameter out
+        // and let the node apply its own default, and null when it is present but malformed, so
+        // the controller can answer 400 instead of forwarding it upstream (#1698).
         this.parseQueryInt = (value) => {
-            if (value === undefined) {
+            if (value === undefined || value === '') {
                 return undefined;
             }
             if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) {
@@ -688,7 +689,7 @@ export class CommonService {
             return Number.isSafeInteger(num) ? num : null;
         };
         this.parseQueryBool = (value) => {
-            if (value === undefined) {
+            if (value === undefined || value === '') {
                 return undefined;
             }
             if (typeof value !== 'string') {
@@ -704,13 +705,13 @@ export class CommonService {
             return null;
         };
         this.parseQueryString = (value) => {
-            if (value === undefined) {
+            if (value === undefined || value === '') {
                 return undefined;
             }
-            if (typeof value !== 'string' || value.trim() === '') {
+            if (typeof value !== 'string') {
                 return null;
             }
-            return value.trim();
+            return value.trim() === '' ? undefined : value.trim();
         };
         this.invalidQueryParam = (res, name, expected) => res.status(400).json({ message: name + ' must be ' + expected, error: 'Invalid query parameter' });
         this.isVersionCompatible = (currentVersion, checkVersion) => {
