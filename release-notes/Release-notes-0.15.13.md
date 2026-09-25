@@ -17,8 +17,8 @@ this release should add its entry under the appropriate section below.
   default (an empty value counts as absent, as before), and answers 400 for a malformed value
   via three small parsers added to `server/utils/common.ts`; `closeChannel` also checks that
   its `channelPoint` path parameter is a `txid:index` outpoint before it goes into the URL,
-  and a Loop quote request that arrives before `loopInfo` has set the server options now
-  fails with 500 instead of going out unaddressed. In passing, the Loop terms-and-quotes handlers assigned the same
+  and a Loop quote request that arrives before `loopInfo` has set the server options answers
+  a 500 with a clear message where it previously threw. In passing, the Loop terms-and-quotes handlers assigned the same
   options object to both the min and max quote requests, so both fetched the max-amount
   quote; they now get their own. `test/backend/query-params.test.mjs` covers every handler.
 

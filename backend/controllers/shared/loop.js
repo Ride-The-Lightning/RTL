@@ -7,11 +7,12 @@ const common = Common;
 // Query for the four quote endpoints: conf_target defaults to 2 as before, and
 // swap_publication_deadline is sent only when the caller supplied one, so the Loop
 // server applies its own default instead of receiving the string "undefined" (#1698).
-// The module-level options are set by loopInfo, which the UI calls first; a quote request
-// that arrives before it fails closed instead of going out with no server URL or macaroon.
+// The module-level options are set by loopInfo, which the UI calls first. Spreading them
+// would turn a still-null value into an empty object, so a quote request that arrives
+// before loopInfo answers 500 (the replaced code threw a TypeError at the same point).
 const quoteQuery = (req, res) => {
     if (!options) {
-        const errMsg = 'Loop Server URL is missing in the configuration.';
+        const errMsg = 'Loop server options are not initialised; call /loop/info first.';
         const err = common.handleError({ statusCode: 500, message: 'Loop Quote Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
         res.status(err.statusCode).json({ message: err.message, error: err.error });
         return null;
