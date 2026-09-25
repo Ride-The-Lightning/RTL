@@ -5,6 +5,34 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+// Query for the four quote endpoints: conf_target defaults to 2 as before, and
+// swap_publication_deadline is sent only when the caller supplied one, so the Loop
+// server applies its own default instead of receiving the string "undefined" (#1698).
+// The module-level options are set by loopInfo, which the UI calls first. Spreading them
+// would turn a still-null value into an empty object, so a quote request that arrives
+// before loopInfo answers 500 (the replaced code threw a TypeError at the same point).
+const quoteQuery = (req, res) => {
+  if (!options) {
+    const errMsg = 'Loop server options are not initialised; call /loop/info first.';
+    const err = common.handleError({ statusCode: 500, message: 'Loop Quote Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    res.status(err.statusCode).json({ message: err.message, error: err.error });
+    return null;
+  }
+  const targetConf = common.parseQueryInt(req.query.targetConf);
+  const deadline = common.parseQueryInt(req.query.swapPublicationDeadline);
+  if (targetConf === null) { common.invalidQueryParam(res, 'targetConf', 'a non-negative integer'); return null; }
+  if (deadline === null) { common.invalidQueryParam(res, 'swapPublicationDeadline', 'a non-negative integer'); return null; }
+  const qs: Record<string, any> = { conf_target: targetConf || 2 };
+  if (deadline !== undefined) { qs.swap_publication_deadline = deadline; }
+  return qs;
+};
+
+const quoteAmount = (req, res) => {
+  const amount = common.parseQueryInt(req.params.amount);
+  if (amount === undefined || amount === null) { common.invalidQueryParam(res, 'amount', 'a non-negative integer'); return null; }
+  return amount;
+};
+
 export const loopOut = (req, res, next) => {
   const { amount, targetConf, swapRoutingFee, minerFee, prepayRoutingFee, prepayAmt, swapFee, swapPublicationDeadline, chanId, destAddress } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping Out..' });
@@ -46,10 +74,14 @@ export const loopOutTerms = (req, res, next) => {
 
 export const loopOutQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
-  options.uri = '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: options.url });
-  request(options).then((quoteRes) => {
-    quoteRes.amount = +req.params.amount;
+  const qs = quoteQuery(req, res);
+  if (qs === null) { return; }
+  const amount = quoteAmount(req, res);
+  if (amount === null) { return; }
+  const quoteOptions = { ...options, uri: '/v1/loop/out/quote/' + amount, qs };
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: { uri: quoteOptions.uri, qs } });
+  request(quoteOptions).then((quoteRes) => {
+    quoteRes.amount = amount;
     quoteRes.swap_payment_dest = quoteRes.swap_payment_dest ? Buffer.from(quoteRes.swap_payment_dest, 'base64').toString('hex') : '';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Quote Received', data: quoteRes });
     res.status(200).json(quoteRes);
@@ -61,12 +93,13 @@ export const loopOutQuote = (req, res, next) => {
 
 export const loopOutTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..' });
+  const qs = quoteQuery(req, res);
+  if (qs === null) { return; }
   options.uri = '/v1/loop/out/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const options1 = { ...options, uri: '/v1/loop/out/quote/' + terms.min_swap_amount, qs };
+    const options2 = { ...options, uri: '/v1/loop/out/quote/' + terms.max_swap_amount, qs };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
@@ -121,10 +154,14 @@ export const loopInTerms = (req, res, next) => {
 
 export const loopInQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
-  options.uri = '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: options.url });
-  request(options).then((body) => {
-    body.amount = +req.params.amount;
+  const qs = quoteQuery(req, res);
+  if (qs === null) { return; }
+  const amount = quoteAmount(req, res);
+  if (amount === null) { return; }
+  const quoteOptions = { ...options, uri: '/v1/loop/in/quote/' + amount, qs };
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: { uri: quoteOptions.uri, qs } });
+  request(quoteOptions).then((body) => {
+    body.amount = amount;
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Qoutes Received', data: body });
     res.status(200).json(body);
@@ -136,12 +173,13 @@ export const loopInQuote = (req, res, next) => {
 
 export const loopInTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..' });
+  const qs = quoteQuery(req, res);
+  if (qs === null) { return; }
   options.uri = '/v1/loop/in/terms';
   request(options).then((terms) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms Received', data: terms });
-    const options1 = options; const options2 = options;
-    options1.uri = '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.uri = '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    const options1 = { ...options, uri: '/v1/loop/in/quote/' + terms.min_swap_amount, qs };
+    const options2 = { ...options, uri: '/v1/loop/in/quote/' + terms.max_swap_amount, qs };
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
     return Promise.all([request(options1), request(options2)]).then((values) => {
