@@ -214,7 +214,10 @@ export const closeChannel = (req, res, next) => {
     }
     options = common.getOptions(req);
     if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-    const channelpoint = req.params.channelPoint?.replace(':', '/');
+    if (typeof req.params.channelPoint !== 'string' || !(/^[0-9a-fA-F]{64}:\d+$/).test(req.params.channelPoint)) {
+      return common.invalidQueryParam(res, 'channelPoint', 'a txid:output_index outpoint');
+    }
+    const channelpoint = req.params.channelPoint.replace(':', '/');
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint;
     const force = common.parseQueryBool(req.query.force);
     const targetConf = common.parseQueryInt(req.query.target_conf);

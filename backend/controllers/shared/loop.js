@@ -7,7 +7,15 @@ const common = Common;
 // Query for the four quote endpoints: conf_target defaults to 2 as before, and
 // swap_publication_deadline is sent only when the caller supplied one, so the Loop
 // server applies its own default instead of receiving the string "undefined" (#1698).
+// The module-level options are set by loopInfo, which the UI calls first; a quote request
+// that arrives before it fails closed instead of going out with no server URL or macaroon.
 const quoteQuery = (req, res) => {
+    if (!options) {
+        const errMsg = 'Loop Server URL is missing in the configuration.';
+        const err = common.handleError({ statusCode: 500, message: 'Loop Quote Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+        res.status(err.statusCode).json({ message: err.message, error: err.error });
+        return null;
+    }
     const targetConf = common.parseQueryInt(req.query.targetConf);
     const deadline = common.parseQueryInt(req.query.swapPublicationDeadline);
     if (targetConf === null) {
@@ -18,7 +26,7 @@ const quoteQuery = (req, res) => {
         common.invalidQueryParam(res, 'swapPublicationDeadline', 'a non-negative integer');
         return null;
     }
-    const qs = { conf_target: targetConf !== undefined ? targetConf : 2 };
+    const qs = { conf_target: targetConf || 2 };
     if (deadline !== undefined) {
         qs.swap_publication_deadline = deadline;
     }
@@ -75,12 +83,12 @@ export const loopOutTerms = (req, res, next) => {
 };
 export const loopOutQuote = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
-    const amount = quoteAmount(req, res);
-    if (amount === null) {
-        return;
-    }
     const qs = quoteQuery(req, res);
     if (qs === null) {
+        return;
+    }
+    const amount = quoteAmount(req, res);
+    if (amount === null) {
         return;
     }
     const quoteOptions = { ...options, uri: '/v1/loop/out/quote/' + amount, qs };
@@ -157,12 +165,12 @@ export const loopInTerms = (req, res, next) => {
 };
 export const loopInQuote = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
-    const amount = quoteAmount(req, res);
-    if (amount === null) {
-        return;
-    }
     const qs = quoteQuery(req, res);
     if (qs === null) {
+        return;
+    }
+    const amount = quoteAmount(req, res);
+    if (amount === null) {
         return;
     }
     const quoteOptions = { ...options, uri: '/v1/loop/in/quote/' + amount, qs };

@@ -61,10 +61,12 @@ const run = async (handler, req) => {
   return res;
 };
 
+const TXID = 'ab'.repeat(32);
+
 const HANDLERS = [
   { name: 'invoiceLookup', handler: invoiceLookup, valid: { query: { payment_hash: 'abc' } }, expected: '/v2/invoices/lookup?payment_hash=abc', bad: { query: { payment_hash: '' } } },
   { name: 'getNewAddress', handler: getNewAddress, valid: { query: {} }, expected: '/v1/newaddress', bad: { query: { type: 'p2tr&x=1' } } },
-  { name: 'closeChannel', handler: closeChannel, valid: { query: {}, params: { channelPoint: 'aa:1' } }, expected: '/v1/channels/aa/1', bad: { query: { force: 'maybe' }, params: { channelPoint: 'aa:1' } } },
+  { name: 'closeChannel', handler: closeChannel, valid: { query: {}, params: { channelPoint: `${TXID}:1` } }, expected: `/v1/channels/${TXID}/1`, bad: { query: { force: 'maybe' }, params: { channelPoint: `${TXID}:1` } } },
   { name: 'getUTXOs (pre-0.14)', handler: getUTXOs, valid: { query: {}, lnVersion: '0.13.0' }, expected: '/v2/wallet/utxos', bad: { query: { max_confs: '-1' }, lnVersion: '0.13.0' } },
   { name: 'getUTXOs (0.14+)', handler: getUTXOs, valid: { query: {} }, expected: '/v2/wallet/utxos', bad: { query: { max_confs: '1e3' } } }
 ];
@@ -95,8 +97,29 @@ for (const h of HANDLERS) {
 test('closeChannel: present parameters are forwarded encoded', async () => {
   const lnd = await startFakeServer();
   try {
-    await run(closeChannel, buildRequest(lnd.url, { query: { force: 'true', target_conf: '6' }, params: { channelPoint: 'aa:1' } }));
-    assert.equal(lnd.seen[0].path, '/v1/channels/aa/1?force=true&target_conf=6');
+    await run(closeChannel, buildRequest(lnd.url, { query: { force: 'true', target_conf: '6' }, params: { channelPoint: `${TXID}:1` } }));
+    assert.equal(lnd.seen[0].path, `/v1/channels/${TXID}/1?force=true&target_conf=6`);
+  } finally { await lnd.close(); }
+});
+
+test('closeChannel: a channelPoint that is not a txid:index outpoint is refused with 400', async () => {
+  const lnd = await startFakeServer();
+  try {
+    for (const channelPoint of [`${TXID}:0?force=true`, '../v1/peers/abc:0', 'aa:1', undefined]) {
+      const res = await run(closeChannel, buildRequest(lnd.url, { params: { channelPoint } }));
+      assert.equal(res.statusCode, 400, `accepted ${channelPoint}`);
+    }
+    assert.equal(lnd.seen.length, 0);
+  } finally { await lnd.close(); }
+});
+
+test('empty query values are treated as absent, as the replaced code did', async () => {
+  const lnd = await startFakeServer();
+  try {
+    await run(closeChannel, buildRequest(lnd.url, { query: { force: '', target_conf: '', sat_per_vbyte: '' }, params: { channelPoint: `${TXID}:1` } }));
+    assert.equal(lnd.seen[0].path, `/v1/channels/${TXID}/1`);
+    await run(invoiceLookup, buildRequest(lnd.url, { query: { payment_addr: '', payment_hash: 'abc' } }));
+    assert.equal(lnd.seen[1].path, '/v2/invoices/lookup?payment_hash=abc');
   } finally { await lnd.close(); }
 });
 
@@ -111,21 +134,34 @@ test('getUTXOs (0.14+): max_confs is sent in the JSON body only when given', asy
 // Loop: the module-level options are set by loopInfo, which the UI always calls first.
 const primeLoop = async (url) => run(loopInfo, buildRequest(url));
 
+// Declared before any primeLoop so the module-level options are still null here.
+test('loop quote handlers fail closed when loopInfo has not initialised the options', async () => {
+  const loop = await startFakeServer();
+  try {
+    const res = await run(loopOutQuote, buildRequest(loop.url, { params: { amount: '1000' } }));
+    assert.equal(res.statusCode, 500);
+    assert.equal(loop.seen.length, 0);
+  } finally { await loop.close(); }
+});
+
 const LOOP_QUOTES = [
   { name: 'loopOutQuote', handler: loopOutQuote, prefix: '/v1/loop/out/quote/' },
   { name: 'loopInQuote', handler: loopInQuote, prefix: '/v1/loop/in/quote/' }
 ];
 
 for (const q of LOOP_QUOTES) {
-  test(`${q.name}: omitted deadline is left out, conf_target keeps its default`, async () => {
+  test(`${q.name}: omitted or empty deadline is left out, empty or zero targetConf keeps the default`, async () => {
     const loop = await startFakeServer();
     try {
       await primeLoop(loop.url);
       const res = await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' } }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));
-      const quote = loop.seen.find((r) => r.path.startsWith(q.prefix));
-      assert.equal(quote.path, `${q.prefix}250000?conf_target=2`);
+      assert.equal(loop.seen[1].path, `${q.prefix}250000?conf_target=2`);
       assert.equal(res.body.amount, 250000);
+      await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' }, query: { targetConf: '', swapPublicationDeadline: '' } }));
+      assert.equal(loop.seen[2].path, `${q.prefix}250000?conf_target=2`);
+      await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' }, query: { targetConf: '0' } }));
+      assert.equal(loop.seen[3].path, `${q.prefix}250000?conf_target=2`);
     } finally { await loop.close(); }
   });
 
