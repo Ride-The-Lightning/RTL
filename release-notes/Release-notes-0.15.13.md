@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Loop requests could go to another node's swap server, and the missing-URL guard never fired**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1715](https://github.com/Ride-The-Lightning/RTL/pull/1715), fixes
   [#1714](https://github.com/Ride-The-Lightning/RTL/issues/1714)).
   `server/controllers/shared/loop.ts` kept one module-level options object, assigned only by
   `loopInfo` and reused by the other ten handlers. In a multi-node RTL a request made while
