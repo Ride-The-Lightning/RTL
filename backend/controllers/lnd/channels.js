@@ -236,14 +236,30 @@ export const closeChannel = (req, res, next) => {
             return res.status(options.statusCode).json({ message: options.message, error: options.error });
         }
         const channelpoint = req.params.channelPoint?.replace(':', '/');
-        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
-        if (req.query.target_conf) {
-            options.url = options.url + '&target_conf=' + req.query.target_conf;
+        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/' + channelpoint;
+        const force = common.parseQueryBool(req.query.force);
+        const targetConf = common.parseQueryInt(req.query.target_conf);
+        const satPerVbyte = common.parseQueryInt(req.query.sat_per_vbyte);
+        if (force === null) {
+            return common.invalidQueryParam(res, 'force', 'true or false');
         }
-        if (req.query.sat_per_vbyte) {
-            options.url = options.url + '&sat_per_vbyte=' + req.query.sat_per_vbyte;
+        if (targetConf === null) {
+            return common.invalidQueryParam(res, 'target_conf', 'a non-negative integer');
         }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: options.url });
+        if (satPerVbyte === null) {
+            return common.invalidQueryParam(res, 'sat_per_vbyte', 'a non-negative integer');
+        }
+        options.qs = {};
+        if (force !== undefined) {
+            options.qs.force = force;
+        }
+        if (targetConf !== undefined) {
+            options.qs.target_conf = targetConf;
+        }
+        if (satPerVbyte !== undefined) {
+            options.qs.sat_per_vbyte = satPerVbyte;
+        }
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel Options URL', data: { url: options.url, qs: options.qs } });
         // Fire-and-forget: LND keeps the close stream open until the closing tx
         // confirms, so exempt it from the request timeout; the 202 is already sent,
         // so log a rejection instead of letting it crash the process.
