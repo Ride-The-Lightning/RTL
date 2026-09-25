@@ -5,6 +5,20 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **Omitted query parameters were sent upstream as the string `"undefined"`**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1698](https://github.com/Ride-The-Lightning/RTL/issues/1698); follow-up to #1687).
+  The remaining handlers that glued `req.query`/`req.params` into the LND or Loop URL —
+  `invoiceLookup`, `getNewAddress`, `closeChannel`, `getUTXOs` and the four Loop quote
+  endpoints — interpolated an absent value as `undefined` (LND answers 400) and let a value
+  containing `&` add parameters upstream. RTL's own frontend always sends these parameters, so
+  this only affected direct API callers. Each handler now builds its query through the
+  request wrapper's `qs` (axios encodes it), omits what is absent so the node applies its own
+  default, and answers 400 for a malformed value via three small parsers added to
+  `server/utils/common.ts`. In passing, the Loop terms-and-quotes handlers assigned the same
+  options object to both the min and max quote requests, so both fetched the max-amount
+  quote; they now get their own. `test/backend/query-params.test.mjs` covers every handler.
+
 - **First login failed with "Invalid CSRF token, form tempered" when entering at `/rtl/`**
   ([#1711](https://github.com/Ride-The-Lightning/RTL/pull/1711), fixes
   [#1710](https://github.com/Ride-The-Lightning/RTL/issues/1710)).

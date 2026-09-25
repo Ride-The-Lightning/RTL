@@ -30,11 +30,12 @@ export const invoiceLookup = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/invoices/lookup';
-  if (req.query.payment_addr) {
-    options.url = options.url + '?payment_addr=' + req.query.payment_addr;
-  } else {
-    options.url = options.url + '?payment_hash=' + req.query.payment_hash;
-  }
+  const paymentAddr = common.parseQueryString(req.query.payment_addr);
+  const paymentHash = common.parseQueryString(req.query.payment_hash);
+  if (paymentAddr === null) { return common.invalidQueryParam(res, 'payment_addr', 'a non-empty string'); }
+  if (paymentHash === null) { return common.invalidQueryParam(res, 'payment_hash', 'a non-empty string'); }
+  if (paymentAddr === undefined && paymentHash === undefined) { return common.invalidQueryParam(res, 'payment_addr or payment_hash', 'provided'); }
+  options.qs = paymentAddr !== undefined ? { payment_addr: paymentAddr } : { payment_hash: paymentHash };
   request(options).then((body) => {
     body.r_preimage = body.r_preimage ? Buffer.from(body.r_preimage, 'base64').toString('hex') : '';
     body.r_hash = body.r_hash ? Buffer.from(body.r_hash, 'base64').toString('hex') : '';
