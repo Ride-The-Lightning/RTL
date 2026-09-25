@@ -9,7 +9,10 @@ export const getNewAddress = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/newaddress?type=' + req.query.type;
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/newaddress';
+  const type = common.parseQueryInt(req.query.type);
+  if (type === null) { return common.invalidQueryParam(res, 'type', 'a non-negative integer'); }
+  if (type !== undefined) { options.qs = { type }; }
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'NewAddress', msg: 'New Address Generated', data: body });
     res.status(200).json(body);

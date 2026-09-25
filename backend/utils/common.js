@@ -673,6 +673,46 @@ export class CommonService {
                 fs.writeFile(channel_backup_file, '', () => { });
             });
         };
+        // Query and path values arrive as strings (or arrays/objects when a key is repeated).
+        // Each parser returns undefined when the value is absent, so the controller can leave the
+        // parameter out and let the node apply its own default, and null when it is present but
+        // malformed, so the controller can answer 400 instead of forwarding it upstream (#1698).
+        this.parseQueryInt = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) {
+                return null;
+            }
+            const num = Number(value.trim());
+            return Number.isSafeInteger(num) ? num : null;
+        };
+        this.parseQueryBool = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string') {
+                return null;
+            }
+            const s = value.trim().toLowerCase();
+            if (s === 'true' || s === '1' || s === 't') {
+                return true;
+            }
+            if (s === 'false' || s === '0' || s === 'f') {
+                return false;
+            }
+            return null;
+        };
+        this.parseQueryString = (value) => {
+            if (value === undefined) {
+                return undefined;
+            }
+            if (typeof value !== 'string' || value.trim() === '') {
+                return null;
+            }
+            return value.trim();
+        };
+        this.invalidQueryParam = (res, name, expected) => res.status(400).json({ message: name + ' must be ' + expected, error: 'Invalid query parameter' });
         this.isVersionCompatible = (currentVersion, checkVersion) => {
             if (currentVersion && currentVersion !== '') {
                 // eslint-disable-next-line prefer-named-capture-group
