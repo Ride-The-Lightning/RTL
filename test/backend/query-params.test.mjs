@@ -6,7 +6,7 @@ import { closeChannel } from '../../backend/controllers/lnd/channels.js';
 import { invoiceLookup } from '../../backend/controllers/lnd/invoices.js';
 import { getNewAddress } from '../../backend/controllers/lnd/newAddress.js';
 import { getUTXOs } from '../../backend/controllers/lnd/wallet.js';
-import { loopInfo, loopInQuote, loopInTermsAndQuotes, loopOutQuote, loopOutTermsAndQuotes } from '../../backend/controllers/shared/loop.js';
+import { loopInQuote, loopInTermsAndQuotes, loopOutQuote, loopOutTermsAndQuotes } from '../../backend/controllers/shared/loop.js';
 
 // #1698: handlers that glued req.query / req.params straight into the upstream URL sent the
 // literal string "undefined" for an omitted parameter (LND answers 400) and let a value
@@ -131,16 +131,13 @@ test('getUTXOs (0.14+): max_confs is sent in the JSON body only when given', asy
   } finally { await lnd.close(); }
 });
 
-// Loop: the module-level options are set by loopInfo, which the UI always calls first.
-const primeLoop = async (url) => run(loopInfo, buildRequest(url));
-
-// Declared before any primeLoop so the module-level options are still null here.
-test('loop quote handlers fail closed when loopInfo has not initialised the options', async () => {
+// Options are built per request from the session (#1714), so no prior loopInfo is needed.
+test('loop quote handlers work without a prior loopInfo call', async () => {
   const loop = await startFakeServer();
   try {
     const res = await run(loopOutQuote, buildRequest(loop.url, { params: { amount: '1000' } }));
-    assert.equal(res.statusCode, 500);
-    assert.equal(loop.seen.length, 0);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(loop.seen[0].path, '/v1/loop/out/quote/1000?conf_target=2');
   } finally { await loop.close(); }
 });
 
@@ -153,22 +150,20 @@ for (const q of LOOP_QUOTES) {
   test(`${q.name}: omitted or empty deadline is left out, empty or zero targetConf keeps the default`, async () => {
     const loop = await startFakeServer();
     try {
-      await primeLoop(loop.url);
       const res = await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' } }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));
-      assert.equal(loop.seen[1].path, `${q.prefix}250000?conf_target=2`);
+      assert.equal(loop.seen[0].path, `${q.prefix}250000?conf_target=2`);
       assert.equal(res.body.amount, 250000);
       await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' }, query: { targetConf: '', swapPublicationDeadline: '' } }));
-      assert.equal(loop.seen[2].path, `${q.prefix}250000?conf_target=2`);
+      assert.equal(loop.seen[1].path, `${q.prefix}250000?conf_target=2`);
       await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' }, query: { targetConf: '0' } }));
-      assert.equal(loop.seen[3].path, `${q.prefix}250000?conf_target=2`);
+      assert.equal(loop.seen[2].path, `${q.prefix}250000?conf_target=2`);
     } finally { await loop.close(); }
   });
 
   test(`${q.name}: malformed amount or deadline is refused with 400`, async () => {
     const loop = await startFakeServer();
     try {
-      await primeLoop(loop.url);
       const before = loop.seen.length;
       const bad1 = await run(q.handler, buildRequest(loop.url, { params: { amount: '1&x=2' } }));
       const bad2 = await run(q.handler, buildRequest(loop.url, { params: { amount: '1' }, query: { swapPublicationDeadline: 'soon' } }));
@@ -188,7 +183,6 @@ for (const t of LOOP_TERMS) {
   test(`${t.name}: quotes the min and max amounts separately with the given query`, async () => {
     const loop = await startFakeServer((path) => (path.endsWith('/terms') ? { min_swap_amount: '1000', max_swap_amount: '9000' } : {}));
     try {
-      await primeLoop(loop.url);
       const res = await run(t.handler, buildRequest(loop.url, { query: { targetConf: '3', swapPublicationDeadline: '1700000000000' } }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));
       const quotes = loop.seen.filter((r) => r.path.startsWith(t.prefix)).map((r) => r.path).sort();
@@ -203,7 +197,6 @@ for (const t of LOOP_TERMS) {
   test(`${t.name}: malformed targetConf is refused with 400 before the terms call`, async () => {
     const loop = await startFakeServer();
     try {
-      await primeLoop(loop.url);
       const before = loop.seen.length;
       const res = await run(t.handler, buildRequest(loop.url, { query: { targetConf: '2.5' } }));
       assert.equal(res.statusCode, 400);
