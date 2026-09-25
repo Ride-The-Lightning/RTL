@@ -667,18 +667,19 @@ export class CommonService {
   };
 
   // Query and path values arrive as strings (or arrays/objects when a key is repeated).
-  // Each parser returns undefined when the value is absent, so the controller can leave the
-  // parameter out and let the node apply its own default, and null when it is present but
-  // malformed, so the controller can answer 400 instead of forwarding it upstream (#1698).
+  // Each parser returns undefined when the value is absent or empty (`key=`, which the code
+  // they replace also treated as not given), so the controller can leave the parameter out
+  // and let the node apply its own default, and null when it is present but malformed, so
+  // the controller can answer 400 instead of forwarding it upstream (#1698).
   public parseQueryInt = (value): number | null | undefined => {
-    if (value === undefined) { return undefined; }
+    if (value === undefined || value === '') { return undefined; }
     if (typeof value !== 'string' || !(/^\d+$/).test(value.trim())) { return null; }
     const num = Number(value.trim());
     return Number.isSafeInteger(num) ? num : null;
   };
 
   public parseQueryBool = (value): boolean | null | undefined => {
-    if (value === undefined) { return undefined; }
+    if (value === undefined || value === '') { return undefined; }
     if (typeof value !== 'string') { return null; }
     const s = value.trim().toLowerCase();
     if (s === 'true' || s === '1' || s === 't') { return true; }
@@ -687,9 +688,9 @@ export class CommonService {
   };
 
   public parseQueryString = (value): string | null | undefined => {
-    if (value === undefined) { return undefined; }
-    if (typeof value !== 'string' || value.trim() === '') { return null; }
-    return value.trim();
+    if (value === undefined || value === '') { return undefined; }
+    if (typeof value !== 'string') { return null; }
+    return value.trim() === '' ? undefined : value.trim();
   };
 
   public invalidQueryParam = (res, name, expected) => res.status(400).json({ message: name + ' must be ' + expected, error: 'Invalid query parameter' });
