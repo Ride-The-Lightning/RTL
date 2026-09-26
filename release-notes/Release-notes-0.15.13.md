@@ -15,7 +15,8 @@ this release should add its entry under the appropriate section below.
   so a node with no `swapServerUrl` was sent upstream with no base URL. Every handler now
   builds its options from the session's selected node on each request (as the LND and Boltz
   controllers already do) and answers 500 before any upstream call when the URL is not
-  configured. A quote request no longer needs a prior `/loop/info` call.
+  configured. A quote request no longer needs a prior `/loop/info` call, and `swap` checks
+  that its `id` path parameter is a hex swap hash before it goes into the URL.
   `test/backend/loop-options.test.mjs` covers the missing-URL case and a node switch.
 
 - **Omitted query parameters were sent upstream as the string `"undefined"`**
@@ -29,11 +30,10 @@ this release should add its entry under the appropriate section below.
   request wrapper's `qs` (axios encodes it), omits what is absent so the node applies its own
   default (an empty value counts as absent, as before), and answers 400 for a malformed value
   via three small parsers added to `server/utils/common.ts`; `closeChannel` also checks that
-  its `channelPoint` path parameter is a `txid:index` outpoint before it goes into the URL,
-  and a Loop quote request that arrives before `loopInfo` has set the server options answers
-  a 500 with a clear message where it previously threw. In passing, the Loop terms-and-quotes handlers assigned the same
-  options object to both the min and max quote requests, so both fetched the max-amount
-  quote; they now get their own. `test/backend/query-params.test.mjs` covers every handler.
+  its `channelPoint` path parameter is a `txid:index` outpoint before it goes into the URL.
+  In passing, the Loop terms-and-quotes handlers assigned the same options object to both
+  the min and max quote requests, so both fetched the max-amount quote; they now get their
+  own. `test/backend/query-params.test.mjs` covers every handler.
 
 - **First login failed with "Invalid CSRF token, form tempered" when entering at `/rtl/`**
   ([#1711](https://github.com/Ride-The-Lightning/RTL/pull/1711), fixes
