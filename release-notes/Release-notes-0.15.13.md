@@ -33,7 +33,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Docker fixture: Core Lightning bumped to v26.06.8**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1717](https://github.com/Ride-The-Lightning/RTL/pull/1717)).
   The `cln` service in `docker/docker-compose.yml` pinned `elementsproject/lightningd:v25.09`,
   a year behind what nodes run in the field. It now pins `v26.06.8`, the current release.
   Verified from a clean `docker compose down -v && up -d && scripts/seed.sh`: the seed produces
