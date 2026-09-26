@@ -1,23 +1,28 @@
 import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
-let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+
+// Every handler builds its own options from the session's selected node (#1714). They used
+// to live in one module-level object set by loopInfo, so a request made while another node
+// was selected went to the first node's Loop server with its macaroon, and the missing-URL
+// guard checked `options.url`, a key setSwapServerOptions never sets.
+const swapOptions = (req, res, errTitle): Record<string, any> | null => {
+  const options: Record<string, any> = common.setSwapServerOptions(req);
+  if (!options.baseUrl) {
+    const errMsg = 'Loop Server URL is missing in the configuration.';
+    const err = common.handleError({ statusCode: 500, message: errTitle, error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
+    res.status(err.statusCode).json({ message: err.message, error: err.error });
+    return null;
+  }
+  return options;
+};
 
 // Query for the four quote endpoints: conf_target defaults to 2 as before, and
 // swap_publication_deadline is sent only when the caller supplied one, so the Loop
 // server applies its own default instead of receiving the string "undefined" (#1698).
-// The module-level options are set by loopInfo, which the UI calls first. Spreading them
-// would turn a still-null value into an empty object, so a quote request that arrives
-// before loopInfo answers 500 (the replaced code threw a TypeError at the same point).
 const quoteQuery = (req, res) => {
-  if (!options) {
-    const errMsg = 'Loop server options are not initialised; call /loop/info first.';
-    const err = common.handleError({ statusCode: 500, message: 'Loop Quote Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
-    res.status(err.statusCode).json({ message: err.message, error: err.error });
-    return null;
-  }
   const targetConf = common.parseQueryInt(req.query.targetConf);
   const deadline = common.parseQueryInt(req.query.swapPublicationDeadline);
   if (targetConf === null) { common.invalidQueryParam(res, 'targetConf', 'a non-negative integer'); return null; }
@@ -36,6 +41,8 @@ const quoteAmount = (req, res) => {
 export const loopOut = (req, res, next) => {
   const { amount, targetConf, swapRoutingFee, minerFee, prepayRoutingFee, prepayAmt, swapFee, swapPublicationDeadline, chanId, destAddress } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping Out..' });
+  const options = swapOptions(req, res, 'Loop Out Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/out';
   options.body = {
     amt: amount,
@@ -62,6 +69,8 @@ export const loopOut = (req, res, next) => {
 
 export const loopOutTerms = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms..' });
+  const options = swapOptions(req, res, 'Loop Out Terms Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/out/terms';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms Received', data: body });
@@ -74,6 +83,8 @@ export const loopOutTerms = (req, res, next) => {
 
 export const loopOutQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Quotes..' });
+  const options = swapOptions(req, res, 'Loop Out Quotes Error');
+  if (!options) { return; }
   const qs = quoteQuery(req, res);
   if (qs === null) { return; }
   const amount = quoteAmount(req, res);
@@ -93,6 +104,8 @@ export const loopOutQuote = (req, res, next) => {
 
 export const loopOutTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Out Terms & Quotes..' });
+  const options = swapOptions(req, res, 'Loop Out Terms & Quotes Error');
+  if (!options) { return; }
   const qs = quoteQuery(req, res);
   if (qs === null) { return; }
   options.uri = '/v1/loop/out/terms';
@@ -123,6 +136,8 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
 export const loopIn = (req, res, next) => {
   const { amount, swapFee, minerFee } = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looping In..' });
+  const options = swapOptions(req, res, 'Loop In Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/in';
   options.body = {
     amt: amount,
@@ -142,6 +157,8 @@ export const loopIn = (req, res, next) => {
 
 export const loopInTerms = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms..' });
+  const options = swapOptions(req, res, 'Loop In Terms Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/in/terms';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms Received', data: body });
@@ -154,6 +171,8 @@ export const loopInTerms = (req, res, next) => {
 
 export const loopInQuote = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Quotes..' });
+  const options = swapOptions(req, res, 'Loop In Quote Error');
+  if (!options) { return; }
   const qs = quoteQuery(req, res);
   if (qs === null) { return; }
   const amount = quoteAmount(req, res);
@@ -173,6 +192,8 @@ export const loopInQuote = (req, res, next) => {
 
 export const loopInTermsAndQuotes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop In Terms & Quotes..' });
+  const options = swapOptions(req, res, 'Loop In Terms & Quotes Error');
+  if (!options) { return; }
   const qs = quoteQuery(req, res);
   if (qs === null) { return; }
   options.uri = '/v1/loop/in/terms';
@@ -202,11 +223,8 @@ export const loopInTermsAndQuotes = (req, res, next) => {
 
 export const swaps = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting List Swaps..' });
-  if (options.url === '') {
-    const errMsg = 'Loop Server URL is missing in the configuration.';
-    const err = common.handleError({ statusCode: 500, message: 'List Swaps Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  }
+  const options = swapOptions(req, res, 'List Swaps Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/swaps';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps Received', data: body });
@@ -219,6 +237,13 @@ export const swaps = (req, res, next) => {
 
 export const swap = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..' });
+  const options = swapOptions(req, res, 'Get Swap Error');
+  if (!options) { return; }
+  // Loop identifies a swap by its hex-encoded swap hash; anything else is refused before it
+  // can reach the upstream path (Express has already percent-decoded it).
+  if (typeof req.params.id !== 'string' || !(/^[0-9a-fA-F]{64}$/).test(req.params.id)) {
+    return common.invalidQueryParam(res, 'id', 'a 64-character hex swap hash');
+  }
   options.uri = '/v1/loop/swap/' + req.params.id;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information Received', data: body });
@@ -231,12 +256,8 @@ export const swap = (req, res, next) => {
 
 export const loopInfo = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Loop Information..' });
-  options = common.setSwapServerOptions(req);
-  if (options.url === '') {
-    const errMsg = 'Loop Server URL is missing in the configuration.';
-    const err = common.handleError({ statusCode: 500, message: 'Get Loop Info Error', error: errMsg }, 'Loop', errMsg, req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  }
+  const options = swapOptions(req, res, 'Get Loop Info Error');
+  if (!options) { return; }
   options.uri = '/v1/loop/info';
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Information Received', data: body });
