@@ -29,3 +29,13 @@ this release should add its entry under the appropriate section below.
   (where CSRF is off) and asserts the cookie arrives with `GET /rtl/`, that a login after it
   succeeds first time, that a login without a token is still refused, and that the redirect
   and static assets are intact.
+
+## Developer Tooling
+
+- **Docker fixture: Core Lightning bumped to v26.06.8**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The `cln` service in `docker/docker-compose.yml` pinned `elementsproject/lightningd:v25.09`,
+  a year behind what nodes run in the field. It now pins `v26.06.8`, the current release.
+  Verified from a clean `docker compose down -v && up -d && scripts/seed.sh`: the seed produces
+  the same channels and payments, the rune healthcheck still passes, and invoice creation
+  through RTL's CLN API returns 201 with and without an expiry. No RTL code changes.
