@@ -163,7 +163,7 @@ services:
   # 127.0.0.1 would only be reachable from inside this container. Protocol stays https
   # (clnrest default, self-signed) — RTL connects with rejectUnauthorized:false.
   cln:
-    image: elementsproject/lightningd:v25.09
+    image: elementsproject/lightningd:v26.06.8
     container_name: ${COMPOSE_PROJECT_NAME}_cln
     restart: unless-stopped
     depends_on:
