@@ -239,6 +239,11 @@ export const swap = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Getting Swap Information..' });
   const options = swapOptions(req, res, 'Get Swap Error');
   if (!options) { return; }
+  // Loop identifies a swap by its hex-encoded swap hash; anything else is refused before it
+  // can reach the upstream path (Express has already percent-decoded it).
+  if (typeof req.params.id !== 'string' || !(/^[0-9a-fA-F]{64}$/).test(req.params.id)) {
+    return common.invalidQueryParam(res, 'id', 'a 64-character hex swap hash');
+  }
   options.uri = '/v1/loop/swap/' + req.params.id;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information Received', data: body });
