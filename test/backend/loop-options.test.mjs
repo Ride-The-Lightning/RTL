@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import test from 'node:test';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { loopInfo, loopOutTerms, swap, swaps } from '../../backend/controllers/shared/loop.js';
 
@@ -21,8 +24,11 @@ const startFakeLoop = async () => {
   return { url: `http://127.0.0.1:${server.address().port}`, seen, close: () => new Promise((resolve) => server.close(resolve)) };
 };
 
-const buildRequest = (swapServerUrl, { params = {} } = {}) => ({
-  session: { selectedNode: { index: 1, lnNode: 'node', lnImplementation: 'LND', authentication: {}, settings: { swapServerUrl, logLevel: 'ERROR' } } },
+// setSwapServerOptions reads <swapMacaroonPath>/loop.macaroon and sends it hex-encoded.
+const macaroonDir = (bytes) => { const dir = mkdtempSync(join(tmpdir(), 'rtl-loop-')); writeFileSync(join(dir, 'loop.macaroon'), bytes); return dir; };
+
+const buildRequest = (swapServerUrl, { params = {}, macaroon } = {}) => ({
+  session: { selectedNode: { index: 1, lnNode: 'node', lnImplementation: 'LND', authentication: macaroon ? { swapMacaroonPath: macaroonDir(macaroon) } : {}, settings: { swapServerUrl, logLevel: 'ERROR' } } },
   query: {},
   params
 });
@@ -51,15 +57,32 @@ for (const [name, handler, path] of [['loopInfo', loopInfo, '/v1/loop/info'], ['
   });
 }
 
-test('each request goes to the selected node\'s own Loop server', async () => {
+test('each request goes to the selected node\'s own Loop server with its own macaroon', async () => {
   const a = await startFakeLoop();
   const b = await startFakeLoop();
+  const nodeA = { url: a.url, macaroon: 'macaroon-a' };
+  const nodeB = { url: b.url, macaroon: 'macaroon-b' };
+  const hash = 'ab'.repeat(32);
   try {
-    await run(loopInfo, buildRequest(a.url));
-    await run(loopOutTerms, buildRequest(b.url));
-    await run(swap, buildRequest(b.url, { params: { id: 'abc' } }));
-    await run(swaps, buildRequest(a.url));
+    await run(loopInfo, buildRequest(nodeA.url, { macaroon: nodeA.macaroon }));
+    await run(loopOutTerms, buildRequest(nodeB.url, { macaroon: nodeB.macaroon }));
+    await run(swap, buildRequest(nodeB.url, { macaroon: nodeB.macaroon, params: { id: hash } }));
+    await run(swaps, buildRequest(nodeA.url, { macaroon: nodeA.macaroon }));
     assert.deepEqual(a.seen.map((r) => r.path), ['/v1/loop/info', '/v1/loop/swaps']);
-    assert.deepEqual(b.seen.map((r) => r.path), ['/v1/loop/out/terms', '/v1/loop/swap/abc']);
+    assert.deepEqual(b.seen.map((r) => r.path), ['/v1/loop/out/terms', `/v1/loop/swap/${hash}`]);
+    const hex = (m) => Buffer.from(m).toString('hex');
+    assert.deepEqual(a.seen.map((r) => r.macaroon), [hex(nodeA.macaroon), hex(nodeA.macaroon)]);
+    assert.deepEqual(b.seen.map((r) => r.macaroon), [hex(nodeB.macaroon), hex(nodeB.macaroon)]);
   } finally { await a.close(); await b.close(); }
+});
+
+test('swap: an id that is not a hex swap hash is refused with 400 and never sent upstream', async () => {
+  const loop = await startFakeLoop();
+  try {
+    for (const id of ['abc', 'ab'.repeat(32) + '?x=1', '../info', undefined]) {
+      const res = await run(swap, buildRequest(loop.url, { params: { id } }));
+      assert.equal(res.statusCode, 400, `accepted ${id}`);
+    }
+    assert.equal(loop.seen.length, 0);
+  } finally { await loop.close(); }
 });
