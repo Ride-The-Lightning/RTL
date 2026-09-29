@@ -16,7 +16,8 @@ this release should add its entry under the appropriate section below.
   builds its options from the session's selected node on each request (as the LND and Boltz
   controllers already do) and answers 500 before any upstream call when the URL is not
   configured. A quote request no longer needs a prior `/loop/info` call, and `swap` checks
-  that its `id` path parameter is a hex swap hash before it goes into the URL.
+  that its `id` path parameter is a URL-safe base64 swap hash (the form the swaps view sends
+  and Loop's REST route decodes) before it goes into the URL.
   `test/backend/loop-options.test.mjs` covers the missing-URL case and a node switch.
 
 - **Omitted query parameters were sent upstream as the string `"undefined"`**

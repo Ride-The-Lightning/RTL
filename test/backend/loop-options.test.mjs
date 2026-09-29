@@ -57,12 +57,15 @@ for (const [name, handler, path] of [['loopInfo', loopInfo, '/v1/loop/info'], ['
   });
 }
 
+// A 32-byte swap hash as the swaps view sends it: base64 of id_bytes with / and + made URL-safe.
+const swapId = (byteHex) => Buffer.from(byteHex.repeat(32 / (byteHex.length / 2)), 'hex').toString('base64').replace(/\//g, '_').replace(/\+/g, '-');
+
 test('each request goes to the selected node\'s own Loop server with its own macaroon', async () => {
   const a = await startFakeLoop();
   const b = await startFakeLoop();
   const nodeA = { url: a.url, macaroon: 'macaroon-a' };
   const nodeB = { url: b.url, macaroon: 'macaroon-b' };
-  const hash = 'ab'.repeat(32);
+  const hash = swapId('ab');
   try {
     await run(loopInfo, buildRequest(nodeA.url, { macaroon: nodeA.macaroon }));
     await run(loopOutTerms, buildRequest(nodeB.url, { macaroon: nodeB.macaroon }));
@@ -76,10 +79,23 @@ test('each request goes to the selected node\'s own Loop server with its own mac
   } finally { await a.close(); await b.close(); }
 });
 
-test('swap: an id that is not a hex swap hash is refused with 400 and never sent upstream', async () => {
+test('swap: the id the swaps view sends (URL-safe base64 of id_bytes) reaches Loop unchanged', async () => {
   const loop = await startFakeLoop();
   try {
-    for (const id of ['abc', 'ab'.repeat(32) + '?x=1', '../info', undefined]) {
+    // 0xfb/0xff bytes make the base64 contain + and /, which the view rewrites to - and _.
+    for (const id of [swapId('fbff'), swapId('fbff').replace(/=$/, '')]) {
+      const res = await run(swap, buildRequest(loop.url, { params: { id } }));
+      assert.equal(res.statusCode, 200, `refused ${id}`);
+    }
+    assert.deepEqual(loop.seen.map((r) => r.path), [`/v1/loop/swap/${swapId('fbff')}`, `/v1/loop/swap/${swapId('fbff').replace(/=$/, '')}`]);
+  } finally { await loop.close(); }
+});
+
+test('swap: an id that is not a base64url swap hash is refused with 400 and never sent upstream', async () => {
+  const loop = await startFakeLoop();
+  try {
+    const std = Buffer.from('fbff'.repeat(16), 'hex').toString('base64');
+    for (const id of ['abc', swapId('ab') + '?x=1', '../info', 'ab'.repeat(32), std, swapId('ab') + '==', undefined]) {
       const res = await run(swap, buildRequest(loop.url, { params: { id } }));
       assert.equal(res.statusCode, 400, `accepted ${id}`);
     }
