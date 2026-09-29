@@ -12,7 +12,8 @@ const common = Common;
 const isValidChannelPoint = (channelPoint) => channelPoint === 'ALL' || (typeof channelPoint === 'string' && (/^[0-9a-fA-F]{64}:\d+$/).test(channelPoint));
 const isInsideBackupDir = (req, file) => {
     const backupDir = resolve(req.session.selectedNode.settings.channelBackupPath);
-    return resolve(file).startsWith(backupDir + sep);
+    // resolve() keeps the trailing separator for a filesystem root ('/', 'C:\\').
+    return resolve(file).startsWith(backupDir.endsWith(sep) ? backupDir : backupDir + sep);
 };
 const invalidChannelPoint = (res) => common.invalidQueryParam(res, 'channelPoint', '\'ALL\' or a txid:output_index outpoint');
 function getFilesList(channelBackupPath, callback) {

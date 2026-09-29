@@ -14,7 +14,8 @@ const isValidChannelPoint = (channelPoint) => channelPoint === 'ALL' || (typeof 
 
 const isInsideBackupDir = (req, file) => {
   const backupDir = resolve(req.session.selectedNode.settings.channelBackupPath);
-  return resolve(file).startsWith(backupDir + sep);
+  // resolve() keeps the trailing separator for a filesystem root ('/', 'C:\\').
+  return resolve(file).startsWith(backupDir.endsWith(sep) ? backupDir : backupDir + sep);
 };
 
 const invalidChannelPoint = (res) => common.invalidQueryParam(res, 'channelPoint', '\'ALL\' or a txid:output_index outpoint');
