@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, parse } from 'node:path';
 import test from 'node:test';
 
 import { getBackup, postBackupVerify, postRestore } from '../../backend/controllers/lnd/channelsBackup.js';
@@ -124,5 +124,15 @@ test('a backup directory that does not exist answers an error instead of stoppin
     // Give a stray stream 'error' a chance to surface before the test ends.
     await new Promise((resolve) => setTimeout(resolve, 50));
     assert.equal(existsSync(missing), false);
+  } finally { await lnd.close(); }
+});
+
+test('a backup directory at the filesystem root is not mistaken for a path outside it', async () => {
+  const lnd = await startFakeLnd();
+  try {
+    // resolve() keeps the trailing separator for a root, so the containment prefix must not add a second one.
+    const res = await run(postBackupVerify, buildRequest(lnd.url, parse(tmpdir()).root, CHANNEL_POINT));
+    assert.equal(res.statusCode, 404, JSON.stringify(res.body));
+    assert.deepEqual(lnd.seen, []);
   } finally { await lnd.close(); }
 });
