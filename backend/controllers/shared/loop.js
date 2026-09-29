@@ -273,10 +273,11 @@ export const swap = (req, res, next) => {
     if (!options) {
         return;
     }
-    // Loop identifies a swap by its hex-encoded swap hash; anything else is refused before it
-    // can reach the upstream path (Express has already percent-decoded it).
-    if (typeof req.params.id !== 'string' || !(/^[0-9a-fA-F]{64}$/).test(req.params.id)) {
-        return common.invalidQueryParam(res, 'id', 'a 64-character hex swap hash');
+    // Loop's REST route decodes the id as base64 bytes, and the swaps view sends the 32-byte swap
+    // hash as URL-safe base64; anything else is refused before it can reach the upstream path
+    // (Express has already percent-decoded it).
+    if (typeof req.params.id !== 'string' || !(/^[A-Za-z0-9_-]{43}=?$/).test(req.params.id)) {
+        return common.invalidQueryParam(res, 'id', 'a URL-safe base64 swap hash');
     }
     options.uri = '/v1/loop/swap/' + req.params.id;
     request(options).then((body) => {
