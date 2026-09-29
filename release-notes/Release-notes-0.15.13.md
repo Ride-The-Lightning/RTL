@@ -5,6 +5,15 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **An invalid channel point could crash RTL during an LND channel backup**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The backup, verify and restore handlers in `server/controllers/lnd/channelsBackup.ts` built a
+  file path from the request's `channelPoint` without checking it. A malformed value could make
+  the backup write fail in a way that stopped the process, or make verify/restore read a file
+  outside the backup folder. The id is now checked against the `txid:output_index` outpoint form
+  (or `ALL`), the resolved path must stay inside `channelBackupPath`, and a failed backup write
+  answers with an error. `test/backend/lnd-channel-backup.test.mjs` covers all three handlers.
+
 - **Loop requests could go to another node's swap server, and the missing-URL guard never fired**
   ([#1715](https://github.com/Ride-The-Lightning/RTL/pull/1715), fixes
   [#1714](https://github.com/Ride-The-Lightning/RTL/issues/1714)).

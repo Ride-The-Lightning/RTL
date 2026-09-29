@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { sep } from 'path';
+import { resolve, sep } from 'path';
 import request from '../../utils/request.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
@@ -7,6 +7,17 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+// Backup files are named after the channel point, so only 'ALL' or a txid:output_index outpoint
+// may reach the path (Express has already decoded %2F to /), and the resolved file must still sit
+// inside the node's backup directory.
+const isValidChannelPoint = (channelPoint) => channelPoint === 'ALL' || (typeof channelPoint === 'string' && (/^[0-9a-fA-F]{64}:\d+$/).test(channelPoint));
+
+const isInsideBackupDir = (req, file) => {
+  const backupDir = resolve(req.session.selectedNode.settings.channelBackupPath);
+  return resolve(file).startsWith(backupDir + sep);
+};
+
+const invalidChannelPoint = (res) => common.invalidQueryParam(res, 'channelPoint', '\'ALL\' or a txid:output_index outpoint');
 
 function getFilesList(channelBackupPath, callback) {
   const files_list = [];
@@ -36,6 +47,7 @@ export const getBackup = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Getting Channel Backup..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  if (!isValidChannelPoint(req.params.channelPoint)) { return invalidChannelPoint(res); }
   let channel_backup_file = '';
   let message = '';
   if (req.params.channelPoint === 'ALL') {
@@ -44,6 +56,7 @@ export const getBackup = (req, res, next) => {
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup';
   } else {
     channel_backup_file = req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.params.channelPoint?.replace(':', '-') + '.bak';
+    if (!isInsideBackupDir(req, channel_backup_file)) { return invalidChannelPoint(res); }
     message = 'Channel Backup Successful.';
     const channelpoint = req.params.channelPoint?.replace(':', '/');
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup/' + channelpoint;
@@ -51,13 +64,13 @@ export const getBackup = (req, res, next) => {
     if (exists) {
       fs.writeFile(channel_backup_file, '', () => { });
     } else {
-      try {
-        const createStream = fs.createWriteStream(channel_backup_file);
-        createStream.end();
-      } catch (errRes) {
-        const err = common.handleError(errRes, 'ChannelsBackup', 'Backup Channels Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
-      }
+      // The stream reports a failed open asynchronously; without a listener that 'error' is
+      // uncaught and stops the process. The write after the backup is fetched answers the request.
+      const createStream = fs.createWriteStream(channel_backup_file);
+      createStream.on('error', (errRes) => {
+        logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'ChannelBackup', msg: 'Creating Channel Backup File Failed', error: errRes });
+      });
+      createStream.end();
     }
   }
   request(options).then((body) => {
@@ -81,6 +94,7 @@ export const postBackupVerify = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Verifying Channel Backup..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  if (!isValidChannelPoint(req.params.channelPoint)) { return invalidChannelPoint(res); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup/verify';
   let channel_verify_file = '';
   let message = '';
@@ -109,6 +123,7 @@ export const postBackupVerify = (req, res, next) => {
   } else {
     message = 'Channel Verify Successful.';
     channel_verify_file = req.session.selectedNode.settings.channelBackupPath + sep + 'channel-' + req.params.channelPoint?.replace(':', '-') + '.bak';
+    if (!isInsideBackupDir(req, channel_verify_file)) { return invalidChannelPoint(res); }
     const exists = fs.existsSync(channel_verify_file);
     if (exists) {
       verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');
@@ -136,6 +151,7 @@ export const postRestore = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Restoring Channel Backup..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  if (!isValidChannelPoint(req.params.channelPoint)) { return invalidChannelPoint(res); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/backup/restore';
   let channel_restore_file = '';
   let message = '';
@@ -174,6 +190,7 @@ export const postRestore = (req, res, next) => {
   } else {
     message = 'Channel Restore Successful.';
     channel_restore_file = req.session.selectedNode.settings.channelBackupPath + sep + 'restore' + sep + 'channel-' + req.params.channelPoint?.replace(':', '-') + '.bak';
+    if (!isInsideBackupDir(req, channel_restore_file)) { return invalidChannelPoint(res); }
     const exists = fs.existsSync(channel_restore_file);
     if (exists) {
       restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
