@@ -94,6 +94,36 @@ export const listPayments = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
+// statusCode and error.message are what common.handleError reads back after its JSON round-trip.
+const offerRefusal = (message) => Promise.reject(Object.assign(new Error(message), { statusCode: 400, error: { message: message } }));
+// An offer invoice is paid only if it matches the payment the user confirmed: issued for the
+// offer being paid, and for the amount to pay.
+const verifyOfferInvoice = (selNode, payOptions, invoice, offer, expectedAmountMsat) => {
+    const expected = Math.round(Number(expectedAmountMsat));
+    if (!invoice || !offer || !Number.isSafeInteger(expected) || expected <= 0) {
+        return offerRefusal('Offer payment requires the invoice, the offer and the amount to pay.');
+    }
+    const decode = (string) => request.post({ ...payOptions, url: selNode.settings.lnServerUrl + '/v1/decode', body: { string: string } });
+    return decode(invoice).then((decodedInvoice) => decode(offer).then((decodedOffer) => {
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Offer Invoice Decoded', data: decodedInvoice });
+        if (!decodedInvoice || decodedInvoice.type !== 'bolt12 invoice' || decodedInvoice.valid === false) {
+            return offerRefusal('The offer payment is not a valid bolt12 invoice.');
+        }
+        if (!decodedOffer || decodedOffer.type !== 'bolt12 offer' || decodedOffer.valid === false || !decodedOffer.offer_id) {
+            return offerRefusal('The offer being paid is not a valid bolt12 offer.');
+        }
+        if (decodedInvoice.offer_id !== decodedOffer.offer_id) {
+            return offerRefusal('The invoice returned by the offer issuer is not for this offer. Payment not sent.');
+        }
+        if (decodedInvoice.invoice_amount_msat === undefined || decodedInvoice.invoice_amount_msat === null) {
+            return offerRefusal('The invoice returned by the offer issuer carries no amount. Payment not sent.');
+        }
+        if (Number(decodedInvoice.invoice_amount_msat) !== expected) {
+            return offerRefusal('The invoice amount returned by the offer issuer (' + decodedInvoice.invoice_amount_msat + ' msat) does not match the amount to pay (' + expected + ' msat). Payment not sent.');
+        }
+        return decodedInvoice;
+    }));
+};
 export const postPayment = (req, res, next) => {
     const { paymentType, saveToDB, bolt12, zeroAmtOffer, amount_msat, title, issuer, description } = req.body;
     options = common.getOptions(req);
@@ -146,7 +176,9 @@ export const postPayment = (req, res, next) => {
         options.body = options_body;
         options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/pay';
     }
-    request.post(options).then((body) => {
+    const payOptions = { ...options };
+    const verifyPayment = (paymentType === 'OFFER') ? verifyOfferInvoice(req.session.selectedNode, payOptions, options_body.bolt11, bolt12, amount_msat) : Promise.resolve();
+    verifyPayment.then(() => request.post(payOptions)).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body });
         if (paymentType === 'OFFER') {
             if (saveToDB && bolt12) {

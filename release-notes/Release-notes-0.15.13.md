@@ -5,6 +5,12 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **Core Lightning: stricter validation of BOLT 12 offer payments**
+  ([#1720](https://github.com/Ride-The-Lightning/RTL/pull/1720)).
+  The invoice fetched for an offer is now validated before it is paid, both in the backend
+  (`server/controllers/cln/payments.ts`) and in the Send Payment dialog.
+  `test/backend/cln-offer-payment.test.mjs` and a new send-payment component spec cover it.
+
 - **An invalid channel point could crash RTL during an LND channel backup**
   ([#1718](https://github.com/Ride-The-Lightning/RTL/pull/1718)).
   The backup, verify and restore handlers in `server/controllers/lnd/channelsBackup.ts` built a
