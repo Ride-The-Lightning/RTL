@@ -227,6 +227,7 @@ interface Changes {
   issuer_removed?: string;
   issuer?: string;
   msat?: string;
+  amount_msat?: number;
 }
 
 interface NextPeriod {
@@ -241,6 +242,7 @@ export interface OfferInvoice {
   invoice: string;
   changes: Changes;
   next_period?: NextPeriod;
+  request?: { offer: string, amount_msat?: number };
 }
 
 export interface ForwardingEvent {

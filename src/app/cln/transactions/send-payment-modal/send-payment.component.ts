@@ -61,6 +61,11 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public offerTitle = '';
   public zeroAmtOffer = false;
   public offerInvoice: OfferInvoice | null = null;
+  private offerInvoiceRequestedMsat: number | null = null;
+  private offerInvoiceRequestedOffer = '';
+  // One fetch at a time, and a reply is used only if it answers that fetch's request.
+  private offerInvoiceFetchPending = false;
+  private offerInvoiceRequest: { offer: string, amount_msat?: number } | null = null;
   public offerAmount: number | null = null;
   public flgSaveToDB = false;
 
@@ -126,11 +131,28 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
         if (action.type === CLNActions.SEND_PAYMENT_STATUS_CLN) {
           this.dialogRef.close();
         }
-        if (action.type === CLNActions.SET_OFFER_INVOICE_CLN) {
-          this.offerInvoice = action.payload;
-          this.sendPayment();
+        // The actions stream is app-wide: act only on the reply to this dialog's own pending fetch.
+        if (action.type === CLNActions.SET_OFFER_INVOICE_CLN && this.isReplyToPendingFetch(action.payload)) {
+          this.offerInvoiceFetchPending = false;
+          const issuerAmountMsat = action.payload?.changes?.amount_msat;
+          if (this.paymentType !== PaymentTypes.OFFER) {
+            // The user left the Offer tab while the invoice was being fetched.
+            this.offerInvoice = null;
+          } else if (this.offerInvoiceRequestedMsat !== this.getOfferAmountMsat() || this.offerInvoiceRequestedOffer !== this.offerRequest) {
+            this.offerInvoice = null;
+            this.paymentError = 'The offer or amount changed while the offer invoice was being fetched. Payment not sent, please send again.';
+          } else if (issuerAmountMsat !== undefined && issuerAmountMsat !== null && +issuerAmountMsat !== this.getOfferAmountMsat()) {
+            this.offerInvoice = null;
+            this.paymentError = 'The offer issuer asked for ' + this.decimalPipe.transform(+issuerAmountMsat / 1000, '1.0-3') + ' Sats instead of ' + this.decimalPipe.transform(this.getOfferAmountMsat() / 1000, '1.0-3') + ' Sats. Payment not sent.';
+          } else {
+            this.offerInvoice = action.payload;
+            this.sendPayment();
+          }
         }
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.status === APICallStatusEnum.ERROR) {
+          if (action.payload.action === 'FetchOfferInvoice') {
+            this.offerInvoiceFetchPending = false;
+          }
           if (action.payload.action === 'SendPayment') {
             delete this.paymentDecoded.amount_msat;
             this.paymentError = action.payload.message;
@@ -233,20 +255,36 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       }
     } else if (this.paymentType === PaymentTypes.OFFER) {
       if (!this.offerInvoice) {
-        if (this.zeroAmtOffer && this.offerAmount) {
-          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest, amount_msat: this.offerAmount * 1000 } }));
-        } else {
-          this.store.dispatch(fetchOfferInvoice({ payload: { offer: this.offerRequest } }));
+        if (this.offerInvoiceFetchPending) {
+          this.paymentError = 'Fetching the offer invoice, please wait.';
+          return;
         }
+        this.offerInvoiceFetchPending = true;
+        this.offerInvoiceRequestedMsat = this.getOfferAmountMsat();
+        this.offerInvoiceRequestedOffer = this.offerRequest;
+        this.offerInvoiceRequest = (this.zeroAmtOffer && this.offerAmount) ? { offer: this.offerRequest, amount_msat: this.offerInvoiceRequestedMsat } : { offer: this.offerRequest };
+        this.store.dispatch(fetchOfferInvoice({ payload: this.offerInvoiceRequest }));
       } else {
         if (this.offerAmount) {
           this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentType: PaymentTypes.OFFER,
-            bolt11: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount_msat: this.offerAmount * 1000,
+            bolt11: this.offerInvoice.invoice, saveToDB: this.flgSaveToDB, bolt12: this.offerRequest, amount_msat: this.getOfferAmountMsat(),
             zeroAmtOffer: this.zeroAmtOffer, title: this.offerTitle, issuer: this.offerIssuer, description: this.offerDescription,
             fromDialog: true } }));
         }
       }
     }
+  }
+
+  isReplyToPendingFetch(reply: OfferInvoice): boolean {
+    const pending = this.offerInvoiceRequest;
+    return this.offerInvoiceFetchPending && !!pending && !!reply?.request &&
+      reply.request.offer === pending.offer && (reply.request.amount_msat ?? null) === (pending.amount_msat ?? null);
+  }
+
+  // Whole msat: a fixed offer's own amount (offerAmount is that divided by 1000, which does not
+  // always multiply back exactly), or the sats entered for a zero-amount offer.
+  getOfferAmountMsat(): number {
+    return this.zeroAmtOffer ? Math.round((this.offerAmount || 0) * 1000) : Number(this.offerDecoded.offer_amount_msat || 0);
   }
 
   onPaymentRequestEntry(event: any) {
@@ -307,6 +345,8 @@ export class CLNLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecoded.amount_msat = +event.target.value;
     }
     if (this.paymentType === PaymentTypes.OFFER) {
+      // An invoice fetched for the previous amount must not be paid for the new one.
+      this.offerInvoice = null;
       delete this.offerDecoded.offer_amount_msat;
       this.offerDecoded.offer_amount_msat = event.target.value;
     }
