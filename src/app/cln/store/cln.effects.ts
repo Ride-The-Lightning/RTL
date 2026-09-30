@@ -391,7 +391,8 @@ export class CLNEffects implements OnDestroy {
               setTimeout(() => {
                 this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'FetchOfferInvoice', status: APICallStatusEnum.COMPLETED } }));
                 this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.FETCH_INVOICE }));
-                this.store.dispatch(setOfferInvoice({ payload: (fetchedInvoice ? fetchedInvoice : {}) }));
+                // The request travels with the reply so the dialog can tell its own fetch's answer from another's.
+                this.store.dispatch(setOfferInvoice({ payload: { ...(fetchedInvoice ? fetchedInvoice : {}), request: action.payload } }));
               }, 500);
             }),
             catchError((err: any) => {
