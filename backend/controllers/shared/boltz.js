@@ -69,6 +69,11 @@ export const getSwapInfo = (req, res, next) => {
         const err = common.handleError({ statusCode: 500, message: 'Get Swap Information Error', error: errMsg }, 'Boltz', errMsg, req.session.selectedNode);
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
+    // Boltz swap ids are short alphanumeric strings; anything else is refused before it can reach
+    // the upstream path (Express has already percent-decoded it).
+    if (typeof req.params.swapId !== 'string' || !(/^[A-Za-z0-9_-]+$/).test(req.params.swapId)) {
+        return common.invalidQueryParam(res, 'swapId', 'a Boltz swap id');
+    }
     options.url = options.url + '/v1/swap/' + req.params.swapId;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Boltz', msg: 'Swap Information Received', data: body });

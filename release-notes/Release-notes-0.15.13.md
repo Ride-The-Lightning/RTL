@@ -11,6 +11,14 @@ this release should add its entry under the appropriate section below.
   (`server/controllers/cln/payments.ts`) and in the Send Payment dialog.
   `test/backend/cln-offer-payment.test.mjs` and a new send-payment component spec cover it.
 
+- **Boltz swap lookup forwarded a malformed swap id to the Boltz server as it was**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1715).
+  `getSwapInfo` in `server/controllers/shared/boltz.ts` put its `swapId` path parameter into the
+  Boltz URL without checking it, so a value that was not a swap id could change which Boltz
+  request was made. It now answers 400 unless the id is made of letters, digits, `-` or `_`,
+  the same kind of check the Loop swap lookup got in #1715. The swaps view only sends ids it
+  received from Boltz. `test/backend/boltz-swap-info.test.mjs` covers it.
+
 - **An invalid channel point could crash RTL during an LND channel backup**
   ([#1718](https://github.com/Ride-The-Lightning/RTL/pull/1718)).
   The backup, verify and restore handlers in `server/controllers/lnd/channelsBackup.ts` built a
