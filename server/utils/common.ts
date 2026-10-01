@@ -693,6 +693,17 @@ export class CommonService {
     return value.trim() === '' ? undefined : value.trim();
   };
 
+  // A path value goes into the upstream URL as it is, and Express has already decoded %2F, %3F
+  // and the like by the time a controller sees it. Returns the value without surrounding
+  // whitespace (which the nodes ignored anyway) when it has the expected form, null otherwise.
+  public parsePathParam = (value, pattern: RegExp): string | null => {
+    if (typeof value !== 'string') { return null; }
+    return pattern.test(value.trim()) ? value.trim() : null;
+  };
+
+  // A node public key as the nodes report it: 33 bytes, hex.
+  public parseNodePubkey = (value): string | null => this.parsePathParam(value, /^[0-9a-fA-F]{66}$/);
+
   public invalidQueryParam = (res, name, expected) => res.status(400).json({ message: name + ' must be ' + expected, error: 'Invalid query parameter' });
 
   public isVersionCompatible = (currentVersion, checkVersion) => {

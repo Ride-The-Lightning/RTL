@@ -6,8 +6,15 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+const parseChanId = (chanId) => common.parsePathParam(chanId, /^\d{1,20}$/);
+const invalidPubkey = (res, name) => common.invalidQueryParam(res, name, 'a 66-character hex node public key');
+const invalidChanId = (res) => common.invalidQueryParam(res, 'chanid', 'a numeric channel id');
+
 export const getAliasFromPubkey = (selNode: SelectedNode, pubkey, requestOptions) => {
-  requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + pubkey;
+  // Same label a failed lookup falls back to, without asking the node.
+  const nodePubkey = common.parseNodePubkey(pubkey);
+  if (nodePubkey === null) { return Promise.resolve(String(pubkey).substring(0, 20)); }
+  requestOptions.url = selNode.settings.lnServerUrl + '/v1/graph/node/' + nodePubkey;
   return request(requestOptions).then((res) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Graph', msg: 'Alias Received', data: res.node.alias });
     return res.node.alias;
@@ -47,7 +54,9 @@ export const getGraphNode = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Node Information..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/node/' + req.params.pubKey;
+  const pubKey = common.parseNodePubkey(req.params.pubKey);
+  if (pubKey === null) { return invalidPubkey(res, 'pubKey'); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/node/' + pubKey;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Node Information Received', data: body });
     res.status(200).json(body);
@@ -61,7 +70,9 @@ export const getGraphEdge = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Edge Information..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + req.params.chanid;
+  const chanId = parseChanId(req.params.chanid);
+  if (chanId === null) { return invalidChanId(res); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + chanId;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Graph Edge Information Received', data: body });
     res.status(200).json(body);
@@ -75,7 +86,11 @@ export const getQueryRoutes = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Graph Routes..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
+  const destPubkey = common.parseNodePubkey(req.params.destPubkey);
+  const amount = common.parsePathParam(req.params.amount, /^\d+$/);
+  if (destPubkey === null) { return invalidPubkey(res, 'destPubkey'); }
+  if (amount === null) { return common.invalidQueryParam(res, 'amount', 'a non-negative integer'); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/routes/' + destPubkey + '/' + amount;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
@@ -111,7 +126,9 @@ export const getRemoteFeePolicy = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Graph', msg: 'Getting Remote Fee Policy..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + req.params.chanid;
+  const chanId = parseChanId(req.params.chanid);
+  if (chanId === null) { return invalidChanId(res); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/edge/' + chanId;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received', data: body });
     let remoteNodeFee = {};
@@ -140,6 +157,7 @@ export const getAliasesForPubkeys = (req, res, next) => {
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   if (req.query.pubkeys) {
+    if (typeof req.query.pubkeys !== 'string') { return common.invalidQueryParam(res, 'pubkeys', 'a comma-separated list of node public keys'); }
     const pubkeyArr = req.query.pubkeys.split(',');
     const selNode = req.session.selectedNode;
     const { qs: _qs, ...requestOptions } = options;
