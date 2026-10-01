@@ -6,21 +6,33 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+// The wallet password and seed passphrase arrive base64-encoded, the way window.btoa produces
+// them. Returns undefined when the value is absent and null when it is not well-formed base64.
+const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+const parseBase64 = (value): string | null | undefined => {
+  if (value === undefined || value === null || value === '') { return undefined; }
+  return (typeof value === 'string' && BASE64.test(value)) ? value : null;
+};
+// LND takes them as base64 of the UTF-8 text.
+const toLndBase64 = (value: string) => Buffer.from(atob(value)).toString('base64');
+const invalidBase64 = (res, name) => common.invalidQueryParam(res, name, 'a base64 string');
+
 export const genSeed = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   // The optional seed passphrase arrives base64-encoded in the request body, as it does for
   // initwallet, and goes to LND through qs so that '+', '/' and '=' are percent-encoded.
-  const passphrase = req.body?.aezeed_passphrase;
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed';
-  if (passphrase !== undefined && passphrase !== '') {
-    if (typeof passphrase !== 'string' || !(/^[A-Za-z0-9+/]+={0,2}$/).test(passphrase)) {
-      return common.invalidQueryParam(res, 'aezeed_passphrase', 'a base64 string');
-    }
-    options.qs = { aezeed_passphrase: Buffer.from(atob(passphrase)).toString('base64') };
-  }
-  request(options).then((body) => {
+  const passphrase = parseBase64(req.body?.aezeed_passphrase);
+  if (passphrase === null) { return invalidBase64(res, 'aezeed_passphrase'); }
+  // The request gets its own copy of the options, so the passphrase stays out of the ones the
+  // session keeps for the node.
+  const seedOptions = {
+    ...options,
+    url: req.session.selectedNode.settings.lnServerUrl + '/v1/genseed',
+    qs: passphrase ? { aezeed_passphrase: toLndBase64(passphrase) } : {}
+  };
+  request(seedOptions).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated' });
     res.status(200).json(body);
   }).catch((errRes) => {
@@ -30,36 +42,42 @@ export const genSeed = (req, res, next) => {
 };
 
 export const operateWallet = (req, res, next) => {
-  const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic } = req.body;
+  const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic } = req.body || {};
   let err_message = '';
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.method = 'POST';
+  const password = parseBase64(wallet_password);
+  if (!password) { return invalidBase64(res, 'wallet_password'); }
+  // The request gets its own copy of the options, so the body stays out of the ones the
+  // session keeps for the node.
+  const walletOptions = { ...options, method: 'POST' };
   if (!req.params.operation || req.params.operation === 'unlockwallet') {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Unlocking Wallet..' });
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/unlockwallet';
-    options.form = JSON.stringify({
-      wallet_password: Buffer.from(atob(wallet_password)).toString('base64')
+    walletOptions.url = req.session.selectedNode.settings.lnServerUrl + '/v1/unlockwallet';
+    walletOptions.form = JSON.stringify({
+      wallet_password: toLndBase64(password)
     });
     err_message = 'Unlocking wallet failed! Verify that lnd is running and the wallet is locked!';
   } else {
+    const passphrase = parseBase64(aezeed_passphrase);
+    if (passphrase === null) { return invalidBase64(res, 'aezeed_passphrase'); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Initializing Wallet..' });
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/initwallet';
-    if (aezeed_passphrase && aezeed_passphrase !== '') {
-      options.form = JSON.stringify({
-        wallet_password: Buffer.from(atob(wallet_password)).toString('base64'),
+    walletOptions.url = req.session.selectedNode.settings.lnServerUrl + '/v1/initwallet';
+    if (passphrase) {
+      walletOptions.form = JSON.stringify({
+        wallet_password: toLndBase64(password),
         cipher_seed_mnemonic: cipher_seed_mnemonic,
-        aezeed_passphrase: Buffer.from(atob(aezeed_passphrase)).toString('base64')
+        aezeed_passphrase: toLndBase64(passphrase)
       });
     } else {
-      options.form = JSON.stringify({
-        wallet_password: Buffer.from(atob(wallet_password)).toString('base64'),
+      walletOptions.form = JSON.stringify({
+        wallet_password: toLndBase64(password),
         cipher_seed_mnemonic: cipher_seed_mnemonic
       });
     }
     err_message = 'Initializing wallet failed!';
   }
-  request(options).then((body) => {
+  request(walletOptions).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     if (!body) {

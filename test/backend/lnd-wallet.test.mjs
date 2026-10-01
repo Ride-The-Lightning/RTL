@@ -34,7 +34,7 @@ const startFakeLnd = async (reply = {}) => {
   return { url, seen, close: () => new Promise((resolve) => server.close(resolve)) };
 };
 
-const buildRequest = (url, { body = {}, params = {}, logLevel = 'ERROR', logFile } = {}) => ({
+const buildRequest = (url, { params = {}, logLevel = 'ERROR', logFile, ...rest } = {}) => ({
   session: {
     selectedNode: {
       index: 1, lnNode: 'test-node', lnImplementation: 'LND', lnVersion: '0.18.0',
@@ -44,7 +44,8 @@ const buildRequest = (url, { body = {}, params = {}, logLevel = 'ERROR', logFile
   },
   query: {},
   params,
-  body
+  // An explicit `body: undefined` is kept: it is what a POST with no parsed body looks like.
+  body: 'body' in rest ? rest.body : {}
 });
 
 const run = async (handler, req) => {
@@ -80,23 +81,93 @@ test('genSeed: the passphrase reaches LND with every base64 character intact', a
 test('genSeed: without a passphrase LND is asked for a seed with no query', async () => {
   const lnd = await startFakeLnd({ cipher_seed_mnemonic: ['one', 'two'] });
   try {
-    for (const body of [{}, { aezeed_passphrase: '' }, undefined]) {
+    for (const body of [{}, { aezeed_passphrase: '' }, { aezeed_passphrase: null }, undefined]) {
       const res = await run(genSeed, buildRequest(lnd.url, { body }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));
       assert.deepEqual(res.body, { cipher_seed_mnemonic: ['one', 'two'] });
     }
-    assert.deepEqual(lnd.seen.map((r) => r.path), ['/v1/genseed', '/v1/genseed', '/v1/genseed']);
+    assert.deepEqual(lnd.seen.map((r) => r.path), ['/v1/genseed', '/v1/genseed', '/v1/genseed', '/v1/genseed']);
   } finally { await lnd.close(); }
 });
 
 test('genSeed: a passphrase that is not base64 text is refused with 400 and never sent upstream', async () => {
   const lnd = await startFakeLnd();
   try {
-    for (const aezeed_passphrase of ['not base64!', 'Pj4+&x=1', ['Pj4+'], { a: 1 }, 42]) {
+    for (const aezeed_passphrase of ['not base64!', 'Pj4+&x=1', 'A', 'ab=', 'abcde', '====', ['Pj4+'], { a: 1 }, 42]) {
       const res = await run(genSeed, buildRequest(lnd.url, { body: { aezeed_passphrase } }));
       assert.equal(res.statusCode, 400, `accepted ${JSON.stringify(aezeed_passphrase)}`);
     }
     assert.equal(lnd.seen.length, 0);
+  } finally { await lnd.close(); }
+});
+
+test('genSeed: a passphrase with accented characters reaches LND as UTF-8, as the browser flow relies on', async () => {
+  const lnd = await startFakeLnd({ cipher_seed_mnemonic: ['one', 'two'] });
+  try {
+    // window.btoa encodes 'é' as the single byte 0xE9; LND is given its UTF-8 form.
+    const res = await run(genSeed, buildRequest(lnd.url, { body: { aezeed_passphrase: b64('caf\u00e9') } }));
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    const sent = new URL('http://lnd' + lnd.seen[0].path).searchParams.get('aezeed_passphrase');
+    assert.equal(sent, Buffer.from('caf\u00e9', 'utf8').toString('base64'));
+  } finally { await lnd.close(); }
+});
+
+test('genSeed: the passphrase is not left on the session after the request', async () => {
+  const lnd = await startFakeLnd({ cipher_seed_mnemonic: ['one', 'two'] });
+  try {
+    const req = buildRequest(lnd.url, { body: { aezeed_passphrase: b64('hunter2') } });
+    const res = await run(genSeed, req);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.ok(!JSON.stringify(req.session).includes(b64('hunter2')), JSON.stringify(req.session.selectedNode.authentication.options));
+  } finally { await lnd.close(); }
+});
+
+test('operateWallet: the request body is not left on the session after the request', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const body = { wallet_password: b64('password123'), cipher_seed_mnemonic: ['markerword1', 'markerword2'], aezeed_passphrase: b64('hunter2') };
+    const req = buildRequest(lnd.url, { body, params: { operation: 'initwallet' } });
+    const res = await run(operateWallet, req);
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    assert.doesNotMatch(JSON.stringify(req.session), /markerword|cGFzc3dvcmQxMjM|aHVudGVyMg/);
+  } finally { await lnd.close(); }
+});
+
+test('operateWallet: the password and passphrase are forwarded to LND in the body', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const body = { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: b64('>>>') };
+    const init = await run(operateWallet, buildRequest(lnd.url, { body, params: { operation: 'initwallet' } }));
+    assert.equal(init.statusCode, 201, JSON.stringify(init.body));
+    assert.equal(lnd.seen[0].path, '/v1/initwallet');
+    assert.deepEqual(JSON.parse(lnd.seen[0].body), { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: b64('>>>') });
+    const noPass = await run(operateWallet, buildRequest(lnd.url, { body: { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: null }, params: { operation: 'initwallet' } }));
+    assert.equal(noPass.statusCode, 201, JSON.stringify(noPass.body));
+    assert.deepEqual(JSON.parse(lnd.seen[1].body), { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'] });
+    const unlock = await run(operateWallet, buildRequest(lnd.url, { body: { wallet_password: b64('password123') }, params: { operation: 'unlockwallet' } }));
+    assert.equal(unlock.statusCode, 201, JSON.stringify(unlock.body));
+    assert.equal(lnd.seen[2].path, '/v1/unlockwallet');
+    assert.deepEqual(JSON.parse(lnd.seen[2].body), { wallet_password: b64('password123') });
+  } finally { await lnd.close(); }
+});
+
+test('operateWallet: a password or passphrase that is not base64 text is refused with 400 and never sent upstream', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const good = b64('password123');
+    const bodies = [
+      undefined, {}, { wallet_password: '' }, { wallet_password: null }, { wallet_password: 'not base64!' }, { wallet_password: 'A' }, { wallet_password: [good] },
+      { wallet_password: good, aezeed_passphrase: 'abcde' }, { wallet_password: good, aezeed_passphrase: ['Pj4+'] }
+    ];
+    for (const operation of ['initwallet', 'unlockwallet']) {
+      for (const body of bodies) {
+        // unlockwallet does not read the passphrase, so those two bodies are valid for it.
+        if (operation === 'unlockwallet' && body && body.aezeed_passphrase) { continue; }
+        const res = await run(operateWallet, buildRequest(lnd.url, { body, params: { operation } }));
+        assert.equal(res.statusCode, 400, `${operation} accepted ${JSON.stringify(body)}`);
+      }
+    }
+    assert.equal(lnd.seen.length, 0, JSON.stringify(lnd.seen));
   } finally { await lnd.close(); }
 });
 
