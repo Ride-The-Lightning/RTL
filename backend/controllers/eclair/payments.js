@@ -4,10 +4,10 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
-export const getSentInfoFromPaymentRequest = (selNode, payment) => {
-    options.url = selNode.settings.lnServerUrl + '/getsentinfo';
-    options.form = { paymentHash: payment };
-    return request.post(options).then((body) => {
+export const getSentInfoFromPaymentRequest = (selNode, payment, requestOptions) => {
+    requestOptions.url = selNode.settings.lnServerUrl + '/getsentinfo';
+    requestOptions.form = { paymentHash: payment };
+    return request.post(requestOptions).then((body) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received', data: body });
         body.forEach((sentPayment) => {
             if (sentPayment.amount) {
@@ -111,15 +111,27 @@ export const getSentPaymentsInformation = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     if (payments) {
+        if (typeof payments !== 'string') {
+            return common.invalidQueryParam(res, 'payments', 'a comma-separated list of payment hashes');
+        }
         const paymentsArr = payments.split(',');
-        return Promise.all(paymentsArr?.map((payment) => getSentInfoFromPaymentRequest(req.session.selectedNode, payment))).
-            then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
-            return res.status(200).json(values);
-        }).
-            catch((errRes) => {
-            const err = common.handleError(errRes, 'Payments', 'Sent Payment Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ message: err.message, error: err.error });
+        // One Eclair call per entry, at most 20 at a time. The queued calls run after other requests
+        // may have replaced the module-level options, so each gets a copy of this request's own.
+        const selNode = req.session.selectedNode;
+        const requestOptions = { ...options };
+        const sentInfoTasks = paymentsArr.map((payment) => () => getSentInfoFromPaymentRequest(selNode, payment, { ...requestOptions }));
+        return common.runWithConcurrencyLimit(sentInfoTasks, 20, (values) => {
+            // Guard the response-send: the limiter invokes this outside any surrounding .catch.
+            try {
+                logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent Information Received', data: values });
+                res.status(200).json(values);
+            }
+            catch (e) {
+                const err = common.handleError(e, 'Payments', 'Sent Payment Error', selNode);
+                if (!res.headersSent) {
+                    res.status(err.statusCode).json({ message: err.message, error: err.error });
+                }
+            }
         });
     }
     else {
