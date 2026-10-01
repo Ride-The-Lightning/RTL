@@ -905,10 +905,9 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.GEN_SEED_LND),
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GEN_SEED }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.WALLET_API + '/genseed/' + action.payload).pipe(
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.WALLET_API + '/genseed', action.payload ? { aezeed_passphrase: action.payload } : {}).pipe(
         map((postRes: any) => {
           this.logger.info('Generated GenSeed!');
-          this.logger.info(postRes);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GEN_SEED }));
           return {
             type: LNDActions.GEN_SEED_RESPONSE_LND,
@@ -916,7 +915,7 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err) => {
-          this.handleErrorWithAlert('GenSeed', UI_MESSAGES.GEN_SEED, 'Genseed Generation Failed', this.CHILD_API_URL + API_END_POINTS.WALLET_API + '/genseed/' + action.payload, err);
+          this.handleErrorWithAlert('GenSeed', UI_MESSAGES.GEN_SEED, 'Genseed Generation Failed', this.CHILD_API_URL + API_END_POINTS.WALLET_API + '/genseed', err);
           return of({ type: RTLActions.VOID });
         })
       );

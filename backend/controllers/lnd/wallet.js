@@ -11,14 +11,18 @@ export const genSeed = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    if (req.params.passphrase) {
-        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
-    }
-    else {
-        options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed';
+    // The optional seed passphrase arrives base64-encoded in the request body, as it does for
+    // initwallet, and goes to LND through qs so that '+', '/' and '=' are percent-encoded.
+    const passphrase = req.body?.aezeed_passphrase;
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/genseed';
+    if (passphrase !== undefined && passphrase !== '') {
+        if (typeof passphrase !== 'string' || !(/^[A-Za-z0-9+/]+={0,2}$/).test(passphrase)) {
+            return common.invalidQueryParam(res, 'aezeed_passphrase', 'a base64 string');
+        }
+        options.qs = { aezeed_passphrase: Buffer.from(atob(passphrase)).toString('base64') };
     }
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated' });
         res.status(200).json(body);
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Wallet', 'Gen Seed Error', req.session.selectedNode);
@@ -81,7 +85,7 @@ export const operateWallet = (req, res, next) => {
             }
         }
         else {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized', data: body });
+            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized' });
             res.status(201).json('Successful');
         }
     }).catch((errRes) => {
