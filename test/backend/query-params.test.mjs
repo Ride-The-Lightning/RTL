@@ -113,6 +113,32 @@ test('closeChannel: a channelPoint that is not a txid:index outpoint is refused 
   } finally { await lnd.close(); }
 });
 
+test('closeChannel: a malformed target_conf, sat_per_vbyte or repeated force is refused with 400 and never sent upstream', async () => {
+  const lnd = await startFakeServer();
+  try {
+    const queries = [
+      { target_conf: '6&x=1' }, { target_conf: '-1' }, { target_conf: '1.5' }, { target_conf: ['6', '7'] },
+      { sat_per_vbyte: '2&x=1' }, { sat_per_vbyte: 'abc' }, { sat_per_vbyte: ['2', '3'] },
+      { force: 'false&x=1' }, { force: ['true', 'false'] }
+    ];
+    for (const query of queries) {
+      const res = await run(closeChannel, buildRequest(lnd.url, { query, params: { channelPoint: `${TXID}:1` } }));
+      assert.equal(res.statusCode, 400, `accepted ${JSON.stringify(query)}`);
+    }
+    assert.equal(lnd.seen.length, 0);
+  } finally { await lnd.close(); }
+});
+
+test('closeChannel: only force, target_conf and sat_per_vbyte are forwarded', async () => {
+  const lnd = await startFakeServer();
+  try {
+    const res = await run(closeChannel, buildRequest(lnd.url, { query: { force: 'false', sat_per_vbyte: '2', no_wait: 'true', other: 'x' }, params: { channelPoint: `${TXID}:1` } }));
+    assert.equal(res.statusCode, 202, JSON.stringify(res.body));
+    assert.equal(lnd.seen.length, 1);
+    assert.equal(lnd.seen[0].path, `/v1/channels/${TXID}/1?force=false&sat_per_vbyte=2`);
+  } finally { await lnd.close(); }
+});
+
 test('empty query values are treated as absent, as the replaced code did', async () => {
   const lnd = await startFakeServer();
   try {
