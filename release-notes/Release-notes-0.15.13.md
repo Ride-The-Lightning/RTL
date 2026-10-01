@@ -5,6 +5,18 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **Core Lightning and Eclair payment lists started one node call per entry all at once**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1722).
+  `listPayments` in `server/controllers/cln/payments.ts` decodes the bolt11 of every payment to
+  show its memo, and `getSentPaymentsInformation` in `server/controllers/eclair/payments.ts`
+  asks for the sent info of every payment hash it is given. Both started all of those calls at
+  once, through a helper that worked from the controller's shared options object, which on a
+  multi-node RTL another request may have replaced by the time a call ran. They now run at most
+  20 calls at a time through `runWithConcurrencyLimit`, as the peer and channel lists already
+  do, and each call gets a copy of the request's own options. The Eclair endpoint also answers
+  400 when `payments` is not a string. `test/backend/cln-list-payments.test.mjs` and
+  `test/backend/eclair-sent-payments.test.mjs` cover both.
+
 - **LND lookups forwarded a malformed path value to the node as it was**
   ([#1722](https://github.com/Ride-The-Lightning/RTL/pull/1722); follow-up to #1713).
   The node, channel and route lookups in `server/controllers/lnd/graph.ts`, payment decode and

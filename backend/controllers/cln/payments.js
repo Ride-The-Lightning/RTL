@@ -7,10 +7,10 @@ let options = null;
 const logger = Logger;
 const common = Common;
 const databaseService = Database;
-export const getMemo = (selNode, payment) => {
-    options.url = selNode.settings.lnServerUrl + '/v1/decode';
-    options.body = { string: payment.bolt11 };
-    return request.post(options).then((res) => {
+export const getMemo = (selNode, payment, requestOptions) => {
+    requestOptions.url = selNode.settings.lnServerUrl + '/v1/decode';
+    requestOptions.body = { string: payment.bolt11 };
+    return request.post(requestOptions).then((res) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received', data: res });
         payment.memo = res.description || '';
         return payment;
@@ -82,12 +82,28 @@ export const listPayments = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listsendpays';
+    // The memo decodes below run after this call returns, when other requests may have replaced
+    // the module-level options, so they work from a copy taken now.
+    const selNode = req.session.selectedNode;
+    const requestOptions = { ...options };
     request.post(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
+        logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received', data: body.payments });
         body.payments = body.payments && body.payments.length && body.payments.length > 0 ? groupBy(body.payments) : [];
-        return Promise.all(body.payments?.map((payment) => ((payment.bolt11) ? getMemo(req.session.selectedNode, payment) : (payment.memo = '')))).then((values) => {
-            logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List with Memo Received', data: body.payments });
-            res.status(200).json(body.payments);
+        // One decode per bolt11 payment, at most 20 at a time, matching the peers/channels paths, so
+        // a long payment history can't storm clnrest (#1501).
+        const getMemoTasks = body.payments.map((payment) => () => ((payment.bolt11) ? getMemo(selNode, payment, { ...requestOptions }) : (payment.memo = '')));
+        common.runWithConcurrencyLimit(getMemoTasks, 20, () => {
+            // Guard the response-send: the limiter invokes this outside the surrounding .catch.
+            try {
+                logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'Payments', msg: 'Payments List with Memo Received', data: body.payments });
+                res.status(200).json(body.payments);
+            }
+            catch (e) {
+                const err = common.handleError(e, 'Payments', 'List Payments Error', selNode);
+                if (!res.headersSent) {
+                    res.status(err.statusCode).json({ message: err.message, error: err.error });
+                }
+            }
         });
     }).catch((errRes) => {
         const err = common.handleError(errRes, 'Payments', 'List Payments Error', req.session.selectedNode);
