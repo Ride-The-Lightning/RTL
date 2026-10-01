@@ -10,12 +10,12 @@ const common: CommonService = Common;
 // BOLT 11 payment requests are bech32, so letters and digits are all one can hold.
 const parsePayRequest = (payRequest) => common.parsePathParam(payRequest, /^[a-zA-Z0-9]+$/);
 
-export const decodePaymentFromPaymentRequest = (selNode: SelectedNode, payment) => {
+export const decodePaymentFromPaymentRequest = (selNode: SelectedNode, payment, requestOptions) => {
   // Same empty result a failed decode gives, without asking the node.
   const payRequest = parsePayRequest(payment);
   if (payRequest === null) { return Promise.resolve(); }
-  options.url = selNode.settings.lnServerUrl + '/v1/payreq/' + payRequest;
-  return request(options).then((res) => {
+  requestOptions.url = selNode.settings.lnServerUrl + '/v1/payreq/' + payRequest;
+  return request(requestOptions).then((res) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Description Received', data: res.description });
     return res;
   }).catch((err) => { });
@@ -45,15 +45,15 @@ export const decodePayments = (req, res, next) => {
   if (payments) {
     if (typeof payments !== 'string') { return common.invalidQueryParam(res, 'payments', 'a comma-separated list of payment requests'); }
     const paymentsArr = payments.split(',');
-    return Promise.all(paymentsArr?.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
-      then((values) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
-        res.status(200).json(values);
-      }).
-      catch((errRes) => {
-        const err = common.handleError(errRes, 'PayRequest', 'Decode Payments Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ message: err.message, error: err.error });
-      });
+    // One LND call per entry, at most 20 at a time. The queued calls run after other requests
+    // may have replaced the module-level options, so each gets a copy of this request's own.
+    const selNode = req.session.selectedNode;
+    const { qs: _qs, ...requestOptions } = options;
+    const decodeTasks = paymentsArr.map((payment) => () => decodePaymentFromPaymentRequest(selNode, payment, { ...requestOptions }));
+    return common.runWithConcurrencyLimit(decodeTasks, 20, (values) => {
+      logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
+      res.status(200).json(values);
+    });
   } else {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Empty Payment List Decoded' });
     return res.status(200).json([]);
