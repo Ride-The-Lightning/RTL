@@ -251,6 +251,14 @@ describe('RTL Root Effects', () => {
     });
   });
 
+  it('should initialize a node that arrives without a settings object', () => {
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    const node: any = { index: 1, lnNode: 'Node 1', lnImplementation: 'LND' };
+    expect(() => effects.initializeNode(node, true)).not.toThrow();
+    const reset = storeDispatchSpy.calls.all().find((call) => (call.args[0] as any).type === resetRootStore.type)?.args[0] as any;
+    expect(Array.isArray(reset.payload.settings.currencyUnits)).toBeTrue();
+  });
+
   it('should fetch application settings again after a failed fetch', (done) => {
     spyOn(effects, 'handleErrorWithAlert').and.stub();
     actions = new ReplaySubject(1);
