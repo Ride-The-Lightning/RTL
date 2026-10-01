@@ -24,11 +24,11 @@ const startFakeServer = async (reply = () => ({})) => {
   return { url, seen, close: () => new Promise((resolve) => server.close(resolve)) };
 };
 
-const buildRequest = (url, { query = {}, params = {}, body = {} } = {}) => ({
+const buildRequest = (url, { query = {}, params = {}, body = {}, macaroon = 'mac' } = {}) => ({
   session: {
     selectedNode: {
       index: 1, lnNode: 'test-node', lnImplementation: 'LND', lnVersion: '0.18.0',
-      authentication: { options: { url: '', rejectUnauthorized: false, json: true, headers: { 'Grpc-Metadata-macaroon': 'mac' } } },
+      authentication: { options: { url: '', rejectUnauthorized: false, json: true, headers: { 'Grpc-Metadata-macaroon': macaroon } } },
       settings: { lnServerUrl: url, logLevel: 'ERROR' }
     }
   },
@@ -168,5 +168,59 @@ test('decodePayments: a payments value that is not a string is refused with 400'
     const res = await run(decodePayments, buildRequest(lnd.url, { body: { payments: [PAY_REQ] } }));
     assert.equal(res.statusCode, 400, JSON.stringify(res.body));
     assert.equal(lnd.seen.length, 0);
+  } finally { await lnd.close(); }
+});
+
+// A fake LND that answers after a short delay, so calls overlap and can be counted.
+const startSlowServer = async () => {
+  const seen = [];
+  const load = { inFlight: 0, max: 0 };
+  const server = createServer((req, res) => {
+    seen.push({ path: req.url, macaroon: req.headers['grpc-metadata-macaroon'] });
+    load.inFlight++;
+    load.max = Math.max(load.max, load.inFlight);
+    setTimeout(() => {
+      load.inFlight--;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ description: req.url.split('/').pop() }));
+    }, 20);
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const url = `http://127.0.0.1:${server.address().port}`;
+  return { url, seen, load, close: () => new Promise((resolve) => server.close(resolve)) };
+};
+
+const runToEnd = (handler, req) => new Promise((resolve) => {
+  const out = { statusCode: null, body: null };
+  out.status = (code) => { out.statusCode = code; return out; };
+  out.json = (payload) => { out.body = payload; resolve(out); return out; };
+  handler(req, out, null);
+});
+
+const LIST = Array.from({ length: 60 }, (_, i) => `${PAY_REQ}${i}`);
+
+test('decodePayments: a long list is decoded at most 20 at a time and keeps its order', async () => {
+  const lnd = await startSlowServer();
+  try {
+    const res = await runToEnd(decodePayments, buildRequest(lnd.url, { body: { payments: LIST.join(',') } }));
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.deepEqual(res.body.map((v) => v.description), LIST);
+    assert.equal(lnd.seen.length, LIST.length);
+    assert.ok(lnd.load.max <= 20, `${lnd.load.max} calls in flight`);
+    assert.ok(lnd.load.max > 1, 'calls no longer overlap');
+  } finally { await lnd.close(); }
+});
+
+test('decodePayments: a list still being decoded keeps its own credentials when another session makes a request', async () => {
+  const lnd = await startSlowServer();
+  try {
+    const list = runToEnd(decodePayments, buildRequest(lnd.url, { body: { payments: LIST.join(',') }, macaroon: 'first' }));
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    await runToEnd(decodePayment, buildRequest(lnd.url, { params: { payRequest: 'other' }, macaroon: 'second' }));
+    const res = await list;
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    const byMacaroon = (m) => lnd.seen.filter((r) => r.macaroon === m).map((r) => r.path);
+    assert.deepEqual(byMacaroon('second'), ['/v1/payreq/other']);
+    assert.equal(byMacaroon('first').length, LIST.length);
   } finally { await lnd.close(); }
 });
