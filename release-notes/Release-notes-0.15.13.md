@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Removals
 
 - **The Boltz integration is removed**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1726](https://github.com/Ride-The-Lightning/RTL/pull/1726), closes
   [#1724](https://github.com/Ride-The-Lightning/RTL/issues/1724)).
   Boltz suspended its swap service on 3 August 2026 and it has not returned; the `boltz-client`
   daemon RTL talked to has no service behind it, so no swap could be created and none of the
