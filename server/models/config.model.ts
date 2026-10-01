@@ -15,7 +15,6 @@ export class Settings {
     public blockExplorerUrl: string,
     public lnServerUrl?: string,
     public swapServerUrl?: string,
-    public boltzServerUrl?: string,
     public bitcoindConfigPath?: string,
     public channelBackupPath?: string,
     public logLevel?: string,
@@ -42,8 +41,7 @@ export class Authentication {
     public runePath?: string,
     public runeValue?: string,
     public lnApiPassword?: string,
-    public swapMacaroonPath?: string,
-    public boltzMacaroonPath?: string
+    public swapMacaroonPath?: string
   ) { }
 
 }

@@ -85,13 +85,6 @@ import { LoopQuoteComponent } from '../shared/components/ln-services/loop/loop-q
 import { LoopStatusComponent } from '../shared/components/ln-services/loop/loop-status/loop-status.component';
 import { LoopOutInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-out-info-graphics/info-graphics.component';
 import { LoopInInfoGraphicsComponent } from '../shared/components/ln-services/loop/loop-in-info-graphics/info-graphics.component';
-import { BoltzRootComponent } from './components/ln-services/boltz/boltz-root.component';
-import { BoltzSwapsComponent } from './components/ln-services/boltz/swaps/swaps.component';
-import { SwapStatusComponent } from './components/ln-services/boltz/swap-status/swap-status.component';
-import { SwapServiceInfoComponent } from './components/ln-services/boltz/swap-service-info/swap-service-info.component';
-import { SwapModalComponent } from './components/ln-services/boltz/swap-modal/swap-modal.component';
-import { SwapInInfoGraphicsComponent } from './components/ln-services/boltz/swap-in-info-graphics/info-graphics.component';
-import { SwapOutInfoGraphicsComponent } from './components/ln-services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -256,14 +249,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoopQuoteComponent,
     LoopStatusComponent,
     LoopInInfoGraphicsComponent,
-    LoopOutInfoGraphicsComponent,
-    BoltzRootComponent,
-    BoltzSwapsComponent,
-    SwapStatusComponent,
-    SwapServiceInfoComponent,
-    SwapModalComponent,
-    SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent
+    LoopOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -310,14 +296,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoopQuoteComponent,
     LoopStatusComponent,
     LoopInInfoGraphicsComponent,
-    LoopOutInfoGraphicsComponent,
-    BoltzRootComponent,
-    BoltzSwapsComponent,
-    SwapStatusComponent,
-    SwapServiceInfoComponent,
-    SwapModalComponent,
-    SwapInInfoGraphicsComponent,
-    SwapOutInfoGraphicsComponent
+    LoopOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

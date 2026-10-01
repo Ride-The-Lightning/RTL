@@ -23,7 +23,6 @@ export class Settings {
     public logLevel?: string,
     public lnServerUrl?: string,
     public swapServerUrl?: string,
-    public boltzServerUrl?: string,
     public channelBackupPath?: string,
     public currencyUnit?: string,
     public enableOffers?: boolean,
@@ -37,7 +36,6 @@ export class Authentication {
 
   constructor(
     public swapMacaroonPath: string,
-    public boltzMacaroonPath: string,
     public configPath?: string
   ) { }
 

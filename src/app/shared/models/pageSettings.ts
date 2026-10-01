@@ -70,10 +70,6 @@ export class LNDPageDefinitions {
   loop: {
     loop: TableDefinition;
   };
-  boltz: {
-    swap_out: TableDefinition;
-    swap_in: TableDefinition;
-  };
 
 };
 

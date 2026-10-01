@@ -42,7 +42,6 @@ export const API_END_POINTS = {
   OFFERS_API: '/offers',
   UTILITY_API: '/utility',
   LOOP_API: '/loop',
-  BOLTZ_API: '/boltz',
   Web_SOCKET_API: '/ws'
 };
 
@@ -252,30 +251,6 @@ export enum LoopTypeEnum {
   LOOP_IN = 'LOOP_IN'
 }
 
-export enum SwapTypeEnum {
-  SWAP_OUT = 'SWAP_OUT',
-  SWAP_IN = 'SWAP_IN'
-}
-
-export enum SwapStateEnum {
-  'swap.created' = 'Swap Created',
-  'swap.expired' = 'Swap Expired',
-  'invoice.set' = 'Invoice Set',
-  'invoice.paid' = 'Invoice Paid',
-  'invoice.pending' = 'Invoice Pending',
-  'invoice.settled' = 'Invoice Settled',
-  'invoice.failedToPay' = 'Invoice Failed To Pay',
-  'channel.created' = 'Channel Created',
-  'transaction.failed' = 'Transaction Failed',
-  'transaction.mempool' = 'Transaction Mempool',
-  'transaction.claimed' = 'Transaction Claimed',
-  'transaction.refunded' = 'Transaction Refunded',
-  'transaction.confirmed' = 'Transaction Confirmed',
-  'transaction.lockupFailed' = 'Lockup Transaction Failed',
-  'swap.refunded' = 'Swap Refunded',
-  'swap.abandoned' = 'Swap Abandoned'
-}
-
 export const MONTHS = [
   { name: 'Jan', days: 31 },
   { name: 'Feb', days: 28 },
@@ -295,7 +270,6 @@ export const SCROLL_RANGES = ['MONTHLY', 'YEARLY'];
 
 export enum ServicesEnum {
   LOOP = 'LOOP',
-  BOLTZ = 'BOLTZ',
   OFFERS = 'OFFERS',
   PEERSWAP = 'PEERSWAP'
 }
@@ -348,7 +322,6 @@ export const UI_MESSAGES = {
   INITIALIZE_WALLET: 'Initializing Wallet...',
   UNLOCK_WALLET: 'Unlocking Wallet...',
   WAIT_SYNC_NODE: 'Waiting for Node Sync...',
-  UPDATE_BOLTZ_SETTINGS: 'Updating Boltz Service Settings...',
   UPDATE_LOOP_SETTINGS: 'Updating Loop Service Settings...',
   UPDATE_PEERSWAP_SETTINGS: 'Updating Peerswap Service Settings...',
   UPDATE_SETTING: 'Updating Setting...',
@@ -356,11 +329,9 @@ export const UI_MESSAGES = {
   UPDATE_NODE_SETTINGS: 'Updating Node Settings...',
   UPDATE_SELECTED_NODE: 'Updating Selected Node...',
   OPEN_CONFIG_FILE: 'Opening Config File...',
-  GET_BOLTZ_INFO: 'Getting Boltz Info...',
   GET_SERVICE_INFO: 'Getting Service Info...',
   GET_QUOTE: 'Getting Quotes...',
   UPDATE_DEFAULT_NODE_SETTING: 'Updating Defaule Node Settings...',
-  GET_BOLTZ_SWAPS: 'Getting Boltz Swaps...',
   SIGN_MESSAGE: 'Signing Message...',
   VERIFY_MESSAGE: 'Verifying Message...',
   BUMP_FEE: 'Bumping Fee...',
@@ -988,14 +959,6 @@ export const LND_DEFAULT_PAGE_SETTINGS: PageSettings[] = [
     { tableId: 'loop', recordsPerPage: PAGE_SIZE, sortBy: 'initiation_time', sortOrder: SortOrderEnum.DESCENDING,
       columnSelectionSM: ['state', 'amt'],
       columnSelection: ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain'] }
-  ] },
-  { pageId: 'boltz', tables: [
-    { tableId: 'swap_out', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['status', 'id', 'onchainAmount'],
-      columnSelection: ['status', 'id', 'claimAddress', 'onchainAmount', 'timeoutBlockHeight'] },
-    { tableId: 'swap_in', recordsPerPage: PAGE_SIZE, sortBy: 'status', sortOrder: SortOrderEnum.DESCENDING,
-      columnSelectionSM: ['status', 'id', 'expectedAmount'],
-      columnSelection: ['status', 'id', 'lockupAddress', 'expectedAmount', 'timeoutBlockHeight'] }
   ] }
 ];
 
@@ -1125,20 +1088,6 @@ export const LND_PAGE_DEFS: LNDPageDefinitions = {
       maxColumns: 8,
       allowedColumns: [{ column:'state' }, { column:'initiation_time' }, { column:'last_update_time' }, { column:'amt', label: 'Amount' }, { column:'cost_server' },
       { column:'cost_offchain' }, { column:'cost_onchain' }, { column:'htlc_address' }, { column:'id' }, { column:'id_bytes', label: 'ID (Bytes)' }]
-    }
-  },
-  boltz: {
-    swap_out: {
-      maxColumns: 7,
-      allowedColumns: [{ column:'status' }, { column:'id', label: 'Swap ID' }, { column:'claimAddress', label: 'Claim Address' },
-      { column:'onchainAmount', label: 'Onchain Amount' }, { column:'error' }, { column:'privateKey', label: 'Private Key' }, { column:'preimage' }, { column:'redeemScript', label: 'Redeem Script' }, { column:'invoice' },
-      { column:'timeoutBlockHeight', label: 'Timeout Block Height' }, { column:'lockupTransactionId', label: 'Lockup Tx ID' }, { column:'claimTransactionId', label: 'Claim Tx ID' }]
-    },
-    swap_in: {
-      maxColumns: 7,
-      allowedColumns: [{ column:'status' }, { column:'id', label: 'Swap ID' }, { column:'lockupAddress', label: 'Lockup Address' }, { column:'expectedAmount', label: 'Expected Amount' }, { column:'error' },
-      { column:'privateKey', label: 'Private Key' }, { column:'preimage' }, { column:'redeemScript', label: 'Redeem Script' }, { column:'invoice' }, { column:'timeoutBlockHeight', label: 'Timeout Block Height' },
-      { column:'lockupTransactionId', label: 'Lockup Tx ID' }, { column:'refundTransactionId', label: 'Refund Tx ID' }]
     }
   }
 };

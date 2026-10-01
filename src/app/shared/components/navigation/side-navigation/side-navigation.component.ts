@@ -160,9 +160,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     const clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
       if (navMenuData.children && navMenuData.children.length) {
-        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/loop' && navMenuChild.link !== '/services/boltz') ||
-          (navMenuChild.link === '/services/loop' && this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '') ||
-          (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== ''));
+        navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona) && navMenuChild.link !== '/services/loop') ||
+          (navMenuChild.link === '/services/loop' && this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== ''));
         return navMenuData.children.length > 0;
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.selNode.settings.userPersona;
@@ -175,8 +174,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       if (navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona)) &&
           (!navMenuChild.link.includes('/services') ||
-            (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap) ||
-            (navMenuChild.link === '/services/boltz' && this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '')
+            (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap)
           ));
         return navMenuData.children.length > 0;
       }

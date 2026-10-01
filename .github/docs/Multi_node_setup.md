@@ -25,13 +25,11 @@ This step is only required to configure the nodes, which will be remotely connec
 7. `nodes` section is a json array, with each element of the array representing the specific parameters for the LND node to connect with. `index` must be a number and start with 1. This number must be unique for each node in the array. For each element, two items need to be configured for each node on the network (`macaroonPath` and `lnServerUrl`).
 8. `macaroonPath` should be set to the local path of the folder containing `admin.macaroon` file for each node. Each node must have a different folder for the `admin.macaroon` on the RTL server.
 9. `swapMacaroonPath` should be set to the local path of the folder containing `loop.macaroon` file for loop.
-10. `boltzMacaroonPath` should be set to the local path of the folder containing `admin.macaroon` file for boltz swaps.
-11. `lnServerUrl` must be set to the service url for LND/Core Lightining REST APIs for each node, with the unique ip address of the node hosting LND/Core Lightning e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001. In this case the ip address of the node hosting LND/Core Lightning is '192.168.0.1'
-12. `swapServerUrl` must be set to the swap service url. e.g. https://127.0.0.1:8081.
-13. `boltzServerUrl` must be set to the boltz service url. e.g. https://127.0.0.1:9003.
-14. `configPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
-15. `lnApiPassword` is mandatory if the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
-16. `runePath` is mandatory for CLN implementation. It should be set to the local path of the folder including filename containing rune value. This rune value in the file should be saved in  `LIGHTNING_RUNE="your-rune"` format.
+10. `lnServerUrl` must be set to the service url for LND/Core Lightining REST APIs for each node, with the unique ip address of the node hosting LND/Core Lightning e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001. In this case the ip address of the node hosting LND/Core Lightning is '192.168.0.1'
+11. `swapServerUrl` must be set to the swap service url. e.g. https://127.0.0.1:8081.
+12. `configPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
+13. `lnApiPassword` is mandatory if the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
+14. `runePath` is mandatory for CLN implementation. It should be set to the local path of the folder including filename containing rune value. This rune value in the file should be saved in  `LIGHTNING_RUNE="your-rune"` format.
 
 #### 3. Restart RTL
 

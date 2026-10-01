@@ -25,7 +25,7 @@ const NODE_SETTINGS_ALLOWLIST = [
   'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
   'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap'
 ];
-// The Loop and Boltz server URLs and macaroon directories are configured in
+// The Loop server URL and macaroon directory are configured in
 // RTL-Config.json or the environment only, like the LN server URL and credential paths:
 // the macaroon is read from disk and sent to that URL as an auth header, so no session may
 // choose either half. Neither endpoint accepts them.
@@ -53,7 +53,7 @@ const indexKey = (node) => {
   if (typeof val === 'string' && val.trim() !== '') { return +val; }
   return undefined;
 };
-// Reject malformed URLs and non-HTTP schemes. User-chosen block explorers and Loop/Boltz
+// Reject malformed URLs and non-HTTP schemes. User-chosen block explorers and Loop
 // servers are intended RTL features (self-hosted instances), so this is format validation
 // only — it does not prevent a caller from pointing at an internal host.
 const isValidHttpUrl = (value) => {
@@ -214,7 +214,6 @@ export const getApplicationSettings = (req, res, next) => {
       delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
       delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
       delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
-      delete appConfData.nodes[selNodeIdx].settings.boltzServerUrl;
       delete appConfData.nodes[selNodeIdx].settings.enableOffers;
       delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
       delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
@@ -303,7 +302,7 @@ export const updateNodeSettings = (req, res, next) => {
     const node = config.nodes.find((node) => (node.index === req.session.selectedNode.index));
     if (node && node.settings) {
       // Allowlist incoming settings to the same set updateApplicationSettings uses. Server
-      // URLs and path anchors — lnServerUrl, swapServerUrl, boltzServerUrl,
+      // URLs and path anchors — lnServerUrl, swapServerUrl,
       // bitcoindConfigPath, channelBackupPath, logFile — stay out of the allowlist, and
       // req.body.authentication is ignored entirely: every credential path is configured
       // in RTL-Config.json or the environment, never through a session.

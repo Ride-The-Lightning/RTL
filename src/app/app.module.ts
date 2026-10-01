@@ -19,7 +19,6 @@ import { LoopService } from './shared/services/loop.service';
 import { DataService } from './shared/services/data.service';
 import { WebSocketClientService } from './shared/services/web-socket.service';
 import { CommonService } from './shared/services/common.service';
-import { BoltzService } from './shared/services/boltz.service';
 
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
@@ -61,8 +60,7 @@ if (isDevMode()) { isDevEnvironemt = true; }
     DataService,
     WebSocketClientService,
     LoopService,
-    CommonService,
-    BoltzService
+    CommonService
   ],
   bootstrap: [AppComponent]
 })
