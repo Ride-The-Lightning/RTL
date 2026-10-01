@@ -63,6 +63,11 @@ export const MENU_DATA: MenuRootNode = {
         { id: 39, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cln/rates', userPersona: UserPersonaEnum.MERCHANT, children: [] }
       ]
     },
+    {
+      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [
+        // { id: 41, parentId: 4, name: 'Peerswap', iconType: 'FA', icon: faHandshake, link: '/services/peerswap', userPersona: UserPersonaEnum.ALL, children: [] },
+      ]
+    },
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL, children: [] },
     { id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL, children: [] }
   ],
