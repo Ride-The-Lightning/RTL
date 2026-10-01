@@ -130,7 +130,7 @@ this release should add its entry under the appropriate section below.
   parameters are forwarded. Tests only; no code change.
 
 - **Dependency update batch**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1727](https://github.com/Ride-The-Lightning/RTL/pull/1727)).
   Resolves the open Dependabot alerts in one pass, per the process in `CONTRIBUTING.md`. The
   Angular framework packages move from 20.3.27 to 20.3.33 (#1706, #1707, #1708, and the
   router advisory fixed in 20.3.32), and the CLI line (`@angular/cli`, `@angular/build`,
