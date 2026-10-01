@@ -171,7 +171,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   loadCLNMenu() {
     const clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLNChildren));
     this.navMenus.data = clonedMenu?.filter((navMenuData: any) => {
-      if (navMenuData.children && navMenuData.children.length) {
+      // The Services group is only a container: it is shown when at least one of its services
+      // is, and left out while it has none (it would otherwise render as a link to nowhere).
+      if ((navMenuData.children && navMenuData.children.length) || navMenuData.link.includes('/services')) {
         navMenuData.children = navMenuData.children?.filter((navMenuChild) => ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.selNode.settings.userPersona)) &&
           (!navMenuChild.link.includes('/services') ||
             (navMenuChild.link === '/services/peerswap' && this.selNode.settings.enablePeerswap)
