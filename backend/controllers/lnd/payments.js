@@ -4,8 +4,15 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+// BOLT 11 payment requests are bech32, so letters and digits are all one can hold.
+const parsePayRequest = (payRequest) => common.parsePathParam(payRequest, /^[a-zA-Z0-9]+$/);
 export const decodePaymentFromPaymentRequest = (selNode, payment) => {
-    options.url = selNode.settings.lnServerUrl + '/v1/payreq/' + payment;
+    // Same empty result a failed decode gives, without asking the node.
+    const payRequest = parsePayRequest(payment);
+    if (payRequest === null) {
+        return Promise.resolve();
+    }
+    options.url = selNode.settings.lnServerUrl + '/v1/payreq/' + payRequest;
     return request(options).then((res) => {
         logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'PayReq', msg: 'Description Received', data: res.description });
         return res;
@@ -17,7 +24,11 @@ export const decodePayment = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/payreq/' + req.params.payRequest;
+    const payRequest = parsePayRequest(req.params.payRequest);
+    if (payRequest === null) {
+        return common.invalidQueryParam(res, 'payRequest', 'a BOLT 11 payment request');
+    }
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/payreq/' + payRequest;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment Decoded', data: body });
         res.status(200).json(body);
@@ -34,6 +45,9 @@ export const decodePayments = (req, res, next) => {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
     if (payments) {
+        if (typeof payments !== 'string') {
+            return common.invalidQueryParam(res, 'payments', 'a comma-separated list of payment requests');
+        }
         const paymentsArr = payments.split(',');
         return Promise.all(paymentsArr?.map((payment) => decodePaymentFromPaymentRequest(req.session.selectedNode, payment))).
             then((values) => {
@@ -125,7 +139,12 @@ export const paymentLookup = (req, res, next) => {
     if (options.error) {
         return res.status(options.statusCode).json({ message: options.message, error: options.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/router/track/' + req.params.paymentHash;
+    // The lookup view sends the hash base64-encoded with '-' and '_', padding kept; '+' is harmless in a path too.
+    const paymentHash = common.parsePathParam(req.params.paymentHash, /^[A-Za-z0-9_+-]+={0,2}$/);
+    if (paymentHash === null) {
+        return common.invalidQueryParam(res, 'paymentHash', 'a base64 payment hash');
+    }
+    options.url = req.session.selectedNode.settings.lnServerUrl + '/v2/router/track/' + paymentHash;
     // Deliberately keep the wrapper's default timeout here: this holds a
     // browser-facing response open while tracking, and payments in flight
     // longer than that are delivered via the websocket subscription instead.
