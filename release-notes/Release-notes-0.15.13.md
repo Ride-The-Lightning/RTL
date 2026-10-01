@@ -14,7 +14,8 @@ this release should add its entry under the appropriate section below.
   multi-node RTL another request may have replaced by the time a call ran. They now run at most
   20 calls at a time through `runWithConcurrencyLimit`, as the peer and channel lists already
   do, and each call gets a copy of the request's own options. The Eclair endpoint also answers
-  400 when `payments` is not a string. `test/backend/cln-list-payments.test.mjs` and
+  400 when `payments` is not a string, and only asks the node about entries that are payment
+  hashes. `test/backend/cln-list-payments.test.mjs` and
   `test/backend/eclair-sent-payments.test.mjs` cover both.
 
 - **LND lookups forwarded a malformed path value to the node as it was**

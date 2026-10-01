@@ -12,7 +12,7 @@ import { listPayments } from '../../backend/controllers/cln/payments.js';
 const COUNT = 60;
 
 // A fake Core Lightning that answers after a short delay, so calls overlap and can be counted.
-const startFakeCln = async () => {
+const startFakeCln = async (count = COUNT) => {
   const seen = [];
   const load = { inFlight: 0, max: 0 };
   const server = createServer((req, res) => {
@@ -23,8 +23,8 @@ const startFakeCln = async () => {
       seen.push({ path: req.url, body, rune: req.headers.rune });
       res.setHeader('Content-Type', 'application/json');
       if (req.url === '/v1/listsendpays') {
-        const payments = Array.from({ length: COUNT }, (_, i) => ({ payment_hash: i.toString(16).padStart(64, '0'), status: 'complete', amount_msat: 1000, amount_sent_msat: 1001, created_at: 1700000000 + i, bolt11: 'lnbcrt1invoice' + i }));
-        payments.push({ payment_hash: 'f'.repeat(64), status: 'complete', amount_msat: 1000, amount_sent_msat: 1001, created_at: 1700009999 });
+        const payments = Array.from({ length: count }, (_, i) => ({ payment_hash: i.toString(16).padStart(64, '0'), status: 'complete', amount_msat: 1000, amount_sent_msat: 1001, created_at: 1700000000 + i, bolt11: 'lnbcrt1invoice' + i }));
+        if (count > 0) { payments.push({ payment_hash: 'f'.repeat(64), status: 'complete', amount_msat: 1000, amount_sent_msat: 1001, created_at: 1700009999 }); }
         return setTimeout(() => res.end(JSON.stringify({ payments })), 40);
       }
       load.inFlight++;
@@ -110,5 +110,15 @@ test('listPayments: an error while sending the list still answers the request', 
     assert.equal(out.sends, 2, 'no error response was sent');
     assert.equal(out.statusCode, 500);
     assert.equal(out.body.message, 'List Payments Error');
+  } finally { await cln.close(); }
+});
+
+test('listPayments: a node with no payments answers an empty list', async () => {
+  const cln = await startFakeCln(0);
+  try {
+    const res = await Promise.race([run(buildRequest(cln.url)), new Promise((resolve) => setTimeout(() => resolve({ statusCode: 'no response' }), 2000))]);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.deepEqual(res.body, []);
+    assert.deepEqual(cln.seen.map((r) => r.path), ['/v1/listsendpays']);
   } finally { await cln.close(); }
 });
