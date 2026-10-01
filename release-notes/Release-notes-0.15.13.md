@@ -76,6 +76,15 @@ this release should add its entry under the appropriate section below.
   succeeds first time, that a login without a token is still refused, and that the redirect
   and static assets are intact.
 
+## Code Health
+
+- **More test coverage for the LND close-channel query parameters**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1713).
+  `test/backend/query-params.test.mjs` checked a malformed `force` for `closeChannel` but not
+  the other two parameters. It now also asserts that a malformed or repeated `target_conf`,
+  `sat_per_vbyte` or `force` answers 400 with nothing sent to LND, and that only those three
+  parameters are forwarded. Tests only; no code change.
+
 ## Developer Tooling
 
 - **Docker fixture: Core Lightning bumped to v26.06.8**
