@@ -22,7 +22,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **LND wallet initialisation failed for some seed passphrases**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1728](https://github.com/Ride-The-Lightning/RTL/pull/1728)).
   The Initialize Wallet screen sent the optional seed passphrase, base64-encoded, as a segment
   of the request path, and `genSeed` in `server/controllers/lnd/wallet.ts` put it into the LND
   URL as it was. A passphrase whose base64 form holds `+` or `/` therefore did not reach LND
