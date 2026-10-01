@@ -21,6 +21,17 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **LND wallet initialisation failed for some seed passphrases**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The Initialize Wallet screen sent the optional seed passphrase, base64-encoded, as a segment
+  of the request path, and `genSeed` in `server/controllers/lnd/wallet.ts` put it into the LND
+  URL as it was. A passphrase whose base64 form holds `+` or `/` therefore did not reach LND
+  intact: seed generation answered "illegal base64 data", or the wallet could not be
+  initialised afterwards ("invalid passphrase"). The passphrase now travels in the request
+  body, as it already did for `initwallet`, and goes to LND as an encoded query value; the
+  seed request is a `POST /api/lnd/wallet/genseed`. The seed and wallet-init log lines now
+  carry the event only. `test/backend/lnd-wallet.test.mjs` covers it.
+
 - **Core Lightning and Eclair payment lists started one node call per entry all at once**
   ([#1725](https://github.com/Ride-The-Lightning/RTL/pull/1725); follow-up to #1722).
   `listPayments` in `server/controllers/cln/payments.ts` decodes the bolt11 of every payment to

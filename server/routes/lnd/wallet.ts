@@ -5,8 +5,7 @@ import { genSeed, updateSelNodeOptions, getUTXOs, operateWallet, bumpFee, labelT
 
 const router = Router();
 
-router.get('/genseed', isAuthenticated, genSeed);
-router.get('/genseed/:passphrase', isAuthenticated, genSeed);
+router.post('/genseed', isAuthenticated, genSeed);
 router.get('/updateSelNodeOptions', isAuthenticated, updateSelNodeOptions);
 router.get('/getUTXOs', isAuthenticated, getUTXOs);
 router.post('/wallet/:operation', isAuthenticated, operateWallet);
