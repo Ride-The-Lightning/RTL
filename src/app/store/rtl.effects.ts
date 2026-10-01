@@ -220,7 +220,10 @@ export class RTLEffects implements OnDestroy {
             let searchNode: Node | null = null;
             const selectedNodeIndex = +rtlConfig.selectedNodeIndex;
             rtlConfig.nodes?.forEach((node) => {
-              if (node.settings) { node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings.currencyUnit ? node.settings.currencyUnit : '')]; }
+              // Later code (initializeNode, updateApplicationSettings) writes to node.settings, so give
+              // a node that arrives without one an empty object rather than passing it on bare.
+              node.settings = node.settings || ({} as any);
+              node.settings.currencyUnits = [...CURRENCY_UNITS, (node.settings.currencyUnit ? node.settings.currencyUnit : '')];
               // A config file may carry the index as a string; compare as numbers, and keep 0 valid.
               if (node.index !== undefined && node.index !== null && +node.index === selectedNodeIndex) {
                 searchNode = node;
