@@ -268,7 +268,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   2. Currency Unit - You can choose your preferred fiat currency, to view the onchain and channel balances in the choosen fiat currency.\n' +
         '   3. Other customizations include day and night mode and a choice of color themes to select from.\n' +
         'Services Options\n' +
-        '   Loop (LND only), Boltz (LND only) & Peerswap (CLN only) services can be configured.\n' +
+        '   Loop (LND only) & Peerswap (CLN only) services can be configured.\n' +
         'Experimental Options (CLN only)\n' +
         '   Offers and Liquidity Ads can be enabled/disabled.\n' +
         'Show LN Config (if configured)\n' +

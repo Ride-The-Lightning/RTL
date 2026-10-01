@@ -179,22 +179,6 @@ export class mockLoopService {
 
 }
 
-export class mockBoltzService {
-
-  public swapsChanged = new BehaviorSubject<any[]>([]);
-  public boltzInfoChanged = new BehaviorSubject<any>({});
-  getBoltzInfo() { };
-  getSwapsList() { };
-  listSwaps() { };
-  swapInfo(id: string) { };
-  serviceInfo() { };
-  swapOut(amount: number, address: string) { };
-  swapIn(amount: number) { };
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) { };
-  handleErrorWithAlert(errURL: string, err: any) { };
-
-}
-
 export class mockRTLEffects {
 
   closeAllDialogs = of(() => ({}));

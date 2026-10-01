@@ -181,16 +181,18 @@ export class CommonService {
         // the credential itself for those two implementations, as runeValue is for CLN —
         // so it is pinned the same way (the persisted file is stripped of it at save time).
         node.authentication.options = runtimeNode.authentication?.options;
-        // swap/boltz macaroon paths are read from disk and sent as auth headers to their
-        // server URLs (setSwapServerOptions/getBoltzServerOptions), so they are pinned
-        // like every other credential anchor here; no endpoint edits them, they are
-        // configured in RTL-Config.json or the environment only.
+        // The swap macaroon path is read from disk and sent as an auth header to its
+        // server URL (setSwapServerOptions), so it is pinned like every other credential
+        // anchor here; no endpoint edits it, it is configured in RTL-Config.json or the
+        // environment only.
         node.authentication.swapMacaroonPath = runtimeNode.authentication?.swapMacaroonPath;
-        node.authentication.boltzMacaroonPath = runtimeNode.authentication?.boltzMacaroonPath;
         node.settings = (node.settings || {}) as Settings;
         node.settings.lnServerUrl = runtimeNode.settings?.lnServerUrl;
         node.settings.swapServerUrl = runtimeNode.settings?.swapServerUrl;
-        node.settings.boltzServerUrl = runtimeNode.settings?.boltzServerUrl;
+        // Boltz support was removed in 0.15.13 (#1724): its two anchors are no longer held by
+        // the server, so whatever a client sends for them is dropped rather than stored.
+        delete (node.authentication as any).boltzMacaroonPath;
+        delete (node.settings as any).boltzServerUrl;
         node.settings.bitcoindConfigPath = runtimeNode.settings?.bitcoindConfigPath;
         node.settings.channelBackupPath = runtimeNode.settings?.channelBackupPath;
       } else {
@@ -206,12 +208,12 @@ export class CommonService {
           delete node.authentication.runeValue;
           delete node.authentication.options;
           delete node.authentication.swapMacaroonPath;
-          delete node.authentication.boltzMacaroonPath;
+          delete (node.authentication as any).boltzMacaroonPath;
         }
         if (node.settings) {
           delete node.settings.lnServerUrl;
           delete node.settings.swapServerUrl;
-          delete node.settings.boltzServerUrl;
+          delete (node.settings as any).boltzServerUrl;
           delete node.settings.bitcoindConfigPath;
           delete node.settings.channelBackupPath;
         }
@@ -237,24 +239,6 @@ export class CommonService {
     }
     this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Swap Options Set' });
     return swapOptions;
-  };
-
-  public getBoltzServerOptions = (req) => {
-    const boltzOptions = {
-      url: req.session.selectedNode.settings.boltzServerUrl,
-      rejectUnauthorized: false,
-      json: true,
-      headers: { 'Grpc-Metadata-macaroon': '' }
-    };
-    if (req.session.selectedNode.authentication.boltzMacaroonPath) {
-      try {
-        boltzOptions.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(join(req.session.selectedNode.authentication.boltzMacaroonPath, 'admin.macaroon')).toString('hex') };
-      } catch (err) {
-        this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Boltz macaroon Error', error: err });
-      }
-    }
-    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Boltz Options Set' });
-    return boltzOptions;
   };
 
   public getOptions = (req) => {

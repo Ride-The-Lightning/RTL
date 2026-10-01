@@ -3,6 +3,22 @@
 This document collects the changes that go into the 0.15.13 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Removals
+
+- **The Boltz integration is removed**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  [#1724](https://github.com/Ride-The-Lightning/RTL/issues/1724)).
+  Boltz suspended its swap service on 3 August 2026 and it has not returned; the `boltz-client`
+  daemon RTL talked to has no service behind it, so no swap could be created and none of the
+  integration could be tested. The Services > Boltz pages, the `/api/boltz/*` endpoints
+  (`server/controllers/shared/boltz.ts`) and the `boltzServerUrl` / `boltzMacaroonPath` settings
+  are gone, along with their documentation. **Operator note:** a config file or environment
+  that still sets `boltzServerUrl`, `boltzMacaroonPath`, `BOLTZ_SERVER_URL` or
+  `BOLTZ_MACAROON_PATH` keeps working: RTL ignores those settings and prints one line at
+  start-up saying so. They can be deleted, and a bundled `boltz-client` container is no longer
+  used by RTL. `test/backend/boltz-removed.test.mjs` covers the start-up notice and the removed
+  routes.
+
 ## Bug Fixes
 
 - **Core Lightning and Eclair payment lists started one node call per entry all at once**

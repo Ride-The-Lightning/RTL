@@ -8,6 +8,11 @@ import parseHocon from 'hocon-parser';
 import { Common, CommonService } from './common.js';
 import { Logger, LoggerService } from './logger.js';
 
+const BOLTZ_REMOVED_NOTICE = 'Boltz support was removed in RTL v0.15.13. The boltzServerUrl and boltzMacaroonPath settings and the BOLTZ_SERVER_URL and BOLTZ_MACAROON_PATH environment variables are ignored and can be deleted';
+
+const hasBoltzSettings = (node, env = process.env): boolean => [env?.BOLTZ_SERVER_URL, env?.BOLTZ_MACAROON_PATH, node?.settings?.boltzServerUrl, node?.authentication?.boltzMacaroonPath].
+  some((value) => typeof value === 'string' && value.trim() !== '');
+
 export class ConfigService {
 
   private platform = os.platform();
@@ -16,6 +21,7 @@ export class ConfigService {
   private directoryName = dirname(fileURLToPath(import.meta.url));
   private common: CommonService = Common;
   private logger: LoggerService = Logger;
+  private boltzNoticeLogged = false;
 
   constructor() {
     this.setServerConfiguration();
@@ -261,16 +267,17 @@ export class ConfigService {
           this.common.nodes[idx].settings.swapServerUrl = '';
           this.common.nodes[idx].authentication.swapMacaroonPath = '';
         }
-        if (process?.env?.BOLTZ_SERVER_URL && process?.env?.BOLTZ_SERVER_URL.trim() !== '') {
-          this.common.nodes[idx].settings.boltzServerUrl = process?.env?.BOLTZ_SERVER_URL.endsWith('/v1') ? process?.env?.BOLTZ_SERVER_URL.slice(0, -3) : process?.env?.BOLTZ_SERVER_URL;
-          this.common.nodes[idx].authentication.boltzMacaroonPath = process?.env?.BOLTZ_MACAROON_PATH;
-        } else if (node.settings.boltzServerUrl && node.settings.boltzServerUrl.trim() !== '') {
-          this.common.nodes[idx].settings.boltzServerUrl = node.settings.boltzServerUrl.endsWith('/v1') ? node.settings.boltzServerUrl.slice(0, -3) : node.settings.boltzServerUrl;
-          this.common.nodes[idx].authentication.boltzMacaroonPath = node.authentication.boltzMacaroonPath ? node.authentication.boltzMacaroonPath : '';
-        } else {
-          this.common.nodes[idx].settings.boltzServerUrl = '';
-          this.common.nodes[idx].authentication.boltzMacaroonPath = '';
+        // The Boltz integration was removed in 0.15.13 (#1724). Its settings are ignored; say so
+        // once, on the console whatever the log level, when a node or the environment still
+        // carries them.
+        if (!this.boltzNoticeLogged && hasBoltzSettings(node)) {
+          this.boltzNoticeLogged = true;
+          this.logger.log({ selectedNode: null, level: 'INFO', fileName: 'RTL', msg: BOLTZ_REMOVED_NOTICE });
         }
+        // Keep them out of the loaded config too, so they are neither served by /api/conf nor
+        // written back on the next save. The file itself is left as the operator wrote it.
+        delete node.settings.boltzServerUrl;
+        if (node.authentication) { delete node.authentication.boltzMacaroonPath; }
         this.common.nodes[idx].settings.enableOffers = process?.env?.ENABLE_OFFERS ? process?.env?.ENABLE_OFFERS : (node.settings.enableOffers) ? node.settings.enableOffers : false;
         this.common.nodes[idx].settings.enablePeerswap = process?.env?.ENABLE_PEERSWAP ? process?.env?.ENABLE_PEERSWAP : (node.settings.enablePeerswap) ? node.settings.enablePeerswap : false;
         this.common.nodes[idx].settings.bitcoindConfigPath = process?.env?.BITCOIND_CONFIG_PATH ? process?.env?.BITCOIND_CONFIG_PATH : (node.settings.bitcoindConfigPath) ? node.settings.bitcoindConfigPath : '';

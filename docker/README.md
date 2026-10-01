@@ -306,8 +306,6 @@ one LND uses, eclair never sees new blocks and channels never confirm.
 
 ## Not included
 
-The Boltz swap service.
-
 BTCPay Server itself (postgres + nbxplorer + btcpayserver). The `sso` profile
 reproduces the entry path BTCPay uses to reach RTL without running BTCPay — see
 [BTCPay SSO harness](#btcpay-sso-harness) for what that covers and what it does not.

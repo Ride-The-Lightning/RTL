@@ -1,10 +1,9 @@
-import { DataTypeEnum, LoopTypeEnum, PaymentTypes, SwapTypeEnum } from '../services/consts-enums-functions';
+import { DataTypeEnum, LoopTypeEnum, PaymentTypes } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
 import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
-import { ServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;
@@ -185,13 +184,6 @@ export interface LoopAlert {
   component?: any;
 }
 
-export interface SwapAlert {
-  channel: Channel;
-  serviceInfo: ServiceInfo;
-  direction?: SwapTypeEnum;
-  component?: any;
-}
-
 export interface AlertData {
   type: string; // INFORMATION/WARNING/SUCCESS/ERROR
   alertTitle?: string;
@@ -245,6 +237,6 @@ export interface DialogConfig {
   minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | ChannelRebalanceAlert | ECLChannelRebalanceAlert | OpenChannelAlert | CLNOpenChannelAlert | InvoiceInformation |
   CLNPaymentInformation | CLNInvoiceInformation | CLNOfferInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLNChannelInformation |
-  BumpFeeInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig |
+  BumpFeeInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig |
   OnChainLabelUTXO | OnChainSendFunds | CLNOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

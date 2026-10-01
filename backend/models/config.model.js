@@ -7,11 +7,10 @@ export class SSO {
     }
 }
 export class Settings {
-    constructor(blockExplorerUrl, lnServerUrl, swapServerUrl, boltzServerUrl, bitcoindConfigPath, channelBackupPath, logLevel, logFile, userPersona, themeMode, themeColor, unannouncedChannels, fiatConversion, currencyUnit, enableOffers, enablePeerswap) {
+    constructor(blockExplorerUrl, lnServerUrl, swapServerUrl, bitcoindConfigPath, channelBackupPath, logLevel, logFile, userPersona, themeMode, themeColor, unannouncedChannels, fiatConversion, currencyUnit, enableOffers, enablePeerswap) {
         this.blockExplorerUrl = blockExplorerUrl;
         this.lnServerUrl = lnServerUrl;
         this.swapServerUrl = swapServerUrl;
-        this.boltzServerUrl = boltzServerUrl;
         this.bitcoindConfigPath = bitcoindConfigPath;
         this.channelBackupPath = channelBackupPath;
         this.logLevel = logLevel;
@@ -27,7 +26,7 @@ export class Settings {
     }
 }
 export class Authentication {
-    constructor(options, configPath, macaroonPath, macaroonValue, runePath, runeValue, lnApiPassword, swapMacaroonPath, boltzMacaroonPath) {
+    constructor(options, configPath, macaroonPath, macaroonValue, runePath, runeValue, lnApiPassword, swapMacaroonPath) {
         this.options = options;
         this.configPath = configPath;
         this.macaroonPath = macaroonPath;
@@ -36,7 +35,6 @@ export class Authentication {
         this.runeValue = runeValue;
         this.lnApiPassword = lnApiPassword;
         this.swapMacaroonPath = swapMacaroonPath;
-        this.boltzMacaroonPath = boltzMacaroonPath;
     }
 }
 export class ApplicationConfig {

@@ -86,7 +86,6 @@ Key facts when working with the fixture:
   has no wallet of its own — `eclair-wallet-init` creates a dedicated `eclair` bitcoind
   wallet before it starts, else it grabs the mining wallet. Its channels confirm at 8 blocks
   (`channel.min-depth-blocks`), not 6. Helper: `bin/e-cli <eclair-cli args>`.
-- **Not included:** the Boltz swap service.
 
 ## Testing an unreleased branch against the fixture
 
