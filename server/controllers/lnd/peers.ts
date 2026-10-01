@@ -90,8 +90,10 @@ export const deletePeer = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Disconnecting Peer..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers/' + req.params.peerPubKey;
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnect Pubkey', data: req.params.peerPubKey });
+  const peerPubKey = common.parseNodePubkey(req.params.peerPubKey);
+  if (peerPubKey === null) { return common.invalidQueryParam(res, 'peerPubKey', 'a 66-character hex node public key'); }
+  options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/peers/' + peerPubKey;
+  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconnect Pubkey', data: peerPubKey });
   request.delete(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peer Disconneted', data: body });
     res.status(204).json({});

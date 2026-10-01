@@ -5,6 +5,20 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **LND lookups forwarded a malformed path value to the node as it was**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1713).
+  The node, channel and route lookups in `server/controllers/lnd/graph.ts`, payment decode and
+  payment lookup in `server/controllers/lnd/payments.ts`, and peer disconnect in
+  `server/controllers/lnd/peers.ts` put their path parameter into the LND URL without checking
+  it, so a value that was not a public key, channel id, amount, payment request or payment hash
+  could change which LND request was made. Each handler now checks the value's form and answers
+  400 otherwise, through a small `parsePathParam` helper in `server/utils/common.ts`; the two
+  list endpoints (aliases for a list of public keys, decode for a list of payment requests) skip
+  the entries that do not fit. Surrounding whitespace, which LND ignored, is dropped rather than
+  refused, so a pasted payment request with a trailing newline still decodes. RTL's own screens
+  are unaffected, except that a mistyped lookup key now gets RTL's 400 instead of LND's error.
+  `test/backend/lnd-path-params.test.mjs` covers every handler.
+
 - **Core Lightning: stricter validation of BOLT 12 offer payments**
   ([#1720](https://github.com/Ride-The-Lightning/RTL/pull/1720)).
   The invoice fetched for an offer is now validated before it is paid, both in the backend
