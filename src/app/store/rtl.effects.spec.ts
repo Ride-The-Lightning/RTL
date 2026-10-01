@@ -240,6 +240,58 @@ describe('RTL Root Effects', () => {
     });
   });
 
+  it('should give the selected node a settings object when the config has none for it', (done) => {
+    const appConfig = twoNodeConfig([1, 2], 2);
+    delete (appConfig.nodes[1] as any).settings;
+    selectedNodeFor(appConfig, (node, response) => {
+      expect(node.lnNode).toEqual('Node 1');
+      expect(Array.isArray(node.settings.currencyUnits)).toBeTrue();
+      expect(response.type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+      done();
+    });
+  });
+
+  it('should fetch application settings again after a failed fetch', (done) => {
+    spyOn(effects, 'handleErrorWithAlert').and.stub();
+    actions = new ReplaySubject(1);
+    const emitted: any[] = [];
+    const sub = effects.appConfigFetch.subscribe((response) => {
+      emitted.push(response);
+      if (emitted.length === 2) {
+        expect(emitted[0].type).toEqual(RTLActions.VOID);
+        expect(emitted[1].type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+        done();
+        setTimeout(() => sub.unsubscribe());
+      }
+    });
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    httpTestingController.expectOne(API_END_POINTS.CONF_API).flush({ message: 'failed' }, { status: 500, statusText: 'Internal Server Error' });
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    httpTestingController.expectOne(API_END_POINTS.CONF_API).flush(twoNodeConfig([1, 2], 1));
+  });
+
+  it('should cancel a pending application settings fetch when a newer one starts, and close its spinner', (done) => {
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    actions = new ReplaySubject(1);
+    const emitted: any[] = [];
+    const sub = effects.appConfigFetch.subscribe((response) => {
+      emitted.push(response);
+      const closes = storeDispatchSpy.calls.all().filter((call) => (call.args[0] as any).type === RTLActions.CLOSE_SPINNER && (call.args[0] as any).payload === UI_MESSAGES.GET_RTL_CONFIG);
+      // One close for the cancelled request; the answered one closes its own when it completes.
+      expect(closes.length).toEqual(1);
+      expect(emitted.length).toEqual(1);
+      expect(response.type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+      done();
+      setTimeout(() => sub.unsubscribe());
+    });
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    const requests = httpTestingController.match(API_END_POINTS.CONF_API);
+    expect(requests.length).toEqual(2);
+    expect(requests[0].cancelled).toBeTrue();
+    requests[1].flush(twoNodeConfig([1, 2], 1));
+  });
+
   it('should open snack bar', (done) => {
     const snackBarOpenSpy = spyOn(snackBar, 'open').and.callThrough();
     actions = new ReplaySubject(1);
