@@ -55,8 +55,17 @@ export const decodePayments = (req, res, next) => {
         const { qs: _qs, ...requestOptions } = options;
         const decodeTasks = paymentsArr.map((payment) => () => decodePaymentFromPaymentRequest(selNode, payment, { ...requestOptions }));
         return common.runWithConcurrencyLimit(decodeTasks, 20, (values) => {
-            logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
-            res.status(200).json(values);
+            // Guard the response-send: the limiter invokes this outside any surrounding .catch.
+            try {
+                logger.log({ selectedNode: selNode, level: 'INFO', fileName: 'PayRequest', msg: 'Payment List Decoded', data: values });
+                res.status(200).json(values);
+            }
+            catch (e) {
+                const err = common.handleError(e, 'PayRequest', 'Decode Payments Error', selNode);
+                if (!res.headersSent) {
+                    res.status(err.statusCode).json({ message: err.message, error: err.error });
+                }
+            }
         });
     }
     else {

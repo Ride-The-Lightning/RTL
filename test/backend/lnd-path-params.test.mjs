@@ -224,3 +224,25 @@ test('decodePayments: a list still being decoded keeps its own credentials when 
     assert.equal(byMacaroon('first').length, LIST.length);
   } finally { await lnd.close(); }
 });
+
+test('decodePayments: an error while sending the decoded list still answers the request', async () => {
+  const lnd = await startFakeServer(() => ({ description: 'coffee' }));
+  try {
+    const out = { statusCode: null, body: null, headersSent: false, sends: 0 };
+    const done = new Promise((resolve) => {
+      out.status = (code) => { out.statusCode = code; return out; };
+      out.json = (payload) => {
+        out.sends++;
+        if (out.sends === 1) { throw new Error('send failed'); }
+        out.body = payload;
+        resolve(out);
+        return out;
+      };
+    });
+    decodePayments(buildRequest(lnd.url, { body: { payments: PAY_REQ } }), out, null);
+    await Promise.race([done, new Promise((resolve) => setTimeout(resolve, 500))]);
+    assert.equal(out.sends, 2, 'no error response was sent');
+    assert.equal(out.statusCode, 500);
+    assert.equal(out.body.message, 'Decode Payments Error');
+  } finally { await lnd.close(); }
+});
