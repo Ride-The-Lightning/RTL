@@ -14,7 +14,8 @@ this release should add its entry under the appropriate section below.
   could change which LND request was made. Each handler now checks the value's form and answers
   400 otherwise, through a small `parsePathParam` helper in `server/utils/common.ts`; the two
   list endpoints (aliases for a list of public keys, decode for a list of payment requests) skip
-  the entries that do not fit. Surrounding whitespace, which LND ignored, is dropped rather than
+  the entries that do not fit, and the decode list now asks LND for at most 20 entries at a time
+  (it started every call at once), as the other list handlers do. Surrounding whitespace, which LND ignored, is dropped rather than
   refused, so a pasted payment request with a trailing newline still decodes. RTL's own screens
   are unaffected, except that a mistyped lookup key now gets RTL's 400 instead of LND's error.
   `test/backend/lnd-path-params.test.mjs` covers every handler.
