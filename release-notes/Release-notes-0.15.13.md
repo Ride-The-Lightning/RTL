@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Core Lightning and Eclair payment lists started one node call per entry all at once**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1722).
+  ([#1725](https://github.com/Ride-The-Lightning/RTL/pull/1725); follow-up to #1722).
   `listPayments` in `server/controllers/cln/payments.ts` decodes the bolt11 of every payment to
   show its memo, and `getSentPaymentsInformation` in `server/controllers/eclair/payments.ts`
   asks for the sent info of every payment hash it is given. Both started all of those calls at
