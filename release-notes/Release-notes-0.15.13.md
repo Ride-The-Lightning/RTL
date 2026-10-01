@@ -12,7 +12,7 @@ this release should add its entry under the appropriate section below.
   `test/backend/cln-offer-payment.test.mjs` and a new send-payment component spec cover it.
 
 - **Boltz swap lookup forwarded a malformed swap id to the Boltz server as it was**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1715).
+  ([#1723](https://github.com/Ride-The-Lightning/RTL/pull/1723); follow-up to #1715).
   `getSwapInfo` in `server/controllers/shared/boltz.ts` put its `swapId` path parameter into the
   Boltz URL without checking it, so a value that was not a swap id could change which Boltz
   request was made. It now answers 400 unless the id is made of letters, digits, `-` or `_`,
