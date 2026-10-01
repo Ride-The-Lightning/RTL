@@ -202,7 +202,7 @@ export const circularRebalance = (req, res, next) => {
             return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((payToRouteCallRes) => {
                 // eslint-disable-next-line arrow-body-style
                 setTimeout(() => {
-                    return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash).then((sentInfoCallRes) => {
+                    return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash, { ...req.session.selectedNode.authentication.options }).then((sentInfoCallRes) => {
                         const payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
                         return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
                     }).catch((errRes) => {
