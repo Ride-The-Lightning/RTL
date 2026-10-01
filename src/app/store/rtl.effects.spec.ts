@@ -175,6 +175,7 @@ describe('RTL Root Effects', () => {
       SSO: { rtlSSO: 0, logoutRedirectLink: '/rtl/login' },
       secret2FA: '',
       allowPasswordUpdate: true,
+      disableAuth: false,
       selectedNodeIndex: 99
     };
     actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
@@ -189,6 +190,54 @@ describe('RTL Root Effects', () => {
     const req = httpTestingController.expectOne(API_END_POINTS.CONF_API);
     req.flush(appConfig);
     expect(req.request.method).toEqual('GET');
+  });
+
+  // Flushes the given config through appConfigFetch and returns the node it selected.
+  const selectedNodeFor = (appConfig: any, done: (node: any, response: any) => void) => {
+    const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    actions = new ReplaySubject(1);
+    actions.next({ type: RTLActions.FETCH_APPLICATION_SETTINGS });
+    const sub = effects.appConfigFetch.subscribe((response) => {
+      const setSelectedNodeAction = storeDispatchSpy.calls.all().find((call) => (call.args[0] as any).type === RTLActions.SET_SELECTED_NODE)?.args[0] as any;
+      done(setSelectedNodeAction?.payload.currentLnNode, response);
+      setTimeout(() => sub.unsubscribe());
+    });
+    httpTestingController.expectOne(API_END_POINTS.CONF_API).flush(appConfig);
+  };
+
+  const twoNodeConfig = (indexes: any[], selectedNodeIndex: any) => {
+    const base = mockRTLStoreState.root.appConfig;
+    return {
+      ...base, SSO: { rtlSSO: 0, logoutRedirectLink: '/rtl/login' }, secret2FA: '', allowPasswordUpdate: true, disableAuth: false, selectedNodeIndex,
+      nodes: indexes.map((index, i) => ({ ...JSON.parse(JSON.stringify(base.nodes[0])), index, lnNode: 'Node ' + i }))
+    };
+  };
+
+  it('should select the node whose index is 0 when it is the selected one', (done) => {
+    selectedNodeFor(twoNodeConfig([1, 0], 0), (node, response) => {
+      expect(node.lnNode).toEqual('Node 1');
+      expect(response.type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+      done();
+    });
+  });
+
+  it('should match the selected node when the config carries indexes as strings', (done) => {
+    selectedNodeFor(twoNodeConfig(['1', '2'], '2'), (node, response) => {
+      expect(node.lnNode).toEqual('Node 1');
+      expect(response.type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+      done();
+    });
+  });
+
+  it('should store application settings when a node has no settings object', (done) => {
+    const appConfig = twoNodeConfig([1, 2], 1);
+    delete (appConfig.nodes[1] as any).settings;
+    selectedNodeFor(appConfig, (node, response) => {
+      expect(node.lnNode).toEqual('Node 0');
+      expect(response.type).toEqual(RTLActions.SET_APPLICATION_SETTINGS);
+      expect((response as any).payload.nodes.length).toEqual(2);
+      done();
+    });
   });
 
   it('should open snack bar', (done) => {
