@@ -21,6 +21,18 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **The node dropdown stayed hidden on a multi-node setup after the first login**
+  ([#1600](https://github.com/Ride-The-Lightning/RTL/pull/1600), by @CosimoRicciardi).
+  Before login RTL only receives the selected node's settings. After a login with a default
+  password the full configuration was never fetched (the forced password reset initialised the
+  node from the pre-login copy), so the store kept one node and the dropdown in the side
+  navigation stayed hidden until a page reload or a settings update. The same happened after
+  any login when no node matched `selectedNodeIndex`: a node with index `0`, or indexes written
+  as strings in `RTL-Config.json`. `src/app/store/rtl.effects.ts` now fetches the configuration
+  on every login path, compares node indexes as numbers with `0` valid, falls back to the first
+  node when none matches, and keeps the fetch effect alive after a failed or superseded
+  request. Specs in `src/app/store/rtl.effects.spec.ts` cover each case.
+
 - **LND wallet requests check their password and passphrase**
   ([#1729](https://github.com/Ride-The-Lightning/RTL/pull/1729); follow-up to #1728).
   `genSeed` accepted passphrase values that are not well-formed base64, and `operateWallet`
