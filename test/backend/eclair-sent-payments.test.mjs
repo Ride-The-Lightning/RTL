@@ -125,3 +125,14 @@ test('getSentPaymentsInformation: no payments still answers an empty list', asyn
     assert.equal(eclair.seen.length, 0);
   } finally { await eclair.close(); }
 });
+
+test('getSentPaymentsInformation: only payment hashes are asked of the node, other entries come back empty in place', async () => {
+  const eclair = await startFakeEclair();
+  try {
+    const list = [HASHES[1], '', ` ${HASHES[2]} `, 'zz', '../getinfo', HASHES[3].toUpperCase(), HASHES[4] + '00'];
+    const res = await run(getSentPaymentsInformation, buildRequest(eclair.url, { body: { payments: list.join(',') } }));
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.deepEqual(res.body.map((v) => (v.length ? v[0].paymentHash : v)), [HASHES[1], [], HASHES[2], [], [], HASHES[3].toUpperCase(), []]);
+    assert.deepEqual(eclair.seen.map((r) => r.form.paymentHash), [HASHES[1], HASHES[2], HASHES[3].toUpperCase()]);
+  } finally { await eclair.close(); }
+});
