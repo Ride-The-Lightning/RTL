@@ -109,7 +109,12 @@ export const getSentPaymentsInformation = (req, res, next) => {
     // may have replaced the module-level options, so each gets a copy of this request's own.
     const selNode = req.session.selectedNode;
     const requestOptions = { ...options };
-    const sentInfoTasks = paymentsArr.map((payment) => () => getSentInfoFromPaymentRequest(selNode, payment, { ...requestOptions }));
+    // An entry that is not a payment hash gets the empty result Eclair gives for an unknown one,
+    // in place, without asking the node.
+    const sentInfoTasks = paymentsArr.map((payment) => () => {
+      const paymentHash = common.parsePathParam(payment, /^[0-9a-fA-F]{64}$/);
+      return paymentHash === null ? [] : getSentInfoFromPaymentRequest(selNode, paymentHash, { ...requestOptions });
+    });
     return common.runWithConcurrencyLimit(sentInfoTasks, 20, (values) => {
       // Guard the response-send: the limiter invokes this outside any surrounding .catch.
       try {
