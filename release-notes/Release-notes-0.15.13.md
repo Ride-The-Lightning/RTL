@@ -79,7 +79,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **More test coverage for the LND close-channel query parameters**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1713).
+  ([#1721](https://github.com/Ride-The-Lightning/RTL/pull/1721); follow-up to #1713).
   `test/backend/query-params.test.mjs` checked a malformed `force` for `closeChannel` but not
   the other two parameters. It now also asserts that a malformed or repeated `target_conf`,
   `sat_per_vbyte` or `force` answers 400 with nothing sent to LND, and that only those three
