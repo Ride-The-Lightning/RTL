@@ -16,8 +16,7 @@
       "authentication": {
         "macaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
         "configPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\lnd.conf",
-        "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet",
-        "boltzMacaroonPath": "C:\\Users\\xyz\\AppData\\Boltz\\mainnet"
+        "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet"
       },
       "settings": {
         "userPersona": "MERCHANT",
@@ -27,7 +26,6 @@
         "logLevel": "ERROR",
         "lnServerUrl": "https://127.0.0.1:8080",
         "swapServerUrl": "https://127.0.0.1:8081",
-        "boltzServerUrl": "https://127.0.0.1:9003",
         "fiatConversion": false,
         "unannouncedChannels": false,
         "blockExplorerUrl": "https://mempool.space"

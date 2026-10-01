@@ -223,11 +223,8 @@
     & .ng-fa-icon, & .mat-icon {
       color: $primary-darker;
     }
-    & .sidenav-img svg, & .boltz-icon-fill {
+    & .sidenav-img svg {
       fill: $primary-darker;
-    }
-    & .boltz-icon {
-      stroke: $primary-darker;
     }
   }
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
@@ -309,8 +306,6 @@
     }
   }
   svg {
-    & .boltz-icon { stroke:#FFFFFF; stroke-width:4; }
-    & .boltz-icon-fill { fill: #FFFFFF; }
     & .stroke-color-thicker { stroke:#B6B6B6; stroke-width: 15.3333; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-thick { stroke:#B6B6B6; stroke-width: 13.4583; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color { stroke:#B6B6B6; stroke-width: 12.5; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
@@ -319,7 +314,6 @@
     & .stroke-color-thinest { stroke:#B6B6B6; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
     & .stroke-color-primary-lighter { stroke: $primary-lighter; }
     & .stroke-color-primary { stroke: $primary-color; }
-    & .fill-color-boltz-bk { fill: #171717; }
     & .fill-color-0 { fill: #171717; }
     & .fill-color-1 { fill: #232323; }
     & .fill-color-2 { fill: #222222; }

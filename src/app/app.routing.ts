@@ -11,7 +11,6 @@ import { NodeSettingsComponent } from './shared/components/node-config/node-sett
 import { PageSettingsComponent } from './shared/components/node-config/page-settings/page-settings.component';
 import { LNServicesComponent } from './shared/components/ln-services/ln-services.component';
 import { LoopComponent } from './shared/components/ln-services/loop/loop.component';
-import { BoltzRootComponent } from './shared/components/ln-services/boltz/boltz-root.component';
 import { HelpComponent } from './shared/components/help/help.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
@@ -47,9 +46,7 @@ export const routes: Routes = [
     path: 'services', component: LNServicesComponent, canActivate: [AuthGuard()], children: [
       { path: '', pathMatch: <PathMatch>'full', redirectTo: 'loop' },
       { path: 'loop', pathMatch: <PathMatch>'full', redirectTo: 'loop/loopout' },
-      { path: 'loop/:selTab', component: LoopComponent },
-      { path: 'boltz', pathMatch: <PathMatch>'full', redirectTo: 'boltz/swapout' },
-      { path: 'boltz/:selTab', component: BoltzRootComponent }
+      { path: 'loop/:selTab', component: LoopComponent }
     ]
   },
   { path: 'help', component: HelpComponent },

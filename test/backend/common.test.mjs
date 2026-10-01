@@ -191,7 +191,9 @@ test('addSecureData strips credential paths from new nodes and pins existing-nod
   assert.equal(existingNode.authentication.boltzMacaroonPath, undefined);
   assert.equal(existingNode.settings.lnServerUrl, 'https://server:8080');
   assert.equal(existingNode.settings.swapServerUrl, 'https://swap:8081');
-  assert.equal(existingNode.settings.boltzServerUrl, 'https://boltz:9003');
+  // Boltz support was removed (#1724): the server no longer holds a Boltz URL to pin to, so
+  // the client-supplied one is dropped instead.
+  assert.equal(existingNode.settings.boltzServerUrl, undefined);
   assert.equal(existingNode.settings.bitcoindConfigPath, '/server/bitcoin.conf');
   assert.equal(existingNode.settings.channelBackupPath, '/server/backups');
   assert.equal(existingNode.settings.themeMode, 'NIGHT');

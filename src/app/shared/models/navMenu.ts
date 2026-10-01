@@ -41,8 +41,7 @@ export const MENU_DATA: MenuRootNode = {
     },
     {
       id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [
-        { id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [] },
-        { id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/services/boltz', userPersona: UserPersonaEnum.ALL, children: [] }
+        { id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [] }
       ]
     },
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL, children: [] },
@@ -62,12 +61,6 @@ export const MENU_DATA: MenuRootNode = {
         { id: 37, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cln/messages', userPersona: UserPersonaEnum.ALL, children: [] },
         { id: 38, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cln/rates', userPersona: UserPersonaEnum.OPERATOR, children: [] },
         { id: 39, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cln/rates', userPersona: UserPersonaEnum.MERCHANT, children: [] }
-      ]
-    },
-    {
-      id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [
-        // { id: 41, parentId: 4, name: 'Peerswap', iconType: 'FA', icon: faHandshake, link: '/services/peerswap', userPersona: UserPersonaEnum.ALL, children: [] },
-        { id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/services/boltz', userPersona: UserPersonaEnum.ALL, children: [] }
       ]
     },
     { id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL, children: [] },

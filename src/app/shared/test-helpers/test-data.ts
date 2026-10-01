@@ -785,8 +785,7 @@ export const mockResponseData = {
     lnImplementation: 'LND',
     authentication: {
       configPath: '/user/.lnd/lnd.conf',
-      swapMacaroonPath: '/user/.loop',
-      boltzMacaroonPath: '/user/.boltz'
+      swapMacaroonPath: '/user/.loop'
     },
     settings: {
       blockExplorerUrl: 'https://mempool.space/',
@@ -799,7 +798,6 @@ export const mockResponseData = {
       fiatConversion: true,
       currencyUnit: 'CAD',
       swapServerUrl: 'https://localhost:8081',
-      boltzServerUrl: 'https://localhost:9003',
       enableOffers: false,
       enablePeerswap: false,
       bitcoindConfigPath: '',
@@ -835,7 +833,6 @@ export const mockActionsData = {
       enableLogging: true,
       lnServerUrl: '',
       swapServerUrl: '',
-      boltzServerUrl: '',
       channelBackupPath: '',
       currencyUnit: '',
       enableOffers: false,
@@ -844,7 +841,6 @@ export const mockActionsData = {
     },
     authentication: {
       swapMacaroonPath: '',
-      boltzMacaroonPath: '',
       configPath: ''
     },
     index: 1,
@@ -857,8 +853,7 @@ export const mockActionsData = {
     lnImplementation: 'LND',
     authentication: {
       configPath: '/user/.lnd/lnd.conf',
-      swapMacaroonPath: '/user/.loop',
-      boltzMacaroonPath: '/user/.boltz'
+      swapMacaroonPath: '/user/.loop'
     },
     settings: {
       blockExplorerUrl: 'https://mempool.space/',
@@ -871,7 +866,6 @@ export const mockActionsData = {
       fiatConversion: true,
       currencyUnit: 'CAD',
       swapServerUrl: 'https://localhost:8081',
-      boltzServerUrl: 'https://localhost:9003',
       enableOffers: false,
       enablePeerswap: false,
       bitcoindConfigPath: '',
@@ -937,7 +931,6 @@ export const mockRTLStoreState = {
         enableLogging: true,
         lnServerUrl: 'https://127.0.0.1:8080',
         swapServerUrl: 'https://127.0.0.1:8081',
-        boltzServerUrl: 'https://127.0.0.1:9003',
         channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
         currencyUnit: 'USD',
         currencyUnits: [
@@ -949,8 +942,7 @@ export const mockRTLStoreState = {
       },
       authentication: {
         configPath: '../AppData/Local/Lnd/lnd.conf',
-        swapMacaroonPath: '../AppData/Local/Loop/testnet',
-        boltzMacaroonPath: '../Boltz'
+        swapMacaroonPath: '../AppData/Local/Loop/testnet'
       }
     },
     appConfig: {
@@ -976,7 +968,6 @@ export const mockRTLStoreState = {
             enableLogging: true,
             lnServerUrl: 'https://127.0.0.1:8080',
             swapServerUrl: 'https://127.0.0.1:8081',
-            boltzServerUrl: 'https://127.0.0.1:9003',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
@@ -988,8 +979,7 @@ export const mockRTLStoreState = {
           },
           authentication: {
             configPath: '../AppData/Local/Lnd/lnd.conf',
-            swapMacaroonPath: '../AppData/Local/Loop/testnet',
-            boltzMacaroonPath: '../Boltz'
+            swapMacaroonPath: '../AppData/Local/Loop/testnet'
           }
         },
         {
@@ -1006,7 +996,6 @@ export const mockRTLStoreState = {
             enableLogging: true,
             lnServerUrl: 'https://127.0.0.1:3001',
             swapServerUrl: '',
-            boltzServerUrl: '',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-2',
             currencyUnit: 'USD',
             currencyUnits: [
@@ -1018,8 +1007,7 @@ export const mockRTLStoreState = {
           },
           authentication: {
             configPath: '../Nodes/cln/config',
-            swapMacaroonPath: '',
-            boltzMacaroonPath: ''
+            swapMacaroonPath: ''
           }
         },
         {
@@ -1036,7 +1024,6 @@ export const mockRTLStoreState = {
             enableLogging: false,
             lnServerUrl: 'http://127.0.0.1:9090',
             swapServerUrl: '',
-            boltzServerUrl: '',
             channelBackupPath: '..\\\\RTL\\\\backup\\\\node-1',
             currencyUnit: 'USD',
             currencyUnits: [
@@ -1048,8 +1035,7 @@ export const mockRTLStoreState = {
           },
           authentication: {
             configPath: '../.eclair/eclair.conf',
-            swapMacaroonPath: '',
-            boltzMacaroonPath: ''
+            swapMacaroonPath: ''
           }
         }
       ]
