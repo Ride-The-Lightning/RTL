@@ -129,6 +129,23 @@ this release should add its entry under the appropriate section below.
   `sat_per_vbyte` or `force` answers 400 with nothing sent to LND, and that only those three
   parameters are forwarded. Tests only; no code change.
 
+- **Dependency update batch**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Resolves the open Dependabot alerts in one pass, per the process in `CONTRIBUTING.md`. The
+  Angular framework packages move from 20.3.27 to 20.3.33 (#1706, #1707, #1708, and the
+  router advisory fixed in 20.3.32), and the CLI line (`@angular/cli`, `@angular/build`,
+  `@angular-devkit/build-angular`) from 20.3.36 to 20.3.37. `axios`, the one runtime finding,
+  moves from 1.18.1 to 1.20.0 for two prototype-pollution advisories. In the lockfile, `hono`
+  moves to 4.13.12 (#1704), `js-yaml` to 4.3.2 (#1705) and `ip-address` to 10.7.2 (#1719),
+  along with `undici`, `engine.io`, `fast-uri`, `brace-expansion`, and the `body-parser`,
+  `express` 4 and `qs` copies under karma and webpack-dev-server. `npm audit --omit=dev` goes
+  from 1 high to **0**; the full count goes from 26 (8 high, 18 moderate) to 6 (2 high,
+  4 moderate), all in build tooling that never ships: `@angular-devkit/build-angular` 20.x and
+  its `webpack-dev-server` / `webpack-dev-middleware` / `sockjs` / `uuid` chain, which only an
+  Angular 22 migration moves. The lockfile was regenerated from scratch and the compiled
+  artifacts rebuilt from it: `frontend/` changes with the Angular bump, `backend/` came out
+  byte-identical.
+
 ## Developer Tooling
 
 - **Docker fixture: Core Lightning bumped to v26.06.8**
