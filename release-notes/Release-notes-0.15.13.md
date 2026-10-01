@@ -22,7 +22,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **LND wallet requests check their password and passphrase**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1728).
+  ([#1729](https://github.com/Ride-The-Lightning/RTL/pull/1729); follow-up to #1728).
   `genSeed` accepted passphrase values that are not well-formed base64, and `operateWallet`
   (unlock and initialise) did not check `wallet_password` or `aezeed_passphrase` at all, so a
   malformed value was decoded leniently or ended in a generic error. Both handlers in
