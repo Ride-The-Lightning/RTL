@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **LND lookups forwarded a malformed path value to the node as it was**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to #1713).
+  ([#1722](https://github.com/Ride-The-Lightning/RTL/pull/1722); follow-up to #1713).
   The node, channel and route lookups in `server/controllers/lnd/graph.ts`, payment decode and
   payment lookup in `server/controllers/lnd/payments.ts`, and peer disconnect in
   `server/controllers/lnd/peers.ts` put their path parameter into the LND URL without checking
