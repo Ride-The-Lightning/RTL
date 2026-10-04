@@ -23,7 +23,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Docker fixture: Eclair 0.14.2 and Bitcoin Core 31.1, built from official releases**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1736](https://github.com/Ride-The-Lightning/RTL/pull/1736), closes
   [#1689](https://github.com/Ride-The-Lightning/RTL/issues/1689)).
   The fixture ran Eclair 0.13.1 and bitcoind 30.0 because Polar, whose multi-arch images it
   used, has published nothing newer, and `acinq/eclair` is amd64-only. Eclair 0.14.1+ also
