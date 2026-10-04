@@ -201,15 +201,12 @@ done
 # ---------------------------------------------------------------- payments
 
 # alice can only route to carol once the bob->carol channel has been announced and
-# reached her graph. Channels are confirmed by now, but gossip is not instant --
-# --trickledelay alone is 5s. Paying before this lands fails with "no route".
-log "Waiting for the channel graph to reach alice"
-for i in $(seq 1 90); do
-  edges=$(lncli alice describegraph | grep -c '"channel_id"' || true)
-  (( ${edges:-0} >= 2 )) && { info "alice sees ${edges} channels in her graph"; break; }
-  sleep 1
-  (( i == 90 )) && die "channel graph never propagated to alice"
-done
+# reached her graph with its routing policies. Channels are confirmed by now, but
+# gossip is not instant -- --trickledelay alone is 5s. Seeing the channels in her graph
+# is not enough: the policy updates can lag, and paying then fails with "no route".
+# So wait until she can actually find a route for the largest payment below.
+log "Waiting for alice to find a route to carol"
+wait_for "route alice -> carol" 120 lncli alice queryroutes --dest="$CAROL_PUB" --amt=100000
 
 # Fixed amounts. alice -> carol routes through bob, generating forwarding history.
 log "Sending payments (alice -> carol, routed via bob)"

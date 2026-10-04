@@ -33,3 +33,12 @@ this release should add its entry under the appropriate section below.
   checksums are signed with a different key from the one ACINQ documents. Upgrading the
   fixture surfaced a real Eclair 0.14 incompatibility in RTL, tracked in
   [#1735](https://github.com/Ride-The-Lightning/RTL/issues/1735).
+
+- **Docker fixture: deterministic seed and peers that survive `down`/`up`**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  [#1737](https://github.com/Ride-The-Lightning/RTL/issues/1737)).
+  `seed.sh` waited only until alice's graph contained the channels, so its first routed
+  payments could fail before the routing policies arrived (3 of 5 on one run); it now waits
+  until `queryroutes` finds a route. And after `docker compose down` / `up` Docker reshuffled
+  container addresses while the nodes remembered their peers by IP, leaving channels inactive;
+  the Lightning nodes now have fixed addresses on the compose network.

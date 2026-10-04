@@ -22,6 +22,18 @@ volumes:
   rtl_sso_config:
   rtl_sso_cookie:
 
+# Lightning nodes remember their peers by the IP address they resolved, not the hostname.
+# 'docker compose down' removes the network, and the next 'up' hands out addresses in a
+# different order, so after a down/up every node dialled a stale address that now belonged
+# to another container and channels stayed inactive. So each Lightning node gets a fixed
+# address; everything else is allocated from ip_range, which keeps clear of them.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          ip_range: 172.30.0.128/25
+
 # No image here: the nodes deliberately run different LND versions, so each pins its own.
 # lightninglabs/lnd rather than Polar because Polar publishes nothing newer than 0.20.0-beta.
 # Its entrypoint is already `lnd`, so the command lists below start at the first flag, and its
@@ -70,6 +82,9 @@ services:
     <<: *lnd
     image: lightninglabs/lnd:v0.21.2-beta
     container_name: ${COMPOSE_PROJECT_NAME}_alice
+    networks:
+      default:
+        ipv4_address: 172.30.0.11
     command:
       - --noseedbackup
       - --trickledelay=5000
@@ -100,6 +115,9 @@ services:
     <<: *lnd
     image: lightninglabs/lnd:v0.20.3-beta
     container_name: ${COMPOSE_PROJECT_NAME}_bob
+    networks:
+      default:
+        ipv4_address: 172.30.0.12
     command:
       - --noseedbackup
       - --trickledelay=5000
@@ -130,6 +148,9 @@ services:
     <<: *lnd
     image: lightninglabs/lnd:v0.21.2-beta
     container_name: ${COMPOSE_PROJECT_NAME}_carol
+    networks:
+      default:
+        ipv4_address: 172.30.0.13
     command:
       - --noseedbackup
       - --trickledelay=5000
@@ -167,6 +188,9 @@ services:
   cln:
     image: elementsproject/lightningd:v26.06.8
     container_name: ${COMPOSE_PROJECT_NAME}_cln
+    networks:
+      default:
+        ipv4_address: 172.30.0.14
     restart: unless-stopped
     depends_on:
       - bitcoind
@@ -237,6 +261,9 @@ services:
     build: ./eclair
     image: rtldev/eclair:0.14.2
     container_name: ${COMPOSE_PROJECT_NAME}_eclair
+    networks:
+      default:
+        ipv4_address: 172.30.0.15
     restart: unless-stopped
     depends_on:
       bitcoind:

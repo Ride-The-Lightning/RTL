@@ -272,9 +272,22 @@ EOF
 
 In `docker-compose.yml` the `$` must be written `$$` to escape Compose interpolation.
 
-**Payments right after channel open will fail.** The channel graph has to reach alice
-before she can route to carol. The seed waits for this; anything you script yourself
-should too.
+**Payments right after channel open will fail.** The channel graph, including each
+channel's routing policy, has to reach alice before she can route to carol. Seeing the
+channels in `describegraph` is not enough: the policy updates can arrive later. The seed
+waits until `lncli alice queryroutes` finds a route; anything you script yourself should
+wait the same way.
+
+**The Lightning nodes have fixed addresses.** Nodes remember their peers by IP, and
+`docker compose down` removes the network, so with Docker-assigned addresses the next `up`
+reshuffled them and every node dialled a stale one: channels stayed inactive, and alice's log
+filled with `chacha20poly1305: message authentication failed`. `docker-compose.yml` therefore
+pins alice, bob, carol, cln and eclair to `172.30.0.11`–`.15` on a `172.30.0.0/24` network;
+other containers get addresses from `.128` up. If that subnet clashes with another network on
+your machine, change it in one place (`networks:` at the top) and keep the node addresses
+inside it. Volumes seeded before this change still hold the old addresses: reconnect once
+by hostname (`bin/ln-cli alice connect <bob-pubkey>@bob:9735`, and so on) or reset with
+`down -v`.
 
 **Mining needs `-rpcwallet=rtldev`.** Two wallets are loaded — `rtldev`, which holds the
 mined coins, and `eclair`, which the eclair node drives — so bitcoind refuses to guess
