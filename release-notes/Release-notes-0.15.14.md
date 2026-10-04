@@ -3,6 +3,14 @@
 This document collects the changes that go into the 0.15.14 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Compatibility
+
+- **Eclair 0.14 needs RTL 0.15.14.** RTL 0.15.13 and earlier cannot read Eclair 0.14's payment
+  history: the Payments, Forwarding History and Reports pages fail. Upgrade RTL before or
+  together with Eclair. RTL 0.15.14 still supports Eclair 0.13 and earlier
+  ([#1739](https://github.com/Ride-The-Lightning/RTL/pull/1739)). Eclair 0.14 itself stops
+  showing payments made before its upgrade (it moves them to `_before_v14` tables).
+
 ## Bug Fixes
 
 - **Eclair 0.14: payment history, routing fees and forwarding history work again**
