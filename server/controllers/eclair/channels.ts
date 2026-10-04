@@ -85,27 +85,6 @@ export const getChannels = (req, res, next) => {
   }
 };
 
-export const getChannelStats = (req, res, next) => {
-  logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Getting Channel States..' });
-  options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  options.url = req.session.selectedNode.settings.lnServerUrl + '/channelstats';
-  const today = new Date(Date.now());
-  const tillToday = (Math.round(today.getTime() / 1000)).toString();
-  const fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime() / 1000)).toString();
-  options.form = {
-    from: fromLastMonth,
-    to: tillToday
-  };
-  request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Channel States Received', data: body });
-    res.status(201).json(body);
-  }).catch((errRes) => {
-    const err = common.handleError(errRes, 'Channels', 'Get Channel Stats Error', req.session.selectedNode);
-    return res.status(err.statusCode).json({ message: err.message, error: err.error });
-  });
-};
-
 export const openChannel = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Channels', msg: 'Opening Channel..' });
   options = common.getOptions(req);

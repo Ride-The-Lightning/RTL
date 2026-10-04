@@ -4,12 +4,39 @@ import { Common } from '../../utils/common.js';
 let options = null;
 const logger = Logger;
 const common = Common;
+// Eclair 0.14 reports a relay as incoming[] and outgoing[] parts, each with its own channelId,
+// amount and timestamp, instead of amountIn/amountOut, fromChannelId/toChannelId and settledAt.
+// Fill the older fields in from the parts (amounts stay in msat) so the rest of RTL reads one
+// shape. A relay split over several channels has no single from/to channel: its parts are kept.
+const fillRelayedFromParts = (relayedEle) => {
+    const sumAmounts = (parts) => parts.reduce((total, part) => total + (part.amount || 0), 0);
+    if (relayedEle.amountIn === undefined && Array.isArray(relayedEle.incoming)) {
+        relayedEle.amountIn = sumAmounts(relayedEle.incoming);
+    }
+    if (relayedEle.amountOut === undefined && Array.isArray(relayedEle.outgoing)) {
+        relayedEle.amountOut = sumAmounts(relayedEle.outgoing);
+    }
+    if (!relayedEle.fromChannelId && relayedEle.incoming?.length === 1) {
+        relayedEle.fromChannelId = relayedEle.incoming[0].channelId;
+    }
+    if (!relayedEle.toChannelId && relayedEle.outgoing?.length === 1) {
+        relayedEle.toChannelId = relayedEle.outgoing[0].channelId;
+    }
+    if (!relayedEle.settledAt && !relayedEle.timestamp && Array.isArray(relayedEle.outgoing)) {
+        const settled = relayedEle.outgoing.map((part) => part.settledAt?.unix).filter((unix) => unix !== undefined);
+        if (settled.length > 0) {
+            relayedEle.settledAt = { iso: new Date(Math.max(...settled) * 1000).toISOString(), unix: Math.max(...settled) };
+        }
+    }
+    return relayedEle;
+};
 export const arrangeFees = (selNode, body, current_time) => {
     const fees = { daily_fee: 0, daily_txs: 0, weekly_fee: 0, weekly_txs: 0, monthly_fee: 0, monthly_txs: 0 };
     const week_start_time = current_time - 604800000;
     const day_start_time = current_time - 86400000;
     let fee = 0;
     body.relayed.forEach((relayedEle) => {
+        fillRelayedFromParts(relayedEle);
         fee = Math.round((relayedEle.amountIn - relayedEle.amountOut) / 1000);
         const relayedEleTimestamp = relayedEle.settledAt ? relayedEle.settledAt : relayedEle.timestamp;
         if (relayedEleTimestamp) {
@@ -51,13 +78,26 @@ export const arrangePayments = (selNode, body) => {
             sentEle.recipientAmount = Math.round(sentEle.recipientAmount / 1000);
         }
         sentEle.parts.forEach((part) => {
+            // Eclair 0.14: amountWithFees/fees/channelId/settledAt. Before, amount excluded the fees.
+            if (part.amount === undefined && part.amountWithFees !== undefined) {
+                part.amount = part.amountWithFees - (part.fees || 0);
+            }
+            if (part.feesPaid === undefined && part.fees !== undefined) {
+                part.feesPaid = part.fees;
+            }
+            if (!part.toChannelId && part.channelId) {
+                part.toChannelId = part.channelId;
+            }
+            if (!part.timestamp && part.settledAt) {
+                part.timestamp = part.settledAt;
+            }
             if (part.amount) {
                 part.amount = Math.round(part.amount / 1000);
             }
             if (part.feesPaid) {
                 part.feesPaid = Math.round(part.feesPaid / 1000);
             }
-            if (part.timestamp.unix) {
+            if (part.timestamp?.unix) {
                 part.timestamp = part.timestamp.unix * 1000;
             }
         });
@@ -67,10 +107,17 @@ export const arrangePayments = (selNode, body) => {
     });
     payments.received.forEach((receivedEle) => {
         receivedEle.parts.forEach((part) => {
+            // Eclair 0.14: channelId/receivedAt.
+            if (!part.fromChannelId && part.channelId) {
+                part.fromChannelId = part.channelId;
+            }
+            if (!part.timestamp && part.receivedAt) {
+                part.timestamp = part.receivedAt;
+            }
             if (part.amount) {
                 part.amount = Math.round(part.amount / 1000);
             }
-            if (part.timestamp.unix) {
+            if (part.timestamp?.unix) {
                 part.timestamp = part.timestamp.unix * 1000;
             }
         });
@@ -79,6 +126,7 @@ export const arrangePayments = (selNode, body) => {
         }
     });
     payments.relayed.forEach((relayedEle) => {
+        fillRelayedFromParts(relayedEle);
         // Changing the timestamp value to keep the response backward compatible.
         // ECL < 0.7.0 sent timestamp in unix milliseconds, then in {"iso", "unix"} object.
         // From v0.10.0, it sends settledAt in {"iso", "unix"} object too.

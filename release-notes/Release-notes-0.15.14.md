@@ -3,6 +3,24 @@
 This document collects the changes that go into the 0.15.14 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Bug Fixes
+
+- **Eclair 0.14: payment history, routing fees and forwarding history work again**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  [#1735](https://github.com/Ride-The-Lightning/RTL/issues/1735)).
+  Eclair 0.14 reworked its audit database and changed the shape of every `/audit` entry: sent
+  parts report `amountWithFees`/`fees`/`channelId`/`settledAt`, received parts
+  `channelId`/`receivedAt`, and a channel relay lists `incoming`/`outgoing` parts instead of
+  `amountIn`/`amountOut`/`fromChannelId`/`toChannelId`. RTL read the 0.13 fields, so the
+  Eclair payments, forwarding history and reports pages failed (`/api/ecl/fees/payments`
+  returned 500 on `part.timestamp.unix`) and routing fees summed to `NaN`. The backend now fills
+  RTL's existing fields in from either version (`server/controllers/eclair/fees.ts`); a 0.14
+  sent part's `amount` is `amountWithFees − fees`, since 0.13's excluded the fees. The unused
+  `/api/ecl/channels/stats` route, which called Eclair's removed `/channelstats`, is gone.
+  Note: Eclair 0.14 moves audit rows written before the upgrade to `_before_v14` tables, so
+  payments made before upgrading no longer appear in RTL. `test/backend/eclair-audit.test.mjs`
+  covers both versions.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
