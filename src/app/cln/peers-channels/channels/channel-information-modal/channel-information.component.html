@@ -7,7 +7,7 @@
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" mat-button (click)="onClose()">X</button>
     </mat-card-header>
-    <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
+    <mat-card-content class="padding-gap-x-large" [ngClass]="screenSize === screenSizeEnum.XS ? 'xs-scroll-y' : 'info-scroll-y'">
       <div fxLayout="column">
         <div fxLayout="row">
           <div fxFlex="50">
@@ -43,7 +43,7 @@
             <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction ID</h4>
             <span class="foreground-secondary-text">
               {{channel.funding_txid}}
-              <fa-icon *ngIf="selNode?.settings?.blockExplorerUrl" matTooltip="{{'Link to ' + selNode?.settings?.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked()"/>
+              <fa-icon *ngIf="selNode?.settings?.blockExplorerUrl" matTooltip="{{'Link to ' + selNode?.settings?.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(channel.funding_txid)"/>
             </span>
           </div>
         </div>
@@ -52,6 +52,7 @@
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel?.state | camelcaseWithReplace:'_'}}</span>
+            <div *ngIf="sweepBlocks !== null" class="overflow-wrap foreground-secondary-text">Sweep in {{sweepBlocks | number}} blocks</div>
           </div>
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">Connected</h4>
@@ -63,6 +64,32 @@
           </div>
         </div>
         <mat-divider class="my-1" />
+        <div *ngIf="channel?.state !== 'CHANNELD_NORMAL' && (channel?.closer || closeTxid)">
+          <div fxLayout="row">
+            <div fxFlex="33">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Closed By</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel?.closer ? (channel.closer | titlecase) : '-'}}</span>
+            </div>
+            <div *ngIf="closeTxid" fxFlex="67">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Close Transaction ID</h4>
+              <span class="overflow-wrap foreground-secondary-text">
+                {{closeTxid}}
+                <fa-icon rtlClipboard matTooltip="Copy Transaction ID" class="ml-1 fa-icon-primary" [icon]="faCopy" [payload]="closeTxid" (copied)="onCopyTxID($event)"/>
+                <fa-icon *ngIf="selNode?.settings?.blockExplorerUrl" matTooltip="{{'Link to ' + selNode?.settings?.blockExplorerUrl}}" class="ml-1 fa-icon-primary" [icon]="faUpRightFromSquare" (click)="onExplorerClicked(closeTxid)"/>
+              </span>
+            </div>
+          </div>
+          <mat-divider class="my-1" />
+        </div>
+        <div *ngIf="channel?.state !== 'CHANNELD_NORMAL' && statusMessages.length > 0">
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Status (Latest First)</h4>
+              <div *ngFor="let message of statusMessages" class="overflow-wrap foreground-secondary-text">{{message}}</div>
+            </div>
+          </div>
+          <mat-divider class="my-1" />
+        </div>
         <div fxLayout="row">
           <div fxFlex="33">
             <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
@@ -101,6 +128,17 @@
             </div>
           </div>
           <mat-divider class="my-1" />
+          <div *ngIf="channel?.state_changes?.length > 0">
+            <div fxLayout="row">
+              <div fxFlex="100">
+                <h4 fxLayoutAlign="start" class="font-bold-500">State Changes</h4>
+                <div *ngFor="let change of channel.state_changes" class="overflow-wrap foreground-secondary-text">
+                  {{change.timestamp | date:'dd/MMM/y HH:mm'}}: {{change.old_state | camelcaseWithReplace:'_'}} to {{change.new_state | camelcaseWithReplace:'_'}} ({{change.cause | titlecase}}){{change.message ? ': ' + change.message : ''}}
+                </div>
+              </div>
+            </div>
+            <mat-divider class="my-1" />
+          </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center" fxFlex="100" [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}">
           <button mat-button color="primary" type="reset" tabindex="6" class="mr-1" (click)="onShowAdvanced()">

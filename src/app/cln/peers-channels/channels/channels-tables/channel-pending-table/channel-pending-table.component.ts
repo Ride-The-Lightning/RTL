@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { GetInfo, Channel, Balance } from '../../../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, CLNChannelPendingState, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, CLNChannelPendingState, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS, getCLNSweepBlocks } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -57,6 +57,7 @@ export class CLNChannelPendingTableComponent implements OnInit, AfterViewInit, O
   public feeRateTypes = FEE_RATE_TYPES;
   public selFilter = '';
   public CLNChannelPendingState = CLNChannelPendingState;
+  public getCLNSweepBlocks = getCLNSweepBlocks;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';

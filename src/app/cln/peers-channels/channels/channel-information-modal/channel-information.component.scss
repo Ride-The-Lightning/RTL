@@ -1,0 +1,5 @@
+// The dialog surface hides overflow (root.scss), so a closing channel's status and state history must scroll in here.
+.info-scroll-y {
+  overflow-y: auto;
+  max-height: 80vh;
+}

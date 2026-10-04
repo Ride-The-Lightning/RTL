@@ -237,6 +237,21 @@ export enum CLNChannelPendingState {
   DUALOPEND_AWAITING_LOCKIN = 'Dual Pending Open'
 }
 
+// onchaind posts '<n> outputs unresolved: in <blocks> blocks will spend <output> (<outpoint>) using <tx>' while
+// it waits out a timelock. Only the latest (last) status entry is current, so older entries are never parsed.
+export function getCLNSweepBlocks(status?: string[]): number | null {
+  const latest = (status && status.length > 0) ? status[status.length - 1] : '';
+  const match = (/outputs unresolved: in (?<blocks>\d+) blocks will spend /).exec(latest || '');
+  return match?.groups ? +match.groups.blocks : null;
+}
+
+// scratch_txid is our latest signed transaction: the mutual close once signed, else our own commitment. It is the
+// close transaction only once one exists, and never when the peer broadcast their commitment (or a revoked one).
+export function getCLNCloseTxid(channel: { state?: string, status?: string[], scratch_txid?: string }): string | null {
+  if (!channel?.scratch_txid || !['CLOSINGD_COMPLETE', 'AWAITING_UNILATERAL', 'FUNDING_SPEND_SEEN', 'ONCHAIN'].includes(channel.state || '')) { return null; }
+  return (channel.status || []).some((message) => (/Tracking their (?:unilateral|illegal) close/).test(message)) ? null : channel.scratch_txid;
+}
+
 export enum LoopStateEnum {
   INITIATED = 'Initiated',
   PREIMAGE_REVEALED = 'Preimage Revealed',

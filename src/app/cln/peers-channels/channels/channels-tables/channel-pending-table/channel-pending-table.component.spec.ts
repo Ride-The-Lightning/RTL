@@ -73,6 +73,34 @@ describe('CLNChannelPendingTableComponent', () => {
     expect(connectedCellText()).toBe('Disconnected');
   });
 
+  // Issue #1733: a force-closed channel waiting out its timelock shows the sweep countdown from the
+  // latest status entry, and only while onchaind is still waiting.
+  const stateCellText = (): string => {
+    const cell = fixture.nativeElement.querySelector('td.mat-column-state');
+    return cell ? cell.textContent.replace(/\s+/g, ' ').trim() : '';
+  };
+
+  it('should show blocks until sweep for an ONCHAIN channel waiting on its timelock', () => {
+    component.displayedColumns = ['state'];
+    component.channels = new MatTableDataSource<any>([{ state: 'ONCHAIN', status: [
+      'CHANNELD_NORMAL:Received ERROR channel abc: failing channel',
+      'ONCHAIN:Tracking our own unilateral close',
+      'ONCHAIN:1 outputs unresolved: in 13 blocks will spend DELAYED_OUTPUT_TO_US (txid:2) using OUR_DELAYED_RETURN_TO_WALLET'
+    ] }]);
+    fixture.detectChanges();
+    expect(stateCellText()).toBe('Onchain Sweep in 13 blocks');
+  });
+
+  it('should not show a sweep countdown once the sweep is broadcast', () => {
+    component.displayedColumns = ['state'];
+    component.channels = new MatTableDataSource<any>([{ state: 'ONCHAIN', status: [
+      'ONCHAIN:1 outputs unresolved: in 13 blocks will spend DELAYED_OUTPUT_TO_US (txid:2) using OUR_DELAYED_RETURN_TO_WALLET',
+      'ONCHAIN:1 outputs unresolved: waiting confirmation that we spent DELAYED_OUTPUT_TO_US (txid:2) using OUR_DELAYED_RETURN_TO_WALLET'
+    ] }]);
+    fixture.detectChanges();
+    expect(stateCellText()).toBe('Onchain');
+  });
+
   // Issue #1606: the channel information modal reads selNode.settings.blockExplorerUrl, so the
   // pending table must pass selNode when opening it. Without it the modal throws mid-render and
   // blanks State/Connected/balances for disconnected channels (which live in this table).

@@ -62,7 +62,10 @@
       </ng-container>
       <ng-container matColumnDef="state">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>State</th>
-        <td *matCellDef="let channel" mat-cell [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}">{{CLNChannelPendingState[channel?.state]}}</td>
+        <td *matCellDef="let channel" mat-cell [ngStyle]="{'width': (screenSize === screenSizeEnum.XS) ? '6rem' : colWidth}" [matTooltip]="channel?.status?.length ? channel.status[channel.status.length - 1] : ''">
+          {{CLNChannelPendingState[channel?.state]}}
+          <div *ngIf="getCLNSweepBlocks(channel?.status) !== null" class="foreground-secondary-text">Sweep in {{getCLNSweepBlocks(channel?.status) | number}} blocks</div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="our_channel_reserve_satoshis">
         <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Local Reserve (Sats)</th>

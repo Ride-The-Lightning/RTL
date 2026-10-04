@@ -325,6 +325,18 @@ export interface Channel {
   fee_proportional_millionths?: number;
   dust_limit_msat?: number;
   balancedness?: number; // Between 0-1-0
+  status?: string[]; // Oldest first, the latest (transient) message last
+  closer?: string; // 'local' or 'remote', once closing has begun
+  scratch_txid?: string;
+  state_changes?: ChannelStateChange[];
+}
+
+export interface ChannelStateChange {
+  timestamp?: string;
+  old_state?: string;
+  new_state?: string;
+  cause?: string;
+  message?: string;
 }
 
 export interface LookupChannelEdge {
