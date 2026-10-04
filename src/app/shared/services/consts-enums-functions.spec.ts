@@ -33,6 +33,11 @@ describe('getCLNCloseTxid', () => {
     expect(getCLNCloseTxid({ state: 'ONCHAIN', scratch_txid: txid, status: ['ONCHAIN:Tracking their illegal close: taking all funds'] })).toBeNull();
   });
 
+  // FUNDING_SPEND_SEEN comes before onchaind's 'Tracking ...' line, so status cannot yet say who broadcast the spend.
+  it('should return null while the funding spend is seen but not yet attributed', () => {
+    expect(getCLNCloseTxid({ state: 'FUNDING_SPEND_SEEN', scratch_txid: txid, status: [] })).toBeNull();
+  });
+
   it('should return null before any close transaction exists', () => {
     expect(getCLNCloseTxid({ state: 'CHANNELD_NORMAL', scratch_txid: txid })).toBeNull();
     expect(getCLNCloseTxid({ state: 'CHANNELD_SHUTTING_DOWN', scratch_txid: txid })).toBeNull();

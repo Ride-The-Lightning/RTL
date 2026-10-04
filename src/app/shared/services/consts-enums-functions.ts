@@ -247,8 +247,9 @@ export function getCLNSweepBlocks(status?: string[]): number | null {
 
 // scratch_txid is our latest signed transaction: the mutual close once signed, else our own commitment. It is the
 // close transaction only once one exists, and never when the peer broadcast their commitment (or a revoked one).
+// FUNDING_SPEND_SEEN is left out: it precedes onchaind's 'Tracking ...' line, so who broadcast is not yet known.
 export function getCLNCloseTxid(channel: { state?: string, status?: string[], scratch_txid?: string }): string | null {
-  if (!channel?.scratch_txid || !['CLOSINGD_COMPLETE', 'AWAITING_UNILATERAL', 'FUNDING_SPEND_SEEN', 'ONCHAIN'].includes(channel.state || '')) { return null; }
+  if (!channel?.scratch_txid || !['CLOSINGD_COMPLETE', 'AWAITING_UNILATERAL', 'ONCHAIN'].includes(channel.state || '')) { return null; }
   return (channel.status || []).some((message) => (/Tracking their (?:unilateral|illegal) close/).test(message)) ? null : channel.scratch_txid;
 }
 
