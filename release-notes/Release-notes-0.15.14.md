@@ -35,7 +35,7 @@ this release should add its entry under the appropriate section below.
   [#1735](https://github.com/Ride-The-Lightning/RTL/issues/1735).
 
 - **Docker fixture: deterministic seed and peers that survive `down`/`up`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1738](https://github.com/Ride-The-Lightning/RTL/pull/1738), closes
   [#1737](https://github.com/Ride-The-Lightning/RTL/issues/1737)).
   `seed.sh` waited only until alice's graph contained the channels, so its first routed
   payments could fail before the routing policies arrived (3 of 5 on one run); it now waits
