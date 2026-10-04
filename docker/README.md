@@ -55,12 +55,23 @@ routing screens something to show. Two nodes would leave them empty. The `cln`
 clnrest with rune auth. The `eclair` node does the same for RTL's Eclair screens —
 RTL talks to its HTTP API with basic auth.
 
-bitcoind and Eclair images come from [Polar](https://lightningpolar.com); the Core Lightning
-image is the official [`elementsproject/lightningd`](https://hub.docker.com/r/elementsproject/lightningd)
+The Core Lightning image is the official [`elementsproject/lightningd`](https://hub.docker.com/r/elementsproject/lightningd)
 and the LND nodes use the official [`lightninglabs/lnd`](https://hub.docker.com/r/lightninglabs/lnd).
-All are multi-arch (amd64 + arm64) and nothing is built locally, so this works on
-Apple Silicon. (The official `acinq/eclair` image is amd64-only and its versioned tags
-are years stale, which is why Polar's build of the same source is used instead.)
+bitcoind (Bitcoin Core 31.1) and Eclair (0.14.2) are **built locally** from their projects'
+official release artifacts, because no maintained multi-arch image of a current release exists:
+Polar stopped at bitcoind 30.0 and Eclair 0.13.1, and `acinq/eclair` is amd64-only with no
+current versioned tag. Eclair 0.14.1+ needs Bitcoin Core 31. Everything is multi-arch
+(amd64 + arm64), so this works on Apple Silicon.
+
+| Image | Built from | Pinned by |
+|---|---|---|
+| `docker/bitcoind/` | `bitcoin-31.1-{x86_64,aarch64}-linux-gnu.tar.gz` from bitcoincore.org on `debian:bookworm-slim` | SHA-256 per architecture, from the release's `SHA256SUMS` |
+| `docker/eclair/` | `eclair-node-0.14.2-3dd8d2d-bin.zip` from ACINQ's GitHub release on `eclipse-temurin:21-jre-noble` | SHA-256 from the release's `SHA256SUMS.asc` |
+
+The build fails if a download does not match its hash. To bump either one, verify the new
+release's signatures first (each Dockerfile says how), then update the version and hashes.
+The first `docker compose up` builds both images (a minute or two); later runs reuse them.
+After changing a Dockerfile, rebuild with `docker compose build bitcoind eclair`.
 
 **The three LND nodes deliberately run two different versions**, so that version-gated UI can be
 checked against a node on either side of a gate without editing the fixture:

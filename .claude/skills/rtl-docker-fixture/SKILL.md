@@ -9,9 +9,11 @@ description: Bring up and use the docker/ regtest fixture (bitcoind + LND alice/
 `bitcoind` + three LND nodes (**alice → bob → carol**) + a **Core Lightning node** (`cln`,
 with a channel to alice) + RTL wired to all four. bob sits in the middle so it accrues
 forwarding history and RTL's routing screens have data; the CLN node gives RTL's Core
-Lightning screens a real backend (it talks to RTL over clnrest with rune auth). LND/bitcoind
-images come from [Polar](https://lightningpolar.com), CLN from `elementsproject/lightningd`
-(all multi-arch, so it works on Apple Silicon). **Dev only; every credential is throwaway.**
+Lightning screens a real backend (it talks to RTL over clnrest with rune auth). LND comes from
+`lightninglabs/lnd`, CLN from `elementsproject/lightningd`; bitcoind (31.1) and Eclair (0.14.2)
+are built locally from official release artifacts, checked against pinned SHA-256s
+(`docker/bitcoind/`, `docker/eclair/`). All multi-arch, so it works on Apple Silicon.
+**Dev only; every credential is throwaway.**
 Full details in `docker/README.md`.
 
 Bring it up (from `docker/`, needs Compose v2 — `docker compose`, not `docker-compose`):
@@ -81,11 +83,11 @@ Key facts when working with the fixture:
   and RTL shows a red "Not Synced to Chain" on the home page. Any fixture left running
   overnight shows this the next morning. Mine one block and it clears — there is nothing to
   debug, and it never happens on a real chain because blocks keep arriving.
-- **Eclair node** (`eclair`, `polarlightning/eclair` — the official `acinq/eclair` image is
-  amd64-only and stale): RTL talks to its HTTP API with basic auth (`lnApiPassword`). Eclair
-  has no wallet of its own — `eclair-wallet-init` creates a dedicated `eclair` bitcoind
-  wallet before it starts, else it grabs the mining wallet. Its channels confirm at 8 blocks
-  (`channel.min-depth-blocks`), not 6. Helper: `bin/e-cli <eclair-cli args>`.
+- **Eclair node** (`eclair`, built from ACINQ's release zip in `docker/eclair/` — the official
+  `acinq/eclair` image is amd64-only and Polar stopped at 0.13.1): RTL talks to its HTTP API
+  with basic auth (`lnApiPassword`). Eclair has no wallet of its own — `eclair-wallet-init`
+  creates a dedicated `eclair` bitcoind wallet before it starts, else it grabs the mining
+  wallet. Its channels confirm at 8 blocks (`channel.min-depth-blocks`), not 6. Helper: `bin/e-cli <eclair-cli args>`.
 
 ## Testing an unreleased branch against the fixture
 

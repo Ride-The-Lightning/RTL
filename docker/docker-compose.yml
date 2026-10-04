@@ -5,8 +5,9 @@
 # Topology is alice -> bob -> carol, so bob forwards payments and RTL's
 # routing/forwarding screens have data in them. See README.md.
 #
-# Node images come from Polar (https://lightningpolar.com), which publishes
-# multi-arch (amd64 + arm64) builds. Nothing is built locally.
+# Node images are multi-arch (amd64 + arm64). bitcoind and eclair are built locally
+# from their projects' official release artifacts (see bitcoind/ and eclair/), because
+# no maintained multi-arch image of a current release exists; the rest are pulled.
 
 volumes:
   bitcoind_data:
@@ -33,7 +34,8 @@ x-lnd: &lnd
 services:
   bitcoind:
     container_name: ${COMPOSE_PROJECT_NAME}_bitcoind
-    image: polarlightning/bitcoind:30.0
+    build: ./bitcoind
+    image: rtldev/bitcoind:31.1
     restart: unless-stopped
     command:
       - bitcoind
@@ -206,7 +208,8 @@ services:
   # bitcoind restarts.
   eclair-wallet-init:
     container_name: ${COMPOSE_PROJECT_NAME}_eclair_wallet_init
-    image: polarlightning/bitcoind:30.0
+    build: ./bitcoind
+    image: rtldev/bitcoind:31.1
     depends_on:
       - bitcoind
     entrypoint: ["/bin/sh", "-c"]
@@ -225,14 +228,14 @@ services:
         echo "eclair wallet ready"
 
   # Eclair node. Talks to RTL over its HTTP API with basic auth (the
-  # lnApiPassword in RTL's config). The polarlightning image is used because
-  # acinq/eclair on Docker Hub is amd64-only and its newest versioned tag is
-  # years stale; Polar builds the same ACINQ source multi-arch (amd64 + arm64).
-  # The image entrypoint translates each --key=value into -Declair.key=value.
-  # The entrypoint also overrides server.public-ips.0 with the container IP, but
-  # the arg must still be present for that substitution to happen.
+  # lnApiPassword in RTL's config). Built from ACINQ's release zip (eclair/):
+  # acinq/eclair on Docker Hub is amd64-only with no current versioned tag, and
+  # Polar stopped at 0.13.1. The entrypoint translates each --key=value into
+  # -Declair.key=value and replaces server.public-ips.0 with the container IP,
+  # so that arg must still be present for the substitution to happen.
   eclair:
-    image: polarlightning/eclair:0.13.1
+    build: ./eclair
+    image: rtldev/eclair:0.14.2
     container_name: ${COMPOSE_PROJECT_NAME}_eclair
     restart: unless-stopped
     depends_on:
@@ -241,7 +244,6 @@ services:
       eclair-wallet-init:
         condition: service_completed_successfully
     command:
-      - polar-eclair
       - --node-alias=eclair
       - --server.public-ips.0=eclair
       - --server.port=9735

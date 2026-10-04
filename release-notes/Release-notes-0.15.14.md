@@ -19,3 +19,17 @@ this release should add its entry under the appropriate section below.
   close transaction is taken from `scratch_txid` and hidden when the peer broadcast the close,
   because `scratch_txid` is then our own unbroadcast commitment. The dialog body now scrolls, so
   the longer content stays reachable on short screens.
+
+## Developer Tooling
+
+- **Docker fixture: Eclair 0.14.2 and Bitcoin Core 31.1, built from official releases**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  [#1689](https://github.com/Ride-The-Lightning/RTL/issues/1689)).
+  The fixture ran Eclair 0.13.1 and bitcoind 30.0 because Polar, whose multi-arch images it
+  used, has published nothing newer, and `acinq/eclair` is amd64-only. Eclair 0.14.1+ also
+  needs Bitcoin Core 31. Both images are now built locally (`docker/eclair/`,
+  `docker/bitcoind/`) from the projects' release artifacts, each checked against a pinned
+  SHA-256 taken from the signed checksum file. Eclair is pinned to 0.14.2 because 0.14.3's
+  checksums are signed with a different key from the one ACINQ documents. Upgrading the
+  fixture surfaced a real Eclair 0.14 incompatibility in RTL, tracked in
+  [#1735](https://github.com/Ride-The-Lightning/RTL/issues/1735).
