@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **Eclair 0.14: payment history, routing fees and forwarding history work again**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1739](https://github.com/Ride-The-Lightning/RTL/pull/1739), closes
   [#1735](https://github.com/Ride-The-Lightning/RTL/issues/1735)).
   Eclair 0.14 reworked its audit database and changed the shape of every `/audit` entry: sent
   parts report `amountWithFees`/`fees`/`channelId`/`settledAt`, received parts
