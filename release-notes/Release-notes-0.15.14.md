@@ -46,6 +46,20 @@ this release should add its entry under the appropriate section below.
   because `scratch_txid` is then our own unbroadcast commitment. The dialog body now scrolls, so
   the longer content stays reachable on short screens.
 
+## Code Health
+
+- **Dev tooling: patched `piscina` and `webpack-dev-middleware` under Angular 20**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); Dependabot alerts #411, #410).
+  `@angular-devkit/build-angular` and `@angular/build` 20.3.37, the newest 20.x, pin
+  `piscina` 5.2.0 (critical: prototype-pollution gadget allowing RCE through worker options) and
+  `webpack-dev-middleware` 7.4.2 (high: path traversal in the dev server). Both are build/dev-server
+  only and not shipped. `package.json` `overrides` now pin them to 5.3.2 and 7.4.6, same major,
+  so the full `npm audit` drops from 3 criticals to 0; production stays at 0, and `frontend/` is
+  byte-identical. Dependabot's own fixes (#1731, #1732) jump to Angular 21/22 and stay open for
+  that migration. Alerts #274 (`uuid` under `sockjs`, which only calls `v4()` without a buffer)
+  and #413 (`http-cache-semantics` under the Angular CLI, no patched release) were dismissed with
+  reasons.
+
 ## Developer Tooling
 
 - **Docker fixture: Eclair 0.14.2 and Bitcoin Core 31.1, built from official releases**
