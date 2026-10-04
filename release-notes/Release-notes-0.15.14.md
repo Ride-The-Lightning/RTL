@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), closes
+  ([#1734](https://github.com/Ride-The-Lightning/RTL/pull/1734), closes
   [#1733](https://github.com/Ride-The-Lightning/RTL/issues/1733)).
   A force-closed Core Lightning channel used to read `ONCHAIN` in Pending/Inactive Channels for
   the whole CSV delay, with no hint of when its funds return to the wallet. The State column now
