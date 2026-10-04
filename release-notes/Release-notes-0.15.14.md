@@ -49,7 +49,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Dev tooling: patched `piscina` and `webpack-dev-middleware` under Angular 20**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); Dependabot alerts #411, #410).
+  ([#1740](https://github.com/Ride-The-Lightning/RTL/pull/1740); Dependabot alerts #411, #410).
   `@angular-devkit/build-angular` and `@angular/build` 20.3.37, the newest 20.x, pin
   `piscina` 5.2.0 (critical: prototype-pollution gadget allowing RCE through worker options) and
   `webpack-dev-middleware` 7.4.2 (high: path traversal in the dev server). Both are build/dev-server
