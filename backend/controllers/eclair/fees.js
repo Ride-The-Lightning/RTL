@@ -7,20 +7,22 @@ const common = Common;
 // Eclair 0.14 reports a relay as incoming[] and outgoing[] parts, each with its own channelId,
 // amount and timestamp, instead of amountIn/amountOut, fromChannelId/toChannelId and settledAt.
 // Fill the older fields in from the parts (amounts stay in msat) so the rest of RTL reads one
-// shape. A relay split over several channels has no single from/to channel: its parts are kept.
+// shape. A relay split over several channels is shown against the channel of its largest part
+// on each side; all parts are kept.
 const fillRelayedFromParts = (relayedEle) => {
     const sumAmounts = (parts) => parts.reduce((total, part) => total + (part.amount || 0), 0);
+    const largestPart = (parts) => parts.reduce((largest, part) => ((part.amount || 0) > (largest.amount || 0) ? part : largest));
     if (relayedEle.amountIn === undefined && Array.isArray(relayedEle.incoming)) {
         relayedEle.amountIn = sumAmounts(relayedEle.incoming);
     }
     if (relayedEle.amountOut === undefined && Array.isArray(relayedEle.outgoing)) {
         relayedEle.amountOut = sumAmounts(relayedEle.outgoing);
     }
-    if (!relayedEle.fromChannelId && relayedEle.incoming?.length === 1) {
-        relayedEle.fromChannelId = relayedEle.incoming[0].channelId;
+    if (!relayedEle.fromChannelId && relayedEle.incoming?.length > 0) {
+        relayedEle.fromChannelId = largestPart(relayedEle.incoming).channelId;
     }
-    if (!relayedEle.toChannelId && relayedEle.outgoing?.length === 1) {
-        relayedEle.toChannelId = relayedEle.outgoing[0].channelId;
+    if (!relayedEle.toChannelId && relayedEle.outgoing?.length > 0) {
+        relayedEle.toChannelId = largestPart(relayedEle.outgoing).channelId;
     }
     if (!relayedEle.settledAt && !relayedEle.timestamp && Array.isArray(relayedEle.outgoing)) {
         const settled = relayedEle.outgoing.map((part) => part.settledAt?.unix).filter((unix) => unix !== undefined);

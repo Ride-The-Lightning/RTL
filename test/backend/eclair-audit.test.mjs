@@ -128,16 +128,20 @@ for (const [version, audit] of [['0.13', AUDIT_V13], ['0.14', AUDIT_V14]]) {
   });
 }
 
-// A relay split over several channels has no single from/to channel; its parts stay listed.
-test('getPayments: an Eclair 0.14 relay over several channels keeps every part', async () => {
+// A relay split over several channels is shown against the channel that carried the most;
+// its parts stay listed. Without a channel, Forwarding History showed 'undefined...'.
+test('getPayments: an Eclair 0.14 relay over several channels uses its largest part per side', async () => {
   const audit = structuredClone(AUDIT_V14);
-  audit.relayed[0].outgoing.push({ channelId: CH_A, remoteNodeId: NODE, amount: 1000, settledAt: ts(nowSec - 20) });
+  audit.relayed[0].incoming.unshift({ channelId: CH_B, remoteNodeId: NODE, amount: 2000, receivedAt: ts(nowSec - 32) });
+  audit.relayed[0].outgoing.unshift({ channelId: CH_A, remoteNodeId: NODE, amount: 1000, settledAt: ts(nowSec - 20) });
   const res = await fetchFrom(getPayments, audit);
   assert.equal(res.statusCode, 200, JSON.stringify(res.body));
   const [relayed] = res.body.relayed;
-  assert.equal(relayed.amountOut, 50001);
-  assert.deepEqual(relayed.outgoing.map((part) => part.channelId), [CH_B, CH_A]);
-  assert.equal(relayed.timestamp, (nowSec - 20) * 1000);
+  assert.deepEqual(
+    { amountIn: relayed.amountIn, amountOut: relayed.amountOut, fromChannelId: relayed.fromChannelId, toChannelId: relayed.toChannelId, timestamp: relayed.timestamp },
+    { amountIn: 50013, amountOut: 50001, fromChannelId: CH_A, toChannelId: CH_B, timestamp: (nowSec - 20) * 1000 }
+  );
+  assert.deepEqual(relayed.outgoing.map((part) => part.channelId), [CH_A, CH_B]);
 });
 
 // Eclair 0.14 removed /channelstats; RTL's route to it had no frontend caller and is gone.
