@@ -54,6 +54,7 @@ const writeConfig = (port) => {
   writeFileSync(join(dir, 'rune'), 'LIGHTNING_RUNE="not-a-real-rune"\n');
   mkdirSync(join(dir, 'backup-1'));
   mkdirSync(join(dir, 'backup-2'));
+  mkdirSync(join(dir, 'backup-3'));
   writeFileSync(join(dir, 'backup-2', 'channel-all.bak'), '');
   const settings = {
     userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', logLevel: 'ERROR',
@@ -78,6 +79,12 @@ const writeConfig = (port) => {
       lnImplementation: 'LND',
       authentication: { macaroonPath: join(dir, 'macaroon'), configPath: '' },
       settings: { ...settings, lnServerUrl: stubs.lnd.url, channelBackupPath: join(dir, 'backup-2') }
+    }, {
+      index: 3,
+      lnNode: 'Eclair',
+      lnImplementation: 'ECL',
+      authentication: { lnApiPassword: 'not-a-real-password' },
+      settings: { ...settings, lnServerUrl: stubs.ecl.url, channelBackupPath: join(dir, 'backup-3') }
     }]
   };
   writeFileSync(join(dir, 'RTL-Config.json'), JSON.stringify(config, null, 2));
@@ -152,13 +159,12 @@ const openBrowser = async () => {
 
 // What a tab does on a node switch: select the node on the session, then fetch its info,
 // which is also where the server sets up the node's request options.
-const IMPLEMENTATION_PATH = { 1: 'cln', 2: 'lnd' };
+const IMPLEMENTATION_PATH = { 1: 'cln', 2: 'lnd', 3: 'ecl' };
 const switchNode = async (browser, currIndex, prevIndex) => {
   const res = await browser.call('GET', '/rtl/api/conf/updateSelNode/' + currIndex + '/' + prevIndex);
   assert.equal(res.status, 200, 'updateSelNode returned ' + res.status);
   await browser.call('GET', '/rtl/api/' + IMPLEMENTATION_PATH[currIndex] + '/getinfo');
-  stubs.cln.hits.length = 0;
-  stubs.lnd.hits.length = 0;
+  Object.values(stubs).forEach((stub) => { stub.hits.length = 0; });
 };
 
 const createInvoice = (browser, withToken) => browser.call('POST', '/rtl/api/cln/invoices', { amount_msat: 40000000, label: 'l', description: '40k-rebalance' }, withToken);
@@ -166,6 +172,7 @@ const createInvoice = (browser, withToken) => browser.call('POST', '/rtl/api/cln
 before(async () => {
   stubs.cln = await startStub(201, { payment_hash: 'ab', bolt11: 'lnbc1' });
   stubs.lnd = await startStub(404, { code: 5, message: 'Not Found', details: [] });
+  stubs.ecl = await startStub(200, { version: '0.14.2', nodeId: '02ab', publicAddresses: [] });
   const port = await freePort();
   configDir = writeConfig(port);
   base = 'http://127.0.0.1:' + port;
@@ -215,4 +222,22 @@ test('a mismatched request without a session token still gets 401, not 409', asy
   await switchNode(browser, 2, -1);
   const res = await createInvoice(browser, false);
   assert.equal(res.status, 401);
+});
+
+test('an Eclair request reaches the Eclair node while the session is on it', async () => {
+  // Control for the /api/ecl mount: a mismatch case alone would still pass with a misspelt
+  // implementation there, since every session would then be refused, Eclair's included.
+  const browser = await openBrowser();
+  await switchNode(browser, 3, -1);
+  const res = await browser.call('GET', '/rtl/api/ecl/getinfo');
+  assert.equal(res.status, 200);
+  assert.deepEqual(stubs.ecl.hits, ['POST /getinfo']);
+});
+
+test('an Eclair request while the session is on CLN is refused', async () => {
+  const browser = await openBrowser();
+  await switchNode(browser, 1, -1);
+  const res = await browser.call('GET', '/rtl/api/ecl/getinfo');
+  assert.equal(res.status, 409, 'expected 409, got ' + res.status);
+  Object.entries(stubs).forEach(([name, stub]) => assert.deepEqual(stub.hits, [], 'the request reached the ' + name + ' stub'));
 });
