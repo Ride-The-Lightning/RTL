@@ -29,6 +29,18 @@ this release should add its entry under the appropriate section below.
   payments made before upgrading no longer appear in RTL. `test/backend/eclair-audit.test.mjs`
   covers both versions.
 
+- **A tab left on one node no longer sends its requests to another node**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1742](https://github.com/Ride-The-Lightning/RTL/issues/1742)).
+  The selected node is stored on the server session, which every tab of a browser shares, while
+  each tab reads it only at page load. After switching to an LND node in one tab, a tab still
+  showing Core Lightning had its requests built from the LND node's settings: creating an
+  invoice called LND's REST URL and failed with "Not Found". The backend now refuses an
+  `/api/lnd`, `/api/cln` or `/api/ecl` request that doesn't match the session node's
+  implementation with a 409 (after authentication, so a logged-out caller still gets 401). The
+  error names the selected node and asks the user to reload the tab, instead of "Not Found".
+  `test/backend/node-implementation-guard.test.mjs` replays the two-tab sequence.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

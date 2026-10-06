@@ -19,6 +19,27 @@ export const isAuthenticated = (req, res, next) => {
   }
 };
 
+// The selected node lives on the session, which every tab of a browser shares, while each tab
+// keeps the node it showed at load. After a switch in one tab, another tab's requests for the
+// old node would run against the new node's settings: a CLN controller would call the LND
+// node's REST URL (issue #1742). Refuse a request whose implementation does not match the
+// session's node, so the tab can re-sync instead. An unauthenticated caller gets the usual 401
+// first, so the reply says nothing about the selected node to someone not logged in.
+const IMPLEMENTATION_ALIASES = { CLT: 'CLN' };
+
+export const isSelectedNodeImplementation = (lnImplementation: string) => (req, res, next) => {
+  const selNodeImplementation = (req.session?.selectedNode?.lnImplementation || '').toUpperCase();
+  if (!selNodeImplementation || (IMPLEMENTATION_ALIASES[selNodeImplementation] || selNodeImplementation) === lnImplementation) {
+    return next();
+  }
+  return isAuthenticated(req, res, () => {
+    const errMsg = 'This page is for ' + lnImplementation + ', but the selected node is ' + req.session.selectedNode.lnNode + ' (' + selNodeImplementation +
+      '). It was probably switched in another tab; reload this page.';
+    const err = common.handleError({ statusCode: 409, message: 'Selected Node Mismatch', error: errMsg }, 'AuthCheck', 'Selected Node Mismatch', req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  });
+};
+
 export const verifyWSUser = (info, next) => {
   const headers = JSON.parse(JSON.stringify(info.req.headers));
   const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());

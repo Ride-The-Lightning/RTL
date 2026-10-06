@@ -6,6 +6,7 @@ import { join, dirname, posix } from 'path';
 import { fileURLToPath } from 'url';
 import CORS from './cors.js';
 import CSRF from './csrf.js';
+import { isSelectedNodeImplementation } from './authCheck.js';
 
 import sharedRoutes from '../routes/shared/index.js';
 import lndRoutes from '../routes/lnd/index.js';
@@ -72,9 +73,9 @@ export class ExpressApplication {
   public setApplicationRoutes = () => {
     this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'App', msg: 'Setting up Application Routes..' });
     this.app.use(this.common.baseHref + '/api', sharedRoutes);
-    this.app.use(this.common.baseHref + '/api/lnd', lndRoutes);
-    this.app.use(this.common.baseHref + '/api/cln', clnRoutes);
-    this.app.use(this.common.baseHref + '/api/ecl', eclRoutes);
+    this.app.use(this.common.baseHref + '/api/lnd', isSelectedNodeImplementation('LND'), lndRoutes);
+    this.app.use(this.common.baseHref + '/api/cln', isSelectedNodeImplementation('CLN'), clnRoutes);
+    this.app.use(this.common.baseHref + '/api/ecl', isSelectedNodeImplementation('ECL'), eclRoutes);
     // index: false leaves the directory index (GET baseHref/) to the catch-all below. Served
     // by express.static it went out without the XSRF-TOKEN cookie, which only the catch-all
     // mints, so a visitor entering at /rtl/ failed their first POST with 403 (issue #1710).
