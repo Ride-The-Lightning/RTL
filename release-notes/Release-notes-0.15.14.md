@@ -30,7 +30,7 @@ this release should add its entry under the appropriate section below.
   covers both versions.
 
 - **A tab left on one node no longer sends its requests to another node**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1743](https://github.com/Ride-The-Lightning/RTL/pull/1743), fixes
   [#1742](https://github.com/Ride-The-Lightning/RTL/issues/1742)).
   The selected node is stored on the server session, which every tab of a browser shares, while
   each tab reads it only at page load. After switching to an LND node in one tab, a tab still
