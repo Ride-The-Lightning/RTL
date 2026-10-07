@@ -1,0 +1,32 @@
+name: PR CI
+
+# Runs the full Lint & Test suite (checks.yml) on an open pull request, but only once a
+# maintainer approves it. Every push queues a run that waits on the pr-ci environment, whose
+# required reviewers are set in the repository settings; approve it from the PR ("Review
+# pending deployments") when the review cycles are done. Nothing runs before that, and a newer
+# push cancels the run still waiting. checks.yml itself still runs on merge, without approval.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ master, 'Release-*' ]
+
+concurrency:
+  group: pr-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  approve:
+    name: Maintainer approval
+    runs-on: ubuntu-latest
+    environment: pr-ci
+    steps:
+      - name: Approved
+        run: echo "Approved by a pr-ci reviewer; running checks on ${{ github.sha }}."
+
+  checks:
+    name: Lint & Test
+    needs: approve
+    uses: ./.github/workflows/checks.yml

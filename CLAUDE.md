@@ -67,10 +67,13 @@ frequently do, since the controllers were written in parallel.
   `ERESOLVE` conflict from `@fortawesome/angular-fontawesome`.
 - **`npm run server` only works on Windows** — it sets `NODE_ENV` with `set X=Y&&` syntax. On
   macOS/Linux use `npm run serverUbuntu`.
-- **`npm run lint` and `npm run test` must both be green before a PR.** Nothing will check
-  this for you: no build or test CI runs on an open PR. `checks.yml` fires on
-  `pull_request: closed` (i.e. on merge) and on tags/releases, and `rtlreviewbot` only on a
-  requested review or a comment — so running both locally is the only gate before merge.
+- **`npm run lint` and `npm run test` must both be green before a PR.** CI on an open PR
+  does not start by itself: every push queues `pr-ci.yml`, which waits on the `pr-ci`
+  environment until a maintainer (its required reviewers) approves it from the PR, usually
+  once the review cycles are done, and then runs the whole of `checks.yml` on the PR merged
+  into its base. `checks.yml` also fires on `pull_request: closed` (i.e. on merge) and on
+  tags/releases, and `rtlreviewbot` only on a requested review or a comment. So until a
+  maintainer approves the PR run, running both locally is the only check.
 - If lint reports hundreds of template "Parsing error" failures, look for a stale
   **`coverage/`** directory (git-ignored Karma output). The template linter walks its HTML
   report. Delete it and re-run.
