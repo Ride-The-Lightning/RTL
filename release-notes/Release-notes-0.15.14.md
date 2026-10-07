@@ -56,7 +56,7 @@ this release should add its entry under the appropriate section below.
   unreadable macaroon, a failing backup call, an empty response and overlapping refreshes.
 
 - **An expired session sends you back to login instead of failing with an empty 400**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1746](https://github.com/Ride-The-Lightning/RTL/pull/1746)).
   The login token can outlive its server session (the cookie was dropped, or the session expired
   while the token survived). Such a request reaches the handlers with no selected node, and
   `updateSelectedNodeOptions` (`server/utils/common.ts`) put an empty `{}` node on the session,
