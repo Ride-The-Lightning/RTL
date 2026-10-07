@@ -94,7 +94,7 @@ this release should add its entry under the appropriate section below.
   `prevNodeIndex` of `-1`, another node, or `undefined`, and reselecting the current node.
 
 - **LND and Eclair: follow-up node calls use their own request's options**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to
+  ([#1750](https://github.com/Ride-The-Lightning/RTL/pull/1750); follow-up to
   [#1725](https://github.com/Ride-The-Lightning/RTL/pull/1725)).
   Several controllers kept the request's options in one module-level variable that every request
   reassigns, and read it again after the node answered to make follow-up calls, so on a
