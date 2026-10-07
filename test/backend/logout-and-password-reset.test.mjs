@@ -150,12 +150,23 @@ after(async () => {
   if (configDir) { rmSync(configDir, { recursive: true, force: true }); }
 });
 
+// The CSRF token is bound to the session id, so a CSRF-valid logout POST with the same cookies
+// only goes through while that session still exists (see the own-logout test's second POST).
+const ownLogout = (jar, token) => fetch(base + '/rtl/api/authenticate/logout', {
+  method: 'POST',
+  headers: { cookie: jar.header(), 'x-xsrf-token': jar.get('XSRF-TOKEN'), authorization: 'Bearer ' + token, 'content-type': 'application/json' },
+  body: '{}'
+});
+
 test('a cross-site GET to logout does not end the session', async () => {
-  const { jar, status } = await signedIn();
+  const { jar, status, token } = await signedIn();
   assert.equal(status, 200, 'setup: login');
   // What a link or top-level navigation from another site sends: the session cookie only.
   const res = await fetch(base + '/rtl/api/authenticate/logout', { headers: { cookie: jar.header() }, redirect: 'manual' });
   assert.equal(await loggedOut(res), false, 'GET logout still ends the session');
+  // And the session is still there: its own logout goes through.
+  const after = await ownLogout(jar, token);
+  assert.equal(await loggedOut(after), true, 'the session did not survive the GET (status ' + after.status + ')');
 });
 
 test('a logout POST without the CSRF token is refused', async () => {
@@ -166,12 +177,13 @@ test('a logout POST without the CSRF token is refused', async () => {
 
 test("RTL's own logout, a POST with the CSRF token, ends the session", async () => {
   const { jar, token } = await signedIn();
-  const res = await fetch(base + '/rtl/api/authenticate/logout', {
-    method: 'POST',
-    headers: { cookie: jar.header(), 'x-xsrf-token': jar.get('XSRF-TOKEN'), authorization: 'Bearer ' + token, 'content-type': 'application/json' },
-    body: '{}'
-  });
+  const res = await ownLogout(jar, token);
   assert.equal(await loggedOut(res), true, 'status ' + res.status);
+  // The session is gone: the same cookies no longer carry a valid token, so this check tells a
+  // live session from an ended one.
+  const again = await ownLogout(jar, token);
+  assert.equal(await loggedOut(again), false, 'a second logout with the same cookies still went through');
+  assert.equal(again.status, 403);
 });
 
 const reset = (session, newPassword) => fetch(base + '/rtl/api/authenticate/reset', {
