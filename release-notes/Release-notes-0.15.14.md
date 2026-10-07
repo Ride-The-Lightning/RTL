@@ -117,7 +117,9 @@ this release should add its entry under the appropriate section below.
   skips an invoice it is already watching, including one just added, and forgets it when the long
   poll ends, so a still-open invoice is subscribed again on the next getinfo. A long poll whose
   connection dies without closing never ends, so past 10 minutes the next getinfo aborts it:
-  it is replaced if the invoice is still open, or dropped if it no longer is. One opened against
+  it is replaced if the invoice is still open, or dropped if it no longer is (judged only from a
+  pending list shorter than the 100-invoice page RTL now asks for, since a full page may leave
+  pending invoices out). One opened against
   a server URL the node no longer uses is replaced too. `request()` now passes an abort
   `signal` through to axios for this.
   `test/backend/lnd-invoice-subscriptions.test.mjs` covers repeated getinfo, a stream ending with

@@ -22,6 +22,9 @@ export class LNDWebSocketClient {
   // it never settles. Past this age the next getinfo aborts it: it subscribes again to an
   // invoice that is still open, and drops one that no longer is.
   private invoiceSubscriptionMaxAgeMs = 10 * 60 * 1000;
+  // The pending invoices are listed one page at a time; ask for this many explicitly so a full
+  // page can be told apart from a complete list.
+  private pendingInvoicesPageSize = 100;
 
   private invoiceSubscriptionKey = (selectedNode: SelectedNode, rHash: string) => selectedNode.index + ':' + rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
 
@@ -49,7 +52,7 @@ export class LNDWebSocketClient {
   public fetchUnpaidInvoices = (selectedNode: SelectedNode) => {
     this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Getting Unpaid Invoices..' });
     const options = this.setOptionsForSelNode(selectedNode);
-    options.url = selectedNode.settings.lnServerUrl + '/v1/invoices?pending_only=true';
+    options.url = selectedNode.settings.lnServerUrl + '/v1/invoices?pending_only=true&num_max_invoices=' + this.pendingInvoicesPageSize;
     return request(options).then((body) => {
       this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Unpaid Invoices Received', data: body });
       if (body.invoices && body.invoices.length > 0) {
@@ -59,7 +62,10 @@ export class LNDWebSocketClient {
           }
         });
       }
-      this.dropExpiredInvoiceSubscriptions(selectedNode, body.invoices || []);
+      // A full page may leave pending invoices out, so only a shorter one says what is no longer pending.
+      if ((body.invoices || []).length < this.pendingInvoicesPageSize) {
+        this.dropExpiredInvoiceSubscriptions(selectedNode, body.invoices || []);
+      }
       return null;
     }).catch((errRes) => {
       const err = this.common.handleError(errRes, 'WebSocketClient', 'Pending Invoices Error', selectedNode);

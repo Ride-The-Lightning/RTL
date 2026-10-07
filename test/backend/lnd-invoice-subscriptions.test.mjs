@@ -260,3 +260,27 @@ test('a stream for an invoice no longer pending is aborted once past the limit, 
     await lnd.close();
   }
 });
+
+// The pending list comes back one page at a time. When the page is full there may be pending
+// invoices beyond it, so an invoice missing from it is not known to be settled: keep its stream.
+test('a full page of pending invoices does not drop streams for invoices missing from it', { timeout: 10000 }, async () => {
+  mock.timers.enable({ apis: ['Date'], now: Date.now() });
+  const lnd = await startFakeLnd();
+  const node = makeNode(20, lnd.url);
+  try {
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(openStreams(lnd), 3, 'setup: three subscriptions open');
+
+    // A full page (100) without invoice 1: 2 and 3 still OPEN, 98 held invoices (not subscribed).
+    const held = Array.from({ length: 98 }, (_, i) => ({ r_hash: hashOf(100 + i), state: 'ACCEPTED' }));
+    lnd.state.invoices = [...OPEN.slice(1), ...held];
+    mock.timers.tick(11 * 60 * 1000);
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes[0].closed, false, 'a stream was dropped on a list that may be cut off');
+  } finally {
+    mock.timers.reset();
+    await lnd.close();
+  }
+});
