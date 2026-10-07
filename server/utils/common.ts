@@ -644,10 +644,16 @@ export class CommonService {
         this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.lnNode + ': empty backup received' });
         return;
       }
-      const temp_backup_file = channel_backup_file + '.tmp';
+      // Overlapping getinfo calls refresh the same node at once, so each write gets its own temp
+      // file: a shared one could be renamed away under another write still in progress.
+      const temp_backup_file = channel_backup_file + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
+      const discardTemp = (err) => {
+        fs.unlink(temp_backup_file, () => { });
+        this.logChannelBackupResult(node, channel_backup_file, body, err);
+      };
       fs.writeFile(temp_backup_file, JSON.stringify(body), (writeErr) => {
-        if (writeErr) { return this.logChannelBackupResult(node, channel_backup_file, body, writeErr); }
-        fs.rename(temp_backup_file, channel_backup_file, (err) => this.logChannelBackupResult(node, channel_backup_file, body, err));
+        if (writeErr) { return discardTemp(writeErr); }
+        fs.rename(temp_backup_file, channel_backup_file, (err) => (err ? discardTemp(err) : this.logChannelBackupResult(node, channel_backup_file, body, null)));
       });
     }, (err) => {
       this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.lnNode, error: err });

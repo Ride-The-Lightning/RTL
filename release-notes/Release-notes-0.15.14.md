@@ -51,8 +51,9 @@ this release should add its entry under the appropriate section below.
   selected. `getAllNodeAllChannelBackup` (`server/utils/common.ts`) now logs and skips a node
   whose macaroon cannot be read, leaves the stored file alone when the backup call fails or
   returns nothing, and writes a new backup to a temp file renamed over the old one, so a failed
-  write cannot truncate it either. `test/backend/lnd-getinfo-backup.test.mjs` covers the
-  unreadable macaroon, a failing backup call and an empty response.
+  write cannot truncate it either. Each write gets its own temp file, since overlapping getinfo
+  calls refresh the same node at once. `test/backend/lnd-getinfo-backup.test.mjs` covers the
+  unreadable macaroon, a failing backup call, an empty response and overlapping refreshes.
 
 ## Enhancements
 
