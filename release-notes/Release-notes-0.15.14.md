@@ -129,7 +129,7 @@ this release should add its entry under the appropriate section below.
   nodes.
 
 - **Logout is a POST under the CSRF check, and a password reset needs a string**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1752](https://github.com/Ride-The-Lightning/RTL/pull/1752)).
   - `GET /api/authenticate/logout` ended the session with no check at all, so a link or page on
     another site could log a user out. Logout is now `POST /api/authenticate/logout`, which the
     CSRF check covers (`server/routes/shared/authenticate.ts`), and the frontend's logout effect
