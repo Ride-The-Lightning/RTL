@@ -108,6 +108,17 @@ this release should add its entry under the appropriate section below.
   `test/backend/cross-session-options.test.mjs` overlaps two sessions on two nodes for each of
   the nine affected handlers.
 
+- **LND: one invoice subscription per open invoice, not one per getinfo**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Every successful LND getinfo, which the UI polls, fetched the node's open invoices and opened a
+  new `/v2/invoices/subscribe` long poll for each, with no timeout, whether or not one was
+  already open, so the open connections to the node grew with every call. `subscribeToInvoice`
+  (`server/controllers/lnd/webSocketClient.ts`) now keeps the open subscriptions per node and
+  skips an invoice it is already watching, including one just added, and forgets it when the long
+  poll ends, so a still-open invoice is subscribed again on the next getinfo.
+  `test/backend/lnd-invoice-subscriptions.test.mjs` covers repeated getinfo, a stream ending with
+  an error or an update, a newly added invoice already being watched, and two nodes.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
