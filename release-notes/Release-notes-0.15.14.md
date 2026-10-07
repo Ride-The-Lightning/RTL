@@ -116,11 +116,14 @@ this release should add its entry under the appropriate section below.
   (`server/controllers/lnd/webSocketClient.ts`) now keeps the open subscriptions per node and
   skips an invoice it is already watching, including one just added, and forgets it when the long
   poll ends, so a still-open invoice is subscribed again on the next getinfo. A long poll whose
-  connection dies without closing never ends, so one older than 10 minutes is aborted and
-  replaced on the next getinfo (`request()` now passes an abort `signal` through to axios).
+  connection dies without closing never ends, so past 10 minutes the next getinfo aborts it:
+  it is replaced if the invoice is still open, or dropped if it no longer is. One opened against
+  a server URL the node no longer uses is replaced too. `request()` now passes an abort
+  `signal` through to axios for this.
   `test/backend/lnd-invoice-subscriptions.test.mjs` covers repeated getinfo, a stream ending with
-  an error or an update, a newly added invoice already being watched, replacement after the age
-  limit, a changed server URL, and two nodes.
+  an error (reported to the browser) or an update, a newly added invoice already being watched,
+  replacement after the age limit, an invoice no longer pending, a changed server URL, and two
+  nodes.
 
 ## Enhancements
 
