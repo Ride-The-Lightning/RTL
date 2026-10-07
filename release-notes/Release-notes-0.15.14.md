@@ -132,10 +132,12 @@ this release should add its entry under the appropriate section below.
   tests) only ran after a merge, so a PR's last assurance before merging was whatever had been
   run locally. A new `pr-ci.yml` queues the same jobs on every push to a PR against `master` or
   a `Release-*` branch, behind a `pr-ci` environment whose required reviewers approve the run
-  from the PR, typically once the review cycles are done. Nothing runs before approval, a newer
-  push cancels the run still waiting, and the PR is tested merged into its base branch.
-  `checks.yml` gains a `workflow_call` trigger so both workflows share one set of jobs, and still
-  runs on merge without approval.
+  from the PR, typically once the review cycles are done. Nothing runs before approval, and a
+  newer push cancels the run still waiting. The run tests the PR merged into its base as of
+  that push, so if the base branch has moved, push again or close and reopen the PR before
+  approving. No run is queued while the PR has a merge conflict, or for a retarget without a
+  push. `checks.yml` gains a `workflow_call` trigger so both workflows share one set of jobs,
+  and still runs on merge without approval.
 
 - **CI: fail when the committed `backend/` doesn't match `server/`**
   ([#1747](https://github.com/Ride-The-Lightning/RTL/pull/1747)).
