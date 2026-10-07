@@ -84,12 +84,14 @@ this release should add its entry under the appropriate section below.
     session's page settings failed with a 500 until it selected the node again (Core Lightning
     offer bookmarks live in the same database). A session not registered on the node is now
     left out, and the database unloaded is the one for the node the session was actually on,
-    not the client's `prevNodeIndex`. A page reload sends `-1` there, which used to leave the
-    session registered on its previous node, so that database was never unloaded.
+    not the client's `prevNodeIndex`. A page reload sends `-1` there, so a reload that landed on
+    a different node used to leave the session registered on its previous one, whose database
+    was then never unloaded. Reselecting the node the session is already on keeps its database
+    loaded instead of reading it back from disk.
 
   `test/backend/node-selection.test.mjs` covers unknown, zero, non-numeric and fractional
-  indexes, a normal switch, a session leaving a node it never had, and switching away with a
-  `prevNodeIndex` of `-1`, another node, or `undefined`.
+  indexes, a normal switch, a session leaving a node it never had, switching away with a
+  `prevNodeIndex` of `-1`, another node, or `undefined`, and reselecting the current node.
 
 ## Enhancements
 
