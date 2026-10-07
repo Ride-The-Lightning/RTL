@@ -72,7 +72,7 @@ test('GET /api/conf stays reachable without a session token', async () => {
 const PUBLIC_ROUTES = new Set([
   'shared/authenticate POST /',
   'shared/authenticate POST /token',
-  'shared/authenticate GET /logout',
+  'shared/authenticate POST /logout',
   'shared/RTLConf GET /',
   'shared/RTLConf GET /rates'
 ]);

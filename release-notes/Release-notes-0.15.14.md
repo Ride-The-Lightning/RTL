@@ -128,6 +128,25 @@ this release should add its entry under the appropriate section below.
   replacement after the age limit, an invoice no longer pending, a changed server URL, and two
   nodes.
 
+- **Logout is a POST under the CSRF check, and a password reset needs a string**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  - `GET /api/authenticate/logout` ended the session with no check at all, so a link or page on
+    another site could log a user out. Logout is now `POST /api/authenticate/logout`, which the
+    CSRF check covers (`server/routes/shared/authenticate.ts`), and the frontend's logout effect
+    posts to it (`src/app/store/rtl.effects.ts`; `frontend/` rebuilt, and the bundle differs by
+    that one call). It still needs no session token, since RTL also logs out after one has
+    failed.
+  - `resetPassword` (`server/controllers/shared/authenticate.ts`) stored `newPassword` as it came.
+    A value that was not a string could never equal the one a login sends, so password login
+    stopped working, also after a restart. A `newPassword` that is not a non-empty string is now
+    refused with a 400.
+
+  `test/backend/logout-and-password-reset.test.mjs` runs `rtl.js` with CSRF on: a cross-site GET
+  no longer logs out, a POST without the token gets a 403, RTL's own POST logs out, a reset to
+  `{}`, `123`, `''`, `null` or `["x"]` is refused and the password still works, and a valid reset
+  still works. `route-guards.test.mjs` lists logout as `POST` among the routes the login page
+  needs without a session token.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

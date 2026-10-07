@@ -8,5 +8,7 @@ router.post('/token', verifyToken);
 // Password changes mint a fresh session token, so the route requires an existing
 // authenticated session; the frontend interceptor attaches it for the settings UI.
 router.post('/reset', isAuthenticated, resetPassword);
-router.get('/logout', logoutUser);
+// A POST, so the CSRF check applies: as a GET, a link or page on another site could end a
+// logged-in user's session. It needs no session token, as logout also follows a failed one.
+router.post('/logout', logoutUser);
 export default router;

@@ -229,6 +229,12 @@ export const resetPassword = (req, res, next) => {
     const errMsg = 'Password cannot be reset for SSO authentication';
     const err = common.handleError({ statusCode: 401, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
+  } else if (typeof newPassword !== 'string' || newPassword === '') {
+    // The new value is stored as it comes and a login compares strings, so anything else would
+    // leave no password that can log in, also after a restart.
+    const errMsg = 'New password must be a non-empty string.';
+    const err = common.handleError({ statusCode: 400, message: 'Password Reset Error', error: errMsg }, 'Authenticate', errMsg, req.session.selectedNode);
+    return res.status(err.statusCode).json({ message: err.message, error: err.error });
   } else {
     if (common.appConfig.rtlPass === currPassword) {
       common.appConfig.rtlPass = common.replacePasswordWithHash(newPassword);
