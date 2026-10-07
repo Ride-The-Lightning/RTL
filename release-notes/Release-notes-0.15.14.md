@@ -127,7 +127,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **CI: run the full checks on an open PR, once a maintainer approves**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1749](https://github.com/Ride-The-Lightning/RTL/pull/1749)).
   `checks.yml` (lint on four Node versions, the `backend/` comparison, backend and frontend
   tests) only ran after a merge, so a PR's last assurance before merging was whatever had been
   run locally. A new `pr-ci.yml` queues the same jobs on every push to a PR against `master` or
