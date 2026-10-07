@@ -29,6 +29,13 @@ npm run buildfrontend    # ng build --configuration production: src/ -> frontend
 a dependency bump alone won't move it. `frontend/` is a bundle, so it also carries the app
 version and any bundled dependency.
 
+Forgetting to commit `backend/` passes every test, because the tests, the Docker image and CI
+all compile `server/` afresh, while a git install runs the committed copy (#1745 shipped that
+way). `checks.yml` therefore compiles into an empty `backend/` and fails if anything differs
+from the commit. To check before pushing:
+`rm -rf backend && npm run buildbackend && git status --short -- backend/` (empty when in sync).
+When checking what earlier PRs committed, use `git show --stat <sha>` with no path filter.
+
 **Never merge a contributor's `frontend/` or `backend/` as submitted — regenerate them.**
 Committed build output is the one part of an external PR that cannot be reviewed by reading
 the diff: `main.*.js` is ~3 MB of minified code that GitHub collapses, so a PR whose `src/`
