@@ -26,6 +26,8 @@ const buildConfig = (options, method: string) => {
   if (options.baseUrl) { config.baseURL = options.baseUrl; }
   if (options.qs && Object.keys(options.qs).length > 0) { config.params = options.qs; }
   if (options.rejectUnauthorized === false) { config.httpsAgent = insecureAgent; }
+  // Lets a caller abort a call it no longer wants, such as an unbounded long poll it replaces.
+  if (options.signal) { config.signal = options.signal; }
   if (options.form !== null && options.form !== undefined) {
     if (typeof options.form === 'string') {
       // Pre-encoded (or raw JSON string for LND's wallet endpoints), send as-is.

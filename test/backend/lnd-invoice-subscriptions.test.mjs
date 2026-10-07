@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import test, { after, afterEach, beforeEach } from 'node:test';
+import test, { after, afterEach, beforeEach, mock } from 'node:test';
 
 import { getInfo } from '../../backend/controllers/lnd/getInfo.js';
 import { addInvoice } from '../../backend/controllers/lnd/invoices.js';
@@ -43,7 +43,9 @@ const startFakeLnd = async () => {
     req.on('end', () => {
       const path = req.url.split('?')[0];
       if (path.startsWith('/v2/invoices/subscribe/')) {
-        subscribes.push({ hash: path.slice('/v2/invoices/subscribe/'.length), res });
+        const sub = { hash: path.slice('/v2/invoices/subscribe/'.length), res, closed: false };
+        res.on('close', () => { sub.closed = true; });
+        subscribes.push(sub);
         return;
       }
       res.setHeader('Content-Type', 'application/json');
@@ -94,7 +96,7 @@ const invoke = (handler, req) => new Promise((resolve, reject) => {
 // Subscriptions are opened after getinfo has answered, without being awaited.
 const settle = () => new Promise((resolve) => setTimeout(resolve, 300));
 
-const openStreams = (lnd) => lnd.subscribes.filter((s) => !s.res.writableEnded).length;
+const openStreams = (lnd) => lnd.subscribes.filter((s) => !s.closed).length;
 
 test('repeated getinfo opens one subscription per open invoice, not one per call', { timeout: 10000 }, async () => {
   const lnd = await startFakeLnd();
@@ -168,5 +170,54 @@ test('the same invoice on two nodes is watched on each', { timeout: 10000 }, asy
   } finally {
     await lndA.close();
     await lndB.close();
+  }
+});
+
+// A long poll can die without its connection closing (a NAT or proxy dropping it), and then it
+// never settles. Past the age limit the next getinfo aborts it and subscribes again, without
+// telling the browser about an error and without leaving the old stream open.
+test('a subscription older than the limit is replaced on the next getinfo, not duplicated', { timeout: 10000 }, async () => {
+  mock.timers.enable({ apis: ['Date'], now: Date.now() });
+  const lnd = await startFakeLnd();
+  const node = makeNode(17, lnd.url);
+  const sent = [];
+  WSServer.webSocketServer = { clients: new Set([{ clientNodeIndex: 17, send: (m) => sent.push(m) }]) };
+  try {
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes.length, 3, 'setup: three subscriptions open');
+
+    mock.timers.tick(9 * 60 * 1000);
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes.length, 3, 'replaced before the limit');
+
+    mock.timers.tick(2 * 60 * 1000);
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes.length, 6, 'subscriptions opened: ' + lnd.subscribes.map((s) => s.hash).join(', '));
+    assert.equal(openStreams(lnd), 3, 'old streams left open');
+    assert.deepEqual(lnd.subscribes.slice(0, 3).map((s) => s.closed), [true, true, true]);
+    assert.deepEqual(sent, [], 'replacing a stream was reported to the browser');
+  } finally {
+    mock.timers.reset();
+    await lnd.close();
+  }
+});
+
+test('a node whose server URL changed is subscribed on the new server', { timeout: 10000 }, async () => {
+  const lndOld = await startFakeLnd();
+  const lndNew = await startFakeLnd();
+  try {
+    await invoke(getInfo, { session: { selectedNode: makeNode(18, lndOld.url) } });
+    await settle();
+    assert.equal(lndOld.subscribes.length, 3, 'setup: three subscriptions open on the old server');
+
+    await invoke(getInfo, { session: { selectedNode: makeNode(18, lndNew.url) } });
+    await settle();
+    assert.equal(lndNew.subscribes.length, 3, 'subscriptions on the new server: ' + lndNew.subscribes.length);
+  } finally {
+    await lndOld.close();
+    await lndNew.close();
   }
 });
