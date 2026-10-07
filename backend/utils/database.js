@@ -340,8 +340,14 @@ export class DatabaseAdapter {
             this.userSessions.push(id);
         }
     }
+    // The node index being left comes from the client, so the session may not be registered on
+    // this node at all. findIndex then returns -1, and splice(-1, 1) would remove the last
+    // session instead, letting one session unload a database another is still using.
     removeSession(sessionID = '') {
-        this.userSessions.splice(this.userSessions.findIndex((sId) => sId === sessionID), 1);
+        const sessionIdx = this.userSessions.findIndex((sId) => sId === sessionID);
+        if (sessionIdx >= 0) {
+            this.userSessions.splice(sessionIdx, 1);
+        }
     }
 }
 export const Database = new DatabaseService();
