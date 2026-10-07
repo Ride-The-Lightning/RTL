@@ -89,7 +89,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **CI: fail when the committed `backend/` doesn't match `server/`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1747](https://github.com/Ride-The-Lightning/RTL/pull/1747)).
   RTL runs the committed `backend/`, but the backend tests, the Docker image and CI all compile
   `server/` afresh, so a PR that forgets to commit the regenerated output passes everything.
   [#1745](https://github.com/Ride-The-Lightning/RTL/pull/1745) merged that way, and its compiled
