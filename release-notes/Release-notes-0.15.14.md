@@ -41,6 +41,19 @@ this release should add its entry under the appropriate section below.
   error names the selected node and asks the user to reload the tab, instead of "Not Found".
   `test/backend/node-implementation-guard.test.mjs` replays the two-tab sequence.
 
+- **LND: one node's failed channel backup no longer breaks another node or wipes its own backup**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Every LND getinfo refreshes `channel-all.bak` for every configured LND node, not only the
+  selected one. When a node's backup call failed (node down, LND error), RTL overwrote that
+  node's stored `channel-all.bak` with an empty file, losing the last good backup just when the
+  node was in trouble. And when any node's `admin.macaroon` could not be read, the unguarded
+  read threw out of getinfo, so the dashboard failed with a 400 for whichever healthy node was
+  selected. `getAllNodeAllChannelBackup` (`server/utils/common.ts`) now logs and skips a node
+  whose macaroon cannot be read, leaves the stored file alone when the backup call fails or
+  returns nothing, and writes a new backup to a temp file renamed over the old one, so a failed
+  write cannot truncate it either. `test/backend/lnd-getinfo-backup.test.mjs` covers the
+  unreadable macaroon, a failing backup call and an empty response.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
