@@ -62,7 +62,10 @@ export class LNDWebSocketClient {
           }
         });
       }
-      // A full page may leave pending invoices out, so only a shorter one says what is no longer pending.
+      // A full page may leave pending invoices out, so only a shorter one says what is no longer
+      // pending. On a node whose pending list always fills the page, a stream that hung and whose
+      // invoice was then settled or cancelled is therefore not dropped and stays until restart;
+      // paging through the whole list would close that gap.
       if ((body.invoices || []).length < this.pendingInvoicesPageSize) {
         this.dropExpiredInvoiceSubscriptions(selectedNode, body.invoices || []);
       }

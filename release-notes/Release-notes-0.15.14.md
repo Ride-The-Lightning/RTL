@@ -119,7 +119,8 @@ this release should add its entry under the appropriate section below.
   connection dies without closing never ends, so past 10 minutes the next getinfo aborts it:
   it is replaced if the invoice is still open, or dropped if it no longer is (judged only from a
   pending list shorter than the 100-invoice page RTL now asks for, since a full page may leave
-  pending invoices out). One opened against
+  pending invoices out; on a node with 100 or more pending invoices that cleanup does not run,
+  and such a hung stream stays until RTL restarts). One opened against
   a server URL the node no longer uses is replaced too. `request()` now passes an abort
   `signal` through to axios for this.
   `test/backend/lnd-invoice-subscriptions.test.mjs` covers repeated getinfo, a stream ending with
