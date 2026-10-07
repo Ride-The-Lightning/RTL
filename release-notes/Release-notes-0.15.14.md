@@ -69,7 +69,7 @@ this release should add its entry under the appropriate section below.
   handlers, each twice in a row on the same session.
 
 - **Switching nodes can no longer break the login page or another session's saved settings**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1748](https://github.com/Ride-The-Lightning/RTL/pull/1748)).
   Two defects in `GET /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`, which any logged-in
   session calls:
   - `updateSelectedNode` (`server/controllers/shared/RTLConf.ts`) stored the node for
