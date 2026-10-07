@@ -141,8 +141,9 @@ this release should add its entry under the appropriate section below.
     stopped working, also after a restart. A `newPassword` that is not a non-empty string is now
     refused with a 400.
 
-  `test/backend/logout-and-password-reset.test.mjs` runs `rtl.js` with CSRF on: a cross-site GET
-  no longer logs out, a POST without the token gets a 403, RTL's own POST logs out, a reset to
+  `test/backend/logout-and-password-reset.test.mjs` runs `rtl.js` with CSRF on: after a
+  cross-site GET the session still works, a POST without the token gets a 403, RTL's own POST
+  logs out (and the same cookies are then refused), a reset to
   `{}`, `123`, `''`, `null` or `["x"]` is refused and the password still works, and a valid reset
   still works. `route-guards.test.mjs` lists logout as `POST` among the routes the login page
   needs without a session token.
