@@ -126,6 +126,17 @@ this release should add its entry under the appropriate section below.
 
 ## Developer Tooling
 
+- **CI: run the full checks on an open PR, once a maintainer approves**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  `checks.yml` (lint on four Node versions, the `backend/` comparison, backend and frontend
+  tests) only ran after a merge, so a PR's last assurance before merging was whatever had been
+  run locally. A new `pr-ci.yml` queues the same jobs on every push to a PR against `master` or
+  a `Release-*` branch, behind a `pr-ci` environment whose required reviewers approve the run
+  from the PR, typically once the review cycles are done. Nothing runs before approval, a newer
+  push cancels the run still waiting, and the PR is tested merged into its base branch.
+  `checks.yml` gains a `workflow_call` trigger so both workflows share one set of jobs, and still
+  runs on merge without approval.
+
 - **CI: fail when the committed `backend/` doesn't match `server/`**
   ([#1747](https://github.com/Ride-The-Lightning/RTL/pull/1747)).
   RTL runs the committed `backend/`, but the backend tests, the Docker image and CI all compile

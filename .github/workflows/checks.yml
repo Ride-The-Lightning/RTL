@@ -11,6 +11,8 @@ on:
     branches: [ master, 'Release-*' ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+  # Lets pr-ci.yml run the same jobs on an open pull request once a maintainer approves.
+  workflow_call:
 
 jobs:
   prepare:
