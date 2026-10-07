@@ -104,5 +104,19 @@ jobs:
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
+      # backend/ is committed and is what RTL runs, but every test compiles server/ afresh, so
+      # a PR that forgets to commit the regenerated output passes them all. Compile into an
+      # empty backend/ and compare with the commit: a changed, missing or leftover file fails.
+      - name: Check committed backend/ matches server/
+        run: |
+          rm -rf backend
+          npm run buildbackend
+          if [ -n "$(git status --porcelain -- backend/)" ]; then
+            echo "::error::backend/ does not match a fresh build of server/. Run 'npm run buildbackend' and commit backend/."
+            git status --short -- backend/
+            git diff --stat -- backend/
+            exit 1
+          fi
+
       - name: Run tests
         run: npm run test
