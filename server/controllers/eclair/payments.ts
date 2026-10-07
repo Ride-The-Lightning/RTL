@@ -19,10 +19,11 @@ export const getSentInfoFromPaymentRequest = (selNode: SelectedNode, payment, re
   }).catch((err) => err);
 };
 
+// Called after the route lookup answered, when the module-level options may hold another
+// request's options: build the request from the node passed in.
 export const getQueryNodes = (selNode: SelectedNode, nodeIds) => {
-  options.url = selNode.settings.lnServerUrl + '/nodes';
-  options.form = { nodeIds: nodeIds?.reduce((acc, curr) => acc + ',' + curr) };
-  return request.post(options).then((nodes) => {
+  const nodeOptions = { ...selNode.authentication.options, url: selNode.settings.lnServerUrl + '/nodes', form: { nodeIds: nodeIds?.reduce((acc, curr) => acc + ',' + curr) } };
+  return request.post(nodeOptions).then((nodes) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Payments', msg: 'Query Nodes Received', data: nodes });
     return nodes;
   }).catch((err) => []);
@@ -133,12 +134,13 @@ export const getSentPaymentsInformation = (req, res, next) => {
 
 export const sendPaymentToRouteRequestCall = (selectedNode: SelectedNode, shortChannelIds: string, invoice: string, amountMsat: number) => {
   logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-  options = selectedNode.authentication.options;
-  options.url = selectedNode.settings.lnServerUrl + '/sendtoroute';
-  options.form = { shortChannelIds: shortChannelIds, amountMsat: amountMsat, invoice: invoice };
+  // A copy of this node's options, not the module-level options other requests reassign.
+  const nodeOptions = { ...selectedNode.authentication.options };
+  nodeOptions.url = selectedNode.settings.lnServerUrl + '/sendtoroute';
+  nodeOptions.form = { shortChannelIds: shortChannelIds, amountMsat: amountMsat, invoice: invoice };
   return new Promise((resolve, reject) => {
-    logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment To Route Options', data: options.form });
-    request.post(options).then((body) => {
+    logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment To Route Options', data: nodeOptions.form });
+    request.post(nodeOptions).then((body) => {
       logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent To Route', data: body });
       resolve(body);
     }).catch((errRes) => {

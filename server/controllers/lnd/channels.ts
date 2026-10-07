@@ -28,6 +28,9 @@ export const getAllChannels = (req, res, next) => {
   let local = 0;
   let remote = 0;
   let total = 0;
+  // Copy before the call: the module-level options is reassigned by every request, so after
+  // the await it may hold another request's options.
+  const { qs: _qs, ...requestOptions } = options;
   request(options).then((body) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Channels List Received', data: body });
     if (body.channels) {
@@ -38,7 +41,6 @@ export const getAllChannels = (req, res, next) => {
         channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local - remote) / total)).toFixed(3);
       });
       const selNode = req.session.selectedNode;
-      const { qs: _qs, ...requestOptions } = options;
       const getChannelAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
       common.runWithConcurrencyLimit(getChannelAliasesTasks, 20, () => {
         try {
@@ -66,12 +68,14 @@ export const getPendingChannels = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/pending';
   options.qs = req.query;
+  // Copy before the call: the module-level options is reassigned by every request, so after
+  // the await it may hold another request's options.
+  const { qs: _qs, ...requestOptions } = options;
   request(options).then((body) => {
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
     }
     const selNode = req.session.selectedNode;
-    const { qs: _qs, ...requestOptions } = options;
     const getPendingAliasesTasks = [];
     if (body.pending_open_channels && body.pending_open_channels.length > 0) {
       body.pending_open_channels?.map((channel) => getPendingAliasesTasks.push(() => getAliasForChannel(selNode, channel.channel, { ...requestOptions })));
@@ -106,13 +110,15 @@ export const getClosedChannels = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/channels/closed';
   options.qs = req.query;
+  // Copy before the call: the module-level options is reassigned by every request, so after
+  // the await it may hold another request's options.
+  const { qs: _qs, ...requestOptions } = options;
   request(options).then((body) => {
     if (body.channels && body.channels.length > 0) {
       body.channels.forEach((channel) => {
         channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
       });
       const selNode = req.session.selectedNode;
-      const { qs: _qs, ...requestOptions } = options;
       const getClosedAliasesTasks = body.channels.map((channel) => () => getAliasForChannel(selNode, channel, { ...requestOptions }));
       common.runWithConcurrencyLimit(getClosedAliasesTasks, 20, () => {
         try {

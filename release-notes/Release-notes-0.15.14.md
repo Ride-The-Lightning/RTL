@@ -93,6 +93,21 @@ this release should add its entry under the appropriate section below.
   indexes, a normal switch, a session leaving a node it never had, switching away with a
   `prevNodeIndex` of `-1`, another node, or `undefined`, and reselecting the current node.
 
+- **LND and Eclair: follow-up node calls use their own request's options**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD); follow-up to
+  [#1725](https://github.com/Ride-The-Lightning/RTL/pull/1725)).
+  Several controllers kept the request's options in one module-level variable that every request
+  reassigns, and read it again after the node answered to make follow-up calls, so on a
+  multi-node RTL another request could replace it in between. On LND that affected the alias
+  lookups of the channel, pending and closed channel lists and of route queries, and the
+  subscription to a new invoice; on Eclair, the alias lookups of the channel and peer lists, of
+  connecting a peer and of route queries. The Eclair helpers used by circular rebalancing also
+  pointed the shared variable at their node and wrote into the session's own options object.
+  Each of these now works from a copy of its own request's or node's options, taken before any
+  await, as #1725 did for the CLN and Eclair payment lists.
+  `test/backend/cross-session-options.test.mjs` overlaps two sessions on two nodes for each of
+  the nine affected handlers.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

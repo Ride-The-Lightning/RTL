@@ -6,10 +6,11 @@ let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
 
+// Called after /peers answered, when the module-level options may hold another request's
+// options: build the request from the node passed in.
 export const getFilteredNodes = (selNode: SelectedNode, peersNodeIds) => {
-  options.url = selNode.settings.lnServerUrl + '/nodes';
-  options.form = { nodeIds: peersNodeIds };
-  return request.post(options).then((nodes) => {
+  const nodeOptions = { ...selNode.authentication.options, url: selNode.settings.lnServerUrl + '/nodes', form: { nodeIds: peersNodeIds } };
+  return request.post(nodeOptions).then((nodes) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Peers', msg: 'Filtered Nodes Received', data: nodes });
     return nodes;
   }).catch((err) => []);
@@ -71,9 +72,9 @@ export const connectPeer = (req, res, next) => {
       const err = common.handleError({ statusCode: 500, message: 'Connect Peer Error', error: body }, 'Peers', body, req.session.selectedNode);
       return res.status(err.statusCode).json({ message: err.message, error: err.error });
     }
-    options.url = req.session.selectedNode.settings.lnServerUrl + '/peers';
-    options.form = {};
-    request.post(options).then((body) => {
+    // After the await the module-level options may hold another request's options: use this one's.
+    const peersOptions = { ...req.session.selectedNode.authentication.options, url: req.session.selectedNode.settings.lnServerUrl + '/peers', form: {} };
+    request.post(peersOptions).then((body) => {
       logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Peers', msg: 'Peers List after Connect', data: body });
       if (body && body.length) {
         let peersNodeIds = '';

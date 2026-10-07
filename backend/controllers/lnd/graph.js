@@ -104,11 +104,13 @@ export const getQueryRoutes = (req, res, next) => {
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/graph/routes/' + destPubkey + '/' + amount;
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes URL', data: options.url });
+    // Copy before the call: the module-level options is reassigned by every request, so after
+    // the await it may hold another request's options.
+    const { qs: _qs, ...requestOptions } = options;
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received', data: body });
         if (body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
             const selNode = req.session.selectedNode;
-            const { qs: _qs, ...requestOptions } = options;
             const getRouteAliasesTasks = body.routes[0].hops.map((hop) => () => getAliasFromPubkey(selNode, hop.pub_key, { ...requestOptions }));
             common.runWithConcurrencyLimit(getRouteAliasesTasks, 20, (values) => {
                 try {
