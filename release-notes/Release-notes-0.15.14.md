@@ -109,7 +109,7 @@ this release should add its entry under the appropriate section below.
   the nine affected handlers.
 
 - **LND: one invoice subscription per open invoice, not one per getinfo**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1751](https://github.com/Ride-The-Lightning/RTL/pull/1751)).
   Every successful LND getinfo, which the UI polls, fetched the node's open invoices and opened a
   new `/v2/invoices/subscribe` long poll for each, with no timeout, whether or not one was
   already open, so the open connections to the node grew with every call. `subscribeToInvoice`
