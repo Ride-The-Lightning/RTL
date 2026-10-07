@@ -68,6 +68,26 @@ this release should add its entry under the appropriate section below.
   so these requests answer 401. `test/backend/session-without-node.test.mjs` covers the four
   handlers, each twice in a row on the same session.
 
+- **Switching nodes can no longer break the login page or another session's saved settings**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Two defects in `GET /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`, which any logged-in
+  session calls:
+  - `updateSelectedNode` (`server/controllers/shared/RTLConf.ts`) stored the node for
+    `currNodeIndex` as the process-wide default before checking it existed. An index matching no
+    node stored `undefined`, and the unauthenticated `GET /api/conf` that the login page loads
+    then failed with a 400 for every client until someone selected a valid node again. An
+    unknown index is now answered with a 404 and nothing is stored.
+  - `prevNodeIndex` comes from the client. When a session unloaded a node it was never on,
+    `removeSession` (`server/utils/database.ts`) ran `splice(findIndex(...), 1)` with a
+    not-found `-1` and removed the *last* registered session instead. Once the list emptied, the
+    node's in-memory database was dropped while another session was still using it, and that
+    session's page settings failed with a 500 until it selected the node again (Core Lightning
+    offer bookmarks live in the same database). A session not registered on the node is now
+    left out.
+
+  `test/backend/node-selection.test.mjs` covers unknown, zero, non-numeric and fractional
+  indexes, a normal switch, and a session leaving a node it never had.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

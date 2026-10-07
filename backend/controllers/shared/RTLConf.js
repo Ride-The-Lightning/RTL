@@ -229,8 +229,17 @@ export const getApplicationSettings = (req, res, next) => {
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
     const selNodeIndex = req.params.currNodeIndex ? +req.params.currNodeIndex : common.selectedNode ? +common.selectedNode.index : 1;
-    req.session.selectedNode = common.findNode(selNodeIndex);
-    common.selectedNode = req.session.selectedNode;
+    // Check the index before storing anything: common.selectedNode is the process-wide default
+    // that the unauthenticated login-page config reads, so an unknown index stored there broke
+    // GET /api/conf for every client.
+    const selectedNode = common.findNode(selNodeIndex);
+    if (!selectedNode) {
+        const errMsg = 'No configured node has this index.';
+        const err = common.handleError({ statusCode: 404, message: 'Select Node Error', error: errMsg }, 'RTLConf', errMsg, req.session.selectedNode);
+        return res.status(err.statusCode).json({ message: err.message, error: err.error });
+    }
+    req.session.selectedNode = selectedNode;
+    common.selectedNode = selectedNode;
     if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
         wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
         if (req.params.prevNodeIndex !== '-1') {
