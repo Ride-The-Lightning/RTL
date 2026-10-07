@@ -71,7 +71,9 @@ frequently do, since the controllers were written in parallel.
   does not start by itself: a push (or opening or reopening the PR) queues `pr-ci.yml`, which
   waits on the `pr-ci` environment until a maintainer (its required reviewers) approves it
   from the PR, usually once the review cycles are done, and then runs the whole of
-  `checks.yml`. Two things it does not do:
+  `checks.yml`. A newer push, or a close and reopen, cancels the previous run, whether it is
+  still waiting or already running after approval, and the new run needs approval again. Two
+  things it does not do:
   - It tests the merge of the PR into its base **as GitHub computed it at that push**, not
     at approval. If the base branch has moved since, push again or close and reopen the PR
     before approving; re-running the old run tests the same old merge.
@@ -79,7 +81,8 @@ frequently do, since the controllers were written in parallel.
     without a push (a retarget). Resolve the conflict, or push or close and reopen after a
     retarget, and a new run appears.
 
-  `checks.yml` also fires on `pull_request: closed` (i.e. on merge) and on tags/releases, and
+  `checks.yml` also runs on merge (`pull_request: closed`; a PR closed without merging is
+  skipped) and on tags/releases, and
   `rtlreviewbot` only on a requested review or a comment. So until a maintainer approves the
   PR run, running both locally is the only check.
 - If lint reports hundreds of template "Parsing error" failures, look for a stale
