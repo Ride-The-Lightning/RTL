@@ -10,6 +10,10 @@ export class LNDWebSocketClient {
         this.common = Common;
         this.wsServer = WSServer;
         this.webSocketClients = [];
+        // Invoice subscriptions currently open, as '<node index>:<r_hash>'. Every getinfo asks for
+        // the node's open invoices and subscribes to each, and a new invoice is subscribed when it
+        // is added, so without this each call opened another unbounded long poll per invoice.
+        this.openInvoiceSubscriptions = new Set();
         this.connect = (selectedNode) => {
             try {
                 const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
@@ -43,11 +47,21 @@ export class LNDWebSocketClient {
         };
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
             rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
+            const subscriptionKey = selectedNode.index + ':' + rHash;
+            if (this.openInvoiceSubscriptions.has(subscriptionKey)) {
+                this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Already Subscribed to Invoice ' + rHash });
+                return;
+            }
+            // Forget the subscription once its long poll ends, however it ends, so a later getinfo
+            // subscribes again to an invoice that is still open.
+            this.openInvoiceSubscriptions.add(subscriptionKey);
+            const ended = () => this.openInvoiceSubscriptions.delete(subscriptionKey);
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
             // Copy the options: the caller may pass the session-cached object, and the
             // long poll needs an unbounded timeout without leaking it to other calls.
             options = { ...options, url: selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash, timeout: 0 };
             request(options).then((msg) => {
+                ended();
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
                 if (typeof msg === 'string') {
                     const results = msg.split('\n');
@@ -62,6 +76,7 @@ export class LNDWebSocketClient {
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Info Received', data: msgStr });
                 this.wsServer.sendEventsToAllLNClients(msgStr, selectedNode);
             }).catch((errRes) => {
+                ended();
                 const err = this.common.handleError(errRes, 'Invoices', 'Subscribe to Invoice Error for ' + rHash, selectedNode);
                 const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message + ' ' + rHash }) : (typeof err === 'object') ? JSON.stringify({ error: err + ' ' + rHash }) : ('{ "error": ' + err + ' ' + rHash + ' }'));
                 this.wsServer.sendErrorToAllLNClients(errStr, selectedNode);
