@@ -38,6 +38,7 @@ const OPEN = [1, 2, 3].map((n) => ({ r_hash: hashOf(n), state: 'OPEN' }));
 // test ends it.
 const startFakeLnd = async () => {
   const subscribes = [];
+  const state = { invoices: OPEN };
   const server = createServer((req, res) => {
     req.on('data', () => { });
     req.on('end', () => {
@@ -52,7 +53,7 @@ const startFakeLnd = async () => {
       if (path === '/v1/getinfo') {
         res.end(JSON.stringify({ version: '0.18.0-beta', alias: 'lnd' }));
       } else if (path === '/v1/invoices' && req.method === 'GET') {
-        res.end(JSON.stringify({ invoices: OPEN }));
+        res.end(JSON.stringify({ invoices: state.invoices }));
       } else if (path === '/v1/invoices' && req.method === 'POST') {
         res.end(JSON.stringify({ r_hash: hashOf(1), payment_request: 'lnbcrt1' }));
       } else {
@@ -63,7 +64,7 @@ const startFakeLnd = async () => {
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   return {
-    subscribes,
+    subscribes, state,
     url: `http://127.0.0.1:${server.address().port}`,
     close: () => { server.closeAllConnections(); return new Promise((resolve) => server.close(resolve)); }
   };
@@ -116,6 +117,8 @@ for (const [how, index] of [['with an error', 12], ['with an invoice update', 16
 test(`a subscription that has ended ${how} is opened again on the next getinfo`, { timeout: 10000 }, async () => {
   const lnd = await startFakeLnd();
   const node = makeNode(index, lnd.url);
+  const sent = [];
+  WSServer.webSocketServer = { clients: new Set([{ clientNodeIndex: index, send: (m) => sent.push(JSON.parse(m)) }]) };
   try {
     await invoke(getInfo, { session: { selectedNode: node } });
     await settle();
@@ -138,6 +141,9 @@ test(`a subscription that has ended ${how} is opened again on the next getinfo`,
     assert.equal(lnd.subscribes.length, 4, 'subscriptions opened: ' + lnd.subscribes.map((s) => s.hash).join(', '));
     assert.equal(lnd.subscribes[3].hash, ended.hash, 'the ended invoice was not the one subscribed again');
     assert.equal(openStreams(lnd), 3);
+    // The browser hears about the stream's end: a real error as an error, an update as an invoice.
+    assert.equal(sent.length, 1, 'messages sent to the browser: ' + JSON.stringify(sent));
+    assert.equal(how === 'with an error' ? typeof sent[0].error : sent[0].type, how === 'with an error' ? 'string' : 'invoice', JSON.stringify(sent[0]));
   } finally { await lnd.close(); }
 });
 }
@@ -216,8 +222,41 @@ test('a node whose server URL changed is subscribed on the new server', { timeou
     await invoke(getInfo, { session: { selectedNode: makeNode(18, lndNew.url) } });
     await settle();
     assert.equal(lndNew.subscribes.length, 3, 'subscriptions on the new server: ' + lndNew.subscribes.length);
+    assert.deepEqual(lndOld.subscribes.map((s) => s.closed), [true, true, true], 'streams to the old server left open');
   } finally {
     await lndOld.close();
     await lndNew.close();
+  }
+});
+
+// An invoice that is no longer pending is never asked about again, so a hung stream for it would
+// stay forever. Once past the age limit it is aborted when getinfo sees the invoice gone; a younger
+// one is left alone, since it may be about to deliver the settle.
+test('a stream for an invoice no longer pending is aborted once past the limit, not before', { timeout: 10000 }, async () => {
+  mock.timers.enable({ apis: ['Date'], now: Date.now() });
+  const lnd = await startFakeLnd();
+  const node = makeNode(19, lnd.url);
+  try {
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(openStreams(lnd), 3, 'setup: three subscriptions open');
+
+    // Invoice 1 is settled, but its stream never told us (it hung).
+    lnd.state.invoices = OPEN.slice(1);
+    mock.timers.tick(60 * 1000);
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes[0].closed, false, 'a young stream for a settled invoice was aborted');
+    assert.equal(lnd.subscribes.length, 3);
+
+    mock.timers.tick(10 * 60 * 1000);
+    await invoke(getInfo, { session: { selectedNode: node } });
+    await settle();
+    assert.equal(lnd.subscribes[0].closed, true, 'the hung stream for the settled invoice is still open');
+    assert.ok(!lnd.subscribes.slice(3).some((s) => s.hash === lnd.subscribes[0].hash), 'the settled invoice was subscribed again');
+    assert.equal(openStreams(lnd), 2);
+  } finally {
+    mock.timers.reset();
+    await lnd.close();
   }
 });
