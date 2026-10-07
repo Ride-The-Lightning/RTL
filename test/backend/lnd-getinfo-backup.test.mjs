@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -7,6 +7,7 @@ import test, { after, afterEach } from 'node:test';
 
 import { getInfo } from '../../backend/controllers/lnd/getInfo.js';
 import { Common } from '../../backend/utils/common.js';
+import { Logger } from '../../backend/utils/logger.js';
 import { WSServer } from '../../backend/utils/webSocketServer.js';
 
 // Every LND getinfo refreshes channel-all.bak for every configured LND node, not only the
@@ -131,3 +132,36 @@ for (const [mode, what] of [['fail', 'an error'], ['empty', 'an empty body']]) {
     }
   });
 }
+
+test('overlapping refreshes of one node each write their own temp file', async () => {
+  // A snapshot large enough that the writes overlap, released to every caller at once.
+  const big = { ...BACKUP, single_chan_backups: { chan_backups: [{ chan_backup: 'x'.repeat(4 * 1024 * 1024) }] } };
+  const REFRESHES = 6;
+  const held = [];
+  const server = createServer((req, res) => {
+    req.on('data', () => { });
+    req.on('end', () => {
+      held.push(res);
+      if (held.length === REFRESHES) {
+        held.forEach((r) => { r.setHeader('Content-Type', 'application/json'); r.end(JSON.stringify(big)); });
+      }
+    });
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const root = mkdtempSync(join(tmpdir(), 'rtl-getinfo-'));
+  const node = makeNode(root, 1, `http://127.0.0.1:${server.address().port}`);
+  const errors = [];
+  const log = Logger.log;
+  Logger.log = (msg) => { if (msg.level === 'ERROR') { errors.push(msg.msg + ': ' + (msg.error?.message || '')); } return log(msg); };
+  try {
+    for (let i = 0; i < REFRESHES; i++) { Common.getAllNodeAllChannelBackup(node); }
+    for (let i = 0; i < 300 && held.length < REFRESHES; i++) { await new Promise((resolve) => setTimeout(resolve, 10)); }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    assert.deepEqual(errors, []);
+    assert.deepEqual(readdirSync(node.settings.channelBackupPath), ['channel-all.bak']);
+    assert.deepEqual(JSON.parse(readFileSync(backupFile(node), 'utf-8')), big);
+  } finally {
+    Logger.log = log;
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
