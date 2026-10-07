@@ -10,10 +10,14 @@ export class LNDWebSocketClient {
         this.common = Common;
         this.wsServer = WSServer;
         this.webSocketClients = [];
-        // Invoice subscriptions currently open, as '<node index>:<r_hash>'. Every getinfo asks for
-        // the node's open invoices and subscribes to each, and a new invoice is subscribed when it
-        // is added, so without this each call opened another unbounded long poll per invoice.
-        this.openInvoiceSubscriptions = new Set();
+        // Invoice subscriptions currently open, keyed '<node index>:<server url>:<r_hash>'. Every
+        // getinfo asks for the node's open invoices and subscribes to each, and a new invoice is
+        // subscribed when it is added, so without this each call opened another unbounded long poll
+        // per invoice.
+        this.openInvoiceSubscriptions = new Map();
+        // A long poll can die without its connection closing (a NAT or proxy dropping it), and then
+        // it never settles. Past this age the next getinfo aborts it and subscribes again.
+        this.invoiceSubscriptionMaxAgeMs = 10 * 60 * 1000;
         this.connect = (selectedNode) => {
             try {
                 const clientExists = this.webSocketClients.find((wsc) => wsc.selectedNode.index === selectedNode.index);
@@ -47,19 +51,29 @@ export class LNDWebSocketClient {
         };
         this.subscribeToInvoice = (options, selectedNode, rHash) => {
             rHash = rHash?.replace(/\+/g, '-')?.replace(/[/]/g, '_');
-            const subscriptionKey = selectedNode.index + ':' + rHash;
-            if (this.openInvoiceSubscriptions.has(subscriptionKey)) {
-                this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Already Subscribed to Invoice ' + rHash });
-                return;
+            const subscriptionKey = selectedNode.index + ':' + selectedNode.settings.lnServerUrl + ':' + rHash;
+            const open = this.openInvoiceSubscriptions.get(subscriptionKey);
+            if (open) {
+                if (Date.now() - open.openedAt < this.invoiceSubscriptionMaxAgeMs) {
+                    this.logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'WebSocketClient', msg: 'Already Subscribed to Invoice ' + rHash });
+                    return;
+                }
+                this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Replacing Subscription to Invoice ' + rHash });
+                open.controller.abort();
             }
             // Forget the subscription once its long poll ends, however it ends, so a later getinfo
-            // subscribes again to an invoice that is still open.
-            this.openInvoiceSubscriptions.add(subscriptionKey);
-            const ended = () => this.openInvoiceSubscriptions.delete(subscriptionKey);
+            // subscribes again to an invoice that is still open; a replaced one leaves the new entry.
+            const subscription = { openedAt: Date.now(), controller: new AbortController() };
+            this.openInvoiceSubscriptions.set(subscriptionKey, subscription);
+            const ended = () => {
+                if (this.openInvoiceSubscriptions.get(subscriptionKey) === subscription) {
+                    this.openInvoiceSubscriptions.delete(subscriptionKey);
+                }
+            };
             this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Subscribing to Invoice ' + rHash + ' ..' });
             // Copy the options: the caller may pass the session-cached object, and the
             // long poll needs an unbounded timeout without leaking it to other calls.
-            options = { ...options, url: selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash, timeout: 0 };
+            options = { ...options, url: selectedNode.settings.lnServerUrl + '/v2/invoices/subscribe/' + rHash, timeout: 0, signal: subscription.controller.signal };
             request(options).then((msg) => {
                 ended();
                 this.logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'WebSocketClient', msg: 'Invoice Information Received for ' + rHash });
@@ -77,6 +91,10 @@ export class LNDWebSocketClient {
                 this.wsServer.sendEventsToAllLNClients(msgStr, selectedNode);
             }).catch((errRes) => {
                 ended();
+                // Aborted because a newer subscription replaced it: not an error to report.
+                if (subscription.controller.signal.aborted) {
+                    return;
+                }
                 const err = this.common.handleError(errRes, 'Invoices', 'Subscribe to Invoice Error for ' + rHash, selectedNode);
                 const errStr = ((typeof err === 'object' && err.message) ? JSON.stringify({ error: err.message + ' ' + rHash }) : (typeof err === 'object') ? JSON.stringify({ error: err + ' ' + rHash }) : ('{ "error": ' + err + ' ' + rHash + ' }'));
                 this.wsServer.sendErrorToAllLNClients(errStr, selectedNode);
