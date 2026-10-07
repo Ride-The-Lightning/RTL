@@ -133,3 +133,20 @@ for (const prev of ['-1', '2', 'undefined']) {
     assert.ok(Database.nodeDatabase[1], "alice's database was not loaded for the session that selected it");
   });
 }
+
+// A page reload reselects the node the session is already on. That must not drop the node's
+// database and read it back from disk: a failed read would leave a half-built entry behind.
+for (const prev of ['-1', '3']) {
+  test(`reselecting the session's own node with prevNodeIndex ${JSON.stringify(prev)} keeps its database loaded`, { timeout: 5000 }, async () => {
+    const req = selectRequest('session-a', Common.nodes[2], '3', prev);
+    Database.loadDatabase(req.session);
+    const loaded = Database.nodeDatabase[3];
+
+    const res = await invoke(updateSelectedNode, req);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(Database.nodeDatabase[3], loaded, "carol's database was dropped and reloaded");
+    // Still registered: leaving now unloads it.
+    Database.unloadDatabase(3, 'session-a');
+    assert.equal(Database.nodeDatabase[3], undefined, 'session A is no longer registered on carol');
+  });
+}

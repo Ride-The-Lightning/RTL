@@ -238,13 +238,14 @@ export const updateSelectedNode = (req, res, next) => {
   }
   // Unload the database of the node the session was on, not the client's prevNodeIndex: a page
   // reload sends -1 and a stale value names another node, and either left the session registered
-  // on the node it left. removeSession ignores a session not registered there.
+  // on the node it left. removeSession ignores a session not registered there. Reselecting the
+  // same node (a page reload) keeps its database loaded rather than reading it back from disk.
   const prevNode = req.session.selectedNode;
   req.session.selectedNode = selectedNode;
   common.selectedNode = selectedNode;
   if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
     wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
-    if (prevNode && prevNode.index) {
+    if (prevNode && prevNode.index && prevNode.index !== selectedNode.index) {
       databaseService.unloadDatabase(prevNode.index, req.session.id);
     }
     if (req.params.currNodeIndex !== '-1') {
