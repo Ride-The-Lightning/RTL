@@ -42,7 +42,7 @@ this release should add its entry under the appropriate section below.
   `test/backend/node-implementation-guard.test.mjs` replays the two-tab sequence.
 
 - **LND: one node's failed channel backup no longer breaks another node or wipes its own backup**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1745](https://github.com/Ride-The-Lightning/RTL/pull/1745)).
   Every LND getinfo refreshes `channel-all.bak` for every configured LND node, not only the
   selected one. When a node's backup call failed (node down, LND error), RTL overwrote that
   node's stored `channel-all.bak` with an empty file, losing the last good backup just when the
