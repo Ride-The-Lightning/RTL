@@ -122,11 +122,14 @@ export const addInvoice = (req, res, next) => {
     }
     options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoices';
     options.form = JSON.stringify(req.body);
+    // Copy before the call: the module-level options is reassigned by every request, so after
+    // the await it may hold another request's options.
+    const requestOptions = { ...options };
     request.post(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added', data: body });
         try {
             if (body.r_hash) {
-                lndWsClient.subscribeToInvoice(options, req.session.selectedNode, body.r_hash);
+                lndWsClient.subscribeToInvoice(requestOptions, req.session.selectedNode, body.r_hash);
             }
         }
         catch (errRes) {

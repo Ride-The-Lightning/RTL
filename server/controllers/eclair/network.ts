@@ -23,11 +23,12 @@ export const getNodes = (req, res, next) => {
 
 export const findRouteBetweenNodesRequestCall = (selectedNode: SelectedNode, amountMsat: number, sourceNodeId: string, targetNodeId: string, ignoreNodeIds: string[] = [], format: string = 'shortChannelId') => {
   logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Network', msg: 'Find Route Between Nodes..' });
-  options = selectedNode.authentication.options;
-  options.url = selectedNode.settings.lnServerUrl + '/findroutebetweennodes';
-  options.form = { amountMsat: amountMsat, sourceNodeId: sourceNodeId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+  // A copy of this node's options, not the module-level options other requests reassign.
+  const nodeOptions = { ...selectedNode.authentication.options };
+  nodeOptions.url = selectedNode.settings.lnServerUrl + '/findroutebetweennodes';
+  nodeOptions.form = { amountMsat: amountMsat, sourceNodeId: sourceNodeId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
   return new Promise((resolve, reject) => {
-    request.post(options).then((body) => {
+    request.post(nodeOptions).then((body) => {
       logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Network', msg: 'Route Lookup Between Nodes Finished', data: body });
       resolve(body);
     }).catch((errRes) => {

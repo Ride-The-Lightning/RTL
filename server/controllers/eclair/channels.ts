@@ -34,10 +34,11 @@ export const simplifyAllChannels = (selNode: SelectedNode, channels) => {
     });
   });
   channelNodeIds = channelNodeIds.substring(1);
-  options.url = selNode.settings.lnServerUrl + '/nodes';
-  options.form = channelNodeIds;
+  // Called after /channels answered, when the module-level options may hold another request's
+  // options: build the request from the node passed in.
+  const nodeOptions = { ...selNode.authentication.options, url: selNode.settings.lnServerUrl + '/nodes', form: channelNodeIds };
   logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias', data: channelNodeIds });
-  return request.post(options).then((nodes) => {
+  return request.post(nodeOptions).then((nodes) => {
     logger.log({ selectedNode: selNode, level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes Received', data: nodes });
     let foundPeer = null;
     simplifiedChannels?.map((channel) => {

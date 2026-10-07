@@ -88,18 +88,19 @@ export const getInvoice = (req, res, next) => {
 };
 export const listPendingInvoicesRequestCall = (selectedNode, count, skip) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'List Pending Invoices..' });
-    options = selectedNode.authentication.options;
-    options.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
-    options.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
+    // A copy of this node's options, not the module-level options other requests reassign.
+    const nodeOptions = { ...selectedNode.authentication.options };
+    nodeOptions.url = selectedNode.settings.lnServerUrl + '/listpendinginvoices';
+    nodeOptions.form = { from: 0, to: (Math.round(new Date(Date.now()).getTime() / 1000)).toString() };
     // Limit the number of invoices till provided count
     if (count) {
-        options.form.count = count;
+        nodeOptions.form.count = count;
     }
     if (skip) {
-        options.form.skip = skip;
+        nodeOptions.form.skip = skip;
     }
     return new Promise((resolve, reject) => {
-        request.post(options).then((pendingInvoicesResponse) => {
+        request.post(nodeOptions).then((pendingInvoicesResponse) => {
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Pending Invoices List ', data: pendingInvoicesResponse });
             resolve(pendingInvoicesResponse);
         }).catch((errRes) => {
@@ -159,11 +160,12 @@ export const listInvoices = (req, res, next) => {
 };
 export const createInvoiceRequestCall = (selectedNode, description, amount) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
-    options = selectedNode.authentication.options;
-    options.url = selectedNode.settings.lnServerUrl + '/createinvoice';
-    options.form = { description: description, amountMsat: amount };
+    // A copy of this node's options, not the module-level options other requests reassign.
+    const nodeOptions = { ...selectedNode.authentication.options };
+    nodeOptions.url = selectedNode.settings.lnServerUrl + '/createinvoice';
+    nodeOptions.form = { description: description, amountMsat: amount };
     return new Promise((resolve, reject) => {
-        request.post(options).then((invResponse) => {
+        request.post(nodeOptions).then((invResponse) => {
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoice', msg: 'Invoice Created', data: invResponse });
             if (invResponse.amount) {
                 invResponse.amount = Math.round(invResponse.amount / 1000);
