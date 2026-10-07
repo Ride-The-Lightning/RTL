@@ -55,6 +55,19 @@ this release should add its entry under the appropriate section below.
   calls refresh the same node at once. `test/backend/lnd-getinfo-backup.test.mjs` covers the
   unreadable macaroon, a failing backup call, an empty response and overlapping refreshes.
 
+- **An expired session sends you back to login instead of failing with an empty 400**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The login token can outlive its server session (the cookie was dropped, or the session expired
+  while the token survived). Such a request reaches the handlers with no selected node, and
+  `updateSelectedNodeOptions` (`server/utils/common.ts`) put an empty `{}` node on the session,
+  then read `.authentication.options` from it outside its `try`. The TypeError came back as
+  400 `{}` from LND, Core Lightning and Eclair getinfo and from LND's `updateSelNodeOptions`,
+  and the `{}` stayed on the session, so later requests failed the same way. The intended 401
+  ("Session expired"), which makes the UI log out and return to the login page, was never sent.
+  The helper now reports the missing node as an expired session without touching the session,
+  so these requests answer 401. `test/backend/session-without-node.test.mjs` covers the four
+  handlers, each twice in a row on the same session.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
