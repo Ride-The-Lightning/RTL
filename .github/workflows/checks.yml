@@ -16,6 +16,11 @@ on:
 
 jobs:
   prepare:
+    # pull_request: closed also fires when a PR is closed without merging (as when closing and
+    # reopening one to re-run PR CI); skip that. lint and test need prepare, so they skip too.
+    # The action is 'closed' only for that trigger, so the PR-push runs pr-ci.yml makes through
+    # workflow_call, and tags, releases and manual runs, are unaffected.
+    if: github.event.action != 'closed' || github.event.pull_request.merged
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

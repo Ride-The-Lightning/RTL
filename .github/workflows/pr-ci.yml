@@ -3,8 +3,9 @@ name: PR CI
 # Runs the full Lint & Test suite (checks.yml) on an open pull request, but only once a
 # maintainer approves it. Every push queues a run that waits on the pr-ci environment, whose
 # required reviewers are set in the repository settings; approve it from the PR ("Review
-# pending deployments") when the review cycles are done. Nothing runs before that, and a newer
-# push cancels the run still waiting. The run tests the merge of the PR into its base as GitHub
+# pending deployments") when the review cycles are done. Nothing runs before that. A newer push
+# (or a close and reopen) cancels the previous run, whether it is waiting or already running
+# after approval, and the new run needs approval again. The run tests the merge of the PR into its base as GitHub
 # made it at the push, not at approval: if the base has moved, push again or close and reopen.
 # GitHub queues nothing while the PR has a merge conflict, or for a base change without a push.
 # checks.yml itself still runs on merge, without approval.
