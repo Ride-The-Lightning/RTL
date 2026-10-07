@@ -450,7 +450,7 @@ export class RTLEffects implements OnDestroy {
             window.location.href = document.baseURI + 'login';
           }
         };
-        return this.httpClient.get(API_END_POINTS.AUTHENTICATE_API + '/logout').
+        return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API + '/logout', {}).
           pipe(map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.LOG_OUT }));
