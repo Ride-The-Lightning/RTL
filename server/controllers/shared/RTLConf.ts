@@ -236,12 +236,16 @@ export const updateSelectedNode = (req, res, next) => {
     const err = common.handleError({ statusCode: 404, message: 'Select Node Error', error: errMsg }, 'RTLConf', errMsg, req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
   }
+  // Unload the database of the node the session was on, not the client's prevNodeIndex: a page
+  // reload sends -1 and a stale value names another node, and either left the session registered
+  // on the node it left. removeSession ignores a session not registered there.
+  const prevNode = req.session.selectedNode;
   req.session.selectedNode = selectedNode;
   common.selectedNode = selectedNode;
   if (req.headers && req.headers.authorization && req.headers.authorization !== '') {
     wsServer.updateLNWSClientDetails(req.session.id, +req.session.selectedNode.index, +req.params.prevNodeIndex);
-    if (req.params.prevNodeIndex !== '-1') {
-      databaseService.unloadDatabase(req.params.prevNodeIndex, req.session.id);
+    if (prevNode && prevNode.index) {
+      databaseService.unloadDatabase(prevNode.index, req.session.id);
     }
     if (req.params.currNodeIndex !== '-1') {
       databaseService.loadDatabase(req.session);

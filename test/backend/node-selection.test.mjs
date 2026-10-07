@@ -117,3 +117,19 @@ test('a session leaving its own node unloads the database once no session is lef
   Database.unloadDatabase(3, 'session-b');
   assert.equal(Database.nodeDatabase[3], undefined);
 });
+
+// The node being left is the one on the session, whatever prevNodeIndex the URL carries: a page
+// reload sends -1, and a stale or tampered value names some other node. Either way the session
+// used to stay registered on the node it left, so that database was never unloaded.
+for (const prev of ['-1', '2', 'undefined']) {
+  test(`switching away with prevNodeIndex ${JSON.stringify(prev)} unloads the node the session was on`, { timeout: 5000 }, async () => {
+    const req = selectRequest('session-a', Common.nodes[2], '1', prev);
+    Database.loadDatabase(req.session);
+    assert.ok(Database.nodeDatabase[3], 'setup: carol database loaded for session A');
+
+    const res = await invoke(updateSelectedNode, req);
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.equal(Database.nodeDatabase[3], undefined, "carol's database is still loaded for a session that left it");
+    assert.ok(Database.nodeDatabase[1], "alice's database was not loaded for the session that selected it");
+  });
+}
