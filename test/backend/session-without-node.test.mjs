@@ -36,21 +36,26 @@ afterEach(() => {
   Common.selectedNode = savedSelectedNode;
 });
 
+// Settles on any way the handler can answer or fail, so a regression shows up as a failed
+// assertion rather than a test left waiting for res.json.
 const invoke = (handler, req) => new Promise((resolve, reject) => {
   const out = { statusCode: null, body: null };
+  const answer = (payload) => { out.body = payload; resolve(out); return res; };
   const res = {
     status: (code) => { out.statusCode = code; return res; },
-    json: (payload) => { out.body = payload; resolve(out); return res; }
+    json: answer,
+    send: answer,
+    end: answer
   };
   try {
-    handler(req, res, () => { });
+    handler(req, res, (err) => reject(err || new Error('handler called next() without answering')));
   } catch (err) {
     reject(err);
   }
 });
 
 for (const [name, handler] of [['LND getinfo', getInfoLND], ['CLN getinfo', getInfoCLN], ['Eclair getinfo', getInfoECL], ['LND updateSelNodeOptions', updateSelNodeOptions]]) {
-  test(`${name} answers 401 for a session with no selected node, and leaves the session without one`, async () => {
+  test(`${name} answers 401 for a session with no selected node, and leaves the session without one`, { timeout: 5000 }, async () => {
     const req = { session: {} };
     for (const attempt of ['first', 'second']) {
       const res = await invoke(handler, req);
