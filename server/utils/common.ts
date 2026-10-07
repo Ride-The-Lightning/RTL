@@ -253,8 +253,11 @@ export class CommonService {
   };
 
   public updateSelectedNodeOptions = (req) => {
+    // A valid JWT can outlive its session (a dropped cookie, or a session expired while the
+    // token survived), so the session may have no node. Report that as the expired session it
+    // is; the caller's getOptions then answers 401, and the session stays without a node.
     if (!req.session.selectedNode) {
-      req.session.selectedNode = {};
+      return { status: 401, message: 'Session expired after a day\'s inactivity' };
     }
     req.session.selectedNode.authentication.options = {
       url: '',
