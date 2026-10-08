@@ -908,7 +908,7 @@ test('updateNodeSettings allowlists settings and pins every server URL and path 
   }
 });
 
-test('updateApplicationSettings validates blockExplorerUrl format and rejects malformed values', () => {
+test('updateApplicationSettings ignores a blockExplorerUrl in the request, malformed or valid', () => {
   const tempDir = mkdtempSync(join(tmpdir(), 'rtlconf-blockexplorer-'));
   const oldConfig = {
     defaultNodeIndex: 0,
@@ -953,12 +953,13 @@ test('updateApplicationSettings validates blockExplorerUrl format and rejects ma
     );
 
     assert.equal(responseStatus, 201);
-    // The malformed URL is rejected; the server-held value is preserved.
+    // The malformed URL is ignored; the server-held value is preserved.
     assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.space');
     // Other settings still merge.
     assert.equal(Common.appConfig.nodes[0].settings.themeMode, 'NIGHT');
 
-    // Now test a valid URL is accepted.
+    // A valid URL is ignored too: the explorer is set in RTL-Config.json or BLOCK_EXPLORER_URL
+    // only, since the server fetches it and returns what it gets.
     writeFileSync(join(tempDir, 'RTL-Config.json'), JSON.stringify(oldConfig, null, 2), 'utf-8');
     Common.appConfig = clone({
       ...oldConfig,
@@ -985,7 +986,7 @@ test('updateApplicationSettings validates blockExplorerUrl format and rejects ma
     );
 
     assert.equal(responseStatus, 201);
-    assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.example');
+    assert.equal(Common.appConfig.nodes[0].settings.blockExplorerUrl, 'https://mempool.space');
     // Service URLs are not accepted on the application-settings endpoint; they are pinned
     // back to the server-held values.
     assert.equal(Common.appConfig.nodes[0].settings.swapServerUrl, 'https://swap:8081');
@@ -1468,7 +1469,8 @@ test('updateApplicationSettings publishes allowlisted node edits to the live run
     // The live node object (still the same one the session holds) carries the edit.
     assert.equal(Common.nodes[0], liveNode);
     assert.equal(liveNode.settings.themeMode, 'NIGHT');
-    assert.equal(liveNode.settings.blockExplorerUrl, 'https://new.example');
+    // The block explorer is not an allowlisted setting: it stays as configured.
+    assert.equal(liveNode.settings.blockExplorerUrl, 'https://old.example');
     assert.equal(liveNode.lnNode, 'lnd-renamed');
     // Pinned anchors and runtime-only auth state are untouched.
     assert.equal(liveNode.settings.lnServerUrl, 'https://lnd.internal:8080');
