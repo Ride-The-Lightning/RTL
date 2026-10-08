@@ -12,7 +12,7 @@ this release should add its entry under the appropriate section below.
   showing payments made before its upgrade (it moves them to `_before_v14` tables).
 
 - **The block explorer URL is set in RTL-Config.json or `BLOCK_EXPLORER_URL` only**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1753](https://github.com/Ride-The-Lightning/RTL/pull/1753)).
   RTL's server fetches the node's block explorer for fee estimates and transaction lookups and
   returns what it gets, so the explorer URL decides what the RTL host fetches. Node Settings
   now shows it read-only, and neither settings endpoint (`/api/conf/node`,
