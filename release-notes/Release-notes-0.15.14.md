@@ -11,6 +11,18 @@ this release should add its entry under the appropriate section below.
   ([#1739](https://github.com/Ride-The-Lightning/RTL/pull/1739)). Eclair 0.14 itself stops
   showing payments made before its upgrade (it moves them to `_before_v14` tables).
 
+- **The block explorer URL is set in RTL-Config.json or `BLOCK_EXPLORER_URL` only**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  RTL's server fetches the node's block explorer for fee estimates and transaction lookups and
+  returns what it gets, so the explorer URL decides what the RTL host fetches. Node Settings
+  now shows it read-only, and neither settings endpoint (`/api/conf/node`,
+  `/api/conf/application`) accepts it any more (`server/controllers/shared/RTLConf.ts`). An
+  explorer already saved through the UI is kept: it is in RTL-Config.json. To change it, edit
+  `blockExplorerUrl` in the node's settings in RTL-Config.json or set `BLOCK_EXPLORER_URL`, and
+  restart RTL; mempool.space is used if neither is set. A self-hosted explorer on the LAN
+  (Umbrel, Start9) keeps working. `test/backend/explorer-url-config-only.test.mjs` covers both
+  endpoints and a save that leaves the configured explorer in place.
+
 ## Bug Fixes
 
 - **Eclair 0.14: payment history, routing fees and forwarding history work again**

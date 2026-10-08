@@ -15,13 +15,16 @@ const common = Common;
 const wsServer = WSServer;
 const databaseService = Database;
 // The settings API echoes the whole config back, so these are the only per-node settings
-// fields accepted from the application-settings request body. Credential paths, LN server
+// fields accepted from the application-settings request body. blockExplorerUrl is not one of
+// them: the server fetches that explorer and returns what it gets (fee estimates, transaction
+// lookups), so it is set in RTL-Config.json or BLOCK_EXPLORER_URL only, like the Loop server URL
+// below, and a save keeps the configured value. Credential paths, LN server
 // URLs, runtime-only fields (options, runeValue) and logFile (config.ts overwrites it at
 // boot) are not here; addSecureData re-pins credential paths and LN server URLs to the
 // server-held values for existing nodes, and strips them from unknown nodes entirely.
 // Anything else arriving under settings is discarded.
 const NODE_SETTINGS_ALLOWLIST = [
-    'blockExplorerUrl', 'logLevel', 'userPersona', 'themeMode', 'themeColor',
+    'logLevel', 'userPersona', 'themeMode', 'themeColor',
     'unannouncedChannels', 'fiatConversion', 'currencyUnit', 'enableOffers', 'enablePeerswap'
 ];
 // The Loop server URL and macaroon directory are configured in
@@ -56,31 +59,8 @@ const indexKey = (node) => {
     }
     return undefined;
 };
-// Reject malformed URLs and non-HTTP schemes. User-chosen block explorers and Loop
-// servers are intended RTL features (self-hosted instances), so this is format validation
-// only — it does not prevent a caller from pointing at an internal host.
-const isValidHttpUrl = (value) => {
-    if (typeof value !== 'string') {
-        return false;
-    }
-    try {
-        const parsed = new URL(value);
-        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-    }
-    catch {
-        return false;
-    }
-};
-// Allowlist a settings payload and drop a blockExplorerUrl that fails isValidHttpUrl.
-// Both settings handlers share this so a malformed value can never reach the outbound
-// request built from the live node's settings.
-const filterNodeSettings = (settings) => {
-    const allowed = Object.fromEntries(Object.entries(settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
-    if (allowed.blockExplorerUrl !== undefined && !isValidHttpUrl(allowed.blockExplorerUrl)) {
-        delete allowed.blockExplorerUrl;
-    }
-    return allowed;
-};
+// Allowlist a settings payload. Both settings handlers share this.
+const filterNodeSettings = (settings) => Object.fromEntries(Object.entries(settings || {}).filter(([key]) => NODE_SETTINGS_ALLOWLIST.includes(key)));
 // Remember, per node, which block explorer answered the last call: the node's own once
 // its REST API suite has worked, mempool.space after a failure. Keyed by node index so one
 // node's explorer (or its fallback) is never reused for another node or session.
@@ -341,6 +321,11 @@ export const updateNodeSettings = (req, res, next) => {
         return res.status(err.statusCode).json({ message: err.error, error: err.error });
     }
 };
+// Accepts settings for every configured node, not only the session's selected one: the
+// Application Settings page saves the whole config, and RTL has one login for all of its
+// nodes, so any session can select any node and change its settings there anyway. Node
+// indexes are checked against the configured nodes below, and only the allowlisted settings
+// are taken.
 export const updateApplicationSettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Application Settings..' });
     const RTLConfFile = common.appConfig.rtlConfFilePath + sep + 'RTL-Config.json';
