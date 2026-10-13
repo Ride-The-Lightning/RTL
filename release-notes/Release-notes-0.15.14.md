@@ -166,10 +166,13 @@ this release should add its entry under the appropriate section below.
   `mapAliases` (`src/app/eclair/store/ecl.reducers.ts`) branched on the relay type with an
   assignment instead of a comparison, so every relay that wasn't `payment-relayed` took the
   trampoline branch and had its type overwritten to `trampoline-payment-relayed`. The branch
-  only maps channel aliases over `incoming`/`outgoing`, so no data was lost, but Forwarding
-  History's Event Information dialog showed "Trampoline Payment Relayed" for a relay that
-  wasn't one (Eclair's on-the-fly-funding relays, for example). The comparison is fixed, and
-  ESLint's `no-cond-assign` is now enabled, which flags this class of mistake.
+  maps channel aliases over `incoming`/`outgoing` and derives `amountIn`/`amountOut` and the
+  flat `from`/`to` fields from those parts, which relays like Eclair's on-the-fly-funding
+  relays also carry. The branch is now chosen by whether the relay has `incoming`/`outgoing`
+  parts rather than by its type, so those relays keep their type and still get their amounts
+  and aliases, while Forwarding History's Event Information dialog no longer shows
+  "Trampoline Payment Relayed" for a relay that wasn't one. ESLint's `no-cond-assign` is now
+  enabled, which flags this class of mistake.
 
 ## Enhancements
 
