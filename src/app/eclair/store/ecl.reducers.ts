@@ -274,7 +274,7 @@ const mapAliases = (rlEvent: PaymentRelayed, storedChannels: Channel[]) => {
       rlEvent.toChannelAlias = rlEvent.toChannelId?.substring(0, 17) + '...';
       rlEvent.toShortChannelId = '';
     }
-  } else if (rlEvent.type = 'trampoline-payment-relayed') {
+  } else if (rlEvent.incoming || rlEvent.outgoing) {
     if (storedChannels && storedChannels.length > 0) {
       for (let idx = 0; idx < storedChannels.length; idx++) {
         rlEvent.incoming?.forEach((incomingEvent) => {
