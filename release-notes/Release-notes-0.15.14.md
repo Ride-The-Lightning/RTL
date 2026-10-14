@@ -205,6 +205,23 @@ this release should add its entry under the appropriate section below.
   and #413 (`http-cache-semantics` under the Angular CLI, no patched release) were dismissed with
   reasons.
 
+- **Dependency update batch**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Resolves the open Dependabot PRs #1754–#1759 in one pass, per the process in
+  `CONTRIBUTING.md`. The one runtime finding is `proxy-addr` 2.0.7 → 2.0.8 under `express`
+  (#1754; critical: IP spoofing through an IPv4-mapped IPv6 address matching a trusted subnet, in
+  the `trust proxy` check that RTL's `trustedProxies` setting configures). The CLI line (`@angular/cli`, `@angular/build`,
+  `@angular-devkit/build-angular`) moves from 20.3.37 to 20.3.39, which brings
+  `@modelcontextprotocol/sdk` 1.31.0 (#1758). In the lockfile, `shell-quote` moves to 1.12.0
+  (#1756), `compression` to 1.8.2 (#1759), `source-map-js` to 1.2.2 (#1755) and
+  `postcss-selector-parser` to 7.1.6 (#1757), all in build tooling. `npm audit --omit=dev` goes
+  from 1 critical to **0**; the full count goes from 27 (2 critical, 22 high, 3 moderate) to 20
+  (18 high, 2 moderate), all dev-only: the new `braces` advisory (no patched release; reached
+  through karma, nodemon, eslint and the Angular CLI), plus the `http-cache-semantics` and
+  `uuid` chains dismissed under #1740. The lockfile was regenerated from scratch;
+  `frontend/` and `backend/` rebuild byte-identical. #1731 and #1732 (Angular 21/22) stay open
+  for that migration.
+
 ## Developer Tooling
 
 - **CI: run the full checks on an open PR, once a maintainer approves**
