@@ -206,7 +206,7 @@ this release should add its entry under the appropriate section below.
   reasons.
 
 - **Dependency update batch**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1761](https://github.com/Ride-The-Lightning/RTL/pull/1761)).
   Resolves the open Dependabot PRs #1754–#1759 in one pass, per the process in
   `CONTRIBUTING.md`. The one runtime finding is `proxy-addr` 2.0.7 → 2.0.8 under `express`
   (#1754; critical: IP spoofing through an IPv4-mapped IPv6 address matching a trusted subnet, in
