@@ -70,7 +70,7 @@ export class CLNChannelInformationComponent implements OnInit {
 
   onExplorerClicked(txid: string) {
     if (!this.selNode?.settings?.blockExplorerUrl) { return; }
-    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + txid, '_blank');
+    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + txid, '_blank', 'noopener,noreferrer');
   }
 
 }

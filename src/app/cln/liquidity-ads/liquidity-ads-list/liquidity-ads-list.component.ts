@@ -198,9 +198,9 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
 
   viewLeaseOn(lqNode: LookupNode, link: string) {
     if (link === 'LN') {
-      window.open('https://lnrouter.app/node/' + lqNode.nodeid, '_blank');
+      window.open('https://lnrouter.app/node/' + lqNode.nodeid, '_blank', 'noopener,noreferrer');
     } else if (link === 'AM') {
-      window.open('https://amboss.space/node/' + lqNode.nodeid, '_blank');
+      window.open('https://amboss.space/node/' + lqNode.nodeid, '_blank', 'noopener,noreferrer');
     }
   }
 

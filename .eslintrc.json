@@ -140,7 +140,10 @@
         "no-mixed-operators": "error",
         "no-multi-assign": "error",
         "no-new-object": "error",
-        "no-restricted-syntax": "error",
+        "no-restricted-syntax": ["error", {
+          "selector": "CallExpression[callee.object.name='window'][callee.property.name='open']:not([arguments.2.value=/noopener/])",
+          "message": "Pass 'noopener,noreferrer' as the third argument of window.open, so the opened page gets no handle on the RTL tab."
+        }],
         "no-tabs": "error",
         "no-unneeded-ternary": "error",
         "no-whitespace-before-property": "error",

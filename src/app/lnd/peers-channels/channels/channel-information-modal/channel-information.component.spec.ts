@@ -38,6 +38,16 @@ describe('ChannelInformationComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should open the block explorer without giving it access to the RTL tab', () => {
+    const openSpy = spyOn(window, 'open');
+    component.selNode = <any>{ settings: { blockExplorerUrl: 'https://mempool.space' } };
+    component.channel = { channel_point: 'abcd:0' };
+    fixture.detectChanges();
+    const explorerIcon = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('fa-icon.fa-icon-primary')).find((icon) => icon.parentElement?.textContent?.includes('abcd:0'));
+    explorerIcon?.click();
+    expect(openSpy).toHaveBeenCalledOnceWith('https://mempool.space/tx/abcd:0', '_blank', 'noopener,noreferrer');
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

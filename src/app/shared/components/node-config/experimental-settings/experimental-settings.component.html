@@ -24,12 +24,12 @@
           <form *ngIf="i === 0" #form="ngForm" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container">
             <div fxFlex="100" class="alert alert-info">
               <fa-icon class="mr-1 alert-icon" [icon]="faInfoCircle" />
-              <span>Please ensure that <strong>experimental-offers</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="http://bolt12.org" target="_blank">here</a></strong> to learn more about Core Lightning offers.</span>
+              <span>Please ensure that <strong>experimental-offers</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="http://bolt12.org" target="_blank" rel="noopener noreferrer">here</a></strong> to learn more about Core Lightning offers.</span>
             </div>
             <h4 class="mt-2">Description</h4>
             <span>Offers is a draft specification (also referred as BOLT12) for Lightning nodes and wallets, with experimental support in Core Lightning.</span>
             <h4 class="mt-2">Links</h4>
-            <span><a href="https://github.com/lightningnetwork/lightning-rfc/pull/798 " target="blank">Core lightning Bolt12</a></span>
+            <span><a href="https://github.com/lightningnetwork/lightning-rfc/pull/798 " target="_blank" rel="noopener noreferrer">Core lightning Bolt12</a></span>
             <mat-divider class="my-2" [inset]="true" />
             <div class="alert alert-warn">
               <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
@@ -41,7 +41,7 @@
             <div *ngIf="!features[1].enabled">
               <div fxFlex="100" fxLayout="row" class="alert alert-warn">
                 <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
-                <span>Please ensure that <strong>experimental-dual-fund</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="https://medium.com/blockstream/setting-up-liquidity-ads-in-c-lightning-54e4c59c091d" target="_blank">here</a></strong> to learn more about Core Lightning Liquidity Ads.</span>
+                <span>Please ensure that <strong>experimental-dual-fund</strong> flag is set to true in the Core Lightning config before enabling it in RTL. Click <strong><a href="https://medium.com/blockstream/setting-up-liquidity-ads-in-c-lightning-54e4c59c091d" target="_blank" rel="noopener noreferrer">here</a></strong> to learn more about Core Lightning Liquidity Ads.</span>
               </div>
             </div>
             <div *ngIf="features[1].enabled" fxLayout="column">

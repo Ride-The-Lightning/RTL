@@ -97,7 +97,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   onDonate() {
-    window.open('https://www.ridethelightning.info/donate/', '_blank');
+    window.open('https://www.ridethelightning.info/donate/', '_blank', 'noopener,noreferrer');
   }
 
   ngOnDestroy() {

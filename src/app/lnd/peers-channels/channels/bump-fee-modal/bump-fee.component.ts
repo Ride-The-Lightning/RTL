@@ -106,7 +106,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   }
 
   onExplorerClicked() {
-    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.txid, '_blank');
+    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + this.txid, '_blank', 'noopener,noreferrer');
   }
 
   resetData() {

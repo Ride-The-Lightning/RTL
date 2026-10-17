@@ -114,7 +114,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   }
 
   onExplorerClicked(obj: MessageDataField) {
-    window.open(this.selNode.settings.blockExplorerUrl + '/' + obj.explorerLink + '/' + obj.value, '_blank');
+    window.open(this.selNode.settings.blockExplorerUrl + '/' + obj.explorerLink + '/' + obj.value, '_blank', 'noopener,noreferrer');
   }
 
   ngOnDestroy() {

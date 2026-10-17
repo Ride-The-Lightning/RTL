@@ -11,7 +11,7 @@
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxFlex="100" class="alert alert-warn">
             <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
-            <span>The block explorer is set in RTL-Config.json (<strong>blockExplorerUrl</strong> in the node's settings) or the <strong>BLOCK_EXPLORER_URL</strong> environment variable, and takes effect after a restart. <strong><a href="https://mempool.space/" target="blank">mempool.space</a></strong> is used if neither is set.</span>
+            <span>The block explorer is set in RTL-Config.json (<strong>blockExplorerUrl</strong> in the node's settings) or the <strong>BLOCK_EXPLORER_URL</strong> environment variable, and takes effect after a restart. <strong><a href="https://mempool.space/" target="_blank" rel="noopener noreferrer">mempool.space</a></strong> is used if neither is set.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
             <mat-form-field fxLayout="column" fxFlex="100">
@@ -49,7 +49,7 @@
         <div fxLayout="column" fxLayoutAlign="start stretch">
           <div fxFlex="100" class="alert alert-warn">
             <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
-            <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
+            <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="_blank" rel="noopener noreferrer">Blockchain.com</a></strong> API to get conversion rates.</span>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="start center">
             <mat-slide-toggle tabindex="2" color="primary" name="fiatConversion" class="mr-2" [(ngModel)]="selNode.settings.fiatConversion" (change)="onFiatConversionChange($event)">Enable Fiat Conversion</mat-slide-toggle>

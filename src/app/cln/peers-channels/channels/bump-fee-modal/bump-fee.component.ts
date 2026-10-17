@@ -110,7 +110,7 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
   }
 
   onExplorerClicked(txid: string) {
-    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + txid, '_blank');
+    window.open(this.selNode.settings.blockExplorerUrl + '/tx/' + txid, '_blank', 'noopener,noreferrer');
   }
 
   resetData() {

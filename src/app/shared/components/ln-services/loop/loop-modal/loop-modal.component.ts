@@ -286,9 +286,9 @@ export class LoopModalComponent implements OnInit, OnDestroy {
 
   onReadMore() {
     if (this.direction === LoopTypeEnum.LOOP_IN) {
-      window.open('https://blog.lightning.engineering/announcement/2019/06/25/loop-in.html', '_blank');
+      window.open('https://blog.lightning.engineering/announcement/2019/06/25/loop-in.html', '_blank', 'noopener,noreferrer');
     } else {
-      window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank');
+      window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank', 'noopener,noreferrer');
     }
     this.onClose();
   }
