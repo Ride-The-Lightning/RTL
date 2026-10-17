@@ -1379,7 +1379,7 @@ export function getFeeLimitSat(selFeeLimitTypeID: string, feeLimit: number | nul
   if (selFeeLimitTypeID === 'percent') {
     return Math.ceil(((amount || 0) * (feeLimit || 0)) / 100);
   }
-  return ((amount || 0) <= DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS) ? (amount || 0) : Math.ceil(((amount || 0) * DEFAULT_FEE_LIMIT_PERCENT) / 100);
+  return ((amount || 0) <= DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS) ? Math.ceil(amount || 0) : Math.ceil(((amount || 0) * DEFAULT_FEE_LIMIT_PERCENT) / 100);
 }
 
 // LND reports 'No Route' both when every route costs more than the fee limit and when no route has

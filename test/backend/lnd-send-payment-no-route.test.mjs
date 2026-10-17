@@ -8,8 +8,8 @@ const PAY_REQ = 'lnbcrt100u1testinvoice';
 const DEST = '0323ce56abc0fec923dd89b443f5e8a17b0bd7b64000ab703859d49d9b879e6a23';
 
 // A fake LND: the payment fails with the given reason, the invoice decodes to `decoded`, and the
-// route query answers with a route costing `routeFeeSat`.
-const startFakeLnd = async ({ failureReason = 'FAILURE_REASON_NO_ROUTE', decoded = {}, routeFeeSat = '500000' } = {}) => {
+// route query answers with a route costing `routeFeeSat`, or with an error when `routesStatus` isn't 200.
+const startFakeLnd = async ({ failureReason = 'FAILURE_REASON_NO_ROUTE', decoded = {}, routeFeeSat = '500000', routesStatus = 200 } = {}) => {
   const seen = [];
   const server = createServer((req, res) => {
     seen.push(req.method + ' ' + req.url);
@@ -20,8 +20,8 @@ const startFakeLnd = async ({ failureReason = 'FAILURE_REASON_NO_ROUTE', decoded
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ destination: DEST, num_satoshis: '10000', cltv_expiry: '80', route_hints: [], ...decoded }));
     } else if (req.url.startsWith('/v1/graph/routes/')) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ routes: [{ total_fees: routeFeeSat, hops: [{}, {}] }] }));
+      res.writeHead(routesStatus, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(routesStatus === 200 ? { routes: [{ total_fees: routeFeeSat, hops: [{}, {}] }] } : { code: 2, message: 'unable to find a path to destination' }));
     } else {
       res.writeHead(404);
       res.end();
@@ -92,6 +92,33 @@ test('sendPayment: no route cost for an invoice with route hints, which the rout
     assert.equal(res.body.error.trim(), 'No Route');
     assert.equal(res.body.cheapest_route_fee_sat, undefined);
     assert.ok(!lnd.seen.some((line) => line.startsWith('GET /v1/graph/routes/')));
+  } finally {
+    await lnd.close();
+  }
+});
+
+test('sendPayment: no route cost for a payment pinned to an outgoing channel or last hop, which the route query would ignore', async () => {
+  for (const pin of [{ outgoing_chan_ids: ['123456789'] }, { last_hop_pubkey: DEST }]) {
+    const lnd = await startFakeLnd();
+    try {
+      const res = await send(lnd, { payment_request: PAY_REQ, amp: false, fee_limit_sat: 500, ...pin });
+      assert.equal(res.body.error.trim(), 'No Route');
+      assert.equal(res.body.cheapest_route_fee_sat, undefined);
+      assert.ok(!lnd.seen.some((line) => line.startsWith('GET /v1/graph/routes/')));
+    } finally {
+      await lnd.close();
+    }
+  }
+});
+
+test('sendPayment: a failed route query still answers with the No Route failure', async () => {
+  const lnd = await startFakeLnd({ routesStatus: 500 });
+  try {
+    const res = await send(lnd, { payment_request: PAY_REQ, amp: false, fee_limit_sat: 500 });
+    assert.equal(res.statusCode, 500);
+    assert.equal(res.body.error.trim(), 'No Route');
+    assert.equal(res.body.cheapest_route_fee_sat, undefined);
+    assert.ok(lnd.seen.some((line) => line.startsWith('GET /v1/graph/routes/')));
   } finally {
     await lnd.close();
   }

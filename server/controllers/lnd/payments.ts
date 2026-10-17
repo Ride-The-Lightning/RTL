@@ -159,11 +159,13 @@ export const paymentLookup = (req, res, next) => {
 // LND fails a payment with NO_ROUTE both when every route costs more than the fee limit and when no
 // route has the liquidity. Ask LND for the cheapest route with no practical limit (21M BTC in sats),
 // so the operator can see what the payment would cost. Resolves to that fee when it is above the
-// limit, otherwise null. Skipped for invoices with route hints: the REST route query can't take them,
-// so its answer could be wrong.
+// limit, otherwise null. Skipped for invoices with route hints, and for payments pinned to an outgoing
+// channel or last hop: the query doesn't take those, so its answer could be for a route the payment
+// couldn't use.
 const getCheapestRouteFeeAboveLimit = (selNode: SelectedNode, payment, failureReason: string, requestOptions): Promise<number | null> => {
   const feeLimitSat = Number(payment.fee_limit_sat);
-  if (failureReason !== 'FAILURE_REASON_NO_ROUTE' || !payment.payment_request || payment.fee_limit_sat === undefined || payment.fee_limit_sat === null || !Number.isFinite(feeLimitSat)) {
+  if (failureReason !== 'FAILURE_REASON_NO_ROUTE' || !payment.payment_request || payment.fee_limit_sat === undefined || payment.fee_limit_sat === null || !Number.isFinite(feeLimitSat) ||
+    payment.outgoing_chan_ids?.length || payment.last_hop_pubkey) {
     return Promise.resolve(null);
   }
   return decodePaymentFromPaymentRequest(selNode, payment.payment_request, { ...requestOptions }).then((decoded) => {
@@ -203,6 +205,9 @@ export const sendPayment = (req, res, next) => {
       const err = common.handleError(common.titleCase(body.result.failure_reason.replace(/_/g, ' ').replace('FAILURE REASON ', '')), 'Payments', 'Send Payment Error', req.session.selectedNode);
       getCheapestRouteFeeAboveLimit(req.session.selectedNode, req.body, body.result.failure_reason, lookupOptions).then((cheapestRouteFeeSat) => {
         res.status(err.statusCode).json({ message: err.message, error: err.error, ...(cheapestRouteFeeSat !== null ? { cheapest_route_fee_sat: cheapestRouteFeeSat } : {}) });
+      }).catch((errRes) => {
+        const replyErr = common.handleError(errRes, 'Payments', 'Send Payment Error', req.session.selectedNode);
+        if (!res.headersSent) { res.status(replyErr.statusCode).json({ message: replyErr.message, error: replyErr.error }); }
       });
       return;
     }

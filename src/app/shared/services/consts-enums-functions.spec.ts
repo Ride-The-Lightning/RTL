@@ -51,6 +51,11 @@ describe('getFeeLimitSat', () => {
     expect(getFeeLimitSat('default', null, 100)).toBe(100);
   });
 
+  it('should round a default fee limit for a fractional amount up to whole sats', () => {
+    expect(getFeeLimitSat('default', null, 50.123)).toBe(51);
+    expect(getFeeLimitSat('default', null, 0.5)).toBe(1);
+  });
+
   it('should allow 5% of the amount, rounded up, as the default fee limit above 100 sats', () => {
     expect(getFeeLimitSat('default', null, 101)).toBe(6);
     expect(getFeeLimitSat('default', null, 10000)).toBe(500);
