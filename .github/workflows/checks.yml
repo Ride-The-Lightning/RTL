@@ -17,7 +17,7 @@ on:
 jobs:
   prepare:
     # pull_request: closed also fires when a PR is closed without merging (as when closing and
-    # reopening one to re-run PR CI); skip that. lint and test need prepare, so they skip too.
+    # reopening one to re-run PR CI); skip that. lint, build and test need prepare, so they skip too.
     # The action is 'closed' only for that trigger, so the PR-push runs pr-ci.yml makes through
     # workflow_call, and tags, releases and manual runs, are unaffected.
     if: github.event.action != 'closed' || github.event.pull_request.merged
@@ -26,7 +26,6 @@ jobs:
       fail-fast: false
       matrix:
         node-version:
-          - '18.x'
           - '20.x'
           - '22.x'
           - '24.x'
@@ -35,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -50,33 +49,26 @@ jobs:
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
+  # ESLint's result doesn't depend on the Node version, so lint runs once.
   lint:
     name: Lint
     runs-on: ubuntu-latest
     needs: prepare
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version:
-          - '18.x'
-          - '20.x'
-          - '22.x'
-          - '24.x'
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22.x'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-22.x-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
@@ -85,35 +77,37 @@ jobs:
       - name: Lint Src and Server
         run: npm run lint
 
-  test:
-    name: Test
+  # backend/ and frontend/ are committed and are what a git install runs, but every test compiles
+  # the sources afresh, so a PR that forgets to commit the regenerated output passes them all, and
+  # a bundle that doesn't come from src/ can't be reviewed by reading the diff. Build each into an
+  # empty directory and compare with the commit: a changed, missing or leftover file fails. Both
+  # builds are deterministic (a Linux build reproduces one made on macOS byte for byte), so one
+  # Node version is enough; 22 is the one the Docker image uses.
+  build:
+    name: Build output matches source
     runs-on: ubuntu-latest
     needs: prepare
-    env:
-      CI: true
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22.x'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-22.x-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
+        id: install
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
-      # backend/ is committed and is what RTL runs, but every test compiles server/ afresh, so
-      # a PR that forgets to commit the regenerated output passes them all. Compile into an
-      # empty backend/ and compare with the commit: a changed, missing or leftover file fails.
       - name: Check committed backend/ matches server/
         run: |
           rm -rf backend
@@ -124,6 +118,52 @@ jobs:
             git diff --stat -- backend/
             exit 1
           fi
+
+      # Also the only production build (ng build --configuration production) CI runs. Runs even
+      # when the backend check fails, so one push reports both.
+      - name: Check committed frontend/ matches src/
+        if: ${{ !cancelled() && steps.install.outcome != 'failure' }}
+        run: |
+          rm -rf frontend
+          npm run buildfrontend
+          if [ -n "$(git status --porcelain -- frontend/)" ]; then
+            echo "::error::frontend/ does not match a fresh build of src/. Run 'npm run buildfrontend' and commit frontend/."
+            git status --short -- frontend/
+            exit 1
+          fi
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - '20.x'
+          - '22.x'
+          - '24.x'
+    env:
+      CI: true
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-npm-packages
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install NPM dependencies
+        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
+        run: npm ci --legacy-peer-deps
 
       - name: Run tests
         run: npm run test

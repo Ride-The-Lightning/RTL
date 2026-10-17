@@ -248,6 +248,18 @@ this release should add its entry under the appropriate section below.
 
 ## Developer Tooling
 
+- **CI: check the committed `frontend/`, and test on the supported Node versions**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Nothing checked that the committed bundle came from `src/`. A PR could forget to rebuild, or
+  carry a bundle that differs from its sources, and still pass, and CI never ran the production
+  build. A new Build job runs both comparisons, `backend/` (moved here from Test) and now
+  `frontend/`: it deletes each, rebuilds it (`npm run buildfrontend` is the production build),
+  and fails on any change. The build is deterministic, so a Linux build reproduces a macOS one
+  byte for byte. The Test job had no matrix, so it ran on whatever Node the runner had; it now
+  runs on Node 20, 22 and 24. Node 18 is dropped everywhere, since `package.json` requires
+  `>=20.19.0` and Angular 20 doesn't run on it. Lint runs once instead of four times, because
+  its result doesn't depend on Node. `actions/setup-node` moves from v3 to v4.
+
 - **CI: run the full checks on an open PR, once a maintainer approves**
   ([#1749](https://github.com/Ride-The-Lightning/RTL/pull/1749)).
   `checks.yml` (lint on four Node versions, the `backend/` comparison, backend and frontend

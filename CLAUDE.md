@@ -31,10 +31,13 @@ version and any bundled dependency.
 
 Forgetting to commit `backend/` passes every test, because the tests, the Docker image and CI
 all compile `server/` afresh, while a git install runs the committed copy (#1745 shipped that
-way). `checks.yml` therefore compiles into an empty `backend/` and fails if anything differs
-from the commit. To check before pushing:
-`rm -rf backend && npm run buildbackend && git status --short -- backend/` (empty when in sync).
-When checking what earlier PRs committed, use `git show --stat <sha>` with no path filter.
+way). `checks.yml` therefore builds each into an empty directory (`backend/` and `frontend/`,
+the latter with the production build, on Node 22) and fails if anything differs from the
+commit. Both builds are deterministic: a Linux build reproduces one made on macOS byte for byte.
+To check before pushing:
+`rm -rf backend frontend && npm run buildbackend && npm run buildfrontend && git status --short -- backend/ frontend/`
+(empty when in sync). When checking what earlier PRs committed, use `git show --stat <sha>` with
+no path filter.
 
 **Never merge a contributor's `frontend/` or `backend/` as submitted — regenerate them.**
 Committed build output is the one part of an external PR that cannot be reviewed by reading
@@ -45,6 +48,8 @@ discard the contributor's copies, and commit your own. If you want evidence rath
 trust, a token-level diff of the two bundles (split on `;` and `,`, then `diff`) shows
 exactly what the source change added — for a one-attribute template change it should be a
 couple of strings and nothing else; `runtime.*.js` may differ only in minifier variable names.
+PR CI now fails when the committed bundle isn't the build of the PR's `src/`, which catches a
+tampered or stale bundle, but it runs only after a maintainer approves it, so keep regenerating.
 
 ## The three-implementation pattern
 
