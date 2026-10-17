@@ -190,7 +190,7 @@ this release should add its entry under the appropriate section below.
   don't open as `noopener` by default, and now use `_blank`.
 
 - **Eclair: refusing to disconnect a peer with channels no longer disconnects it later**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1766](https://github.com/Ride-The-Lightning/RTL/pull/1766), fixes
   [#1764](https://github.com/Ride-The-Lightning/RTL/issues/1764)).
   On the Peers page, Disconnect on a peer with channels shows only a "Disconnect Not Allowed"
   alert, but `onPeerDetach` still waited for a confirmation answer. The next confirmation on the
