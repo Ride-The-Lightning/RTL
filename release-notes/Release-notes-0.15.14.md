@@ -181,7 +181,7 @@ this release should add its entry under the appropriate section below.
   now answers Cancel when it closes without one (`confirmation-message.component.ts`).
 
 - **External links open without a handle on the RTL tab**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1765](https://github.com/Ride-The-Lightning/RTL/pull/1765)).
   RTL opened block-explorer and other external links with `window.open(url, '_blank')`, which
   gives the opened page `window.opener` and lets it navigate the RTL tab. Every `window.open`
   now passes `noopener,noreferrer`, which also keeps RTL's address out of the `Referer` sent to
