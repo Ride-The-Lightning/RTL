@@ -270,3 +270,8 @@ this release should add its entry under the appropriate section below.
   until `queryroutes` finds a route. And after `docker compose down` / `up` Docker reshuffled
   container addresses while the nodes remembered their peers by IP, leaving channels inactive;
   the Lightning nodes now have fixed addresses on the compose network.
+
+- **Docker fixture: default RTL image is now `v0.15.13`**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Both RTL services (`rtl` and the SSO harness's `rtl-sso`) defaulted to
+  `shahanafarooqui/rtl:v0.15.10`, three releases behind. `RTL_IMAGE` still overrides both.

@@ -320,7 +320,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
     # Defaults to the published image; override with RTL_IMAGE (e.g. a locally built
     # branch image) to test unreleased changes: RTL_IMAGE=rtl:pr1625 docker compose up.
-    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.10}
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.13}
     restart: unless-stopped
     depends_on:
       rtl-config-init:
@@ -397,7 +397,7 @@ services:
   rtl-sso:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl_sso
     profiles: ["sso"]
-    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.10}
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.13}
     restart: unless-stopped
     depends_on:
       rtl-sso-config-init:
