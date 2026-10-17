@@ -198,6 +198,18 @@ this release should add its entry under the appropriate section below.
   wait now starts only after the "Disconnect Peer" confirmation opens, as in LND and CLN
   (`eclair/.../peers.component.ts`).
 
+- **LND: a default fee limit for payments, shown before sending**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Payments from the Send Payment dialog and from Home now use the same default fee limit: 5% of
+  the amount, or the whole amount for payments of up to 100 sats. This follows `lncli`'s default,
+  with a lower cutoff (`lncli` allows the whole amount up to 1,000 sats). Previously, payments
+  from Home could only use zero-fee routes, so they often failed with "No Route". The dialog now
+  shows the limit next to the amount, and the Home confirmation lists it as Max Fee. When a
+  payment fails with "No Route", the message explains that the fee limit may have stopped it and
+  how to raise it, and gives the cheapest route's fee when LND can find one (not available for
+  invoices with route hints). Fixed and Percentage limits work as before, and "No Fee Limit" is
+  renamed "Default Limit".
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

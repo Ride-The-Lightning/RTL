@@ -11,7 +11,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop, ListPayments } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum,
+  UI_MESSAGES, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, LND_PAGE_DEFS, DEFAULT_FEE_LIMIT_DESCRIPTION, getFeeLimitSat } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -174,7 +175,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         { key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER },
         { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30 }]
       ];
-      const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
+      const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay. The max fee is ' + DEFAULT_FEE_LIMIT_DESCRIPTION + '.';
       this.store.dispatch(openConfirmation({
         payload: {
           data: {
@@ -196,17 +197,19 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         subscribe((confirmRes) => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, amt: confirmRes[0].inputValue, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, amt: confirmRes[0].inputValue, fee_limit_sat: getFeeLimitSat('default', null, +confirmRes[0].inputValue), fee_limit_type: 'default', fromDialog: false } }));
             this.resetData();
           }
         });
     } else {
+      const feeLimitSat = getFeeLimitSat('default', null, +this.paymentDecoded.num_satoshis);
       const reorderedPaymentDecoded: MessageDataField[][] = [
         [{ key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100 }],
         [{ key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100 }],
         [{ key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100 }],
-        [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
-        { key: 'num_satoshis', value: this.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+        [{ key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME },
+        { key: 'num_satoshis', value: this.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 30, type: DataTypeEnum.NUMBER },
+        { key: 'fee_limit_sat', value: feeLimitSat, title: 'Max Fee (Sats)', width: 30, type: DataTypeEnum.NUMBER }],
         [{ key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER },
         { key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 50 }]
       ];
@@ -225,7 +228,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         pipe(take(1)).
         subscribe((confirmRes) => {
           if (confirmRes) {
-            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, fromDialog: false } }));
+            this.store.dispatch(sendPayment({ payload: { uiMessage: UI_MESSAGES.SEND_PAYMENT, payment_request: this.paymentRequest, amp: false, fee_limit_sat: feeLimitSat, fee_limit_type: 'default', fromDialog: false } }));
             this.resetData();
           }
         });

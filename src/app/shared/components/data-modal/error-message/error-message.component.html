@@ -13,7 +13,7 @@
         <span>{{data.message.code}}</span>
         <mat-divider class="w-100 my-1" />
         <h4 fxLayoutAlign="start" class="font-bold-500">Error Message</h4>
-        <span class="word-break">{{errorMessage}}</span>
+        <span class="word-break"><ng-container *ngFor="let part of errorMessage | satsAmountParts"><strong *ngIf="part.isAmount">{{part.text}}</strong><ng-container *ngIf="!part.isAmount">{{part.text}}</ng-container></ng-container></span>
         <mat-divider class="w-100 my-1" />
         <h4 fxLayoutAlign="start" class="font-bold-500">API URL</h4>
         <span class="word-break">{{data.message.URL}}</span>

@@ -54,3 +54,17 @@ export class CamelCaseWithReplacePipe implements PipeTransform {
   }
 
 }
+
+// Splits text into parts so a template can bold each amount written as 'N Sats' (for example
+// '500,000 Sats'), rendering every part as text: nothing in the message is treated as markup.
+@Pipe({
+  standalone: false,
+  name: 'satsAmountParts'
+})
+export class SatsAmountPartsPipe implements PipeTransform {
+
+  transform(value: string): { text: string, isAmount: boolean }[] {
+    return (value || '').split(/(?<amount>\d[\d,.]* Sats)/).filter((part) => part !== '').map((part) => ({ text: part, isAmount: (/^\d[\d,.]* Sats$/).test(part) }));
+  }
+
+}

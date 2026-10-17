@@ -15,11 +15,11 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 import { EffectsModule } from '@ngrx/effects';
-import { DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, DEFAULT_INVOICE_EXPIRY, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
 
 import { RTLState } from '../../../store/rtl.state';
-import { sendPayment } from '../../store/lnd.actions';
+import { sendPayment, updateLNDAPICallStatus } from '../../store/lnd.actions';
 import { Node } from '../../../shared/models/RTLconfig';
 import { SendPayment } from '../../../shared/models/lndModels';
 
@@ -49,6 +49,12 @@ describe('LightningSendPaymentsComponent', () => {
     }).
       compileComponents();
   }));
+
+  const decodablePaymentRequest = 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3tx' +
+    'vejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8s' +
+    's5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j' +
+    '0s3hrgpv4eel3';
+  const hintText = () => (fixture.nativeElement.querySelector('mat-hint')?.textContent || '').replace(/\s+/g, ' ').trim();
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LightningSendPaymentsComponent);
@@ -90,7 +96,7 @@ describe('LightningSendPaymentsComponent', () => {
     const sendButton = fixture.debugElement.nativeElement.querySelector('#sendBtn');
     sendButton.click();
     const expectedSendPaymentPayload: SendPayment = {
-      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoing_chan_ids: undefined, fee_limit_sat: 1000000, fromDialog: true, amp: false,
+      uiMessage: UI_MESSAGES.SEND_PAYMENT, outgoing_chan_ids: undefined, fee_limit_sat: 20, fee_limit_type: 'default', fromDialog: true, amp: false,
       payment_request: 'lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq' +
       '6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5c' +
       'qqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq' +
@@ -172,8 +178,8 @@ describe('LightningSendPaymentsComponent', () => {
     'txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvr' +
     'c8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630a' +
     'q38j0s3hrgpv4eel3');
-    expect(component.paymentDecodedHintPre).toEqual('Sending: 400 Sats (');
-    expect(component.paymentDecodedHintPost).toEqual('0.13) | Memo: Testing ngrx Effects 4');
+    fixture.detectChanges();
+    expect(hintText()).toEqual('Sending: 400 Sats ( 0.13) | Max fee: 20 Sats | Memo: Testing ngrx Effects 4');
   });
 
   it('should decode payment when pay request changed and fiat conversion is false', () => {
@@ -181,7 +187,40 @@ describe('LightningSendPaymentsComponent', () => {
     'vejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8s' +
     's5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j' +
     '0s3hrgpv4eel3');
-    expect(component.paymentDecodedHintPre).toEqual('Sending: 400 Sats | Memo: Testing ngrx Effects 4');
+    fixture.detectChanges();
+    expect(hintText()).toEqual('Sending: 400 Sats | Max fee: 20 Sats | Memo: Testing ngrx Effects 4');
+  });
+
+  it('should show a fixed fee limit in the hint once it is entered', () => {
+    component.onPaymentRequestEntry(decodablePaymentRequest);
+    component.selFeeLimitType = FEE_LIMIT_TYPES[1];
+    component.feeLimit = 50;
+    fixture.detectChanges();
+    expect(hintText()).toEqual('Sending: 400 Sats | Max fee: 50 Sats | Memo: Testing ngrx Effects 4');
+  });
+
+  it('should send the fee limit type with the payment, so a failure can name the limit', () => {
+    const storeSpy = spyOn(store, 'dispatch').and.callThrough();
+    component.onPaymentRequestEntry(decodablePaymentRequest);
+    component.selFeeLimitType = FEE_LIMIT_TYPES[1];
+    component.feeLimit = 50;
+    component.sendPayment();
+    expect(storeSpy.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({ payload: jasmine.objectContaining({ fee_limit_sat: 50, fee_limit_type: 'fixed' }) }));
+  });
+
+  it('should show the amounts in a payment error in bold', () => {
+    component.paymentError = 'Payment not sent. Nothing was paid. The cheapest route LND found costs 500,000 Sats in fees, more than the default max fee of 500 Sats.';
+    fixture.detectChanges();
+    const alert = fixture.nativeElement.querySelector('.alert-danger');
+    expect(Array.from<HTMLElement>(alert.querySelectorAll('strong')).map((bold) => bold.textContent)).toEqual(['500,000 Sats', '500 Sats']);
+    expect(alert.textContent.trim()).toEqual(component.paymentError);
+  });
+
+  it('should show the payment error it is given', () => {
+    component.onPaymentRequestEntry(decodablePaymentRequest);
+    component.sendPayment();
+    store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SendPayment', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Insufficient Balance ' } }));
+    expect(component.paymentError).toEqual('Insufficient Balance ');
   });
 
   it('should throw an error from decode payment when pay request is not found', () => {

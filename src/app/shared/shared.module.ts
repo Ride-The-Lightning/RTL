@@ -91,7 +91,7 @@ import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
-import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe } from './pipes/app.pipe';
+import { RemoveLeadingZerosPipe, CamelCasePipe, CamelCaseWithReplacePipe, CamelCaseWithSpacesPipe, SatsAmountPartsPipe } from './pipes/app.pipe';
 import { HttpClientModule } from '@angular/common/http';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -223,6 +223,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     CamelCasePipe,
     CamelCaseWithReplacePipe,
     CamelCaseWithSpacesPipe,
+    SatsAmountPartsPipe,
     MaxValidator,
     MinValidator,
     AppSettingsComponent,
@@ -279,6 +280,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     CamelCasePipe,
     CamelCaseWithReplacePipe,
     CamelCaseWithSpacesPipe,
+    SatsAmountPartsPipe,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
     ShowPubkeyComponent,

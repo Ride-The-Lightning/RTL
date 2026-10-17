@@ -559,6 +559,7 @@ export interface SendPayment {
   amt?: number;
   outgoing_chan_ids?: string[] | [];
   fee_limit_sat?: number | null;
+  fee_limit_type?: string;
   allow_self_payment?: boolean;
   last_hop_pubkey?: string;
 }

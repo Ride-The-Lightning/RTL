@@ -156,6 +156,29 @@ export const paymentLookup = (req, res, next) => {
   });
 };
 
+// LND fails a payment with NO_ROUTE both when every route costs more than the fee limit and when no
+// route has the liquidity. Ask LND for the cheapest route with no practical limit (21M BTC in sats),
+// so the operator can see what the payment would cost. Resolves to that fee when it is above the
+// limit, otherwise null. Skipped for invoices with route hints: the REST route query can't take them,
+// so its answer could be wrong.
+const getCheapestRouteFeeAboveLimit = (selNode: SelectedNode, payment, failureReason: string, requestOptions): Promise<number | null> => {
+  const feeLimitSat = Number(payment.fee_limit_sat);
+  if (failureReason !== 'FAILURE_REASON_NO_ROUTE' || !payment.payment_request || payment.fee_limit_sat === undefined || payment.fee_limit_sat === null || !Number.isFinite(feeLimitSat)) {
+    return Promise.resolve(null);
+  }
+  return decodePaymentFromPaymentRequest(selNode, payment.payment_request, { ...requestOptions }).then((decoded) => {
+    const amount = +payment.amt || +decoded?.num_satoshis;
+    const destination = common.parseNodePubkey(decoded?.destination);
+    if (!destination || !amount || !Number.isInteger(amount) || decoded.route_hints?.length) { return null; }
+    const cltv = Number.isInteger(+decoded.cltv_expiry) && +decoded.cltv_expiry > 0 ? '&final_cltv_delta=' + decoded.cltv_expiry : '';
+    const url = selNode.settings.lnServerUrl + '/v1/graph/routes/' + destination + '/' + amount + '?fee_limit.fixed=2100000000000000' + cltv;
+    return request({ ...requestOptions, url }).then((body) => {
+      const fee = Number(body?.routes?.[0]?.total_fees);
+      return (Number.isFinite(fee) && fee > feeLimitSat) ? fee : null;
+    });
+  }).catch(() => null);
+};
+
 export const sendPayment = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Sending Payment..' });
   options = common.getOptions(req);
@@ -168,6 +191,8 @@ export const sendPayment = (req, res, next) => {
   req.body.timeout_seconds = (Number.isFinite(+req.body.timeout_seconds) && +req.body.timeout_seconds > 0) ? +req.body.timeout_seconds : 600;
   options.form = JSON.stringify(req.body);
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Options', data: options.form });
+  // Copy before the call: the module-level options is reassigned by every request.
+  const { form: _form, ...lookupOptions } = options;
   // LND ends the stream at timeout_seconds with a FAILURE_REASON_TIMEOUT result;
   // give the transport a margin over that so LND's mapped failure always wins
   // the race against the wrapper's own timeout.
@@ -176,7 +201,10 @@ export const sendPayment = (req, res, next) => {
     body = results.length > 0 ? results[results.length - 1] : { result: { status: 'UNKNOWN' } };
     if (body.result.status === 'FAILED') {
       const err = common.handleError(common.titleCase(body.result.failure_reason.replace(/_/g, ' ').replace('FAILURE REASON ', '')), 'Payments', 'Send Payment Error', req.session.selectedNode);
-      return res.status(err.statusCode).json({ message: err.message, error: err.error });
+      getCheapestRouteFeeAboveLimit(req.session.selectedNode, req.body, body.result.failure_reason, lookupOptions).then((cheapestRouteFeeSat) => {
+        res.status(err.statusCode).json({ message: err.message, error: err.error, ...(cheapestRouteFeeSat !== null ? { cheapest_route_fee_sat: cheapestRouteFeeSat } : {}) });
+      });
+      return;
     }
     if (body.result.status === 'SUCCEEDED') {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent', data: body.result });

@@ -17,7 +17,7 @@
               <fa-icon [icon]="convertedCurrency.symbol" />
             </span>
             <span *ngIf="convertedCurrency && convertedCurrency.iconType === 'SVG' && paymentDecodedHintPre !== ''" fxLayoutAlign="center center" class="mr-3px" [innerHTML]="convertedCurrency.symbol"></span>
-            {{paymentDecodedHintPost}}
+            {{paymentDecodedHintPost}}{{(!zeroAmtInvoice && getMaxFeeHint() !== '') ? ' | ' + getMaxFeeHint() : ''}}{{paymentDecodedHintMemo}}
           </mat-hint>
           <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
           <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
@@ -25,7 +25,7 @@
         <mat-form-field *ngIf="zeroAmtInvoice" fxFlex="100">
           <mat-label>Amount (Sats)</mat-label>
           <input #paymentAmt="ngModel" matInput name="amount" tabindex="2" required [(ngModel)]="paymentAmount" (change)="onAmountChange($event)">
-          <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
+          <mat-hint>It is a zero amount invoice, enter amount to be paid.{{getMaxFeeHint() !== '' ? ' ' + getMaxFeeHint() + '.' : ''}}</mat-hint>
           <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
         </mat-form-field>
         <mat-expansion-panel fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true, false)" (opened)="onAdvancedPanelToggle(false, false)">
@@ -46,6 +46,7 @@
             <mat-form-field fxLayout="column" fxFlex="33">
               <mat-label>{{selFeeLimitType?.placeholder}}</mat-label>
               <input #fLmt="ngModel" matInput type="number" name="feeLmt" required tabindex="6" [step]="1" [min]="0" [disabled]="selFeeLimitType === feeLimitTypes[0]" [(ngModel)]="feeLimit">
+              <mat-hint *ngIf="selFeeLimitType === feeLimitTypes[0]">{{defaultFeeLimitDescription}}</mat-hint>
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="37" fxLayoutAlign="start end">
@@ -61,7 +62,7 @@
         </mat-expansion-panel>
         <div *ngIf="paymentError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
-          <span *ngIf="paymentError !== ''">{{paymentError}}</span>
+          <span *ngIf="paymentError !== ''"><ng-container *ngFor="let part of paymentError | satsAmountParts"><strong *ngIf="part.isAmount">{{part.text}}</strong><ng-container *ngIf="!part.isAmount">{{part.text}}</ng-container></ng-container></span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Fields</button>

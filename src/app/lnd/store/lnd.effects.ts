@@ -18,7 +18,7 @@ import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, 
   SetRestoreChannelsList } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { API_URL, API_END_POINTS, RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum } from '../../shared/services/consts-enums-functions';
+import { API_URL, API_END_POINTS, RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, getNoRouteMessage } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
@@ -696,6 +696,7 @@ export class LNDEffects implements OnDestroy {
       const queryParams = JSON.parse(JSON.stringify(action.payload));
       delete queryParams.uiMessage;
       delete queryParams.fromDialog;
+      delete queryParams.fee_limit_type;
       return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/send', queryParams).pipe(
         map((sendRes: any) => {
           this.logger.info(sendRes);
@@ -746,10 +747,12 @@ export class LNDEffects implements OnDestroy {
               payload: { error: this.commonService.extractErrorMessage(err) }
             });
           } else {
+            const errMsg = getNoRouteMessage(this.commonService.extractErrorMessage(err), action.payload.fee_limit_sat, err.error?.cheapest_route_fee_sat, action.payload.fee_limit_type === 'default',
+              action.payload.fromDialog ? 'raise the limit in Advanced Options and send again.' : 'use Send Payment under Transactions > Payments and set a higher limit in Advanced Options.');
             if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
+              this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err, errMsg);
             } else {
-              this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/transactions', err);
+              this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/transactions', err, errMsg);
             }
             return of({ type: RTLActions.VOID });
           }
@@ -1273,7 +1276,7 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(fetchInvoices({ payload: { num_max_invoices: this.invoicesPageSettings?.recordsPerPage, reversed: true } }));
   }
 
-  handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }, errMessage?: string) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -1281,11 +1284,11 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
-      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.commonService.extractErrorMessage(err, genericErrorMessage) } }));
+      this.store.dispatch(updateLNDAPICallStatus({ payload: { action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMessage || this.commonService.extractErrorMessage(err, genericErrorMessage) } }));
     }
   }
 
-  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any }, errMessage?: string) {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -1293,7 +1296,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(logout({ payload: 'Authentication Failed: ' + JSON.stringify(err.error) }));
     } else {
       this.store.dispatch(closeSpinner({ payload: uiMessage }));
-      const errMsg = this.commonService.extractErrorMessage(err);
+      const errMsg = errMessage || this.commonService.extractErrorMessage(err);
       this.store.dispatch(openAlert({
         payload: {
           data: {

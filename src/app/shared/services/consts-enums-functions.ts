@@ -67,7 +67,7 @@ export const TRANS_TYPES = [
 ];
 
 export const FEE_LIMIT_TYPES = [
-  { id: 'none', name: 'No Fee Limit', placeholder: 'No Limit' },
+  { id: 'default', name: 'Default Limit', placeholder: 'Default Limit' },
   { id: 'fixed', name: 'Fixed Limit (Sats)', placeholder: 'Fixed Limit in Sats' },
   { id: 'percent', name: 'Percentage of Amount', placeholder: 'Percentage Limit' }
 ];
@@ -1365,12 +1365,35 @@ export function getSelectedCurrency(currencyID: string) {
 }
 
 
-export function getFeeLimitSat(selFeeLimitTypeID: string, feeLimit: number, amount?: number) {
+// The fee limit used when the operator sets none: the whole amount for a payment of up to
+// DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS, DEFAULT_FEE_LIMIT_PERCENT of it above that. This is lncli's
+// default with a lower cutoff (lncli allows the whole amount up to 1,000 sats).
+export const DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS = 100;
+export const DEFAULT_FEE_LIMIT_PERCENT = 5;
+export const DEFAULT_FEE_LIMIT_DESCRIPTION = DEFAULT_FEE_LIMIT_PERCENT + '% of the amount, or all of it up to ' + DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS + ' Sats';
+
+export function getFeeLimitSat(selFeeLimitTypeID: string, feeLimit: number | null, amount?: number) {
   if (selFeeLimitTypeID === 'fixed') {
     return feeLimit;
   }
   if (selFeeLimitTypeID === 'percent') {
-    return Math.ceil(((amount || 0) * feeLimit) / 100);
+    return Math.ceil(((amount || 0) * (feeLimit || 0)) / 100);
   }
-  return 1000000;
+  return ((amount || 0) <= DEFAULT_FEE_LIMIT_FULL_AMOUNT_SATS) ? (amount || 0) : Math.ceil(((amount || 0) * DEFAULT_FEE_LIMIT_PERCENT) / 100);
+}
+
+// LND reports 'No Route' both when every route costs more than the fee limit and when no route has
+// enough liquidity. Say that the limit stopped the payment, what the cheapest route would cost when
+// the server could find out, and how to raise the limit if the operator accepts that fee.
+export function getNoRouteMessage(errMsg: string, feeLimitSat: number | null | undefined, cheapestRouteFeeSat: number | null | undefined, isDefaultLimit: boolean, howToRaise: string) {
+  if (errMsg?.trim().toLowerCase() !== 'no route' || feeLimitSat === null || typeof feeLimitSat === 'undefined') {
+    return errMsg;
+  }
+  const maxFee = (isDefaultLimit ? 'the default' : 'your') + ' max fee of ' + feeLimitSat.toLocaleString('en-US') + ' Sats';
+  if (Number.isFinite(cheapestRouteFeeSat) && cheapestRouteFeeSat > feeLimitSat) {
+    return 'Payment not sent. Nothing was paid. The cheapest route LND found costs ' + cheapestRouteFeeSat.toLocaleString('en-US') + ' Sats in fees, more than ' + maxFee +
+      '. If you\'re willing to pay that fee, ' + howToRaise;
+  }
+  return 'Payment not sent. Nothing was paid. Every route LND found would cost more than ' + maxFee + ', or didn\'t have enough liquidity. ' +
+    'If you\'re willing to pay a higher fee, ' + howToRaise;
 }

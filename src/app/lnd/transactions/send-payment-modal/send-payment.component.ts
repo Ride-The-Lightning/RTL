@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Node } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel, ChannelsSummary, LightningBalance, SendPayment } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES, getFeeLimitSat } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, DEFAULT_FEE_LIMIT_DESCRIPTION, FEE_LIMIT_TYPES, LNDActions, UI_MESSAGES, getFeeLimitSat } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -40,6 +40,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentRequest = '';
   public paymentDecodedHintPre = '';
   public paymentDecodedHintPost = '';
+  public paymentDecodedHintMemo = '';
   public showAdvanced = false;
   public activeChannels: Channel[] = [];
   public filteredMinAmtActvChannels: Channel[] = [];
@@ -48,6 +49,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public feeLimit: number | null = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
+  public defaultFeeLimitDescription = DEFAULT_FEE_LIMIT_DESCRIPTION;
   public advancedTitle = 'Advanced Options';
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -151,6 +153,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
         amt: this.paymentAmount || 0,
         outgoing_chan_ids: this.selectedChannelCtrl.value?.chan_id ? [this.selectedChannelCtrl.value.chan_id] : undefined,
         fee_limit_sat: getFeeLimitSat(this.selFeeLimitType.id, this.feeLimit, (this.paymentAmount || 0)),
+        fee_limit_type: this.selFeeLimitType.id,
         fromDialog: true
       };
       this.store.dispatch(sendPayment({ payload }));
@@ -162,6 +165,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
         amp: this.isAmp,
         outgoing_chan_ids: this.selectedChannelCtrl.value?.chan_id ? [this.selectedChannelCtrl.value.chan_id] : undefined,
         fee_limit_sat: getFeeLimitSat(this.selFeeLimitType.id, this.feeLimit, (+this.paymentDecoded.num_satoshis || 0)),
+        fee_limit_type: this.selFeeLimitType.id,
         fromDialog: true
       };
       this.store.dispatch(sendPayment({ payload }));
@@ -178,6 +182,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentError = '';
     this.paymentDecodedHintPre = '';
     this.paymentDecodedHintPost = '';
+    this.paymentDecodedHintMemo = '';
     this.zeroAmtInvoice = false;
     if (this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
@@ -206,16 +211,18 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
                     next: (data) => {
                       this.convertedCurrency = data;
                       this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (';
-                      this.paymentDecodedHintPost = this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' +
-                       (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                      this.paymentDecodedHintPost = this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ')';
+                      this.paymentDecodedHintMemo = ' | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
                     }, error: (error) => {
-                      this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
+                      this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats';
                       this.paymentDecodedHintPost = '';
+                      this.paymentDecodedHintMemo = ' | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None') + '. Unable to convert currency.';
                     }
                   });
               } else {
-                this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+                this.paymentDecodedHintPre = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats';
                 this.paymentDecodedHintPost = '';
+                this.paymentDecodedHintMemo = ' | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
               }
             } else {
               this.zeroAmtInvoice = true;
@@ -232,6 +239,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
             this.logger.error(err);
             this.paymentDecodedHintPre = 'ERROR: ' + err.message;
             this.paymentDecodedHintPost = '';
+            this.paymentDecodedHintMemo = '';
             this.paymentReq.control.setErrors({ decodeError: true });
           }
         });
@@ -241,10 +249,24 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   onAdvancedPanelToggle(isClosed: boolean, isReset: boolean) {
     if (isClosed && !isReset) {
       const alias = (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.remote_alias) ? this.selectedChannelCtrl.value.remote_alias : (this.selectedChannelCtrl.value && this.selectedChannelCtrl.value.chan_id) ? this.selectedChannelCtrl.value.chan_id : '';
-      this.advancedTitle = 'Advanced Options | ' + this.selFeeLimitType.name + (this.selFeeLimitType.id === 'none' ? '' : (': ' + this.feeLimit)) + ((alias !== '') ? ' | First Outgoing Channel: ' + alias : '');
+      this.advancedTitle = 'Advanced Options | ' + this.selFeeLimitType.name + (this.selFeeLimitType.id === 'default' ? '' : (': ' + this.feeLimit)) + ((alias !== '') ? ' | First Outgoing Channel: ' + alias : '');
     } else {
       this.advancedTitle = 'Advanced Options';
     }
+  }
+
+  // The fee limit this payment will be sent with, or null until there is an amount and a limit to apply.
+  getMaxFeeSat(): number | null {
+    const amount = this.zeroAmtInvoice ? +(this.paymentAmount || 0) : +(this.paymentDecoded.num_satoshis || (+(this.paymentDecoded.num_msat || 0) / 1000));
+    if (!amount || (this.selFeeLimitType.id !== 'default' && !this.feeLimit)) {
+      return null;
+    }
+    return getFeeLimitSat(this.selFeeLimitType.id, this.feeLimit, amount);
+  }
+
+  getMaxFeeHint(): string {
+    const maxFeeSat = this.getMaxFeeSat();
+    return maxFeeSat === null ? '' : ('Max fee: ' + this.decimalPipe.transform(maxFeeSat) + ' Sats');
   }
 
   resetData() {
@@ -266,6 +288,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentError = '';
     this.paymentDecodedHintPre = '';
     this.paymentDecodedHintPost = '';
+    this.paymentDecodedHintMemo = '';
   }
 
   ngOnDestroy() {
