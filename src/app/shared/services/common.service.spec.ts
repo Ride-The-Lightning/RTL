@@ -56,6 +56,13 @@ describe('CommonService', () => {
       expect(csv).toBe('policy,last\r\n"{""fee"":1;""note"":""=x""}",x\r\n');
     });
 
+    it('should escape date and timestamp fields that are not dates', () => {
+      // 6 characters: neither a seconds nor a milliseconds timestamp, so it is written as it came
+      // 10 characters: read as seconds, the date pipe throws on it, so the fallback writes it
+      const csv = commonService.convertToCSV([{ creation_date: '=1+1,x' }, { creation_date: '=cmd|12,34' }]);
+      expect(csv).toBe('creation_date\r\n"\'=1+1,x"\r\n"\'=cmd|12,34"\r\n');
+    });
+
     it('should leave an empty cell for a missing key', () => {
       const csv = commonService.convertToCSV([{ a: 1, b: 2 }, { a: 3 }]);
       expect(csv).toBe('a,b\r\n1,2\r\n3,\r\n');
