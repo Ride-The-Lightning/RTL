@@ -272,6 +272,6 @@ this release should add its entry under the appropriate section below.
   the Lightning nodes now have fixed addresses on the compose network.
 
 - **Docker fixture: default RTL image is now `v0.15.13`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1762](https://github.com/Ride-The-Lightning/RTL/pull/1762)).
   Both RTL services (`rtl` and the SSO harness's `rtl-sso`) defaulted to
   `shahanafarooqui/rtl:v0.15.10`, three releases behind. `RTL_IMAGE` still overrides both.
