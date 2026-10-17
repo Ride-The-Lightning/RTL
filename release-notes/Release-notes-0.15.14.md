@@ -212,7 +212,7 @@ this release should add its entry under the appropriate section below.
 
 - **Download CSV: text from other nodes can no longer become a spreadsheet formula or shift
   columns**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1771](https://github.com/Ride-The-Lightning/RTL/pull/1771)).
   Every "Download CSV" button goes through `convertToCSV`
   (`src/app/shared/services/common.service.ts`), which wrote text fields as they came, unquoted.
   Several exported fields are chosen by other parties, such as a peer's or a liquidity lessor's
