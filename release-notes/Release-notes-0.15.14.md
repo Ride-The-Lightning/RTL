@@ -249,7 +249,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **CI: check the committed `frontend/`, and test on the supported Node versions**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1767](https://github.com/Ride-The-Lightning/RTL/pull/1767)).
   Nothing checked that the committed bundle came from `src/`. A PR could forget to rebuild, or
   carry a bundle that differs from its sources, and still pass, and CI never ran the production
   build. A new Build job runs both comparisons, `backend/` (moved here from Test) and now
