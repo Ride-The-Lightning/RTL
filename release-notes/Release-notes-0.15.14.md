@@ -174,6 +174,12 @@ this release should add its entry under the appropriate section below.
   "Trampoline Payment Relayed" for a relay that wasn't one. ESLint's `no-cond-assign` is now
   enabled, which flags this class of mistake.
 
+- **A confirmation dialog closed by browser navigation now counts as Cancel**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Browser navigation (Back, or a change to the URL fragment) closes a confirmation dialog without
+  an answer, so the action that opened it could take a later dialog's answer instead. The dialog
+  now answers Cancel when it closes without one (`confirmation-message.component.ts`).
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

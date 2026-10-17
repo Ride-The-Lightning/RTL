@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +16,7 @@ import { closeConfirmation } from '../../../../store/rtl.actions';
   templateUrl: './confirmation-message.component.html',
   styleUrls: ['./confirmation-message.component.scss']
 })
-export class ConfirmationMessageComponent implements OnInit {
+export class ConfirmationMessageComponent implements OnInit, OnDestroy {
 
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
@@ -32,6 +32,7 @@ export class ConfirmationMessageComponent implements OnInit {
   public getInputs: Array<InputData> = [{ placeholder: '', inputType: DataTypeEnum.STRING, inputValue: '', hintText: '', hintFunction: null, advancedField: false }];
 
   private showAdvanced = false;
+  private replied = false;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: ConfirmationData, private logger: LoggerService,
@@ -70,7 +71,17 @@ export class ConfirmationMessageComponent implements OnInit {
         return accumulator;
       }, []);
     }
+    this.replied = true;
     this.store.dispatch(closeConfirmation({ payload: dialogRes }));
+  }
+
+  ngOnDestroy() {
+    // Browser navigation (Back, a fragment change) closes the dialog without an answer. Answer no,
+    // so the action waiting on this dialog is cancelled instead of taking the next dialog's answer.
+    if (!this.replied) {
+      this.replied = true;
+      this.store.dispatch(closeConfirmation({ payload: false }));
+    }
   }
 
 }
