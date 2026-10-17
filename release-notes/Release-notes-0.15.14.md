@@ -199,7 +199,7 @@ this release should add its entry under the appropriate section below.
   (`eclair/.../peers.component.ts`).
 
 - **LND: a default fee limit for payments, shown before sending**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1769](https://github.com/Ride-The-Lightning/RTL/pull/1769)).
   Payments from the Send Payment dialog and from Home now use the same default fee limit: 5% of
   the amount, or the whole amount for payments of up to 100 sats. This follows `lncli`'s default,
   with a lower cutoff (`lncli` allows the whole amount up to 1,000 sats). Previously, payments
