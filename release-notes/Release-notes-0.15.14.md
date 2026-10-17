@@ -189,6 +189,15 @@ this release should add its entry under the appropriate section below.
   `rel="noopener noreferrer"`; three of them used `target="blank"`, a named window that browsers
   don't open as `noopener` by default, and now use `_blank`.
 
+- **Eclair: refusing to disconnect a peer with channels no longer disconnects it later**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1764](https://github.com/Ride-The-Lightning/RTL/issues/1764)).
+  On the Peers page, Disconnect on a peer with channels shows only a "Disconnect Not Allowed"
+  alert, but `onPeerDetach` still waited for a confirmation answer. The next confirmation on the
+  page, such as Disconnect for another peer, then disconnected the refused peer as well. The
+  wait now starts only after the "Disconnect Peer" confirmation opens, as in LND and CLN
+  (`eclair/.../peers.component.ts`).
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

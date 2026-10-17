@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreModule } from '@ngrx/store';
+import { Subject } from 'rxjs';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
@@ -15,6 +16,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { disconnectPeer } from '../../store/ecl.actions';
 
 describe('ECLPeersComponent', () => {
   let component: ECLPeersComponent;
@@ -48,6 +50,17 @@ describe('ECLPeersComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should disconnect only the confirmed peer after refusing to disconnect a peer with channels', () => {
+    const closeConfirm = new Subject<boolean>();
+    (<any>TestBed.inject(RTLEffects)).closeConfirm = closeConfirm;
+    const dispatchSpy = spyOn(TestBed.inject(Store), 'dispatch');
+    component.onPeerDetach({ nodeId: 'peer-with-channel', channels: 1 });
+    component.onPeerDetach({ nodeId: 'peer-without-channel', channels: 0 });
+    closeConfirm.next(true);
+    const disconnected = dispatchSpy.calls.allArgs().map(([action]) => action).filter((action: any) => action.type === disconnectPeer.type);
+    expect(disconnected).toEqual([disconnectPeer({ payload: { nodeId: 'peer-without-channel' } })]);
   });
 
   afterEach(() => {

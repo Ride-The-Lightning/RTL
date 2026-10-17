@@ -199,14 +199,14 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }));
+      this.rtlEffects.closeConfirm.
+        pipe(takeUntil(this.unSubs[5])).
+        subscribe((confirmRes) => {
+          if (confirmRes) {
+            this.store.dispatch(disconnectPeer({ payload: { nodeId: (peerToDetach.nodeId || '') } }));
+          }
+        });
     }
-    this.rtlEffects.closeConfirm.
-      pipe(takeUntil(this.unSubs[5])).
-      subscribe((confirmRes) => {
-        if (confirmRes) {
-          this.store.dispatch(disconnectPeer({ payload: { nodeId: (peerToDetach.nodeId || '') } }));
-        }
-      });
   }
 
   applyFilter() {
