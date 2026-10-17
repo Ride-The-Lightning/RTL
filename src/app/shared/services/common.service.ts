@@ -285,7 +285,7 @@ export class CommonService implements OnDestroy {
         }
       }
     });
-    const header = keys.join(',');
+    const header = keys.map((key) => this.escapeCSVField(key)).join(',');
     csvStrArray = header + '\r\n';
     objArray.forEach((obj) => {
       dataRow = '';
@@ -300,10 +300,10 @@ export class CommonService implements OnDestroy {
                 arrayField += '(' + arrEl + ')';
               }
             });
-            dataRow += arrayField + ',';
+            dataRow += this.escapeCSVField(arrayField) + ',';
           } else {
             if (typeof obj[key] === 'object') {
-              dataRow += JSON.stringify(obj[key])?.replace(/\,/g, ';') + ',';
+              dataRow += this.escapeCSVField(JSON.stringify(obj[key])?.replace(/\,/g, ';')) + ',';
             } else {
               if ((key.includes('timestamp') || key.includes('date'))) {
                 try {
@@ -317,14 +317,14 @@ export class CommonService implements OnDestroy {
                       break;
 
                     default:
-                      dataRow += obj[key] + ',';
+                      dataRow += this.escapeCSVField(obj[key]) + ',';
                       break;
                   }
                 } catch (error) {
-                  dataRow += obj[key] + ',';
+                  dataRow += this.escapeCSVField(obj[key]) + ',';
                 }
               } else {
-                dataRow += obj[key] + ',';
+                dataRow += this.escapeCSVField(obj[key]) + ',';
               }
             }
           }
@@ -335,6 +335,19 @@ export class CommonService implements OnDestroy {
       csvStrArray += dataRow.slice(0, -1) + '\r\n';
     });
     return csvStrArray;
+  }
+
+  // Exported values can come from other nodes (aliases, memos), so text a spreadsheet would
+  // evaluate as a formula gets a leading quote, and any field with a delimiter is quoted (RFC 4180).
+  escapeCSVField(value: any) {
+    let field = String(value);
+    if (typeof value === 'string' && (/^[=+\-@\t\r]/).test(field) && !(/^[+-]?\d+(?:\.\d+)?$/).test(field)) {
+      field = '\'' + field;
+    }
+    if ((/[",\r\n]/).test(field)) {
+      field = '"' + field.replace(/"/g, '""') + '"';
+    }
+    return field;
   }
 
   isVersionCompatible(currentVersion, checkVersion) {

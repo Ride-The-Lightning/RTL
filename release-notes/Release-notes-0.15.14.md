@@ -210,6 +210,19 @@ this release should add its entry under the appropriate section below.
   invoices with route hints). Fixed and Percentage limits work as before, and "No Fee Limit" is
   renamed "Default Limit".
 
+- **Download CSV: text from other nodes can no longer become a spreadsheet formula or shift
+  columns**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Every "Download CSV" button goes through `convertToCSV`
+  (`src/app/shared/services/common.service.ts`), which wrote text fields as they came, unquoted.
+  Several exported fields are chosen by other parties, such as a peer's or a liquidity lessor's
+  alias, a keysend message or an offer description. A value starting with `=`, `+`, `-` or `@`
+  was evaluated as a formula when the file was opened in a spreadsheet, and a comma or line
+  break split it across columns or rows. Such text now gets a leading `'`, so the spreadsheet
+  shows it as text; numbers, including signed ones like `-50000`, are left alone. Any field
+  with a comma, quote or line break is quoted as RFC 4180 specifies. The fix covers all three
+  implementations. Reported by iblitzc0de.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
