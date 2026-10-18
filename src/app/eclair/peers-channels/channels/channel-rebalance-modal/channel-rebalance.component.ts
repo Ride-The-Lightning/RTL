@@ -170,9 +170,19 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchChannels());
         }, error: (error) => {
           this.logger.error(error);
-          // Only a definite failure lets the same rebalance be set up again. An error without a status, such as a proxy timeout, may have come after the payment was sent.
-          this.rebalanceStatus = error?.paymentStatus ? error :
-            { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } };
+          const body = error?.body;
+          const emptyStatus = { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
+          if (body?.paymentStatus) {
+            this.rebalanceStatus = { ...emptyStatus, ...body };
+          } else if (error?.httpStatus >= 400 && error.httpStatus < 500 && error.httpStatus !== 408) {
+            // Refused before the rebalance ran, such as a CSRF or session error: nothing was sent.
+            const message = [body, body?.error, body?.message].find((text) => typeof text === 'string' && text !== '');
+            this.rebalanceStatus = { ...emptyStatus, paymentStatus: { error: message || 'Rebalance failed.' } };
+          } else {
+            // No answer, a server error or a proxy timeout: the payment may have been sent.
+            this.rebalanceStatus = { ...emptyStatus, paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } };
+          }
+          // Only a definite failure lets the same rebalance be set up again.
           this.flgEditable = this.rebalanceStatus.paymentStatus.type !== 'unknown';
         }
       });

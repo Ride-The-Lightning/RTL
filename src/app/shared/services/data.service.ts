@@ -361,7 +361,8 @@ export class DataService implements OnDestroy {
       map((res: any) => res),
       catchError((err) => {
         this.handleErrorWithoutAlert('Rebalance Channel', UI_MESSAGES.REBALANCE_CHANNEL, err);
-        return throwError(() => err.error);
+        // With the HTTP status, the dialog can tell a request refused before the rebalance ran from one that may have paid.
+        return throwError(() => ({ httpStatus: err.status, body: err.error }));
       })
     );
   }

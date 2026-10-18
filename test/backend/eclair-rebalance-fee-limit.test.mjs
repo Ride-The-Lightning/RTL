@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import { circularRebalance } from '../../backend/controllers/eclair/channels.js';
 import { sendPaymentToRoute } from '../../backend/controllers/eclair/payments.js';
+import { Common } from '../../backend/utils/common.js';
 
 const SOURCE_NODE = '033c6f0fb82e995e05c95b84d0243d3d605575427f96f13268a6356d92a2cf4613';
 const TARGET_NODE = '0323ce56abc0fec923dd89b443f5e8a17b0bd7b64000ab703859d49d9b879e6a23';
@@ -199,6 +200,31 @@ test('circularRebalance treats the payment as unknown when reading its status th
     const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
     assert.equal(res.body.paymentStatus.type, 'unknown');
     assert.match(res.body.paymentStatus.error, /Payment status unknown/);
+  } finally {
+    await eclair.close();
+  }
+});
+
+test('circularRebalance answers an expired session in the same shape as its other errors', async () => {
+  const eclair = await startFakeEclair();
+  try {
+    const req = buildRequest(eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
+    // The expired-session error is logged against the server's selected node, set at startup.
+    const previousNode = Common.selectedNode;
+    Common.selectedNode = { ...req.session.selectedNode };
+    delete req.session.selectedNode.authentication.options;
+    const res = buildResponse();
+    try {
+      circularRebalance(req, res, null);
+      await res.done;
+    } finally {
+      Common.selectedNode = previousNode;
+    }
+    assert.equal(res.statusCode, 401);
+    assert.equal(res.body.paymentRoute, '');
+    assert.equal(res.body.invoice, '');
+    assert.match(res.body.paymentStatus.error, /Session expired/);
+    assert.equal(eclair.calls.length, 0);
   } finally {
     await eclair.close();
   }

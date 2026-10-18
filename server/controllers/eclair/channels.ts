@@ -170,7 +170,7 @@ export const circularRebalance = (req, res, next) => {
   const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
   const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
   options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error, paymentStatus: { error: options.message } }); }
+  if (options.error) { return res.status(options.statusCode).json({ flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: {}, paymentStatus: { error: options.message }, message: options.message, error: options.error }); }
   const maxFeeMsat = getMaxFeeMsat(req.body.maxFeeMsat, amountMsat);
   if (maxFeeMsat === null) {
     const error = 'maxFeeMsat must be a non-negative integer';

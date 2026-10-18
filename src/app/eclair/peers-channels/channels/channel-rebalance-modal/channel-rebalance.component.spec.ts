@@ -183,8 +183,9 @@ describe('ECLChannelRebalanceComponent', () => {
       expect(canGoBackToFirstStep()).toBeTrue();
     });
 
-    const rebalanceFailingWith = (errorBody: any) => {
-      circularRebalance.and.returnValue(throwError(() => errorBody));
+    // DataService rethrows the HTTP status with the body, as `{ httpStatus, body }`.
+    const rebalanceFailingWith = (errorBody: any, httpStatus = 500) => {
+      circularRebalance.and.returnValue(throwError(() => ({ httpStatus: httpStatus, body: errorBody })));
       fixture.detectChanges();
       component.onRebalance();
       fixture.detectChanges();
@@ -199,13 +200,35 @@ describe('ECLChannelRebalanceComponent', () => {
     });
 
     it('treats an error without a payment status, such as a proxy timeout, as unknown', () => {
-      const text = rebalanceFailingWith('<html>504 Gateway Time-out</html>');
+      const text = rebalanceFailingWith('<html>504 Gateway Time-out</html>', 504);
       expect(text).toContain('Rebalance status unknown.');
       expect(text).toContain('Check Payments before trying again.');
       expect(text).not.toContain('Rebalance Failed.');
       expect(text).not.toContain('Route failed');
       expect(text).not.toContain('Start Again');
       expect(canGoBackToFirstStep()).toBeFalse();
+    });
+
+    it('treats a request that got no answer as unknown', () => {
+      const text = rebalanceFailingWith(null, 0);
+      expect(text).toContain('Rebalance status unknown.');
+      expect(canGoBackToFirstStep()).toBeFalse();
+    });
+
+    it('shows a request refused before the rebalance ran as failed, with its message', () => {
+      const text = rebalanceFailingWith('Invalid CSRF token, form tempered.', 403);
+      expect(text).toContain('Rebalance Failed.');
+      expect(text).toContain('Invalid CSRF token, form tempered.');
+      expect(text).not.toContain('Rebalance status unknown.');
+      expect(canGoBackToFirstStep()).toBeTrue();
+    });
+
+    it('shows an error carrying only a payment status without breaking the dialog', () => {
+      const text = rebalanceFailingWith({ message: 'Eclair node not found', error: 'Eclair node not found', paymentStatus: { error: 'Eclair node not found' } }, 500);
+      expect(text).toContain('Rebalance Failed.');
+      expect(text).toContain('Eclair node not found');
+      expect(text).not.toContain('Invoice generated');
+      expect(canGoBackToFirstStep()).toBeTrue();
     });
 
     it('lets a new rebalance be set up after a definite failure', () => {
