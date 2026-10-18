@@ -148,6 +148,8 @@ export const closeChannel = (req, res, next) => {
   });
 };
 
+const UNKNOWN_PAYMENT_STATUS = { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' };
+
 const msatToSatsText = (msat: number) => (msat / 1000).toLocaleString('en-US', { maximumFractionDigits: 3 });
 
 // Eclair reports a failed payment as a status with failures, not as an error, so the dialog would
@@ -168,7 +170,7 @@ export const circularRebalance = (req, res, next) => {
   const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
   const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
   options = common.getOptions(req);
-  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error, paymentStatus: { error: options.message } }); }
   const maxFeeMsat = getMaxFeeMsat(req.body.maxFeeMsat, amountMsat);
   if (maxFeeMsat === null) {
     const error = 'maxFeeMsat must be a non-negative integer';
@@ -209,17 +211,18 @@ export const circularRebalance = (req, res, next) => {
               payStatus = { ...payStatus, error: describeFailedPayment(payStatus) };
             } else if (payStatus?.type !== 'sent' && payStatus?.type !== 'pending') {
               // No record of this attempt, or the lookup failed: the route was sent, so the payment may have gone out.
-              payStatus = { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' };
+              payStatus = UNKNOWN_PAYMENT_STATUS;
             }
             return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
           }).catch((errRes) => {
             const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Sent Info Error', req.session.selectedNode);
-            return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: { error: err.error } });
+            // The route was sent, so the payment may have gone out.
+            return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: UNKNOWN_PAYMENT_STATUS });
           });
         }, 3000);
       }).catch((errRes) => {
         const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Send Payment To Route Error', req.session.selectedNode);
-        return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: {}, paymentStatus: { error: err.error } });
+        return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: {}, paymentStatus: errRes.flgMaybeSent ? UNKNOWN_PAYMENT_STATUS : { error: err.error } });
       });
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Find Routes Error', req.session.selectedNode);

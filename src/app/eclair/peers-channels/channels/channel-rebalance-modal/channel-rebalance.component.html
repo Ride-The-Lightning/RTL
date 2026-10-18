@@ -86,7 +86,7 @@
               <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentRoute ? 'Route used' : rebalanceStatus.paymentStatus?.error ? 'Route failed' : 'Searching route...'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentRoute ? 'check' : 'close'}}</mat-icon></span>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{rebalanceStatus.paymentRoute ? 'Route used' : rebalanceStatus.paymentStatus?.type === 'unknown' ? 'Route unknown' : rebalanceStatus.paymentStatus?.error ? 'Route failed' : 'Searching route...'}}<mat-icon *ngIf="rebalanceStatus.paymentStatus" class="ml-1 icon-small">{{rebalanceStatus.paymentRoute ? 'check' : rebalanceStatus.paymentStatus?.type === 'unknown' ? 'help_outline' : 'close'}}</mat-icon></span>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div *ngIf="rebalanceStatus.paymentRoute !== ''" fxLayout="column">

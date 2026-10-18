@@ -173,7 +173,10 @@ export const sendPaymentToRouteRequestCall = (selectedNode, shortChannelIds, inv
             logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Payment Sent To Route', data: body });
             resolve(body);
         }).catch((errRes) => {
-            reject(common.handleError(errRes, 'Payments', 'Send Payment To Route Error', selectedNode));
+            const err = common.handleError(errRes, 'Payments', 'Send Payment To Route Error', selectedNode);
+            // Eclair refused the route (4xx) or was never reached: nothing was sent. Otherwise it may have started the payment.
+            err.flgMaybeSent = !((errRes.statusCode >= 400 && errRes.statusCode < 500) || errRes.error?.code === 'ECONNREFUSED');
+            reject(err);
         });
     });
 };

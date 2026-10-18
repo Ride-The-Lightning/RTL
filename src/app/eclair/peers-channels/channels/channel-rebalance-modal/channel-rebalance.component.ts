@@ -170,8 +170,10 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
           this.store.dispatch(fetchChannels());
         }, error: (error) => {
           this.logger.error(error);
-          this.rebalanceStatus = error;
-          this.flgEditable = true;
+          // Only a definite failure lets the same rebalance be set up again. An error without a status, such as a proxy timeout, may have come after the payment was sent.
+          this.rebalanceStatus = error?.paymentStatus ? error :
+            { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } };
+          this.flgEditable = this.rebalanceStatus.paymentStatus.type !== 'unknown';
         }
       });
   }

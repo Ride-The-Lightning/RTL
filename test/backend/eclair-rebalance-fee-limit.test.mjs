@@ -14,8 +14,9 @@ const FEE_CAP_FAILURE = {
 
 // A fake Eclair that records the form of every call. The route lookup answers with `routes`, or
 // fails when `routesStatus` isn't 200; getsentinfo answers with a payment whose status is `sentStatus`,
-// with `sentInfo` instead when given, or fails when `sentInfoStatus` isn't 200.
-const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: ['2x1x0'] }], routesStatus = 200, sentStatus = { type: 'sent', feesPaid: 1050 }, sentInfo = null, sentInfoStatus = 200 } = {}) => {
+// with `sentInfo` instead when given, or fails when `sentInfoStatus` isn't 200. /sendtoroute fails when
+// `sendStatus` isn't 200, and drops the connection without answering when `sendDropped` is set.
+const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: ['2x1x0'] }], routesStatus = 200, sentStatus = { type: 'sent', feesPaid: 1050 }, sentInfo = null, sentInfoStatus = 200, sendStatus = 200, sendDropped = false } = {}) => {
   const calls = [];
   const server = createServer((req, res) => {
     let data = '';
@@ -27,7 +28,9 @@ const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: 
         case '/listpendinginvoices': return reply(200, []);
         case '/findroutebetweennodes': return routesStatus === 200 ? reply(200, { routes }) : reply(routesStatus, { error: 'route not found' });
         case '/createinvoice': return reply(200, { serialized: 'lnbcrt300u1rebalance', paymentHash: 'ab'.repeat(32) });
-        case '/sendtoroute': return reply(200, { paymentId: 'pid', parentId: 'ppid' });
+        case '/sendtoroute':
+          if (sendDropped) { return req.socket.destroy(); }
+          return sendStatus === 200 ? reply(200, { paymentId: 'pid', parentId: 'ppid' }) : reply(sendStatus, { error: 'route refused' });
         case '/getsentinfo': return sentInfoStatus === 200 ? reply(200, sentInfo || [{ id: 'pid', amount: 30000000, status: sentStatus }]) : reply(sentInfoStatus, { error: 'API call failed' });
         default: return reply(404, {});
       }
@@ -160,6 +163,42 @@ test('circularRebalance treats a status lookup without the attempt it sent as un
     const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 25000000 }));
     assert.equal(res.body.paymentStatus.type, 'unknown');
     assert.doesNotMatch(res.body.paymentStatus.error, /Nothing was paid/);
+  } finally {
+    await eclair.close();
+  }
+});
+
+test('circularRebalance reports a route Eclair refused as failed', async () => {
+  const eclair = await startFakeEclair({ sendStatus: 400 });
+  try {
+    const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
+    assert.notEqual(res.body.paymentStatus.type, 'unknown');
+    assert.match(res.body.paymentStatus.error, /route refused/);
+  } finally {
+    await eclair.close();
+  }
+});
+
+for (const [what, fakeOptions] of [['drops the connection', { sendDropped: true }], ['answers with a server error', { sendStatus: 500 }]]) {
+  test(`circularRebalance treats the payment as unknown when Eclair ${what} on /sendtoroute`, async () => {
+    const eclair = await startFakeEclair(fakeOptions);
+    try {
+      const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
+      // Eclair may have started the payment before the request failed.
+      assert.equal(res.body.paymentStatus.type, 'unknown');
+      assert.match(res.body.paymentStatus.error, /Payment status unknown/);
+    } finally {
+      await eclair.close();
+    }
+  });
+}
+
+test('circularRebalance treats the payment as unknown when reading its status throws', async () => {
+  const eclair = await startFakeEclair({ sentStatus: { type: 'failed', failures: [null] } });
+  try {
+    const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
+    assert.equal(res.body.paymentStatus.type, 'unknown');
+    assert.match(res.body.paymentStatus.error, /Payment status unknown/);
   } finally {
     await eclair.close();
   }

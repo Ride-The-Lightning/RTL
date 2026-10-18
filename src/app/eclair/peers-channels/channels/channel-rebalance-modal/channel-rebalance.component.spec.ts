@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
@@ -180,6 +180,38 @@ describe('ECLChannelRebalanceComponent', () => {
       rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'sent', feesPaid: 1050 } });
       expect(canGoBackToFirstStep()).toBeTrue();
       rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'failed', error: 'Payment not sent. Nothing was paid.' } });
+      expect(canGoBackToFirstStep()).toBeTrue();
+    });
+
+    const rebalanceFailingWith = (errorBody: any) => {
+      circularRebalance.and.returnValue(throwError(() => errorBody));
+      fixture.detectChanges();
+      component.onRebalance();
+      fixture.detectChanges();
+      return fixture.nativeElement.textContent;
+    };
+
+    it('does not let the same rebalance be sent again when the backend answers with an unknown status', () => {
+      const text = rebalanceFailingWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } });
+      expect(text).toContain('Rebalance status unknown.');
+      expect(text).not.toContain('Start Again');
+      expect(canGoBackToFirstStep()).toBeFalse();
+    });
+
+    it('treats an error without a payment status, such as a proxy timeout, as unknown', () => {
+      const text = rebalanceFailingWith('<html>504 Gateway Time-out</html>');
+      expect(text).toContain('Rebalance status unknown.');
+      expect(text).toContain('Check Payments before trying again.');
+      expect(text).not.toContain('Rebalance Failed.');
+      expect(text).not.toContain('Route failed');
+      expect(text).not.toContain('Start Again');
+      expect(canGoBackToFirstStep()).toBeFalse();
+    });
+
+    it('lets a new rebalance be set up after a definite failure', () => {
+      const text = rebalanceFailingWith({ paymentRoute: '', paymentStatus: { error: 'No route found between the two peers other than through this node.' } });
+      expect(text).toContain('Rebalance Failed.');
+      expect(text).toContain('Start Again');
       expect(canGoBackToFirstStep()).toBeTrue();
     });
 
