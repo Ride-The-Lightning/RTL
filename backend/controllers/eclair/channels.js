@@ -205,13 +205,15 @@ export const circularRebalance = (req, res, next) => {
                 // eslint-disable-next-line arrow-body-style
                 setTimeout(() => {
                     return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash, { ...req.session.selectedNode.authentication.options }).then((sentInfoCallRes) => {
-                        let payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
+                        // Eclair lists every attempt for the hash, and a reused invoice has earlier ones: read this attempt's.
+                        const thisAttempt = Array.isArray(sentInfoCallRes) ? sentInfoCallRes.find((sentPayment) => sentPayment.id && sentPayment.id === payToRouteCallRes?.paymentId) : null;
+                        let payStatus = thisAttempt?.status;
                         if (payStatus?.type === 'failed') {
                             payStatus = { ...payStatus, error: describeFailedPayment(payStatus) };
                         }
                         else if (payStatus?.type !== 'sent' && payStatus?.type !== 'pending') {
-                            // No payment for this hash, or the lookup failed: the route was sent, so the payment may have gone out.
-                            payStatus = { error: 'Payment status unknown. Check Payments before trying again.' };
+                            // No record of this attempt, or the lookup failed: the route was sent, so the payment may have gone out.
+                            payStatus = { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' };
                         }
                         return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
                     }).catch((errRes) => {

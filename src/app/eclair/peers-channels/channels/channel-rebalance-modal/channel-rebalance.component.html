@@ -99,15 +99,15 @@
               <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!rebalanceStatus.paymentStatus">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? 'Payment status pending...' : rebalanceStatus.paymentStatus?.error ? 'Payment failed' : rebalanceStatus.paymentStatus?.type === 'sent' ? 'Payment successful' : ''}}<mat-icon *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.type !== 'pending'" class="ml-1 icon-small">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                    <span fxLayoutAlign="start center" fxFlex="100">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? 'Payment status pending...' : rebalanceStatus.paymentStatus?.type === 'unknown' ? 'Payment status unknown' : rebalanceStatus.paymentStatus?.error ? 'Payment failed' : rebalanceStatus.paymentStatus?.type === 'sent' ? 'Payment successful' : ''}}<mat-icon *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus?.type !== 'pending'" class="ml-1 icon-small">{{rebalanceStatus.paymentStatus?.type === 'unknown' ? 'help_outline' : !rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div *ngIf="!rebalanceStatus.paymentStatus; else paymentStatusBlock"fxLayout="column"></div>
               </mat-expansion-panel>
             </div>
-            <h4 fxLayoutAlign="start" class="font-bold-500 mt-1">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? '' : rebalanceStatus.paymentStatus?.error ? 'Rebalance Failed.' : 'Rebalance Successful.'}}</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500 mt-1">{{!rebalanceStatus.paymentStatus || rebalanceStatus.paymentStatus?.type === 'pending' ? '' : rebalanceStatus.paymentStatus?.type === 'unknown' ? 'Rebalance status unknown.' : rebalanceStatus.paymentStatus?.error ? 'Rebalance Failed.' : 'Rebalance Successful.'}}</h4>
             <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-              <button *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus.error" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
+              <button *ngIf="rebalanceStatus.paymentStatus && rebalanceStatus.paymentStatus.error && rebalanceStatus.paymentStatus.type !== 'unknown'" mat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
             </div>
           </form>
         </mat-step>
@@ -122,7 +122,7 @@
   <ng-container *ngTemplateOutlet="rebalanceStatus.paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock" />
 </ng-template>
 <ng-template #paymentFailedBlock>
-  <div fxLayout="column"><span class="foreground-secondary-text message-text">Error: {{rebalanceStatus.paymentStatus.error}}</span></div>
+  <div fxLayout="column"><span class="foreground-secondary-text message-text">{{rebalanceStatus.paymentStatus.type === 'unknown' ? '' : 'Error: '}}{{rebalanceStatus.paymentStatus.error}}</span></div>
 </ng-template>
 <ng-template #paymentSuccessfulBlock>
   <div fxLayout="column">

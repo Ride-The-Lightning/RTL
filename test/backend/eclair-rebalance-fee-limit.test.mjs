@@ -130,6 +130,7 @@ for (const [what, fakeOptions] of [['no payment', { sentInfo: [] }], ['an error'
     try {
       const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
       // The route was sent, so the payment may have gone out: the error must not say nothing was paid.
+      assert.equal(res.body.paymentStatus.type, 'unknown');
       assert.match(res.body.paymentStatus.error, /Payment status unknown/);
       assert.doesNotMatch(res.body.paymentStatus.error, /Nothing was paid/);
     } finally {
@@ -137,6 +138,32 @@ for (const [what, fakeOptions] of [['no payment', { sentInfo: [] }], ['an error'
     }
   });
 }
+
+test('circularRebalance reports the attempt it sent, not an earlier attempt on a reused invoice', async () => {
+  // Eclair lists every attempt for the payment hash; this one's id is the paymentId /sendtoroute returned.
+  const eclair = await startFakeEclair({ sentInfo: [
+    { id: 'pid', amount: 30000000, status: { type: 'sent', feesPaid: 1050 } },
+    { id: 'earlier', amount: 30000000, status: FEE_CAP_FAILURE }
+  ] });
+  try {
+    const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 25000000 }));
+    assert.equal(res.body.paymentStatus.type, 'sent');
+    assert.equal(res.body.paymentStatus.error, undefined);
+  } finally {
+    await eclair.close();
+  }
+});
+
+test('circularRebalance treats a status lookup without the attempt it sent as unknown', async () => {
+  const eclair = await startFakeEclair({ sentInfo: [{ id: 'earlier', amount: 30000000, status: FEE_CAP_FAILURE }] });
+  try {
+    const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 25000000 }));
+    assert.equal(res.body.paymentStatus.type, 'unknown');
+    assert.doesNotMatch(res.body.paymentStatus.error, /Nothing was paid/);
+  } finally {
+    await eclair.close();
+  }
+});
 
 test('circularRebalance answers when the route lookup fails and there is no invoice to reuse', async () => {
   const eclair = await startFakeEclair({ routesStatus: 400 });

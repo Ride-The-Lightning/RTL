@@ -150,6 +150,16 @@ describe('ECLChannelRebalanceComponent', () => {
       expect(text).not.toContain('Route failed');
     });
 
+    it('shows an unknown payment status as unknown, without offering to rebalance again', () => {
+      const text = rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } });
+      expect(text).toContain('Payment status unknown');
+      expect(text).toContain('Rebalance status unknown.');
+      expect(text).toContain('Check Payments before trying again.');
+      expect(text).not.toContain('Rebalance Failed.');
+      expect(text).not.toContain('Payment failed');
+      expect(text).not.toContain('Start Again');
+    });
+
     it('shows a route lookup failure as a failed route', () => {
       const text = rebalanceWith({ paymentRoute: '', paymentStatus: { error: 'No route found between the two peers other than through this node.' } });
       expect(text).toContain('Route failed');
