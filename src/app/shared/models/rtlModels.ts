@@ -31,11 +31,6 @@ export interface Login {
   twoFAToken?: string;
 }
 
-export interface VerifyTwoFA {
-  token: string;
-  authResponse: any;
-}
-
 export interface FetchFile {
   channelPoint: string;
   path?: string;

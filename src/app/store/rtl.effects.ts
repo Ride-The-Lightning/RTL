@@ -17,7 +17,7 @@ import { DataService } from '../shared/services/data.service';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
 import { API_URL, API_END_POINTS, RTLActions, APICallStatusEnum, AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum, UI_MESSAGES } from '../shared/services/consts-enums-functions';
 import { DialogConfig } from '../shared/models/alertData';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode } from '../shared/models/rtlModels';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -400,30 +400,6 @@ export class RTLEffects implements OnDestroy {
             }
             return of({ type: RTLActions.VOID });
           }));
-      })),
-    { dispatch: false }
-  );
-
-  tokenVerify = createEffect(
-    () => this.actions.pipe(
-      ofType(RTLActions.VERIFY_TWO_FA),
-      mergeMap((action: { type: string, payload: VerifyTwoFA }) => {
-        this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_TOKEN }));
-        this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'VerifyToken', status: APICallStatusEnum.INITIATED } }));
-        return this.httpClient.post(API_END_POINTS.AUTHENTICATE_API + '/token', { authentication2FA: action.payload.token }).
-          pipe(
-            map((postRes: any) => {
-              this.logger.info(postRes);
-              this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.VERIFY_TOKEN }));
-              this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'VerifyToken', status: APICallStatusEnum.COMPLETED } }));
-              this.logger.info('Token Successfully Verified!');
-              this.setLoggedInDetails(false, action.payload.authResponse);
-            }),
-            catchError((err) => {
-              this.handleErrorWithAlert('VerifyToken', UI_MESSAGES.VERIFY_TOKEN, 'Authorization Failed!', API_END_POINTS.AUTHENTICATE_API + '/token', err);
-              return of({ type: RTLActions.VOID });
-            })
-          );
       })),
     { dispatch: false }
   );

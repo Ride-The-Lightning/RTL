@@ -71,7 +71,6 @@ test('GET /api/conf stays reachable without a session token', async () => {
 // it walked, so a route declared on an index router or a nested sub-router cannot slip past.
 const PUBLIC_ROUTES = new Set([
   'shared/authenticate POST /',
-  'shared/authenticate POST /token',
   'shared/authenticate POST /logout',
   'shared/RTLConf GET /',
   'shared/RTLConf GET /rates'

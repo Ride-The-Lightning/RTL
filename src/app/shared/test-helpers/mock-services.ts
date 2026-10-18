@@ -200,7 +200,6 @@ export class mockRTLEffects {
   isAuthorized = of(() => ({}));
   isAuthorizedRes = of(() => ({}));
   authLogin = of(() => ({}));
-  tokenVerify = of(() => ({}));
   logOut = of(() => ({}));
   resetPassword = of(() => ({}));
   setSelectedNode = of(() => ({}));

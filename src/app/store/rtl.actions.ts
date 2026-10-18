@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { DialogConfig } from '../shared/models/alertData';
 import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
 import { RTLConfiguration, Node, GetInfoRoot } from '../shared/models/RTLconfig';
-import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode, VerifyTwoFA } from '../shared/models/rtlModels';
+import { FetchFile, Login, OpenSnackBar, ResetPassword, UpdateSelectedNode } from '../shared/models/rtlModels';
 import { RTLActions } from '../shared/services/consts-enums-functions';
 
 export const voidAction = createAction(RTLActions.VOID);
@@ -61,8 +61,6 @@ export const isAuthorized = createAction(RTLActions.IS_AUTHORIZED, props<{ paylo
 export const isAuthorizedRes = createAction(RTLActions.IS_AUTHORIZED_RES, props<{ payload: any }>());
 
 export const login = createAction(RTLActions.LOGIN, props<{ payload: Login }>());
-
-export const verifyTwoFA = createAction(RTLActions.VERIFY_TWO_FA, props<{ payload: VerifyTwoFA }>());
 
 export const fetchFile = createAction(RTLActions.FETCH_FILE, props<{ payload: FetchFile }>());
 

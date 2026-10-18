@@ -223,6 +223,16 @@ this release should add its entry under the appropriate section below.
   with a comma, quote or line break is quoted as RFC 4180 specifies. The fix covers all three
   implementations. Reported by iblitzc0de.
 
+- **Removed the unused `POST /api/authenticate/token` route, which never answered**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The route was bound to `verifyToken`, the helper that checks a 2FA code and returns true or
+  false, not a request handler. It never sent a response, so every request to it, which needed
+  no login, held its connection open until Node's request timeout (300 s). Nothing in the UI
+  called it any more: 2FA setup checks the code in the browser, and login checks it in
+  `authenticateUser`, which is unchanged. The route is gone, along with the unused frontend
+  effect and action that targeted it. `test/backend/authenticate-token-route.test.mjs` checks
+  that a request to it is answered at once. Reported by iblitzc0de.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**
