@@ -216,7 +216,8 @@ test('circularRebalance answers an expired session in the same shape as its othe
     const res = buildResponse();
     try {
       circularRebalance(req, res, null);
-      await res.done;
+      const answered = await Promise.race([res.done.then(() => true), new Promise((resolve) => setTimeout(() => resolve(false), 6000))]);
+      assert.ok(answered, 'the controller never answered');
     } finally {
       Common.selectedNode = previousNode;
     }
