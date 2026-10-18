@@ -224,7 +224,7 @@ this release should add its entry under the appropriate section below.
   implementations. Reported by iblitzc0de.
 
 - **Removed the unused `POST /api/authenticate/token` route, which never answered**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1772](https://github.com/Ride-The-Lightning/RTL/pull/1772)).
   The route was bound to `verifyToken`, the helper that checks a 2FA code and returns true or
   false, not a request handler. It never sent a response, so every request to it, which needed
   no login, held its connection open until Node's request timeout (300 s). Nothing in the UI
