@@ -160,6 +160,29 @@ describe('ECLChannelRebalanceComponent', () => {
       expect(text).not.toContain('Start Again');
     });
 
+    const canGoBackToFirstStep = () => {
+      component.stepper.selectedIndex = 0;
+      fixture.detectChanges();
+      return component.stepper.selectedIndex === 0;
+    };
+
+    it('does not let the same rebalance be sent again while its status is unknown or pending', () => {
+      rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'unknown', error: 'Payment status unknown. Check Payments before trying again.' } });
+      expect(canGoBackToFirstStep()).toBeFalse();
+      component.onRestart();
+      component.inputFormGroup.controls.rebalanceAmount.setValue(30000);
+      component.inputFormGroup.controls.selRebalancePeer.setValue(TARGET_CHANNEL);
+      rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'pending' } });
+      expect(canGoBackToFirstStep()).toBeFalse();
+    });
+
+    it('lets a new rebalance be set up once the payment has succeeded or failed', () => {
+      rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'sent', feesPaid: 1050 } });
+      expect(canGoBackToFirstStep()).toBeTrue();
+      rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'failed', error: 'Payment not sent. Nothing was paid.' } });
+      expect(canGoBackToFirstStep()).toBeTrue();
+    });
+
     it('shows a route lookup failure as a failed route', () => {
       const text = rebalanceWith({ paymentRoute: '', paymentStatus: { error: 'No route found between the two peers other than through this node.' } });
       expect(text).toContain('Route failed');

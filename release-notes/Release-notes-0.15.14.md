@@ -256,7 +256,8 @@ this release should add its entry under the appropriate section below.
     Failed." with the reason, and "Route used" instead of "Route failed" when the route was
     found. The status is read from the attempt this rebalance sent, not from an earlier
     attempt on a reused invoice; when Eclair has no record of it, the dialog says the status is
-    unknown and asks to check Payments, without offering Start Again (which could pay twice).
+    unknown and asks to check Payments. While the status is unknown or still pending, the
+    dialog offers no way to send the same rebalance again (which could pay twice).
   - The dialog keeps the amount, peer and max fee in its step label after sending (the label
     never updated), and scrolls when its status is taller than the screen.
 

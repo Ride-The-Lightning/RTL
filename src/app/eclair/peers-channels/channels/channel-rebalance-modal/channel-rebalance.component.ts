@@ -166,7 +166,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
         next: (rebalanceRes) => {
           this.logger.info(rebalanceRes);
           this.rebalanceStatus = rebalanceRes;
-          this.flgEditable = true;
+          this.flgEditable = !['unknown', 'pending'].includes(rebalanceRes?.paymentStatus?.type);
           this.store.dispatch(fetchChannels());
         }, error: (error) => {
           this.logger.error(error);
