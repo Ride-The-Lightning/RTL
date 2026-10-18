@@ -235,7 +235,7 @@ this release should add its entry under the appropriate section below.
 
 - **Eclair: Circular Rebalance has a fee limit, and a failed rebalance no longer reads as
   successful**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1773](https://github.com/Ride-The-Lightning/RTL/pull/1773)).
   RTL builds the rebalance route itself and sends it with Eclair's `/sendtoroute`, which applies
   no fee limit to an explicit route unless it is given one. RTL gave none, so a rebalance paid
   whatever fees the route's channels charged, including the selected peer's fee on the last hop,
