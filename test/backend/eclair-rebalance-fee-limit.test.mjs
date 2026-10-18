@@ -13,8 +13,9 @@ const FEE_CAP_FAILURE = {
 };
 
 // A fake Eclair that records the form of every call. The route lookup answers with `routes`, or
-// fails when `routesStatus` isn't 200; getsentinfo answers with a payment whose status is `sentStatus`.
-const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: ['2x1x0'] }], routesStatus = 200, sentStatus = { type: 'sent', feesPaid: 1050 } } = {}) => {
+// fails when `routesStatus` isn't 200; getsentinfo answers with a payment whose status is `sentStatus`,
+// with `sentInfo` instead when given, or fails when `sentInfoStatus` isn't 200.
+const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: ['2x1x0'] }], routesStatus = 200, sentStatus = { type: 'sent', feesPaid: 1050 }, sentInfo = null, sentInfoStatus = 200 } = {}) => {
   const calls = [];
   const server = createServer((req, res) => {
     let data = '';
@@ -27,7 +28,7 @@ const startFakeEclair = async ({ routes = [{ amount: 30000000, shortChannelIds: 
         case '/findroutebetweennodes': return routesStatus === 200 ? reply(200, { routes }) : reply(routesStatus, { error: 'route not found' });
         case '/createinvoice': return reply(200, { serialized: 'lnbcrt300u1rebalance', paymentHash: 'ab'.repeat(32) });
         case '/sendtoroute': return reply(200, { paymentId: 'pid', parentId: 'ppid' });
-        case '/getsentinfo': return reply(200, [{ id: 'pid', amount: 30000000, status: sentStatus }]);
+        case '/getsentinfo': return sentInfoStatus === 200 ? reply(200, sentInfo || [{ id: 'pid', amount: 30000000, status: sentStatus }]) : reply(sentInfoStatus, { error: 'API call failed' });
         default: return reply(404, {});
       }
     });
@@ -123,6 +124,20 @@ test('circularRebalance passes on the reason of any other failed payment', async
   }
 });
 
+for (const [what, fakeOptions] of [['no payment', { sentInfo: [] }], ['an error', { sentInfoStatus: 500 }]]) {
+  test(`circularRebalance does not report success when Eclair's payment status lookup returns ${what}`, async () => {
+    const eclair = await startFakeEclair(fakeOptions);
+    try {
+      const res = await call(circularRebalance, eclair, rebalanceBody({ maxFeeMsat: 1500000 }));
+      // The route was sent, so the payment may have gone out: the error must not say nothing was paid.
+      assert.match(res.body.paymentStatus.error, /Payment status unknown/);
+      assert.doesNotMatch(res.body.paymentStatus.error, /Nothing was paid/);
+    } finally {
+      await eclair.close();
+    }
+  });
+}
+
 test('circularRebalance answers when the route lookup fails and there is no invoice to reuse', async () => {
   const eclair = await startFakeEclair({ routesStatus: 400 });
   try {
@@ -148,7 +163,7 @@ test('circularRebalance says so when the only route found is the direct pair of 
   }
 });
 
-for (const maxFeeMsat of [-1, 'abc', 1.5]) {
+for (const maxFeeMsat of [-1, 'abc', 1.5, true, false, [], ['7'], ' ', '0x10', '1e3', 1e21]) {
   test(`circularRebalance rejects a max fee of ${JSON.stringify(maxFeeMsat)} without paying`, async () => {
     const eclair = await startFakeEclair();
     try {
@@ -180,6 +195,26 @@ test('sendPaymentToRoute without a max fee caps the route at the default limit',
     eclair.calls.length = 0;
     await call(sendPaymentToRoute, eclair, { shortChannelIds: '1x1x0,2x1x0', invoice: 'lnbcrt1', amountMsat: 100001 });
     assert.equal(eclair.formOf('/sendtoroute').maxFeeMsat, '5001');
+  } finally {
+    await eclair.close();
+  }
+});
+
+test('sendPaymentToRoute accepts a max fee sent as a string of digits', async () => {
+  const eclair = await startFakeEclair();
+  try {
+    await call(sendPaymentToRoute, eclair, { shortChannelIds: '1x1x0,2x1x0', invoice: 'lnbcrt1', amountMsat: 30000000, maxFeeMsat: '7000' });
+    assert.equal(eclair.formOf('/sendtoroute').maxFeeMsat, '7000');
+  } finally {
+    await eclair.close();
+  }
+});
+
+test('sendPaymentToRoute never defaults to a negative max fee', async () => {
+  const eclair = await startFakeEclair();
+  try {
+    await call(sendPaymentToRoute, eclair, { shortChannelIds: '1x1x0,2x1x0', invoice: 'lnbcrt1', amountMsat: -5000 });
+    assert.equal(eclair.formOf('/sendtoroute').maxFeeMsat, '0');
   } finally {
     await eclair.close();
   }

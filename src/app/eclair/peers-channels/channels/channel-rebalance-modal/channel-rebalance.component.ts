@@ -151,7 +151,8 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
         this.inputFormGroup.controls.selRebalancePeer.setErrors({ required: true });
       }
       if (this.getMaxFeeSat() === null) {
-        this.inputFormGroup.controls.feeLimit.setErrors({ required: true });
+        // A negative limit is already flagged by Validators.min; keep that message.
+        this.inputFormGroup.controls.feeLimit.setErrors(this.inputFormGroup.controls.feeLimit.errors?.min ? this.inputFormGroup.controls.feeLimit.errors : { required: true });
       }
       return true;
     }

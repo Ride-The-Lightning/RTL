@@ -203,7 +203,12 @@ export const circularRebalance = (req, res, next) => {
         setTimeout(() => {
           return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash, { ...req.session.selectedNode.authentication.options }).then((sentInfoCallRes) => {
             let payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
-            if (payStatus?.type === 'failed') { payStatus = { ...payStatus, error: describeFailedPayment(payStatus) }; }
+            if (payStatus?.type === 'failed') {
+              payStatus = { ...payStatus, error: describeFailedPayment(payStatus) };
+            } else if (payStatus?.type !== 'sent' && payStatus?.type !== 'pending') {
+              // No payment for this hash, or the lookup failed: the route was sent, so the payment may have gone out.
+              payStatus = { error: 'Payment status unknown. Check Payments before trying again.' };
+            }
             return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
           }).catch((errRes) => {
             const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Sent Info Error', req.session.selectedNode);

@@ -118,6 +118,44 @@ describe('ECLChannelRebalanceComponent', () => {
       expect(fixture.nativeElement.textContent).toContain('Rebalancing Amount: 30,000 Sats | Peer: alice | Max Fee: 1,500 Sats');
     });
 
+    it('keeps a negative limit reported as negative, not as missing', () => {
+      setFeeLimit('fixed', -5);
+      component.onRebalance();
+      expect(circularRebalance).not.toHaveBeenCalled();
+      expect(component.inputFormGroup.controls.feeLimit.errors?.min).toBeTruthy();
+      expect(component.inputFormGroup.controls.feeLimit.errors?.required).toBeUndefined();
+    });
+
+    const rebalanceWith = (rebalanceRes: any) => {
+      circularRebalance.and.returnValue(of({ flgReusingInvoice: false, invoice: 'lnbcrt1', paymentHash: 'ab', paymentDetails: {}, ...rebalanceRes }));
+      fixture.detectChanges();
+      component.onRebalance();
+      fixture.detectChanges();
+      return fixture.nativeElement.textContent;
+    };
+
+    it('gives no verdict while the payment is pending', () => {
+      const text = rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'pending' } });
+      expect(text).toContain('Payment status pending...');
+      expect(text).not.toContain('Rebalance Successful.');
+      expect(text).not.toContain('Rebalance Failed.');
+    });
+
+    it('shows a failed payment as failed, with its reason, on the route it used', () => {
+      const text = rebalanceWith({ paymentRoute: '1x1x0,2x1x0,3x1x0', paymentStatus: { type: 'failed', error: 'Payment not sent. Nothing was paid. The route costs 20,001.08 Sats in fees.' } });
+      expect(text).toContain('Rebalance Failed.');
+      expect(text).not.toContain('Rebalance Successful.');
+      expect(text).toContain('Payment not sent. Nothing was paid. The route costs 20,001.08 Sats in fees.');
+      expect(text).toContain('Route used');
+      expect(text).not.toContain('Route failed');
+    });
+
+    it('shows a route lookup failure as a failed route', () => {
+      const text = rebalanceWith({ paymentRoute: '', paymentStatus: { error: 'No route found between the two peers other than through this node.' } });
+      expect(text).toContain('Route failed');
+      expect(text).toContain('Rebalance Failed.');
+    });
+
     it('goes back to the default limit on Start Again', () => {
       setFeeLimit('fixed', 250);
       component.onRestart();

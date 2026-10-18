@@ -147,16 +147,19 @@ export const getSentPaymentsInformation = (req, res, next) => {
 };
 // The fee limit used when the caller sets none, as the frontend's default fee limit: the whole
 // amount up to 100 Sats, 5% of it above that.
-export const defaultMaxFeeMsat = (amountMsat) => ((amountMsat <= 100000) ? Math.ceil(amountMsat) : Math.ceil((amountMsat * 5) / 100));
+export const defaultMaxFeeMsat = (amountMsat) => ((amountMsat <= 100000) ? Math.max(0, Math.ceil(amountMsat)) : Math.ceil((amountMsat * 5) / 100));
 // The max fee a request asks for, the default when it asks for none, or null when it isn't a
-// whole, non-negative number of msats. Eclair applies no fee limit to an explicit route unless
-// it is given one.
+// whole, non-negative number of msats, given as a number or a string of digits. Eclair applies no
+// fee limit to an explicit route unless it is given one.
 export const getMaxFeeMsat = (maxFeeMsat, amountMsat) => {
     if (maxFeeMsat === undefined || maxFeeMsat === null || maxFeeMsat === '') {
         return defaultMaxFeeMsat(Number(amountMsat) || 0);
     }
+    if (typeof maxFeeMsat !== 'number' && !(typeof maxFeeMsat === 'string' && (/^\d+$/).test(maxFeeMsat))) {
+        return null;
+    }
     const fee = Number(maxFeeMsat);
-    return (Number.isInteger(fee) && fee >= 0) ? fee : null;
+    return (Number.isSafeInteger(fee) && fee >= 0) ? fee : null;
 };
 export const sendPaymentToRouteRequestCall = (selectedNode, shortChannelIds, invoice, amountMsat, maxFeeMsat) => {
     logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
