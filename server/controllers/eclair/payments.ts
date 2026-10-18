@@ -132,12 +132,25 @@ export const getSentPaymentsInformation = (req, res, next) => {
   }
 };
 
-export const sendPaymentToRouteRequestCall = (selectedNode: SelectedNode, shortChannelIds: string, invoice: string, amountMsat: number) => {
+// The fee limit used when the caller sets none, as the frontend's default fee limit: the whole
+// amount up to 100 Sats, 5% of it above that.
+export const defaultMaxFeeMsat = (amountMsat: number) => ((amountMsat <= 100000) ? Math.ceil(amountMsat) : Math.ceil((amountMsat * 5) / 100));
+
+// The max fee a request asks for, the default when it asks for none, or null when it isn't a
+// whole, non-negative number of msats. Eclair applies no fee limit to an explicit route unless
+// it is given one.
+export const getMaxFeeMsat = (maxFeeMsat, amountMsat) => {
+  if (maxFeeMsat === undefined || maxFeeMsat === null || maxFeeMsat === '') { return defaultMaxFeeMsat(Number(amountMsat) || 0); }
+  const fee = Number(maxFeeMsat);
+  return (Number.isInteger(fee) && fee >= 0) ? fee : null;
+};
+
+export const sendPaymentToRouteRequestCall = (selectedNode: SelectedNode, shortChannelIds: string, invoice: string, amountMsat: number, maxFeeMsat: number) => {
   logger.log({ selectedNode: selectedNode, level: 'INFO', fileName: 'Invoices', msg: 'Creating Invoice..' });
   // A copy of this node's options, not the module-level options other requests reassign.
   const nodeOptions = { ...selectedNode.authentication.options };
   nodeOptions.url = selectedNode.settings.lnServerUrl + '/sendtoroute';
-  nodeOptions.form = { shortChannelIds: shortChannelIds, amountMsat: amountMsat, invoice: invoice };
+  nodeOptions.form = { shortChannelIds: shortChannelIds, amountMsat: amountMsat, invoice: invoice, maxFeeMsat: maxFeeMsat };
   return new Promise((resolve, reject) => {
     logger.log({ selectedNode: selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment To Route Options', data: nodeOptions.form });
     request.post(nodeOptions).then((body) => {
@@ -154,7 +167,9 @@ export const sendPaymentToRoute = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Send Payment To Route..' });
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
-  sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((callRes) => {
+  const maxFeeMsat = getMaxFeeMsat(req.body.maxFeeMsat, amountMsat);
+  if (maxFeeMsat === null) { return res.status(400).json({ message: 'maxFeeMsat must be a non-negative integer', error: 'Invalid max fee' }); }
+  sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat, maxFeeMsat).then((callRes) => {
     res.status(200).json(callRes);
   }).catch((err) => res.status(err.statusCode).json({ message: err.message, error: err.error }));
 };

@@ -2,6 +2,18 @@
   width: 3rem;
 }
 
+// The dialog surface hides overflow (root.scss), so a long status must scroll in here.
+.info-scroll-y {
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+// The theme breaks secondary text anywhere, for invoices and hashes; a message reads better broken between words.
+.foreground-secondary-text.message-text {
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
 .info-graphics-container {
   max-height: 30rem;
   min-height: 30rem;

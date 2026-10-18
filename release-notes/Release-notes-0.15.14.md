@@ -233,6 +233,34 @@ this release should add its entry under the appropriate section below.
   effect and action that targeted it. `test/backend/authenticate-token-route.test.mjs` checks
   that a request to it is answered at once. Reported by iblitzc0de.
 
+- **Eclair: Circular Rebalance has a fee limit, and a failed rebalance no longer reads as
+  successful**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  RTL builds the rebalance route itself and sends it with Eclair's `/sendtoroute`, which applies
+  no fee limit to an explicit route unless it is given one. RTL gave none, so a rebalance paid
+  whatever fees the route's channels charged, including the selected peer's fee on the last hop,
+  and showed the fee only afterwards. The dialog now has the same Fee Limits choice as the other
+  payment dialogs (Default Limit: 5% of the amount, or the whole amount up to 100 sats), shows
+  the max fee before sending, and RTL passes it to Eclair as `maxFeeMsat`. Eclair refuses a
+  route that costs more before sending anything; the dialog then says nothing was paid and what
+  the route would have cost. The backend applies the default limit when a request sets none, on
+  both `/api/ecl/channels/circularRebalance` and `/api/ecl/payments/sendtoroute`. Also fixed in
+  the same flow:
+  - **A rebalance whose route lookup failed crashed RTL's server** when there was no earlier
+    rebalance invoice to reuse: the error handler read `serialized` from the missing invoice,
+    and the uncaught error stopped the Node process, logging every session out. It now answers
+    with the lookup error, and with "No route found" when the only route Eclair finds goes back
+    through this node.
+  - Eclair reports a failed payment as a status, not an error, so the dialog showed "Rebalance
+    Successful." for it, and also while the payment was still pending. It now shows "Rebalance
+    Failed." with the reason, and "Route used" instead of "Route failed" when the route was
+    found.
+  - The dialog keeps the amount, peer and max fee in its step label after sending (the label
+    never updated), and scrolls when its status is taller than the screen.
+
+  `test/backend/eclair-rebalance-fee-limit.test.mjs` covers the limit, the default, failed
+  payments and both route-lookup failures.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

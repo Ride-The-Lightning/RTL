@@ -4,7 +4,7 @@ import { Common, CommonService } from '../../utils/common.js';
 import { SelectedNode } from '../../models/config.model.js';
 import { createInvoiceRequestCall, listPendingInvoicesRequestCall } from './invoices.js';
 import { findRouteBetweenNodesRequestCall } from './network.js';
-import { getSentInfoFromPaymentRequest, sendPaymentToRouteRequestCall } from './payments.js';
+import { getMaxFeeMsat, getSentInfoFromPaymentRequest, sendPaymentToRouteRequestCall } from './payments.js';
 
 let options = null;
 const logger: LoggerService = Logger;
@@ -148,11 +148,32 @@ export const closeChannel = (req, res, next) => {
   });
 };
 
+const msatToSatsText = (msat: number) => (msat / 1000).toLocaleString('en-US', { maximumFractionDigits: 3 });
+
+// Eclair reports a failed payment as a status with failures, not as an error, so the dialog would
+// show it as a success. Describe why it failed, and what the route costs when the max fee stopped it.
+const describeFailedPayment = (payStatus) => {
+  const messages: string[] = (payStatus.failures || []).map((failure) => failure.failureMessage).filter((message) => !!message);
+  for (const message of messages) {
+    const feeCap = (/Route fee \((?<routeFee>\d+) msat\) was above the maximum allowed fee \((?<maxFee>\d+) msat\)/).exec(message);
+    if (feeCap?.groups) {
+      return 'Payment not sent. Nothing was paid. The route costs ' + msatToSatsText(+feeCap.groups.routeFee) + ' Sats in fees, more than the max fee of ' +
+        msatToSatsText(+feeCap.groups.maxFee) + ' Sats. Raise the max fee to pay it, or rebalance with another peer.';
+    }
+  }
+  return 'Payment failed' + (messages.length > 0 ? ': ' + messages.join('; ') : '.');
+};
+
 export const circularRebalance = (req, res, next) => {
   const { amountMsat, sourceNodeId, targetNodeId, ignoreNodeIds, format, sourceShortChannelId, targetShortChannelId } = req.body;
   const crInvDescription = 'Circular rebalancing invoice for ' + (amountMsat / 1000) + ' Sats';
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
+  const maxFeeMsat = getMaxFeeMsat(req.body.maxFeeMsat, amountMsat);
+  if (maxFeeMsat === null) {
+    const error = 'maxFeeMsat must be a non-negative integer';
+    return res.status(400).json({ flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: {}, paymentStatus: { error: error }, message: error, error: 'Invalid max fee' });
+  }
   options.form = req.body;
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Channels', msg: 'Rebalance Params', data: options.form });
   const tillToday = (Math.round(new Date(Date.now()).getTime() / 1000)).toString();
@@ -169,15 +190,20 @@ export const circularRebalance = (req, res, next) => {
         return !((route.shortChannelIds[0] === sourceShortChannelId && route.shortChannelIds[1] === targetShortChannelId) ||
         (route.shortChannelIds[1] === sourceShortChannelId && route.shortChannelIds[0] === targetShortChannelId));
       });
+      if (!routes || routes.length === 0) {
+        const invoice = (foundExistingInvoice?.serialized || values[1]?.serialized || '');
+        return res.status(500).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: '', paymentHash: '', paymentDetails: {}, paymentStatus: { error: 'No route found between the two peers other than through this node.' } });
+      }
       const firstRoute = routes[0].shortChannelIds.join() || '';
       const shortChannelIds = sourceShortChannelId + ',' + firstRoute + ',' + targetShortChannelId;
       const invoice = (foundExistingInvoice && foundExistingInvoice.serialized ? foundExistingInvoice.serialized : (values[1] ? values[1].serialized : '')) || '';
       const paymentHash = (foundExistingInvoice && foundExistingInvoice.paymentHash ? foundExistingInvoice.paymentHash : (values[1] ? values[1].paymentHash : '') || '');
-      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat).then((payToRouteCallRes) => {
+      return sendPaymentToRouteRequestCall(req.session.selectedNode, shortChannelIds, invoice, amountMsat, maxFeeMsat).then((payToRouteCallRes) => {
         // eslint-disable-next-line arrow-body-style
         setTimeout(() => {
           return getSentInfoFromPaymentRequest(req.session.selectedNode, paymentHash, { ...req.session.selectedNode.authentication.options }).then((sentInfoCallRes) => {
-            const payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
+            let payStatus = sentInfoCallRes.length && sentInfoCallRes.length > 0 ? sentInfoCallRes[sentInfoCallRes.length - 1].status : sentInfoCallRes;
+            if (payStatus?.type === 'failed') { payStatus = { ...payStatus, error: describeFailedPayment(payStatus) }; }
             return res.status(201).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: invoice, paymentRoute: shortChannelIds, paymentHash: paymentHash, paymentDetails: payToRouteCallRes, paymentStatus: payStatus });
           }).catch((errRes) => {
             const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Sent Info Error', req.session.selectedNode);
@@ -190,7 +216,7 @@ export const circularRebalance = (req, res, next) => {
       });
     }).catch((errRes) => {
       const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From Find Routes Error', req.session.selectedNode);
-      return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: (foundExistingInvoice.serialized || ''), paymentRoute: '', paymentHash: '', paymentDetails: {}, paymentStatus: { error: err.error } });
+      return res.status(err.statusCode).json({ flgReusingInvoice: !!foundExistingInvoice, invoice: (foundExistingInvoice?.serialized || ''), paymentRoute: '', paymentHash: '', paymentDetails: {}, paymentStatus: { error: err.error } });
     });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Channels', 'Channel Rebalance From List Pending Invoices Error', req.session.selectedNode);

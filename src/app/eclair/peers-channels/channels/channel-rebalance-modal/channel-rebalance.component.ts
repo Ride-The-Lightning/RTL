@@ -14,6 +14,8 @@ import { Channel, GetInfo } from '../../../../shared/models/eclModels';
 import { opacityAnimation } from '../../../../shared/animation/opacity-animation';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonService } from '../../../../shared/services/common.service';
+import { DEFAULT_FEE_LIMIT_DESCRIPTION, FEE_LIMIT_TYPES, ScreenSizeEnum, getFeeLimitSat } from '../../../../shared/services/consts-enums-functions';
 import { RTLState } from '../../../../store/rtl.state';
 import { fetchChannels } from '../../../store/ecl.actions';
 
@@ -35,19 +37,24 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
   public rebalanceStatus: { flgReusingInvoice: boolean, invoice: string, paymentRoute: string, paymentHash: string, paymentDetails: any, paymentStatus: any } =
     { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
   public inputFormLabel = 'Amount to rebalance';
+  public feeLimitTypes = FEE_LIMIT_TYPES;
+  public defaultFeeLimitDescription = DEFAULT_FEE_LIMIT_DESCRIPTION;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   public flgEditable = true;
   public flgShowInfo = false;
   public stepNumber = 1;
   public animationDirection = 'forward';
   inputFormGroup: FormGroup;
   statusFormGroup: FormGroup;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(
     public dialogRef: MatDialogRef<ECLChannelRebalanceComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ECLChannelRebalanceAlert,
     private logger: LoggerService,
     private dataService: DataService,
+    private commonService: CommonService,
     private formBuilder: FormBuilder,
     private store: Store<RTLState>,
     private decimalPipe: DecimalPipe) { }
@@ -55,6 +62,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let x = '';
     let y = '';
+    this.screenSize = this.commonService.getScreenSize();
     this.information = this.data.message?.information || {};
     this.selChannel = this.data.message?.selChannel || {};
     this.activeChannels = this.data.message?.channels?.filter((channel) => channel.channelId !== this.selChannel.channelId && channel.toRemote && channel.toRemote > 0) || [];
@@ -65,7 +73,9 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
     });
     this.inputFormGroup = this.formBuilder.group({
       rebalanceAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.selChannel.toLocal || 0)]],
-      selRebalancePeer: [null, Validators.required]
+      selRebalancePeer: [null, Validators.required],
+      selFeeLimitType: [FEE_LIMIT_TYPES[0]],
+      feeLimit: [{ value: null, disabled: true }, [Validators.min(0)]]
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.inputFormGroup.get('rebalanceAmount')?.valueChanges.pipe(
@@ -82,6 +92,31 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
           this.filteredActiveChannels = of(this.filterActiveChannels());
         }
       });
+    this.inputFormGroup.get('selFeeLimitType')?.valueChanges.pipe(takeUntil(this.unSubs[4])).
+      subscribe((feeLimitType) => {
+        const feeLimitCtrl = this.inputFormGroup.controls.feeLimit;
+        if (!feeLimitType || feeLimitType.id === FEE_LIMIT_TYPES[0].id) {
+          feeLimitCtrl.setValue(null);
+          feeLimitCtrl.disable();
+        } else {
+          feeLimitCtrl.enable();
+        }
+      });
+  }
+
+  // The most the rebalance may pay in fees, or null while a fixed or percentage limit is unset.
+  getMaxFeeSat(): number | null {
+    const feeLimitTypeId = this.inputFormGroup.controls.selFeeLimitType.value?.id || FEE_LIMIT_TYPES[0].id;
+    const feeLimit = this.inputFormGroup.controls.feeLimit.value;
+    if (feeLimitTypeId !== FEE_LIMIT_TYPES[0].id && (feeLimit === null || feeLimit === '' || +feeLimit < 0)) {
+      return null;
+    }
+    return getFeeLimitSat(feeLimitTypeId, (feeLimit === null || feeLimit === '') ? null : +feeLimit, +(this.inputFormGroup.controls.rebalanceAmount.value || 0));
+  }
+
+  maxFeeHint(): string {
+    const maxFeeSat = this.inputFormGroup.controls.rebalanceAmount.value ? this.getMaxFeeSat() : null;
+    return maxFeeSat === null ? '' : ('Max fee: ' + this.decimalPipe.transform(maxFeeSat) + ' Sats');
   }
 
   stepSelectionChanged(event: any) {
@@ -95,7 +130,8 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
           this.inputFormLabel = 'Rebalancing Amount: ' +
             (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) +
             ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.alias ? this.inputFormGroup.controls.selRebalancePeer.value.alias :
-            (this.inputFormGroup.controls.selRebalancePeer.value.nodeId.substring(0, 15) + '...'));
+            (this.inputFormGroup.controls.selRebalancePeer.value.nodeId.substring(0, 15) + '...')) +
+            (this.getMaxFeeSat() !== null ? ' | Max Fee: ' + this.decimalPipe.transform(this.getMaxFeeSat()) + ' Sats' : '');
         } else {
           this.inputFormLabel = 'Amount to rebalance';
         }
@@ -110,16 +146,21 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
   onRebalance(): boolean | void {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 ||
       (this.selChannel.toLocal && this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.toLocal) ||
-      !this.inputFormGroup.controls.selRebalancePeer.value.nodeId) {
+      !this.inputFormGroup.controls.selRebalancePeer.value.nodeId || this.getMaxFeeSat() === null) {
       if (!this.inputFormGroup.controls.selRebalancePeer.value.nodeId) {
         this.inputFormGroup.controls.selRebalancePeer.setErrors({ required: true });
       }
+      if (this.getMaxFeeSat() === null) {
+        this.inputFormGroup.controls.feeLimit.setErrors({ required: true });
+      }
       return true;
     }
+    const maxFeeMsat = Math.round((this.getMaxFeeSat() || 0) * 1000);
     this.stepper.next();
     this.flgEditable = false;
     this.rebalanceStatus = { flgReusingInvoice: false, invoice: '', paymentRoute: '', paymentHash: '', paymentDetails: null, paymentStatus: null };
-    this.dataService.circularRebalance((this.inputFormGroup.controls.rebalanceAmount.value * 1000), this.selChannel.shortChannelId, this.selChannel.nodeId, this.inputFormGroup.controls.selRebalancePeer.value.shortChannelId, this.inputFormGroup.controls.selRebalancePeer.value.nodeId, [this.information.nodeId || '']).
+    this.dataService.circularRebalance((this.inputFormGroup.controls.rebalanceAmount.value * 1000), this.selChannel.shortChannelId, this.selChannel.nodeId,
+      this.inputFormGroup.controls.selRebalancePeer.value.shortChannelId, this.inputFormGroup.controls.selRebalancePeer.value.nodeId, [this.information.nodeId || ''], maxFeeMsat).
       pipe(takeUntil(this.unSubs[2])).subscribe({
         next: (rebalanceRes) => {
           this.logger.info(rebalanceRes);
@@ -179,6 +220,7 @@ export class ECLChannelRebalanceComponent implements OnInit, OnDestroy {
     this.inputFormGroup.controls.rebalanceAmount.setErrors(null);
     this.inputFormGroup.controls.selRebalancePeer.setValue('');
     this.inputFormGroup.controls.selRebalancePeer.setErrors(null);
+    this.inputFormGroup.controls.selFeeLimitType.setValue(FEE_LIMIT_TYPES[0]);
     this.filteredActiveChannels = of(this.activeChannels);
   }
 

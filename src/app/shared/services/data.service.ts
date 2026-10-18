@@ -353,9 +353,9 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], format: string = 'shortChannelId') {
+  circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], maxFeeMsat: number | null = null, format: string = 'shortChannelId') {
     const url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
-    const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, format: format };
+    const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, maxFeeMsat: maxFeeMsat, format: format };
     return this.httpClient.post(url, reqBody).pipe(
       takeUntil(this.unSubs[12]),
       map((res: any) => res),
