@@ -202,6 +202,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
     const sats = this.sendConfirmation.sats;
     this.clearSendConfirmation();
+    this.sendFundError = '';
     this.sendInProgress = true;
     this.store.dispatch(setChannelTransaction({ payload: { ...this.sendFundsPayload(), amount: sats } }));
   }

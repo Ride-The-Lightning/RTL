@@ -177,6 +177,19 @@ describe('OnChainSendModalComponent', () => {
       expect(text).toContain('Please fill in all the required fields.');
     });
 
+    it('drops the required-fields error once the corrected form is confirmed', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      component.selTransType = '2';
+      component.transactionFees = null;
+      component.onConfirmSend();
+      expect(render()).toContain('Please fill in all the required fields.');
+      component.transactionFees = 5;
+      component.onConfirmSend();
+      expect(sentPayloads().length).toBe(1);
+      expect(render()).not.toContain('Please fill in all the required fields.');
+    });
+
     it('sends nothing more while a send is in progress, until it fails', () => {
       const sendFundsButton = () => Array.from(fixture.nativeElement.querySelectorAll('button')).find((button: HTMLButtonElement) => button.textContent.trim() === 'Send Funds') as HTMLButtonElement;
       component.selAmountUnit = 'USD';

@@ -122,6 +122,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
     const sats = this.sendConfirmation.sats;
     this.clearSendConfirmation();
+    this.sendFundError = '';
     this.sendInProgress = true;
     this.store.dispatch(sendOnchainFunds({ payload: { ...this.transaction, amount: sats } }));
   }
