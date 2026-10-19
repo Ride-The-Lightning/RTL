@@ -266,7 +266,7 @@ this release should add its entry under the appropriate section below.
   payments and both route-lookup failures.
 
 - **On-chain send: an amount in BTC or fiat is shown in Sats and confirmed before it is sent**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1774](https://github.com/Ride-The-Lightning/RTL/pull/1774)).
   In the Send Funds dialog of LND, Core Lightning and Eclair, an amount entered in BTC or a fiat
   currency was converted to sats when Send Funds was clicked and sent straight away, without
   showing the sats figure. A fiat amount is converted with the rate RTL fetches from
