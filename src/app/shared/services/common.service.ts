@@ -126,6 +126,25 @@ export class CommonService implements OnDestroy {
     }
   }
 
+  // The amount of an on-chain send in whole sats, and how it was worked out, for the operator to
+  // confirm before it goes out: a fiat amount depends on a rate RTL gets from a third party.
+  convertToSendSats(amount: number, selAmountUnit: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<{ sats: number, summary: string }> {
+    const from = (otherCurrencyUnit && selAmountUnit === otherCurrencyUnit) ? CurrencyUnitEnum.OTHER : selAmountUnit;
+    return this.convertCurrency(amount, from, CurrencyUnitEnum.SATS, otherCurrencyUnit, fiatConversion).pipe(
+      switchMap((data) => {
+        const sats = Math.round(data[CurrencyUnitEnum.SATS]);
+        if (!Number.isFinite(sats) || sats <= 0) {
+          return throwError(() => 'Currency Conversion Error.');
+        }
+        const twoDecimals = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const summary = (from === CurrencyUnitEnum.OTHER) ?
+          twoDecimals(amount) + ' ' + otherCurrencyUnit + ' at 1 BTC = ' + twoDecimals(this.conversionData.data[otherCurrencyUnit].last) + ' ' + otherCurrencyUnit :
+          amount + ' ' + selAmountUnit;
+        return of({ sats: sats, summary: summary });
+      })
+    );
+  }
+
   convertWithoutFiat(value: number, from: string) {
     const returnValue = {};
     returnValue[CurrencyUnitEnum.SATS] = 0;

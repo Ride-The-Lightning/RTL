@@ -109,12 +109,30 @@ export const getExplorerTransaction = (req, res, next) => {
         });
     });
 };
+// On-chain sends convert a fiat amount with these rates, which come from a third party: pass on
+// only the rates that can convert one, with a finite, positive `last`.
+const usableRates = (rates) => {
+    const usable = {};
+    if (rates && typeof rates === 'object' && !Array.isArray(rates)) {
+        Object.keys(rates).forEach((currency) => {
+            const last = rates[currency]?.last;
+            if (typeof last === 'number' && Number.isFinite(last) && last > 0) {
+                usable[currency] = rates[currency];
+            }
+        });
+    }
+    return usable;
+};
 export const getCurrencyRates = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..' });
     options.url = 'https://blockchain.info/ticker';
     request(options).then((body) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received', data: body });
-        res.status(200).json(JSON.parse(body));
+        const rates = usableRates(JSON.parse(body));
+        if (Object.keys(rates).length === 0) {
+            throw new Error('No usable currency rate in the reply');
+        }
+        res.status(200).json(rates);
     }).catch((errRes) => {
         const errMsg = 'Get Rates Error';
         const err = common.handleError({ statusCode: 500, message: errMsg, error: errRes }, 'RTLConf', errMsg, req.session.selectedNode);

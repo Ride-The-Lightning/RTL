@@ -39,6 +39,8 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public newAddress = '';
   public transaction: SendPaymentOnChain = {};
   public sendFundError = '';
+  public sendConfirmation: { sats: number, summary: string, payload: any } | null = null;
+  private sendRequestId = 0;
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
@@ -84,22 +86,36 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.sendFundError = '';
+    this.clearSendConfirmation();
     if (this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion).
+      // Show the Sats the amount converts to, and send them only once the operator confirms.
+      const requestId = this.sendRequestId;
+      const payload = { ...this.transaction };
+      this.commonService.convertToSendSats(this.transaction.amount, this.selAmountUnit, this.amountUnits[2], this.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
-          next: (data) => {
-            this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
-            this.selAmountUnit = CurrencyUnitEnum.SATS;
-            this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
+          next: (converted) => {
+            if (requestId === this.sendRequestId) {
+              this.sendConfirmation = { sats: converted.sats, summary: converted.summary, payload: { ...payload, amount: converted.sats } };
+            }
           }, error: (err) => {
-            this.selAmountUnit = CurrencyUnitEnum.SATS;
-            this.amountError = 'Conversion Error: ' + err;
+            this.sendFundError = 'Conversion Error: ' + err;
           }
         });
     } else {
       this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
     }
+  }
+
+  onConfirmSend() {
+    if (this.sendConfirmation) {
+      this.store.dispatch(sendOnchainFunds({ payload: this.sendConfirmation.payload }));
+    }
+  }
+
+  clearSendConfirmation() {
+    this.sendConfirmation = null;
+    this.sendRequestId++;
   }
 
   get invalidValues(): boolean {
@@ -111,13 +127,18 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   resetData() {
     this.sendFundError = '';
     this.transaction = {};
+    this.clearSendConfirmation();
   }
 
   onAmountUnitChange(event: any) {
     const self = this;
     const prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
-    let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if (this.transaction.amount && this.selAmountUnit !== event.value) {
+    const currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
+    this.clearSendConfirmation();
+    if (!this.transaction.amount) {
+      // Nothing to convert: the amount typed next is in the unit picked.
+      this.selAmountUnit = event.value;
+    } else if (this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion).
         pipe(takeUntil(this.unSubs[4])).
         subscribe({
@@ -125,9 +146,9 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
             this.selAmountUnit = event.value;
             self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit])!.replace(/,/g, '');
           }, error: (err) => {
-            this.amountError = 'Conversion Error: ' + err;
-            this.selAmountUnit = prevSelectedUnit;
-            currSelectedUnit = prevSelectedUnit;
+            // Keep the amount in the unit it was typed in, and show that unit again.
+            this.sendFundError = 'Conversion Error: ' + err;
+            if (event.source) { event.source.value = this.selAmountUnit; }
           }
         });
     }

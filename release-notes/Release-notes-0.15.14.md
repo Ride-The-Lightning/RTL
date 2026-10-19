@@ -265,6 +265,27 @@ this release should add its entry under the appropriate section below.
   `test/backend/eclair-rebalance-fee-limit.test.mjs` covers the limit, the default, failed
   payments and both route-lookup failures.
 
+- **On-chain send: an amount in BTC or fiat is shown in Sats and confirmed before it is sent**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  In the Send Funds dialog of LND, Core Lightning and Eclair, an amount entered in BTC or a fiat
+  currency was converted to sats when Send Funds was clicked and sent straight away, without
+  showing the sats figure. A fiat amount is converted with the rate RTL fetches from
+  blockchain.info, so a wrong rate sent a wrong amount unnoticed. Send Funds now shows the
+  amount in Sats with the rate used, for example "Send 12,266 Sats (10.00 USD at 1 BTC =
+  81,525.00 USD)?", and sends only on Confirm Send; changing the address, amount or unit drops
+  the confirmation. An amount in Sats sends as before. `/api/conf/rates` passes on only rates
+  with a finite, positive value, and answers an error when none is usable. Also fixed in the
+  same dialog:
+  - **Eclair: a failed conversion no longer turns the amount into Sats.** The unit switched to
+    Sats with the error hidden, so the next click sent the fiat number as sats. The unit and
+    amount now stay as entered, and the error is shown. LND and Core Lightning no longer clear
+    the amount on a failed conversion.
+  - **A unit picked while the amount is empty now applies.** The selector showed the new unit,
+    but the amount typed next was sent as sats (all three implementations).
+  - **Core Lightning: a converted amount is sent in whole sats.** It could carry a fraction.
+
+  `test/backend/currency-rates.test.mjs` covers the rates check.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

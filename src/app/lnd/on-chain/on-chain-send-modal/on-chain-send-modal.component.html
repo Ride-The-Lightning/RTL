@@ -23,12 +23,12 @@
       <form *ngIf="!sweepAll; else sweepAllBlock;" #form="ngForm" fxLayout="row wrap"fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()">
         <mat-form-field fxLayout="column" fxFlex.gt-sm="55">
           <mat-label>Bitcoin Address</mat-label>
-          <input #address="ngModel" autoFocus matInput name="address" required [(ngModel)]="transactionAddress">
+          <input #address="ngModel" autoFocus matInput name="address" required [(ngModel)]="transactionAddress" (ngModelChange)="clearSendConfirmation()">
           <mat-error *ngIf="!transactionAddress">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxLayout="column" fxFlex.gt-sm="30">
           <mat-label>Amount</mat-label>
-          <input #amnt="ngModel" matInput name="amt" type="number" required [step]="100" [min]="0" [(ngModel)]="transactionAmount">
+          <input #amnt="ngModel" matInput name="amt" type="number" required [step]="100" [min]="0" [(ngModel)]="transactionAmount" (ngModelChange)="clearSendConfirmation()">
           <span matSuffix>{{selAmountUnit}} </span>
           <mat-error *ngIf="!transactionAmount">{{amountError}}</mat-error>
         </mat-form-field>
@@ -63,9 +63,15 @@
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span *ngIf="sendFundError !== ''">{{sendFundError}}</span>
         </div>
+        <div *ngIf="sendConfirmation" fxFlex="100" class="alert alert-warn mt-1">
+          <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
+          <span>Send <strong>{{sendConfirmation.sats | number}} Sats</strong> ({{sendConfirmation.summary}})?</span>
+        </div>
         <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">
-          <button class="mr-1" mat-button color="primary" type="reset">Clear Fields</button>
-          <button mat-button color="primary" type="submit">Send Funds</button>
+          <button *ngIf="!sendConfirmation" class="mr-1" mat-button color="primary" type="reset">Clear Fields</button>
+          <button *ngIf="!sendConfirmation" mat-button color="primary" type="submit">Send Funds</button>
+          <button *ngIf="sendConfirmation" class="mr-1" mat-button color="primary" type="button" (click)="clearSendConfirmation()">Back</button>
+          <button *ngIf="sendConfirmation" mat-button color="primary" type="button" (click)="onConfirmSend()">Confirm Send</button>
         </div>
       </form>
     </mat-card-content>
