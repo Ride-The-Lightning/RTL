@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
@@ -15,6 +15,7 @@ import { mockCLEffects, mockECLEffects, mockLNDEffects, mockLoggerService, mockM
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FEE_LIMIT_TYPES, LNDActions } from '../../../../shared/services/consts-enums-functions';
 
 describe('ChannelRebalanceComponent', () => {
   let component: ChannelRebalanceComponent;
@@ -48,6 +49,53 @@ describe('ChannelRebalanceComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('fee limit', () => {
+    let dispatch: jasmine.Spy;
+
+    beforeEach(() => {
+      dispatch = spyOn(TestBed.inject(Store), 'dispatch');
+    });
+
+    const setFeeLimit = (amount: number, typeId: string, feeLimit: number) => {
+      component.inputFormGroup.controls.rebalanceAmount.setValue(amount);
+      component.inputFormGroup.controls.selRebalancePeer.setValue({ remote_pubkey: '02'.padEnd(66, 'a') });
+      component.feeFormGroup.controls.selFeeLimitType.setValue(FEE_LIMIT_TYPES.find((type) => type.id === typeId));
+      component.feeFormGroup.controls.feeLimit.setValue(feeLimit);
+    };
+    const sentFeeLimitSat = () => {
+      component.sendPayment('lnbcrt1example');
+      const payments = dispatch.calls.allArgs().map((args) => args[0]).filter((action) => action.type === LNDActions.SEND_PAYMENT_LND);
+      expect(payments.length).toBe(1);
+      return payments[0].payload.fee_limit_sat;
+    };
+
+    it('sends a fractional percentage as that share of the amount', () => {
+      setFeeLimit(20000, 'percent', 2.5);
+      expect(sentFeeLimitSat()).toBe(500);
+    });
+
+    it('rounds a fractional percentage of a small amount up to whole sats', () => {
+      setFeeLimit(50, 'percent', 2.5);
+      expect(sentFeeLimitSat()).toBe(2);
+    });
+
+    it('sends a whole percentage as that share of the amount', () => {
+      setFeeLimit(20000, 'percent', 2);
+      expect(sentFeeLimitSat()).toBe(400);
+    });
+
+    it('sends a fixed limit as entered', () => {
+      setFeeLimit(20000, 'fixed', 30);
+      expect(sentFeeLimitSat()).toBe(30);
+    });
+
+    it('shows the fee limit in Sats before rebalancing', () => {
+      setFeeLimit(20000, 'percent', 2.5);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Max fee: 500 Sats');
+    });
   });
 
   afterEach(() => {

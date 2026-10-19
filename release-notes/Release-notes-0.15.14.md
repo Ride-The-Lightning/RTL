@@ -289,6 +289,15 @@ this release should add its entry under the appropriate section below.
 
   `test/backend/currency-rates.test.mjs` covers the rates check.
 
+- **LND circular rebalance: a fractional 'Percentage of Amount' fee limit is a percentage**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  A fractional percentage such as 2.5 was sent as that many sats, rounded up (`fee_limit_sat: 3`
+  for any amount), while a whole percentage was applied correctly. On a small rebalance the
+  enforced limit was above the one entered, so routing hops could collect more than it allowed;
+  on a larger one it was far too low and the rebalance failed with 'No Route'. Both now take
+  that share of the amount, rounded up to whole sats, and the fee step shows the resulting
+  "Max fee: N Sats" before Rebalance is clicked.
+
 ## Enhancements
 
 - **CLN: show sweep countdown and close status for closing channels**

@@ -184,7 +184,8 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
           this.inputFormLabel = 'Amount to rebalance';
         }
         if (this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && (this.queryRoute.routes[0].total_fees_msat || (this.queryRoute.routes[0].hops && this.queryRoute.routes[0].hops.length))) {
-          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) + ' | Hops: ' + this.queryRoute.routes[0].hops?.length;
+          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) +
+            (this.maxFeeHint() ? ' | ' + this.maxFeeHint() : '') + ' | Hops: ' + this.queryRoute.routes[0].hops?.length;
         } else {
           this.feeFormLabel = 'Select rebalance fee';
         }
@@ -239,31 +240,27 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    if (this.feeFormGroup.controls.selFeeLimitType.value.id === 'percent' && !(+this.feeFormGroup.controls.feeLimit.value % 1 === 0)) {
-      const payload: SendPayment = {
-        uiMessage: UI_MESSAGES.NO_SPINNER,
-        payment_request: payReq,
-        amp: false,
-        outgoing_chan_ids: this.selChannel?.chan_id ? [this.selChannel?.chan_id] : undefined,
-        fee_limit_sat: Math.ceil(getFeeLimitSat('fixed', this.feeFormGroup.controls.feeLimit.value, (this.inputFormGroup.controls.rebalanceAmount.value || 0))),
-        allow_self_payment: true,
-        last_hop_pubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey,
-        fromDialog: true
-      };
-      this.store.dispatch(sendPayment({ payload }));
-    } else {
-      const payload: SendPayment = {
-        uiMessage: UI_MESSAGES.NO_SPINNER,
-        payment_request: payReq,
-        amp: false,
-        outgoing_chan_ids: this.selChannel?.chan_id ? [this.selChannel?.chan_id] : undefined,
-        fee_limit_sat: getFeeLimitSat(this.feeFormGroup.controls.selFeeLimitType.value.id, this.feeFormGroup.controls.feeLimit.value, (this.inputFormGroup.controls.rebalanceAmount.value || 0)),
-        allow_self_payment: true,
-        last_hop_pubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey,
-        fromDialog: true
-      };
-      this.store.dispatch(sendPayment({ payload }));
-    }
+    const payload: SendPayment = {
+      uiMessage: UI_MESSAGES.NO_SPINNER,
+      payment_request: payReq,
+      amp: false,
+      outgoing_chan_ids: this.selChannel?.chan_id ? [this.selChannel?.chan_id] : undefined,
+      fee_limit_sat: this.getMaxFeeSat(),
+      allow_self_payment: true,
+      last_hop_pubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey,
+      fromDialog: true
+    };
+    this.store.dispatch(sendPayment({ payload }));
+  }
+
+  // The most the rebalance may pay in fees: a percentage limit, whole or fractional, is that share of the amount.
+  getMaxFeeSat(): number | null {
+    return getFeeLimitSat(this.feeFormGroup.controls.selFeeLimitType.value?.id, this.feeFormGroup.controls.feeLimit.value, (this.inputFormGroup.controls.rebalanceAmount.value || 0));
+  }
+
+  maxFeeHint(): string {
+    const feeLimit = this.feeFormGroup.controls.feeLimit.value;
+    return (feeLimit === null || feeLimit === '' || +feeLimit < 0) ? '' : ('Max fee: ' + this.decimalPipe.transform(this.getMaxFeeSat()) + ' Sats');
   }
 
   filterActiveChannels() {

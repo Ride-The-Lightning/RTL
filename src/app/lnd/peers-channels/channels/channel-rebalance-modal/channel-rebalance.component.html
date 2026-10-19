@@ -67,6 +67,7 @@
                 <mat-form-field fxLayout="column" fxFlex="48">
                   <mat-label>{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}</mat-label>
                   <input matInput formControlName="feeLimit" type="number" tabindex="7" required [step]="1">
+                  <mat-hint *ngIf="maxFeeHint()">{{maxFeeHint()}}</mat-hint>
                   <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
                   <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
                 </mat-form-field>
