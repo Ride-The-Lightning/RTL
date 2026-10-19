@@ -60,7 +60,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public flgMinConf = false;
   public minConfValue = null;
   public sendFundError = '';
-  public sendConfirmation: { sats: number, summary: string, payload: any } | null = null;
+  public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
@@ -198,10 +198,6 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
     if (this.flgUseAllBalance) {
       this.transaction.satoshi = 'all';
     }
-    if (this.selUTXOs.length && this.selUTXOs.length > 0) {
-      this.transaction.utxos = [];
-      this.selUTXOs.forEach((utxo: UTXO) => this.transaction.utxos?.push(utxo.txid + ':' + utxo.output));
-    }
     if (this.sweepAll) {
       if (
         (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') ||
@@ -224,28 +220,24 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       delete this.transaction.utxos;
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
-      this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
-      this.transaction['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
-      if ((!this.transaction.destination || this.transaction.destination === '') ||
-        ((!this.transaction.satoshi || +this.transaction.satoshi <= 0)) ||
-        (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||
-        (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate)) {
+      if (!this.prepareTransaction()) {
         return true;
       }
       this.clearSendConfirmation();
       if (this.transaction.satoshi && this.transaction.satoshi !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         // Show the Sats the amount converts to, and send them only once the operator confirms.
         const requestId = this.sendRequestId;
-        const payload = { ...this.transaction };
         this.commonService.convertToSendSats(+this.transaction.satoshi, this.selAmountUnit, this.amountUnits[2], this.fiatConversion).
           pipe(takeUntil(this.unSubs[7])).
           subscribe({
             next: (converted) => {
               if (requestId === this.sendRequestId) {
-                this.sendConfirmation = { sats: converted.sats, summary: converted.summary, payload: { ...payload, satoshi: converted.sats } };
+                this.sendConfirmation = converted;
               }
             }, error: (err) => {
-              this.sendFundError = 'Conversion Error: ' + err;
+              if (requestId === this.sendRequestId) {
+                this.sendFundError = 'Conversion Error: ' + err;
+              }
             }
           });
       } else {
@@ -255,9 +247,31 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onConfirmSend() {
-    if (this.sendConfirmation) {
-      this.store.dispatch(setChannelTransaction({ payload: this.sendConfirmation.payload }));
+    if (!this.sendConfirmation) {
+      return;
     }
+    // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
+    const sats = this.sendConfirmation.sats;
+    this.clearSendConfirmation();
+    if (this.prepareTransaction()) {
+      this.store.dispatch(setChannelTransaction({ payload: { ...this.transaction, satoshi: sats } }));
+    }
+  }
+
+  // Fills in the coins, min-conf and fee rate from the form as it is now; false when the form is incomplete.
+  prepareTransaction(): boolean {
+    if (this.selUTXOs.length && this.selUTXOs.length > 0) {
+      this.transaction.utxos = [];
+      this.selUTXOs.forEach((utxo: UTXO) => this.transaction.utxos?.push(utxo.txid + ':' + utxo.output));
+    } else {
+      delete this.transaction.utxos;
+    }
+    this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
+    this.transaction['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
+    return !((!this.transaction.destination || this.transaction.destination === '') ||
+      ((!this.transaction.satoshi || +this.transaction.satoshi <= 0)) ||
+      (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||
+      (this.selFeeRate === 'customperkb' && !this.flgMinConf && !this.customFeeRate));
   }
 
   clearSendConfirmation() {

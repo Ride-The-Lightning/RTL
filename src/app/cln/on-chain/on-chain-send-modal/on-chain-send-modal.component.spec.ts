@@ -1,7 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SharedModule } from '../../../shared/shared.module';
 import { Store, StoreModule } from '@ngrx/store';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { EffectsModule } from '@ngrx/effects';
 
 import { RootReducer } from '../../../store/rtl.reducers';
@@ -116,6 +116,38 @@ describe('CLNOnChainSendModalComponent', () => {
       component.onSendFunds();
       component.onConfirmSend();
       expect(sentPayloads().length).toBe(0);
+    });
+
+    it('sends the fee rate and coins chosen while the confirmation is shown', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      expect(render()).toContain('29,905 Sats');
+      component.selFeeRate = 'urgent';
+      component.selUTXOs = [{ txid: 'aa'.repeat(32), output: 1, amount_msat: 50000000 } as any];
+      component.onConfirmSend();
+      expect(sentPayloads().length).toBe(1);
+      expect(sentPayloads()[0].feerate).toBe('urgent');
+      expect(sentPayloads()[0].utxos).toEqual(['aa'.repeat(32) + ':1']);
+    });
+
+    it('sends once when Confirm Send is clicked twice', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      component.onConfirmSend();
+      component.onConfirmSend();
+      expect(sentPayloads().length).toBe(1);
+    });
+
+    it('shows no error from a conversion the operator has moved on from', () => {
+      const conversion = new Subject<{ sats: number, summary: string }>();
+      spyOn(TestBed.inject(CommonService), 'convertToSendSats').and.returnValue(conversion);
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      // What the amount input does when it is edited.
+      component.transaction.satoshi = 20;
+      component.clearSendConfirmation();
+      conversion.error('Currency Conversion Error.');
+      expect(render()).not.toContain('Conversion Error');
     });
 
     it('applies a unit picked while the amount is empty', () => {

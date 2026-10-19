@@ -60,7 +60,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public unitConversionValue = 0;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   public sendFundError = '';
-  public sendConfirmation: { sats: number, summary: string, payload: any } | null = null;
+  public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
   public flgValidated = false;
   public flgEditable = true;
@@ -165,6 +165,40 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.sendFundError = '';
+    const postTransaction = this.sendFundsPayload();
+    this.clearSendConfirmation();
+    if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      // Show the Sats the amount converts to, and send them only once the operator confirms.
+      const requestId = this.sendRequestId;
+      this.commonService.convertToSendSats(this.transactionAmount, this.selAmountUnit, this.amountUnits[2], this.fiatConversion).
+        pipe(takeUntil(this.unSubs[5])).
+        subscribe({
+          next: (converted) => {
+            if (requestId === this.sendRequestId) {
+              this.sendConfirmation = converted;
+            }
+          }, error: (err) => {
+            if (requestId === this.sendRequestId) {
+              this.sendFundError = 'Conversion Error: ' + err;
+            }
+          }
+        });
+    } else {
+      this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
+    }
+  }
+
+  onConfirmSend() {
+    if (!this.sendConfirmation || this.invalidValues) {
+      return;
+    }
+    // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
+    const sats = this.sendConfirmation.sats;
+    this.clearSendConfirmation();
+    this.store.dispatch(setChannelTransaction({ payload: { ...this.sendFundsPayload(), amount: sats } }));
+  }
+
+  sendFundsPayload() {
     const postTransaction = {
       amount: this.transactionAmount ? this.transactionAmount : 0,
       sendAll: this.sweepAll
@@ -186,30 +220,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.transactionFees;
       }
     }
-    this.clearSendConfirmation();
-    if (this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      // Show the Sats the amount converts to, and send them only once the operator confirms.
-      const requestId = this.sendRequestId;
-      this.commonService.convertToSendSats(this.transactionAmount, this.selAmountUnit, this.amountUnits[2], this.fiatConversion).
-        pipe(takeUntil(this.unSubs[5])).
-        subscribe({
-          next: (converted) => {
-            if (requestId === this.sendRequestId) {
-              this.sendConfirmation = { sats: converted.sats, summary: converted.summary, payload: { ...postTransaction, amount: converted.sats } };
-            }
-          }, error: (err) => {
-            this.sendFundError = 'Conversion Error: ' + err;
-          }
-        });
-    } else {
-      this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
-    }
-  }
-
-  onConfirmSend() {
-    if (this.sendConfirmation) {
-      this.store.dispatch(setChannelTransaction({ payload: this.sendConfirmation.payload }));
-    }
+    return postTransaction;
   }
 
   clearSendConfirmation() {

@@ -39,7 +39,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public newAddress = '';
   public transaction: SendPaymentOnChain = {};
   public sendFundError = '';
-  public sendConfirmation: { sats: number, summary: string, payload: any } | null = null;
+  public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
@@ -90,16 +90,17 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     if (this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       // Show the Sats the amount converts to, and send them only once the operator confirms.
       const requestId = this.sendRequestId;
-      const payload = { ...this.transaction };
       this.commonService.convertToSendSats(this.transaction.amount, this.selAmountUnit, this.amountUnits[2], this.fiatConversion).
         pipe(takeUntil(this.unSubs[3])).
         subscribe({
           next: (converted) => {
             if (requestId === this.sendRequestId) {
-              this.sendConfirmation = { sats: converted.sats, summary: converted.summary, payload: { ...payload, amount: converted.sats } };
+              this.sendConfirmation = converted;
             }
           }, error: (err) => {
-            this.sendFundError = 'Conversion Error: ' + err;
+            if (requestId === this.sendRequestId) {
+              this.sendFundError = 'Conversion Error: ' + err;
+            }
           }
         });
     } else {
@@ -108,9 +109,13 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onConfirmSend() {
-    if (this.sendConfirmation) {
-      this.store.dispatch(sendOnchainFunds({ payload: this.sendConfirmation.payload }));
+    if (!this.sendConfirmation || this.invalidValues) {
+      return;
     }
+    // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
+    const sats = this.sendConfirmation.sats;
+    this.clearSendConfirmation();
+    this.store.dispatch(sendOnchainFunds({ payload: { ...this.transaction, amount: sats } }));
   }
 
   clearSendConfirmation() {

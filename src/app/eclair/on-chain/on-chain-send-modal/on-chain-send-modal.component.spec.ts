@@ -1,7 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store, StoreModule } from '@ngrx/store';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
@@ -111,6 +111,36 @@ describe('ECLOnChainSendModalComponent', () => {
       component.onSendFunds();
       component.onConfirmSend();
       expect(sentPayloads().length).toBe(0);
+    });
+
+    it('sends the target blocks chosen while the confirmation is shown', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      expect(render()).toContain('29,905 Sats');
+      component.transaction.blocks = 12;
+      component.onConfirmSend();
+      expect(sentPayloads().length).toBe(1);
+      expect(sentPayloads()[0].blocks).toBe(12);
+    });
+
+    it('sends once when Confirm Send is clicked twice', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      component.onConfirmSend();
+      component.onConfirmSend();
+      expect(sentPayloads().length).toBe(1);
+    });
+
+    it('shows no error from a conversion the operator has moved on from', () => {
+      const conversion = new Subject<{ sats: number, summary: string }>();
+      spyOn(TestBed.inject(CommonService), 'convertToSendSats').and.returnValue(conversion);
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      // What the amount input does when it is edited.
+      component.transaction.amount = 20;
+      component.clearSendConfirmation();
+      conversion.error('Currency Conversion Error.');
+      expect(render()).not.toContain('Conversion Error');
     });
 
     it('applies a unit picked while the amount is empty', () => {
