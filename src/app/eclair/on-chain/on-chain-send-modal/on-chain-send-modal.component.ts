@@ -41,6 +41,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundError = '';
   public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
+  public sendInProgress = false;
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
@@ -76,13 +77,14 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           this.dialogRef.close();
         }
         if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendOnchainFunds') {
+          this.sendInProgress = false;
           this.sendFundError = action.payload.message;
         }
       });
   }
 
   onSendFunds(): boolean | void {
-    if (this.invalidValues) {
+    if (this.sendInProgress || this.invalidValues) {
       return true;
     }
     this.sendFundError = '';
@@ -104,17 +106,23 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
           }
         });
     } else {
+      this.sendInProgress = true;
       this.store.dispatch(sendOnchainFunds({ payload: this.transaction }));
     }
   }
 
   onConfirmSend() {
-    if (!this.sendConfirmation || this.invalidValues) {
+    if (!this.sendConfirmation || this.sendInProgress) {
+      return;
+    }
+    if (this.invalidValues) {
+      this.sendFundError = 'Please fill in all the required fields.';
       return;
     }
     // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
     const sats = this.sendConfirmation.sats;
     this.clearSendConfirmation();
+    this.sendInProgress = true;
     this.store.dispatch(sendOnchainFunds({ payload: { ...this.transaction, amount: sats } }));
   }
 

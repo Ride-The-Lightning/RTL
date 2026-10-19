@@ -62,6 +62,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundError = '';
   public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
+  public sendInProgress = false;
   public flgValidated = false;
   public flgEditable = true;
   public recommendedFee: RecommendedFeeRates = { fastestFee: 0, halfHourFee: 0, hourFee: 0 };
@@ -137,6 +138,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
           this.dialogRef.close();
         }
         if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
+          this.sendInProgress = false;
           this.sendFundError = action.payload.message;
         }
       });
@@ -161,7 +163,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds(): boolean | void {
-    if (this.invalidValues) {
+    if (this.sendInProgress || this.invalidValues) {
       return true;
     }
     this.sendFundError = '';
@@ -184,17 +186,23 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
           }
         });
     } else {
+      this.sendInProgress = true;
       this.store.dispatch(setChannelTransaction({ payload: postTransaction }));
     }
   }
 
   onConfirmSend() {
-    if (!this.sendConfirmation || this.invalidValues) {
+    if (!this.sendConfirmation || this.sendInProgress) {
+      return;
+    }
+    if (this.invalidValues) {
+      this.sendFundError = 'Please fill in all the required fields.';
       return;
     }
     // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
     const sats = this.sendConfirmation.sats;
     this.clearSendConfirmation();
+    this.sendInProgress = true;
     this.store.dispatch(setChannelTransaction({ payload: { ...this.sendFundsPayload(), amount: sats } }));
   }
 

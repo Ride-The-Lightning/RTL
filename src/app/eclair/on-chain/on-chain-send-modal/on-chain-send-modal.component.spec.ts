@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Store, StoreModule } from '@ngrx/store';
+import { ScannedActionsSubject, Store, StoreModule } from '@ngrx/store';
 import { Subject, throwError } from 'rxjs';
 
 import { RootReducer } from '../../../store/rtl.reducers';
@@ -17,7 +17,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
-import { ECLActions } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ECLActions } from '../../../shared/services/consts-enums-functions';
 
 describe('ECLOnChainSendModalComponent', () => {
   let component: ECLOnChainSendModalComponent;
@@ -152,6 +152,43 @@ describe('ECLOnChainSendModalComponent', () => {
       expect(render()).toContain('20,000 Sats');
       component.onConfirmSend();
       expect(sentPayloads()[0].amount).toBe(20000);
+    });
+
+    it('keeps the confirmation and says why when the form is incomplete at Confirm Send', () => {
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      expect(render()).toContain('29,905 Sats');
+      // Clearing Target Confirmation Blocks.
+      component.transaction.blocks = null;
+      component.onConfirmSend();
+      const text = render();
+      expect(sentPayloads().length).toBe(0);
+      expect(text).toContain('29,905 Sats');
+      expect(text).toContain('Please fill in all the required fields.');
+    });
+
+    it('sends nothing more while a send is in progress, until it fails', () => {
+      const sendFundsButton = () => Array.from(fixture.nativeElement.querySelectorAll('button')).find((button: HTMLButtonElement) => button.textContent.trim() === 'Send Funds') as HTMLButtonElement;
+      component.selAmountUnit = 'USD';
+      component.onSendFunds();
+      component.onConfirmSend();
+      expect(render()).not.toContain('29,905 Sats');
+      expect(sendFundsButton().disabled).toBeTrue();
+      // The second click of a double-click lands on Send Funds.
+      component.onSendFunds();
+      expect(render()).not.toContain('29,905 Sats');
+      expect(sentPayloads().length).toBe(1);
+      TestBed.inject(ScannedActionsSubject).next({ type: ECLActions.UPDATE_API_CALL_STATUS_ECL, payload: { action: 'SendOnchainFunds', status: APICallStatusEnum.ERROR, message: 'insufficient funds' } } as any);
+      expect(render()).toContain('insufficient funds');
+      expect(sendFundsButton().disabled).toBeFalse();
+      component.onSendFunds();
+      expect(render()).toContain('29,905 Sats');
+    });
+
+    it('sends an amount in Sats once while the send is in progress', () => {
+      component.onSendFunds();
+      component.onSendFunds();
+      expect(sentPayloads().length).toBe(1);
     });
   });
 

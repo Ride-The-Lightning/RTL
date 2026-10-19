@@ -283,6 +283,9 @@ this release should add its entry under the appropriate section below.
   - **A unit picked while the amount is empty now applies.** The selector showed the new unit,
     but the amount typed next was sent as sats (all three implementations).
   - **Core Lightning: a converted amount is sent in whole sats.** It could carry a fraction.
+  - **A send in progress can't be repeated.** Send Funds and Confirm Send are disabled until the
+    send fails, so the second click of a double-click no longer brings the confirmation back.
+    If the form has become incomplete at Confirm Send, the confirmation stays and says so.
 
   `test/backend/currency-rates.test.mjs` covers the rates check.
 

@@ -56,9 +56,9 @@
         </div>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">
           <button *ngIf="!sendConfirmation" class="mr-1" mat-button color="primary" type="reset">Clear Fields</button>
-          <button *ngIf="!sendConfirmation" mat-button color="primary" type="submit">Send Funds</button>
+          <button *ngIf="!sendConfirmation" mat-button color="primary" type="submit" [disabled]="sendInProgress">Send Funds</button>
           <button *ngIf="sendConfirmation" class="mr-1" mat-button color="primary" type="button" (click)="clearSendConfirmation()">Back</button>
-          <button *ngIf="sendConfirmation" mat-button color="primary" type="button" (click)="onConfirmSend()">Confirm Send</button>
+          <button *ngIf="sendConfirmation" mat-button color="primary" type="button" [disabled]="sendInProgress" (click)="onConfirmSend()">Confirm Send</button>
         </div>
       </form>
     </mat-card-content>

@@ -62,6 +62,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   public sendFundError = '';
   public sendConfirmation: { sats: number, summary: string } | null = null;
   private sendRequestId = 0;
+  public sendInProgress = false;
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
@@ -169,6 +170,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
           this.dialogRef.close();
         }
         if (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
+          this.sendInProgress = false;
           this.sendFundError = action.payload.message;
         }
       });
@@ -194,6 +196,9 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds(): boolean | void {
+    if (this.sendInProgress) {
+      return true;
+    }
     this.sendFundError = '';
     if (this.flgUseAllBalance) {
       this.transaction.satoshi = 'all';
@@ -218,6 +223,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
           ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
       }
       delete this.transaction.utxos;
+      this.sendInProgress = true;
       this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
     } else {
       if (!this.prepareTransaction()) {
@@ -241,21 +247,25 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
             }
           });
       } else {
+        this.sendInProgress = true;
         this.store.dispatch(setChannelTransaction({ payload: this.transaction }));
       }
     }
   }
 
   onConfirmSend() {
-    if (!this.sendConfirmation) {
+    if (!this.sendConfirmation || this.sendInProgress) {
+      return;
+    }
+    if (!this.prepareTransaction()) {
+      this.sendFundError = 'Please fill in all the required fields.';
       return;
     }
     // The confirmed Sats, with the rest of the form as it is now. Cleared first, so a second click doesn't send again.
     const sats = this.sendConfirmation.sats;
     this.clearSendConfirmation();
-    if (this.prepareTransaction()) {
-      this.store.dispatch(setChannelTransaction({ payload: { ...this.transaction, satoshi: sats } }));
-    }
+    this.sendInProgress = true;
+    this.store.dispatch(setChannelTransaction({ payload: { ...this.transaction, satoshi: sats } }));
   }
 
   // Fills in the coins, min-conf and fee rate from the form as it is now; false when the form is incomplete.
