@@ -183,9 +183,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         } else {
           this.inputFormLabel = 'Amount to rebalance';
         }
-        if (this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && (this.queryRoute.routes[0].total_fees_msat || (this.queryRoute.routes[0].hops && this.queryRoute.routes[0].hops.length))) {
-          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) +
-            (this.maxFeeHint() ? ' | ' + this.maxFeeHint() : '') + ' | Hops: ' + this.queryRoute.routes[0].hops?.length;
+        if (this.feeFormGroup.controls.selFeeLimitType.value && this.maxFeeHint()) {
+          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value) + ' | ' + this.maxFeeHint() +
+            ((this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].hops?.length) ? ' | Hops: ' + this.queryRoute.routes[0].hops.length : '');
         } else {
           this.feeFormLabel = 'Select rebalance fee';
         }

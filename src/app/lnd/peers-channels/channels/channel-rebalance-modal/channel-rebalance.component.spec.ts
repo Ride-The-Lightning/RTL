@@ -91,6 +91,12 @@ describe('ChannelRebalanceComponent', () => {
       expect(sentFeeLimitSat()).toBe(30);
     });
 
+    it('shows the fee limit and its Sats in the fee step label once rebalancing starts', () => {
+      setFeeLimit(20000, 'percent', 2.5);
+      component.stepSelectionChanged({ selectedIndex: 2, previouslySelectedIndex: 1 });
+      expect(component.feeFormLabel).toBe('Percentage Limit: 2.5 | Max fee: 500 Sats');
+    });
+
     it('shows the fee limit in Sats before rebalancing', () => {
       setFeeLimit(20000, 'percent', 2.5);
       fixture.detectChanges();
