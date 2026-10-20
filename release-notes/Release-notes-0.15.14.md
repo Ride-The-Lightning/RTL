@@ -198,7 +198,8 @@ this release should add its entry under the appropriate section below.
   wait now starts only after the "Disconnect Peer" confirmation opens, as in LND and CLN
   (`eclair/.../peers.component.ts`).
 
-- **LND: a default fee limit for payments, shown before sending**
+- **LND: Send Payment no longer allows up to 1,000,000 sats in fees by default; the limit is
+  shown before sending**
   ([#1769](https://github.com/Ride-The-Lightning/RTL/pull/1769)).
   Payments from the Send Payment dialog and from Home now use the same default fee limit: 5% of
   the amount, or the whole amount for payments of up to 100 sats. This follows `lncli`'s default,
@@ -209,6 +210,16 @@ this release should add its entry under the appropriate section below.
   how to raise it, and gives the cheapest route's fee when LND can find one (not available for
   invoices with route hints). Fixed and Percentage limits work as before, and "No Fee Limit" is
   renamed "Default Limit".
+
+  **If you pay from RTL 0.15.3 to 0.15.13 on LND:** the Send Payment dialog's default, "No Fee
+  Limit", let a payment spend up to 1,000,000 sats in routing fees, whatever the amount, and
+  the dialog didn't show that limit. A route can charge any fee its nodes set: the invoice's
+  creator can add a costly last hop in the invoice itself, or the payee's own channel can be
+  that hop. Such a route was paid with nothing to warn you, and the fee showed only after the
+  payment went through. Upgrade to 0.15.14. Until you do, open Advanced Options and choose a
+  Fixed or Percentage fee limit before each payment (the setting resets each time). Versions
+  before 0.15.3 are not affected: they sent no limit, and LND applied its own default of 5% of
+  the amount.
 
 - **Download CSV: text from other nodes can no longer become a spreadsheet formula or shift
   columns**
@@ -264,6 +275,15 @@ this release should add its entry under the appropriate section below.
 
   `test/backend/eclair-rebalance-fee-limit.test.mjs` covers the limit, the default, failed
   payments and both route-lookup failures.
+
+  **If you use Circular Rebalance on Eclair with RTL 0.14.0 to 0.15.13:** a rebalance paid
+  whatever fee each channel on the route charged, with no limit and nothing shown before
+  sending. A node on the route, including the peer you picked under "Receive from Peer", could
+  raise its fee toward your node and collect it from the rebalance, and the fee showed only
+  after the payment went through. Upgrade to 0.15.14. Until you do, don't use Circular
+  Rebalance on Eclair: the dialog has no fee setting in those versions. Payments from the Send
+  Payment dialog are not affected, as Eclair finds those routes itself and applies its own fee
+  limit.
 
 - **On-chain send: an amount in BTC or fiat is shown in Sats and confirmed before it is sent**
   ([#1774](https://github.com/Ride-The-Lightning/RTL/pull/1774)).
