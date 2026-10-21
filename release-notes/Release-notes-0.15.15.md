@@ -7,7 +7,7 @@ this release should add its entry under the appropriate section below.
 
 - **Node.js 22.23.4 / 24.22.1: the Docker image and the supported Node range move to the
   October 2026 Node.js security releases**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1780](https://github.com/Ride-The-Lightning/RTL/pull/1780)).
   Node.js published ten CVEs on 2026-10-21
   ([advisory](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)). The one
   that reaches RTL as deployed is CVE-2026-111497, an out-of-bounds write in Node's bundled
