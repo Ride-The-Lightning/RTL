@@ -3,6 +3,18 @@
 This document collects the changes that go into the 0.15.16 release. Each PR merged for
 this release should add its entry under the appropriate section below.
 
+## Security
+
+- **Session, CSRF and XSRF-TOKEN cookies are scoped to RTL's base path**
+  ([#1785](https://github.com/Ride-The-Lightning/RTL/pull/1785)). All three cookies were
+  issued with the site-wide default `Path=/`, although RTL serves itself under `/rtl`. Behind
+  BTCPay Server and similar bundles RTL shares its origin with other applications on sibling
+  paths, so the browser sent RTL's session cookie and signed CSRF cookie on every request to
+  them, and the readable `XSRF-TOKEN` sat in their `document.cookie`. Each cookie now carries
+  `Path=/rtl` (the `baseHref`), so none of them leaves RTL's own routes. A cookie path is not
+  an origin boundary, so this is least privilege rather than isolation, and nothing about the
+  login or the BTCPay single-sign-on entry changes.
+
 ## Dependencies
 
 - **Dependency update batch** ([#1784](https://github.com/Ride-The-Lightning/RTL/pull/1784)):

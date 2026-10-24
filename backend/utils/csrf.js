@@ -10,12 +10,18 @@ class CSRF {
         // the same token (read from the XSRF-TOKEN cookie set in app.ts) in a
         // header. The cookie is not secure-only because RTL commonly serves plain
         // HTTP (matching the session cookie); token sources match what csurf
-        // accepted. The error code EBADCSRFTOKEN is handled in app.ts.
+        // accepted. The error code EBADCSRFTOKEN is handled in app.ts. Like the
+        // session and XSRF-TOKEN cookies it is scoped to baseHref, so a bundle that
+        // serves other applications on sibling paths of the same origin (BTCPay
+        // Server) never receives it. baseHref is a constant on CommonService (no
+        // config key or environment variable sets it), so reading it here, when this
+        // singleton is built at import, yields the same path the other two cookies
+        // read later.
         this.doubleCsrfUtilities = doubleCsrf({
             getSecret: () => this.common.secret_key,
             getSessionIdentifier: (req) => (req.session ? req.session.id : ''),
             cookieName: '_csrf',
-            cookieOptions: { sameSite: 'strict', path: '/', secure: false, httpOnly: true },
+            cookieOptions: { sameSite: 'strict', path: this.common.baseHref || '/', secure: false, httpOnly: true },
             getCsrfTokenFromRequest: (req) => (req.body && req.body._csrf) || (req.query && req.query._csrf) ||
                 req.headers['csrf-token'] || req.headers['xsrf-token'] ||
                 req.headers['x-csrf-token'] || req.headers['x-xsrf-token']

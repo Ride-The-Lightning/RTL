@@ -204,3 +204,39 @@ test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still se
   assert.equal(asset.status, 200);
   assert.equal(asset.headers.get('content-type'), 'image/png');
 });
+
+// Cookie Path attributes. RTL is served under baseHref ('/rtl'), and behind BTCPay Server
+// and similar bundles it shares its origin with other applications on sibling paths. A
+// cookie scoped Path=/ rides on every request to those applications and (for the readable
+// XSRF-TOKEN) is in their document.cookie; scoping each to baseHref keeps the session,
+// the signed CSRF cookie and the token out of their reach. Path is not an origin boundary,
+// so this is least privilege, not isolation.
+const cookieAttributes = (res, name) => {
+  const line = res.headers.getSetCookie().find((entry) => entry.startsWith(name + '='));
+  assert.ok(line, 'no ' + name + ' cookie in ' + JSON.stringify(res.headers.getSetCookie()));
+  return Object.fromEntries(line.split(';').slice(1).map((attr) => {
+    const [key, value] = attr.trim().split('=');
+    return [key.toLowerCase(), value === undefined ? true : value];
+  }));
+};
+
+test('the session, _csrf and XSRF-TOKEN cookies are scoped to the base href', async () => {
+  const res = await fetch(base + '/rtl/', { redirect: 'manual' });
+  for (const name of ['connect.sid', '_csrf', 'XSRF-TOKEN']) {
+    assert.equal(cookieAttributes(res, name).path, '/rtl', name + ' cookie path');
+  }
+});
+
+test('the token re-minted on a CSRF failure is scoped to the base href too', async () => {
+  const res = await login(cookieJar());
+  assert.equal(res.status, 403);
+  assert.equal(cookieAttributes(res, 'XSRF-TOKEN').path, '/rtl');
+});
+
+test('a deep link under the base href still gets the scoped cookies', async () => {
+  // Path matching is by prefix: /rtl covers /rtl/… but not /rtl2 or a sibling app.
+  const res = await fetch(base + '/rtl/lnd/home', { redirect: 'manual' });
+  assert.equal(res.status, 200);
+  assert.equal(cookieAttributes(res, 'connect.sid').path, '/rtl');
+  assert.equal(cookieAttributes(res, 'XSRF-TOKEN').path, '/rtl');
+});

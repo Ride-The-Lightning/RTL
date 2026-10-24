@@ -72,7 +72,7 @@ export class ExpressApplication {
                 // new token on a first visit, so calling twice would desync the cookie
                 // from the header and the _csrf cookie it must match.
                 const csrfToken = req.csrfToken ? req.csrfToken() : (req.cookies && req.cookies._csrf) ? req.cookies._csrf : '';
-                res.cookie('XSRF-TOKEN', csrfToken); // RTL Angular Frontend
+                res.cookie('XSRF-TOKEN', csrfToken, { path: this.common.baseHref || '/' }); // RTL Angular Frontend
                 // The response carries a per-client token pair. Every response already gets
                 // no-cache from cors.ts, which still lets a shared cache store the pair subject
                 // to revalidation; no-store forbids storing it at all.
@@ -104,7 +104,7 @@ export class ExpressApplication {
                     // (the stale one may be bound to a destroyed session or rotated secret).
                     try {
                         const csrfToken = CSRF.reMintToken(req, res);
-                        res.cookie('XSRF-TOKEN', csrfToken);
+                        res.cookie('XSRF-TOKEN', csrfToken, { path: this.common.baseHref || '/' });
                     }
                     catch (csrfError) {
                         this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: 'CSRF Token Re-Mint Failed', error: csrfError });
@@ -140,7 +140,13 @@ export class ExpressApplication {
                 'Every client whose address is inside a trusted entry can forge its own address and defeat the login lockout; list the proxy\'s exact address instead';
             this.logger.log({ selectedNode: this.common.selectedNode, level: 'ERROR', fileName: 'App', msg: msg });
         }
-        this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { secure: false, maxAge: ONE_DAY }, resave: false }));
+        // Every cookie RTL sets (this session cookie, the signed _csrf cookie in csrf.ts and
+        // the readable XSRF-TOKEN below) is scoped to baseHref rather than the site-wide
+        // default of '/': behind BTCPay Server and similar bundles RTL shares its origin with
+        // other applications on sibling paths, and a Path=/ cookie would ride on every request
+        // to them, and sit in their document.cookie. Path is no origin boundary; this is only
+        // least privilege. The fallback covers a build with an empty baseHref.
+        this.app.use(sessions({ secret: this.common.secret_key, saveUninitialized: true, cookie: { secure: false, maxAge: ONE_DAY, path: this.common.baseHref || '/' }, resave: false }));
         this.app.use(cookieParser(this.common.secret_key));
         this.app.use(bodyParser.json({ limit: '25mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '25mb' }));
