@@ -5,7 +5,7 @@ this release should add its entry under the appropriate section below.
 
 ## Dependencies
 
-- **Dependency update batch** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)):
+- **Dependency update batch** ([#1784](https://github.com/Ride-The-Lightning/RTL/pull/1784)):
   resolves every open Dependabot alert. `npm audit` goes from 17 findings (1 high in
   production scope) to 0 in both scopes.
   - **`body-parser` 2.4.0** (production, [GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828)):
