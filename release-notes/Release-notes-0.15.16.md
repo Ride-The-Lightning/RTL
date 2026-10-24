@@ -13,7 +13,7 @@ this release should add its entry under the appropriate section below.
   them, and the readable `XSRF-TOKEN` sat in their `document.cookie`. Each cookie now carries
   `Path=/rtl` (the `baseHref`), so none of them leaves RTL's own routes. A cookie path is not
   an origin boundary, so this is least privilege rather than isolation, and nothing about the
-  login or the BTCPay single-sign-on entry changes.
+  login or the BTCPay single-sign-on entry changes. Reported by Gleb Lizunov (hokvo).
 
 ## Dependencies
 
