@@ -57,7 +57,7 @@ this release should add its entry under the appropriate section below.
     altogether and stays open as a migration.
   - **Transitive dev-tooling patches** picked up by regenerating the lockfile:
     `launch-editor` 2.14.2, `fast-uri` 3.1.9, `http-cache-semantics` 4.3.0, `ip-address` 10.7.4,
-    `serialize-javascript` 7.1.4, `undici` 6.29.1, `webpack` 5.112.0.
+    `serialize-javascript` 7.1.4, `undici` 6.29.1, `vite` 7.3.7, `webpack` 5.112.0.
   - The `follow-redirects` and `@angular/common` alerts GitHub still lists against `master`
     were fixed in v0.15.15 ([#1780](https://github.com/Ride-The-Lightning/RTL/pull/1780));
     they close once GitHub re-reads the lockfile.
