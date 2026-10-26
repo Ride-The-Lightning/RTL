@@ -15,6 +15,20 @@ this release should add its entry under the appropriate section below.
   an origin boundary, so this is least privilege rather than isolation, and nothing about the
   login or the BTCPay single-sign-on entry changes. Reported by Gleb Lizunov (hokvo).
 
+- **Docker image upgrades Alpine's packages at build time**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  [#1791](https://github.com/Ride-The-Lightning/RTL/issues/1791)). The `v0.15.15` image runs
+  Node 22.23.4, which rejects the eMudhra chains, but still carried Alpine's
+  `ca-certificates-bundle-20260909-r0`, so tools inside the container that use the system
+  trust store (BusyBox `wget`, `openssl`) accepted 7 of the 14 affected test chains. RTL's
+  own HTTPS calls were never affected: Node uses its bundled roots. The image was built from
+  the `node:22-alpine` tag a few hours before that tag was refreshed with Alpine's corrected
+  `ca-certificates-20261020-r0`, and the runner stage never upgraded the packages it
+  inherited, so the trust store was frozen at whatever the base image had on build day. The
+  runner stage now runs `apk upgrade --no-cache` after installing `tini`, so every build picks
+  up Alpine's current package fixes regardless of when the base tag was last rebuilt.
+  Reported by Nicolas Dorier.
+
 ## Dependencies
 
 - **Dependency update batch** ([#1784](https://github.com/Ride-The-Lightning/RTL/pull/1784)):

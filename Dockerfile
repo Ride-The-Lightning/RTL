@@ -22,7 +22,9 @@ RUN npm prune --omit=dev --legacy-peer-deps
 
 FROM --platform=${TARGETPLATFORM} ${BASE_DISTRO} AS runner
 
-RUN apk add --no-cache tini
+# Upgrade the Alpine packages inherited from the base image, so a build picks up
+# fixes (such as a refreshed ca-certificates bundle) before the base tag is rebuilt.
+RUN apk add --no-cache tini && apk upgrade --no-cache
 
 WORKDIR /RTL
 
