@@ -16,7 +16,7 @@ this release should add its entry under the appropriate section below.
   login or the BTCPay single-sign-on entry changes. Reported by Gleb Lizunov (hokvo).
 
 - **Docker image upgrades Alpine's packages at build time**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), fixes
+  ([#1792](https://github.com/Ride-The-Lightning/RTL/pull/1792), fixes
   [#1791](https://github.com/Ride-The-Lightning/RTL/issues/1791)). The `v0.15.15` image runs
   Node 22.23.4, which rejects the eMudhra chains, but still carried Alpine's
   `ca-certificates-bundle-20260909-r0`, so tools inside the container that use the system
