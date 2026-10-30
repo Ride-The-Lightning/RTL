@@ -255,7 +255,11 @@ export const logoutUser = (req, res, next) => {
     databaseService.unloadDatabase(+req.session.selectedNode.index, req.session.id);
   }
   req.session.destroy((err) => {
-    res.clearCookie('connect.sid');
+    // Cookies are set with Path=baseHref; a deletion must name the same path.
+    const cookieOptions = { path: common.baseHref || '/' };
+    res.clearCookie('connect.sid', cookieOptions);
+    res.clearCookie('_csrf', cookieOptions);
+    res.clearCookie('XSRF-TOKEN', cookieOptions);
     res.status(200).json({ loggedout: true });
   });
 };
