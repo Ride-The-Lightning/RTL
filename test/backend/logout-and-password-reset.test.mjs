@@ -186,6 +186,21 @@ test("RTL's own logout, a POST with the CSRF token, ends the session", async () 
   assert.equal(again.status, 403);
 });
 
+test('logout deletes the session and CSRF cookies on the path they were set with', async () => {
+  const { jar, token } = await signedIn();
+  const res = await ownLogout(jar, token);
+  assert.equal(await loggedOut(res), true, 'status ' + res.status);
+  const deletions = res.headers.getSetCookie();
+  for (const name of ['connect.sid', '_csrf', 'XSRF-TOKEN']) {
+    const line = deletions.find((l) => l.startsWith(name + '='));
+    assert.ok(line, 'logout did not clear ' + name + '; Set-Cookie was ' + JSON.stringify(deletions));
+    assert.match(line, /^[^=]+=;/, name + ' was not emptied: ' + line);
+    assert.match(line, /; Path=\/rtl(;|$)/, name + ' was cleared on the wrong path: ' + line);
+    const expires = line.match(/; Expires=([^;]+)/);
+    assert.ok(expires && new Date(expires[1]).getTime() < Date.now(), name + ' was not expired: ' + line);
+  }
+});
+
 const reset = (session, newPassword) => fetch(base + '/rtl/api/authenticate/reset', {
   method: 'POST',
   headers: { 'content-type': 'application/json', cookie: session.jar.header(), 'x-xsrf-token': session.jar.get('XSRF-TOKEN'), authorization: 'Bearer ' + session.token },
