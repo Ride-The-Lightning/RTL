@@ -1,0 +1,10 @@
+name: CSV contribution checks
+on:
+  push:
+    branches: [fix/lnd-routing-csv-column-order]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
