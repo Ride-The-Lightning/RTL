@@ -1,3 +1,3 @@
 ## Bug Fixes
 
-- LND routing CSV exports keep a fixed order for known columns across selected dates and LND versions. Missing optional HTLC IDs produce empty cells; additional fields are retained in sorted trailing columns. Existing CSV escaping and other exports are unchanged.
+- [#1796](https://github.com/Ride-The-Lightning/RTL/pull/1796) Fix LND routing CSV column order ([#1545](https://github.com/Ride-The-Lightning/RTL/issues/1545)). Columns no longer follow response object-key order; missing optional HTLC IDs produce empty cells, and extra fields remain in sorted trailing columns.
