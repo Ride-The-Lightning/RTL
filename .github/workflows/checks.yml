@@ -2,6 +2,7 @@ name: Lint & Test
 
 on:
   push:
+    branches: [ 'fix/lnd-routing-csv-column-order' ]
     tags: [ 'v*' ]
   release:
     types: [released]
