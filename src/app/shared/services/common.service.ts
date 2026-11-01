@@ -268,10 +268,10 @@ export class CommonService implements OnDestroy {
     return value;
   }
 
-  downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
+  downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv', columns: readonly string[] = []) {
     let blob = new Blob();
     if (fromFormat === '.json') {
-      blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
+      blob = new Blob(['\ufeff' + this.convertToCSV(data, columns)], { type: 'text/csv;charset=utf-8;' });
     } else {
       blob = new Blob([data.toString()], { type: 'text/plain;charset=utf-8' });
     }
@@ -289,7 +289,7 @@ export class CommonService implements OnDestroy {
     document.body.removeChild(downloadUrl);
   }
 
-  convertToCSV(objArray: any[]) {
+  convertToCSV(objArray: any[], columns: readonly string[] = []) {
     const keys: string[] = [];
     let dataRow = '';
     let arrayField = '';
@@ -304,6 +304,12 @@ export class CommonService implements OnDestroy {
         }
       }
     });
+    // A caller can pin its schema across date ranges and node versions. Keep unknown
+    // fields too, in deterministic trailing columns; other exports retain their order.
+    if (columns.length > 0) {
+      const extraKeys = keys.filter((key) => !columns.includes(key)).sort();
+      keys.splice(0, keys.length, ...new Set(columns), ...extraKeys);
+    }
     const header = keys.map((key) => this.escapeCSVField(key)).join(',');
     csvStrArray = header + '\r\n';
     objArray.forEach((obj) => {

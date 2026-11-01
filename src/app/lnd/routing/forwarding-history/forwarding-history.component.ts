@@ -185,7 +185,13 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   onDownloadCSV() {
     if (this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
+      // Preserve the historical columns, then append optional fields from newer LNDs.
+      const columns = [
+        'timestamp', 'chan_id_in', 'chan_id_out', 'amt_in', 'amt_out', 'fee', 'fee_msat',
+        'amt_in_msat', 'amt_out_msat', 'timestamp_ns', 'peer_alias_in', 'peer_alias_out',
+        'alias_in', 'alias_out', 'incoming_htlc_id', 'outgoing_htlc_id'
+      ];
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history', '.json', '.csv', columns);
     }
   }
 
