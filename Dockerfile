@@ -1,4 +1,4 @@
-ARG BASE_DISTRO="node:22-alpine"
+ARG BASE_DISTRO="node:24-alpine"
 
 FROM --platform=${BUILDPLATFORM} ${BASE_DISTRO} AS builder
 

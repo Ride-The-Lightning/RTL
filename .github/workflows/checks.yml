@@ -28,6 +28,7 @@ jobs:
         node-version:
           - '22.x'
           - '24.x'
+          - '26.x'
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -60,14 +61,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: '24.x'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-22.x-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-24.x-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         if: steps.cache-npm-packages.outputs.cache-hit != 'true'
@@ -81,7 +82,7 @@ jobs:
   # a bundle that doesn't come from src/ can't be reviewed by reading the diff. Build each into an
   # empty directory and compare with the commit: a changed, missing or leftover file fails. Both
   # builds are deterministic (a Linux build reproduces one made on macOS byte for byte), so one
-  # Node version is enough; 22 is the one the Docker image uses.
+  # Node version is enough; 24 is the one the Docker image uses.
   build:
     name: Build output matches source
     runs-on: ubuntu-latest
@@ -93,14 +94,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: '24.x'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-npm-packages
         with:
           path: node_modules
-          key: ${{ runner.OS }}-22.x-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-24.x-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install NPM dependencies
         id: install
@@ -141,6 +142,7 @@ jobs:
         node-version:
           - '22.x'
           - '24.x'
+          - '26.x'
     env:
       CI: true
     steps:

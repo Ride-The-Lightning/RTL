@@ -32,7 +32,7 @@ version and any bundled dependency.
 Forgetting to commit `backend/` passes every test, because the tests, the Docker image and CI
 all compile `server/` afresh, while a git install runs the committed copy (#1745 shipped that
 way). `checks.yml` therefore builds each into an empty directory (`backend/` and `frontend/`,
-the latter with the production build, on Node 22) and fails if anything differs from the
+the latter with the production build, on Node 24) and fails if anything differs from the
 commit. Both builds are deterministic: a Linux build reproduces one made on macOS byte for byte.
 To check before pushing:
 `rm -rf backend frontend && npm run buildbackend && npm run buildfrontend && git status --short -- backend/ frontend/`
