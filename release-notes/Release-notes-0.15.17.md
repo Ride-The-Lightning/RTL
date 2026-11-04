@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Code Health
 
 - **Docker image moves to Node 24 LTS, and CI starts testing Node 26**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  ([#1798](https://github.com/Ride-The-Lightning/RTL/pull/1798), issue
   [#1797](https://github.com/Ride-The-Lightning/RTL/issues/1797)). Node 22 reaches end of life
   in April 2027. The image was built on `node:22-alpine`. It now uses `node:24-alpine`
   (supported until April 2028), which was already in the CI test matrix and the `engines`
