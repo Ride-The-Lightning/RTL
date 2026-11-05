@@ -31,6 +31,19 @@ this release should add its entry under the appropriate section below.
   `/rtl` are now redirected to `/rtl/`, keeping the query string. A backend test asserts the
   redirect and a first login entered at `/`; both failed before the change.
 
+## Enhancements
+
+- **LND: label any on-chain transaction from the Transactions table**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  [#1261](https://github.com/Ride-The-Lightning/RTL/issues/1261)). A label could only be set
+  through a UTXO's Actions menu, so a received transaction whose outputs were already spent
+  could not be labelled at all. Transaction rows now have an Actions menu with View Info and
+  Label, using the same LND call as the UTXO action. LND labels a whole transaction, so all of
+  its outputs share the label. The table shows a txid in display order, while LND takes the
+  bytes in reverse order, base64-encoded; the dialog converts it. Specs cover the conversion,
+  checked against a txid pair LND returned, and both label paths. Labelling a received, spent
+  transaction on the regtest fixture through the UI stored the label in LND.
+
 ## Code Health
 
 - **Docker image moves to Node 24 LTS, and CI starts testing Node 26**

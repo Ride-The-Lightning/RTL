@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { isDevMode } from '@angular/core';
+import { Buffer } from 'buffer';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CLNPageDefinitions, ECLPageDefinitions, LNDPageDefinitions, PageSettings } from '../models/pageSettings';
 import { FiatCurrency } from '../models/rtlModels';
@@ -1394,4 +1395,10 @@ export function getNoRouteMessage(errMsg: string, feeLimitSat: number | null | u
   }
   return 'Payment not sent. Nothing was paid. Every route LND found would cost more than ' + maxFee + ', or didn\'t have enough liquidity. ' +
     'If you\'re willing to pay a higher fee, ' + howToRaise;
+}
+
+// LND shows a txid as hex in display order, but its wallet RPCs take the raw txid bytes in internal
+// order, which is the reverse, sent over REST as base64. This is what a UTXO's outpoint.txid_bytes holds.
+export function getLNDTxidBytes(txidHex: string | undefined) {
+  return txidHex ? Buffer.from(txidHex.trim(), 'hex').reverse().toString('base64') : '';
 }

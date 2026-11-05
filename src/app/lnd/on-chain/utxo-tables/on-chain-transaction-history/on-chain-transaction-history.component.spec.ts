@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
@@ -13,6 +13,8 @@ import { mockDataService, mockLoggerService } from '../../../../shared/test-help
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../shared/services/data.service';
+import { openAlert } from '../../../../store/rtl.actions';
+import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-label-modal.component';
 
 describe('OnChainTransactionHistoryComponent', () => {
   let component: OnChainTransactionHistoryComponent;
@@ -43,6 +45,13 @@ describe('OnChainTransactionHistoryComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should open the label modal for the selected transaction', () => {
+    const storeSpy = spyOn(TestBed.inject(Store), 'dispatch');
+    const transaction = { tx_hash: 'ab'.repeat(32), amount: '5000', num_confirmations: 2 };
+    component.onLabelTransaction(transaction);
+    expect(storeSpy).toHaveBeenCalledWith(openAlert({ payload: { data: { transaction: transaction, component: OnChainLabelModalComponent } } }));
   });
 
   afterEach(() => {

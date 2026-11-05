@@ -21,6 +21,7 @@ import { lndPageSettings, transactions } from '../../../store/lnd.selector';
 import { ColumnDefinition, PageSettings, TableSetting } from '../../../../shared/models/pageSettings';
 import { CamelCaseWithReplacePipe } from '../../../../shared/pipes/app.pipe';
 import { MessageDataField } from '../../../../shared/models/alertData';
+import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-label-modal.component';
 
 @Component({
   standalone: false,
@@ -118,6 +119,17 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
           alertTitle: 'Transaction Information',
           message: reorderedTransactions,
           scrollable: selTransaction.dest_addresses && selTransaction.dest_addresses.length > 5
+        }
+      }
+    }));
+  }
+
+  onLabelTransaction(transaction: Transaction) {
+    this.store.dispatch(openAlert({
+      payload: {
+        data: {
+          transaction: transaction,
+          component: OnChainLabelModalComponent
         }
       }
     }));

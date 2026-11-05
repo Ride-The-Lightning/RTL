@@ -6,9 +6,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { UTXO } from '../../../shared/models/lndModels';
+import { Transaction, UTXO } from '../../../shared/models/lndModels';
 import { OnChainLabelUTXO } from '../../../shared/models/alertData';
 import { DataService } from '../../../shared/services/data.service';
+import { getLNDTxidBytes } from '../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../store/rtl.state';
 import { CommonService } from '../../../shared/services/common.service';
@@ -25,6 +26,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public utxo: UTXO | null = null;
+  public transaction: Transaction | null = null;
   public label = '';
   public labelError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -32,8 +34,9 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<OnChainLabelModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainLabelUTXO, private dataService: DataService, private store: Store<RTLState>, private snackBar: MatSnackBar, private commonService: CommonService) { }
 
   ngOnInit() {
-    this.utxo = this.data.utxo;
-    this.label = this.utxo.label || '';
+    this.utxo = this.data.utxo || null;
+    this.transaction = this.data.transaction || null;
+    this.label = (this.transaction ? this.transaction.label : this.utxo?.label) || '';
   }
 
   onLabelUTXO(): boolean | void {
@@ -41,13 +44,14 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
       return true;
     }
     this.labelError = '';
-    this.dataService.labelUTXO((this.utxo && this.utxo.outpoint && this.utxo.outpoint.txid_bytes ? this.utxo.outpoint.txid_bytes : ''), this.label, true).
+    const txidBytes = this.transaction ? getLNDTxidBytes(this.transaction.tx_hash) : (this.utxo && this.utxo.outpoint && this.utxo.outpoint.txid_bytes ? this.utxo.outpoint.txid_bytes : '');
+    this.dataService.labelUTXO(txidBytes, this.label, true).
       pipe(takeUntil(this.unSubs[0])).
       subscribe({
         next: (res) => {
           this.store.dispatch(fetchTransactions());
           this.store.dispatch(fetchUTXOs());
-          this.snackBar.open('Successfully labelled the UTXO.');
+          this.snackBar.open(this.transaction ? 'Successfully labelled the transaction.' : 'Successfully labelled the UTXO.');
           this.dialogRef.close();
         }, error: (err) => {
           this.labelError = err;

@@ -75,7 +75,13 @@
             </div>
          </th>
           <td *matCellDef="let transaction" mat-cell fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onTransactionClick(transaction)">View Info</button>
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="4" class="mr-0">
+                <mat-select-trigger />
+                <mat-option (click)="onTransactionClick(transaction)">View Info</mat-option>
+                <mat-option (click)="onLabelTransaction(transaction)">Label</mat-option>
+              </mat-select>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="no_transaction">

@@ -2,20 +2,20 @@
   <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Label UTXO</span>
+        <span class="page-title">{{transaction ? 'Label Transaction' : 'Label UTXO'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center center" class="btn-close-x p-0" default mat-button [mat-dialog-close]="false">X</button>
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large">
       <form #form="ngForm" fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" class="overflow-x-hidden" (submit)="onLabelUTXO()" (reset)="resetData()">
-        <div *ngIf="(label | lowercase).includes('sweep') && utxo.confirmations === '0'" fxFlex="100" class="alert alert-warn">
+        <div *ngIf="(label | lowercase).includes('sweep') && (utxo?.confirmations === '0' || transaction?.num_confirmations === 0)" fxFlex="100" class="alert alert-warn">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
           <span>Bump fee option will be disabled for unconfirmed UTXOs where label text includes "sweep" in its value.</span>
         </div>
         <mat-form-field fxLayout="column" fxFlex.gt-sm="100">
-          <mat-label>UTXO Label</mat-label>
+          <mat-label>{{transaction ? 'Transaction Label' : 'UTXO Label'}}</mat-label>
           <input autoFocus matInput name="label" tabindex="1" required [(ngModel)]="label">
-          <mat-error *ngIf="!label">UTXO Label is required.</mat-error>
+          <mat-error *ngIf="!label">{{transaction ? 'Transaction Label' : 'UTXO Label'}} is required.</mat-error>
         </mat-form-field>
         <div *ngIf="labelError !== ''" fxFlex="100" class="alert alert-danger mt-1">
           <fa-icon class="mr-1 alert-icon" [icon]="faExclamationTriangle" />
@@ -23,7 +23,7 @@
         </div>
         <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">
           <button class="mr-1" mat-button color="primary" tabindex="7" type="reset">Clear</button>
-          <button mat-button color="primary" type="submit" tabindex="8">Label UTXO</button>
+          <button mat-button color="primary" type="submit" tabindex="8">{{transaction ? 'Label Transaction' : 'Label UTXO'}}</button>
         </div>
       </form>
     </mat-card-content>

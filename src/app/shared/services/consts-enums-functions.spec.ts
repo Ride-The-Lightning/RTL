@@ -1,4 +1,20 @@
-import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage } from './consts-enums-functions';
+import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes } from './consts-enums-functions';
+
+describe('getLNDTxidBytes', () => {
+  // txid_str and txid_bytes of the same outpoint, as LND's REST API returned them from the regtest fixture.
+  const txidStr = '56941c4f0f3dab1441f4f83246cd8f05580e040b4a34d383fd1925176d50ec1b';
+  const txidBytes = 'G+xQbRclGf2D0zRKCwQOWAWPzUYy+PRBFKs9D08clFY=';
+
+  it('should turn a display-order txid into the base64 bytes LND expects', () => {
+    expect(getLNDTxidBytes(txidStr)).toBe(txidBytes);
+    expect(getLNDTxidBytes(' ' + txidStr + ' ')).toBe(txidBytes);
+  });
+
+  it('should return an empty string without a txid', () => {
+    expect(getLNDTxidBytes(undefined)).toBe('');
+    expect(getLNDTxidBytes('')).toBe('');
+  });
+});
 
 describe('getCLNSweepBlocks', () => {
   const waiting = 'ONCHAIN:1 outputs unresolved: in 13 blocks will spend DELAYED_OUTPUT_TO_US (txid:2) using OUR_DELAYED_RETURN_TO_WALLET';

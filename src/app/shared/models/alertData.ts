@@ -1,6 +1,6 @@
 import { DataTypeEnum, LoopTypeEnum, PaymentTypes } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
-import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
+import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO, Transaction } from './lndModels';
 import { Invoice as InvoiceCLN, GetInfo as GetInfoCLN, Peer as PeerCLN, Channel as ChannelCLN, UTXO as UTXOCLN, Offer as OfferCLN, LookupNode as LookupNodeCLN } from './clnModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
@@ -35,7 +35,8 @@ export interface InputData {
 }
 
 export interface OnChainLabelUTXO {
-  utxo: UTXO;
+  utxo?: UTXO;
+  transaction?: Transaction;
   component?: any;
 }
 
