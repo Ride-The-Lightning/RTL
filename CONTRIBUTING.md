@@ -89,3 +89,10 @@ Dependabot files its security PRs against `master`, but they are not merged indi
 6. **Open one PR** against the current release branch with a release-note entry summarizing the before/after `npm audit` counts. Once the release branch is merged to `master`, Dependabot closes its superseded PRs automatically.
 
 Vulnerabilities in deprecated packages (e.g. an unmaintained dependency with no fixed release) cannot be resolved by version bumps — track those in a dedicated issue for a code-level replacement instead of leaving them in the batch PR.
+
+#### <a name="codereview"></a>Code Review
+Review the whole diff, not only `src/` and `server/`. Some files in a PR can't be judged by reading them, or change more than the fix needs:
+
+* **Committed build output (`frontend/`, `backend/`).** `main.*.js` is about 3 MB of minified code that GitHub collapses, so a one-line source change could carry anything in the bundle. Don't merge a contributor's copies. Rebuild both from the PR's sources on the current release branch and commit your own. CI fails when the committed bundle isn't the build of the PR's sources, but it only runs after a maintainer approves it.
+* **CI configuration (`.github/workflows/`).** A bug fix or feature has no reason to add or edit a workflow. Ask for unrelated workflow changes to be removed, even harmless-looking ones such as a helper for running checks on the contributor's fork, which would otherwise land in the repository as dead configuration. Don't approve the `pr-ci` run while a PR changes a workflow without a reason. Only `pr-ci.yml` waits for that approval, so a new workflow with its own trigger runs without it once the contributor is no longer a first-time contributor. Changes to CI belong in their own PR, agreed in an issue first.
+* **Dependencies.** New libraries need an issue first (see [Caution about adding new libraries](#code)), and `package-lock.json` should change only as much as the PR needs.

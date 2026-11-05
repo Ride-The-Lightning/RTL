@@ -51,6 +51,13 @@ couple of strings and nothing else; `runtime.*.js` may differ only in minifier v
 PR CI now fails when the committed bundle isn't the build of the PR's `src/`, which catches a
 tampered or stale bundle, but it runs only after a maintainer approves it, so keep regenerating.
 
+**Stop on workflow changes in an external PR.** A fix has no reason to touch
+`.github/workflows/`. Only `pr-ci.yml` waits for the `pr-ci` approval, so a workflow a PR adds
+with its own trigger runs without it once the author is no longer a first-time contributor.
+Ask for unrelated workflow changes to be removed before approving the PR's CI run, even a
+harmless-looking one such as a helper for running checks on the contributor's fork.
+`CONTRIBUTING.md` § "Code Review" has the full list.
+
 ## The three-implementation pattern
 
 RTL supports three Lightning implementations, and the layout mirrors that everywhere:

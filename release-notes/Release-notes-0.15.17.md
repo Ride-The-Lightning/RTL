@@ -62,3 +62,14 @@ this release should add its entry under the appropriate section below.
   a cross-origin redirect. RTL never sets `sensitiveHeaders`, and axios builds that list in the
   same realm as follow-redirects, so RTL was not exposed. The bump is lockfile-only, within
   axios's existing `^1.16.0` range, and clears the audit.
+
+## Developer Tooling
+
+- **Code review guideline for external PRs**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). `CONTRIBUTING.md` linked a
+  Code Review section that didn't exist. It now lists what a review must check beyond the
+  source diff: rebuild `frontend/` and `backend/` rather than merging a contributor's copies,
+  turn away unrelated changes under `.github/workflows/`, and keep dependency changes to what
+  the PR needs. Only `pr-ci.yml` waits for maintainer approval, so a workflow a PR adds with
+  its own trigger would run without that approval once the author has had a PR merged.
+  `CLAUDE.md` carries the same rule for review agents.
