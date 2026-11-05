@@ -16,8 +16,8 @@ this release should add its entry under the appropriate section below.
   which was never cleared. The logout now deletes all three cookies on the base-href path, and
   the next page load mints a token pair for the new session. A backend test asserts the three
   deletions and their path; it failed on the 0.15.16 build and passes now. The report also
-  describes a login that keeps failing after an idle period until the URL is retyped; whether
-  the stale cookies alone cause that is still being investigated on the issue.
+  describes a login that keeps failing until the URL is retyped; that has a separate cause,
+  fixed by #1799 below.
 - **Opening RTL at the site root no longer breaks login**
   ([#1799](https://github.com/Ride-The-Lightning/RTL/pull/1799), issue
   [#1794](https://github.com/Ride-The-Lightning/RTL/issues/1794)). This is the cause of the
