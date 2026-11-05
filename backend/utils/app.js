@@ -54,9 +54,20 @@ export class ExpressApplication {
                     return;
                 }
                 const queryAt = req.url.indexOf('?');
+                const rawPathname = queryAt === -1 ? req.url : req.url.slice(0, queryAt);
+                // Compared raw, not decoded: the browser's cookie-path match and the static mount both
+                // see the raw path, so /%72tl/ or /x%2f..%2frtl/ is outside baseHref even though it
+                // decodes into it. Checked before decoding, so an undecodable path is redirected too.
+                if (this.common.baseHref && rawPathname !== this.common.baseHref && !rawPathname.startsWith(this.common.baseHref + '/')) {
+                    // 302, not 301: browsers keep a 301 indefinitely, and / is the root of an origin
+                    // that may serve something else there later.
+                    res.set('Cache-Control', 'no-store');
+                    res.redirect(302, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
+                    return;
+                }
                 let pathname;
                 try {
-                    pathname = posix.normalize(decodeURIComponent(queryAt === -1 ? req.url : req.url.slice(0, queryAt)).replace(/\\/g, '/'));
+                    pathname = posix.normalize(decodeURIComponent(rawPathname).replace(/\\/g, '/'));
                 }
                 catch {
                     next();
@@ -67,13 +78,6 @@ export class ExpressApplication {
                     // a redirect is heuristically cacheable, so forbid storing it.
                     res.set('Cache-Control', 'no-store');
                     res.redirect(301, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
-                    return;
-                }
-                if (this.common.baseHref && pathname !== this.common.baseHref && !pathname.startsWith(this.common.baseHref + '/')) {
-                    // 302, not 301: browsers keep a 301 indefinitely, and / is the root of an origin
-                    // that may serve something else there later.
-                    res.set('Cache-Control', 'no-store');
-                    res.redirect(302, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
                     return;
                 }
                 next();

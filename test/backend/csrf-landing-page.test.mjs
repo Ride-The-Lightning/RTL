@@ -211,7 +211,11 @@ test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still se
 // sees XSRF-TOKEN, sends no x-xsrf-token header, and every login fails with 403 until the
 // user reloads under /rtl (issue #1794). The page must only ever load under the base href.
 test('a page request outside the base href is redirected into it', async () => {
-  for (const path of ['/', '/login', '/lnd/home', '/RTL/', '/RTL/login', '/rtl2/', '/index.html']) {
+  // The encoded spellings decode (and normalize) to a path under /rtl, but the browser's
+  // cookie-path match and the static mount both see the raw path, which is outside it; an
+  // undecodable path outside the base href is a page load outside it too.
+  for (const path of ['/', '/login', '/lnd/home', '/RTL/', '/RTL/login', '/rtl2/', '/index.html',
+    '/%72tl/', '/x%2f..%2frtl/', '/rtl%2Ffoo', '/%E0']) {
     const res = await rawGet(path);
     assert.equal(res.status, 302, path + ' returned ' + res.status);
     assert.equal(res.location, '/rtl/', path);
