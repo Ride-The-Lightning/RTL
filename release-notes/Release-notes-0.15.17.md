@@ -34,7 +34,7 @@ this release should add its entry under the appropriate section below.
 ## Enhancements
 
 - **LND: label any on-chain transaction from the Transactions table**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  ([#1801](https://github.com/Ride-The-Lightning/RTL/pull/1801), issue
   [#1261](https://github.com/Ride-The-Lightning/RTL/issues/1261)). A label could only be set
   through a UTXO's Actions menu, so a received transaction whose outputs were already spent
   could not be labelled at all. Transaction rows now have an Actions menu with View Info and
