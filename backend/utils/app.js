@@ -43,6 +43,11 @@ export class ExpressApplication {
             // decode + normalize collapses back to it (//index.html, /./index.html, %2e, %69…),
             // each the same tokenless entry; send every such spelling to the directory index so
             // there is one entry path. The redirect keeps the query string.
+            // A page loaded outside baseHref (/, a bare deep link, a /RTL/ spelling, which Express
+            // matches but cookie paths do not) cannot read the XSRF-TOKEN cookie scoped to it: the
+            // browser scopes document.cookie to the URL the document was loaded at, and the router's
+            // pushState into baseHref is not a load. Its logins went out with no token header and
+            // failed until a reload under baseHref (issue #1794), so send it to the directory index too.
             this.app.use((req, res, next) => {
                 if (req.method !== 'GET' && req.method !== 'HEAD') {
                     next();
@@ -62,6 +67,13 @@ export class ExpressApplication {
                     // a redirect is heuristically cacheable, so forbid storing it.
                     res.set('Cache-Control', 'no-store');
                     res.redirect(301, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
+                    return;
+                }
+                if (this.common.baseHref && pathname !== this.common.baseHref && !pathname.startsWith(this.common.baseHref + '/')) {
+                    // 302, not 301: browsers keep a 301 indefinitely, and / is the root of an origin
+                    // that may serve something else there later.
+                    res.set('Cache-Control', 'no-store');
+                    res.redirect(302, this.common.baseHref + '/' + (queryAt === -1 ? '' : req.url.slice(queryAt)));
                     return;
                 }
                 next();

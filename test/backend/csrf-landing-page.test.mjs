@@ -205,6 +205,44 @@ test('/rtl and /rtl/index.html redirect to /rtl/, and static assets are still se
   assert.equal(asset.headers.get('content-type'), 'image/png');
 });
 
+// The cookies are scoped to Path=/rtl (below), and a page reads them through document.cookie,
+// which the browser scopes to the URL the document was loaded at. The Angular router moves
+// the address bar into /rtl with pushState, which is not a load, so a page loaded at / never
+// sees XSRF-TOKEN, sends no x-xsrf-token header, and every login fails with 403 until the
+// user reloads under /rtl (issue #1794). The page must only ever load under the base href.
+test('a page request outside the base href is redirected into it', async () => {
+  for (const path of ['/', '/login', '/lnd/home', '/RTL/', '/RTL/login', '/rtl2/', '/index.html']) {
+    const res = await rawGet(path);
+    assert.equal(res.status, 302, path + ' returned ' + res.status);
+    assert.equal(res.location, '/rtl/', path);
+  }
+  // The redirect keeps the query string, and like the index redirect it carries a new
+  // session's cookie and reflects the query, so it must not be stored.
+  const withQuery = await rawGet('/?access-key=x');
+  assert.equal(withQuery.status, 302);
+  assert.equal(withQuery.location, '/rtl/?access-key=x');
+  const headers = await fetch(base + '/', { redirect: 'manual' });
+  assert.equal(headers.headers.get('cache-control'), 'no-store');
+});
+
+test('a visitor entering at / lands on a page that hands out the token, and logs in', async () => {
+  const jar = cookieJar();
+  const entry = await fetch(base + '/', { redirect: 'manual' });
+  jar.absorb(entry);
+  assert.equal(entry.status, 302);
+  const page = await fetch(new URL(entry.headers.get('location'), base), { redirect: 'manual', headers: { cookie: jar.header() } });
+  assert.equal(page.status, 200);
+  jar.absorb(page);
+  const res = await login(jar);
+  assert.equal(res.status, 200, 'first login after entering at / returned ' + res.status);
+});
+
+test('API routes outside a page load are not redirected', async () => {
+  // Only page loads move; a POST outside the base href is not a document load and is left alone.
+  const post = await fetch(base + '/api/authenticate', { method: 'POST', redirect: 'manual' });
+  assert.notEqual(post.status, 302);
+});
+
 // Cookie Path attributes. RTL is served under baseHref ('/rtl'), and behind BTCPay Server
 // and similar bundles it shares its origin with other applications on sibling paths. A
 // cookie scoped Path=/ rides on every request to those applications and (for the readable

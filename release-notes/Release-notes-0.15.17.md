@@ -18,6 +18,18 @@ this release should add its entry under the appropriate section below.
   deletions and their path; it failed on the 0.15.16 build and passes now. The report also
   describes a login that keeps failing after an idle period until the URL is retyped; whether
   the stale cookies alone cause that is still being investigated on the issue.
+- **Opening RTL at the site root no longer breaks login**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  [#1794](https://github.com/Ride-The-Lightning/RTL/issues/1794)). This is the cause of the
+  repeated login failure in that report. Any path outside `/rtl`, such as `host:3000/`, was
+  answered with the app itself, and the router then moved the address bar to `/rtl/login`
+  without reloading the page. A browser scopes `document.cookie` to the URL a page was loaded
+  at, so since 0.15.16 scoped the CSRF cookies to `Path=/rtl`
+  ([#1785](https://github.com/Ride-The-Lightning/RTL/pull/1785)) such a page could not read
+  `XSRF-TOKEN`. It sent its login without the token header, and every attempt failed with
+  "Invalid Csrf Token, Form Tempered" until a reload under `/rtl`. Page requests outside
+  `/rtl` are now redirected to `/rtl/`, keeping the query string. A backend test asserts the
+  redirect and a first login entered at `/`; both failed before the change.
 
 ## Code Health
 
