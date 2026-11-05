@@ -19,7 +19,7 @@ this release should add its entry under the appropriate section below.
   describes a login that keeps failing after an idle period until the URL is retyped; whether
   the stale cookies alone cause that is still being investigated on the issue.
 - **Opening RTL at the site root no longer breaks login**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  ([#1799](https://github.com/Ride-The-Lightning/RTL/pull/1799), issue
   [#1794](https://github.com/Ride-The-Lightning/RTL/issues/1794)). This is the cause of the
   repeated login failure in that report. Any path outside `/rtl`, such as `host:3000/`, was
   answered with the app itself, and the router then moved the address bar to `/rtl/login`
