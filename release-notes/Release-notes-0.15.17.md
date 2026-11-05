@@ -42,7 +42,7 @@ this release should add its entry under the appropriate section below.
   26 joins the test matrix so it is tested before the image moves to it. The production
   bundle built on Node 22, 24 and 26 is byte-identical to the committed `frontend/`, so
   nothing in it changes. Git installs on Node 22 stay supported until its end of life.
-- **follow-redirects 1.16.1 → 1.16.2** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+- **follow-redirects 1.16.1 → 1.16.2** ([#1800](https://github.com/Ride-The-Lightning/RTL/pull/1800)).
   `npm audit --omit=dev` flagged the axios dependency as high severity under
   [GHSA-mrwp-f3q8-3g9p](https://github.com/advisories/GHSA-mrwp-f3q8-3g9p): a `sensitiveHeaders`
   array created in another JavaScript realm was discarded, so the headers it named could follow
