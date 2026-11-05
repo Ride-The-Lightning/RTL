@@ -66,7 +66,7 @@ this release should add its entry under the appropriate section below.
 ## Developer Tooling
 
 - **Code review guideline for external PRs**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). `CONTRIBUTING.md` linked a
+  ([#1802](https://github.com/Ride-The-Lightning/RTL/pull/1802)). `CONTRIBUTING.md` linked a
   Code Review section that didn't exist. It now lists what a review must check beyond the
   source diff: rebuild `frontend/` and `backend/` rather than merging a contributor's copies,
   turn away unrelated changes under `.github/workflows/`, and keep dependency changes to what
