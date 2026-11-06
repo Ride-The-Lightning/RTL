@@ -31,7 +31,7 @@ this release should add its entry under the appropriate section below.
   `/rtl` are now redirected to `/rtl/`, keeping the query string. A backend test asserts the
   redirect and a first login entered at `/`; both failed before the change.
 - **Routing CSV exports keep the same columns in the same order**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  ([#1803](https://github.com/Ride-The-Lightning/RTL/pull/1803), issue
   [#1545](https://github.com/Ride-The-Lightning/RTL/issues/1545)). An export's header was every
   key its rows held, in the order first seen. That order changed with the events in the file:
   newer LND releases add `incoming_htlc_id` and `outgoing_htlc_id`, and RTL sets the alias of
