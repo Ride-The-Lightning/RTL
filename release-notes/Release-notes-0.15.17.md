@@ -36,12 +36,16 @@ this release should add its entry under the appropriate section below.
   key its rows held, in the order first seen. That order changed with the events in the file:
   newer LND releases add `incoming_htlc_id` and `outgoing_htlc_id`, and RTL sets the alias of
   whichever channel it finds first in the channel list, so `alias_in` and `alias_out` could swap
-  places. Files from different months then didn't line up when combined. Rows always matched
-  their own header, so no exported value was ever in the wrong column. The LND forwarding export
-  and the CLN forwarding, failed and local-failed exports now use a fixed column list, with an
-  empty cell where an event lacks a field and any field the list doesn't name added at the end.
-  Specs covering the issue's two event shapes failed before the change. On the regtest fixture,
-  the Reports → Routing export from alice (LND) and CLN gave the fixed headers.
+  places. CLN's `in_channel_alias`/`out_channel_alias` and Eclair's `fromChannelAlias`/
+  `toChannelAlias` (with their short channel ids) were set the same way. Files from different
+  months then didn't line up when combined. Rows always matched their own header, so no exported
+  value was ever in the wrong column. The LND and Eclair forwarding exports and the CLN
+  forwarding, failed and local-failed exports now use a fixed column list, with an empty cell
+  where an event lacks a field and any field the list doesn't name added at the end. Eclair's
+  list covers the fields RTL gives both Eclair 0.13 and 0.14 relays. Specs covering the issue's
+  two LND event shapes and both Eclair versions failed before the change. On the regtest
+  fixture, the Reports → Routing export from alice (LND), CLN and Eclair 0.14 gave the fixed
+  headers.
 
 ## Enhancements
 

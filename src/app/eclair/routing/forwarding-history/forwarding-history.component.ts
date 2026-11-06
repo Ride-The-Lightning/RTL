@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, ECL_DEFAULT_PAGE_SETTINGS, ECL_PAGE_DEFS, ECL_FORWARDING_CSV_COLUMNS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -199,7 +199,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
 
   onDownloadCSV() {
     if (this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history', '.json', '.csv', ECL_FORWARDING_CSV_COLUMNS);
     }
   }
 

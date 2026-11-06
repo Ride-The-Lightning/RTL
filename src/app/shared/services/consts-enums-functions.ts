@@ -297,6 +297,11 @@ export const CLN_FORWARDING_CSV_COLUMNS = ['created_index', 'updated_index', 'pa
 export const CLN_FAILED_FORWARDING_CSV_COLUMNS = ['created_index', 'updated_index', 'payment_hash', 'in_channel', 'in_htlc_id', 'out_channel', 'out_htlc_id',
   'in_msat', 'out_msat', 'fee_msat', 'status', 'style', 'received_time', 'resolved_time', 'failcode', 'failreason', 'in_channel_alias', 'out_channel_alias'];
 
+// The backend gives Eclair 0.13 and 0.14 relays the same amountIn/amountOut/fromChannelId/toChannelId/timestamp;
+// receivedAt is top-level only on 0.13, and incoming/outgoing are 0.14's per-part lists.
+export const ECL_FORWARDING_CSV_COLUMNS = ['type', 'paymentHash', 'fromChannelId', 'fromShortChannelId', 'fromChannelAlias', 'toChannelId', 'toShortChannelId',
+  'toChannelAlias', 'amountIn', 'amountOut', 'receivedAt', 'settledAt', 'timestamp', 'incoming', 'outgoing'];
+
 export enum ServicesEnum {
   LOOP = 'LOOP',
   OFFERS = 'OFFERS',
