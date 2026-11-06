@@ -113,6 +113,9 @@ frequently do, since the controllers were written in parallel.
   Link the PR and any issue, and state the root cause briefly. Because the PR number isn't
   known until the PR exists, commit the entry with `#TBD` and follow up with a
   `Fill in PR number in release note (#N)` commit.
+- Release notes are for people running RTL. A change only maintainers notice (process docs,
+  review guidelines) gets one line at most; a repository setting or a fix to an earlier
+  entry gets none.
 
 ### If a release ships while your PR is open
 
