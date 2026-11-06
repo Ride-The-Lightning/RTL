@@ -113,11 +113,14 @@ test('rejects login with an invalid 2FA token when 2FA is enabled', () => {
 });
 
 // Issue #1337: the server checks a code against its own clock, which drifts on a host without
-// NTP. Login runs with Date.now pinned mid-step, so the codes either side of it are exactly
-// one 30 second step away whatever the moment the test runs.
+// NTP. Login runs with Date.now pinned to a fixed moment mid-step (2030-03-17), so the codes
+// either side of it are exactly one 30 second step away whatever the moment the test runs, and
+// a check that froze the clock at import time, instead of reading it per call, would fail here.
+// The lockout bookkeeping uses new Date(), which the pin does not touch.
 const STEP_MS = 30 * 1000;
+const PINNED_NOW = 1900000000000 + STEP_MS / 2;
 const loginWithCodeFrom = (offsetSteps) => {
-  const now = Math.floor(Date.now() / STEP_MS) * STEP_MS + STEP_MS / 2;
+  const now = PINNED_NOW;
   const code = authenticator.clone({ epoch: now + offsetSteps * STEP_MS }).generate(TOTP_SECRET);
   const res = mockResponse();
   const realNow = Date.now;
