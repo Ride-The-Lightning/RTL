@@ -86,6 +86,11 @@ this release should add its entry under the appropriate section below.
   Code Review section that didn't exist. It now lists what a review must check beyond the
   source diff: rebuild `frontend/` and `backend/` rather than merging a contributor's copies,
   turn away unrelated changes under `.github/workflows/`, and keep dependency changes to what
-  the PR needs. Only `pr-ci.yml` waits for maintainer approval, so a workflow a PR adds with
-  its own trigger would run without that approval once the author has had a PR merged.
-  `CLAUDE.md` carries the same rule for review agents.
+  the PR needs. `CLAUDE.md` carries the same rule for review agents.
+- **Every workflow run on an outside contributor's PR needs maintainer approval**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The repository asked for
+  approval only on a first-time contributor's PRs. Only `pr-ci.yml` also waits for the `pr-ci`
+  environment, so once an author had a PR merged, a workflow their next PR added with its own
+  trigger would have run without any maintainer approval. The setting now requires approval
+  for all outside contributors. One approval still runs every workflow the PR triggers, so
+  `CONTRIBUTING.md` and `CLAUDE.md` now say to check `.github/workflows/` before approving.

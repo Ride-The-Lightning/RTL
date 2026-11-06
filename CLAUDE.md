@@ -52,8 +52,8 @@ PR CI now fails when the committed bundle isn't the build of the PR's `src/`, wh
 tampered or stale bundle, but it runs only after a maintainer approves it, so keep regenerating.
 
 **Stop on workflow changes in an external PR.** A fix has no reason to touch
-`.github/workflows/`. Only `pr-ci.yml` waits for the `pr-ci` approval, so a workflow a PR adds
-with its own trigger runs without it once the author is no longer a first-time contributor.
+`.github/workflows/`. Every workflow run on an outside contributor's PR waits for a maintainer
+to approve it, and one approval runs every workflow the PR triggers, including one it adds.
 Ask for unrelated workflow changes to be removed before approving the PR's CI run, even a
 harmless-looking one such as a helper for running checks on the contributor's fork.
 `CONTRIBUTING.md` § "Code Review" has the full list.
