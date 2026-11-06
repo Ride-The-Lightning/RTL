@@ -5,7 +5,10 @@ import { Injectable } from '@angular/core';
  * WebCrypto, replacing otplib in the browser bundle so the crypto-browserify
  * polyfill chain can be dropped. The backend still verifies login tokens with
  * otplib, so the parameters here must stay in sync with
- * server/controllers/shared/authenticate.ts (otplib authenticator defaults).
+ * server/controllers/shared/authenticate.ts (otplib authenticator defaults). The
+ * one exception is the window: the backend accepts the steps either side of the
+ * current one to absorb server clock drift (#1337), while the setup check here
+ * runs on the browser's clock and keeps window 0.
  */
 @Injectable({ providedIn: 'root' })
 export class TotpService {

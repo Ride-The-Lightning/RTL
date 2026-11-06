@@ -112,6 +112,40 @@ test('rejects login with an invalid 2FA token when 2FA is enabled', () => {
   assert.match(res.body.error, /2FA/);
 });
 
+// Issue #1337: the server checks a code against its own clock, which drifts on a host without
+// NTP. Login runs with Date.now pinned mid-step, so the codes either side of it are exactly
+// one 30 second step away whatever the moment the test runs.
+const STEP_MS = 30 * 1000;
+const loginWithCodeFrom = (offsetSteps) => {
+  const now = Math.floor(Date.now() / STEP_MS) * STEP_MS + STEP_MS / 2;
+  const code = authenticator.clone({ epoch: now + offsetSteps * STEP_MS }).generate(TOTP_SECRET);
+  const res = mockResponse();
+  const realNow = Date.now;
+  Date.now = () => now;
+  let lines;
+  try {
+    lines = captureLog(() => authenticateUser(mockRequest({ twoFAToken: code }), res, null));
+  } finally {
+    Date.now = realNow;
+  }
+  return { res, lines };
+};
+
+test('accepts a 2FA code from the step before or after the server clock\'s (#1337)', () => {
+  setupAppConfig(true, TOTP_SECRET);
+  assert.equal(loginWithCodeFrom(-1).res.statusCode, 200);
+  assert.equal(loginWithCodeFrom(1).res.statusCode, 200);
+});
+
+test('rejects a 2FA code two steps away from the server clock, and logs the clock as a cause', () => {
+  setupAppConfig(true, TOTP_SECRET);
+  for (const offset of [-2, 2]) {
+    const { res, lines } = loginWithCodeFrom(offset);
+    assert.equal(res.statusCode, 401);
+    assert.ok(lines.some((line) => /clock/i.test(JSON.stringify(line))), 'the failure log mentions the server clock');
+  }
+});
+
 test('rejects a non-string 2FA token when 2FA is enabled', () => {
   setupAppConfig(true, TOTP_SECRET);
   // A JSON body can carry an array/object/number. otplib 12.0.1 coerces and rejects these

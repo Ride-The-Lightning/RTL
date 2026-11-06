@@ -46,6 +46,16 @@ this release should add its entry under the appropriate section below.
   two LND event shapes and both Eclair versions failed before the change. On the regtest
   fixture, the Reports → Routing export from alice (LND), CLN and Eclair 0.14 gave the fixed
   headers.
+- **2FA login tolerates a server clock that is slightly off**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  [#1337](https://github.com/Ride-The-Lightning/RTL/issues/1337)). The login checked the
+  authenticator code against the RTL server's clock and accepted only the current 30 second
+  code. On a server without time sync the clock drifts, so valid codes started failing,
+  first now and then and eventually always, until the login locked. Enabling 2FA still
+  succeeded, because that check runs on the browser's clock. The login now also accepts the
+  codes either side of the current one, which covers up to 30 seconds of drift, and a rejected
+  code's log entry suggests checking the server clock. A larger drift still needs the clock
+  synced (NTP).
 
 ## Enhancements
 

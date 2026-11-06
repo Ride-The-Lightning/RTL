@@ -113,7 +113,11 @@ const handleMultipleFailedAttemptsError = (failed, currentTime, errMsg) => {
         };
     }
 };
-export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && otplib.authenticator.check(twoFAToken, common.appConfig.secret2FA));
+// The code is checked against this server's clock, which drifts on a host without NTP. Accepting
+// the 30 second steps either side of the current one (RFC 6238 section 5.2) absorbs up to 30
+// seconds of drift (#1337). The clone keeps otplib's shared authenticator at its defaults.
+const totpAuthenticator = otplib.authenticator.clone({ window: 1 });
+export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && totpAuthenticator.check(twoFAToken, common.appConfig.secret2FA));
 // True only for a session JWT this process minted. jwt.verify throws on everything else
 // (missing, malformed, expired, wrong key); a throw from a controller reaches the catch-all
 // error handler, which answers 400 with the serialised error -- never the right reply to a
@@ -212,7 +216,7 @@ export const authenticateUser = (req, res, next) => {
             // password prompt before on-chain sends) are exempt from the TOTP requirement.
             if (twoFARequired) {
                 if (typeof twoFAToken !== 'string' || twoFAToken === '' || !verifyToken(twoFAToken)) {
-                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token.' } });
+                    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: { error: 'Invalid token. If codes from the authenticator app keep failing, check that this server\'s clock is synced (NTP).' } });
                     return res.status(401).json(handleMultipleFailedAttemptsError(recordFailedAttempt(reqIP, currentTime), currentTime, errMsg));
                 }
             }
