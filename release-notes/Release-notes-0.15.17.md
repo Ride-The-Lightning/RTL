@@ -88,7 +88,7 @@ this release should add its entry under the appropriate section below.
   turn away unrelated changes under `.github/workflows/`, and keep dependency changes to what
   the PR needs. `CLAUDE.md` carries the same rule for review agents.
 - **Every workflow run on an outside contributor's PR needs maintainer approval**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The repository asked for
+  ([#1804](https://github.com/Ride-The-Lightning/RTL/pull/1804)). The repository asked for
   approval only on a first-time contributor's PRs. Only `pr-ci.yml` also waits for the `pr-ci`
   environment, so once an author had a PR merged, a workflow their next PR added with its own
   trigger would have run without any maintainer approval. The setting now requires approval
