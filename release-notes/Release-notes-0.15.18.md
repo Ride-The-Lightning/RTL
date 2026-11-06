@@ -5,7 +5,7 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
-- **The Dockerfile builds on 32-bit ARM again** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+- **The Dockerfile builds on 32-bit ARM again** ([#1808](https://github.com/Ride-The-Lightning/RTL/pull/1808)).
   0.15.17 moved the image to `node:24-alpine`
   ([#1798](https://github.com/Ride-The-Lightning/RTL/pull/1798)), which publishes no
   `linux/arm/v7` image, so building the Dockerfile for 32-bit ARM failed, both in the release
