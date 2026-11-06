@@ -67,5 +67,19 @@ describe('CommonService', () => {
       const csv = commonService.convertToCSV([{ a: 1, b: 2 }, { a: 3 }]);
       expect(csv).toBe('a,b\r\n1,2\r\n3,\r\n');
     });
+
+    it('should write the given columns in order whatever order the rows set their keys in', () => {
+      const columns = ['a', 'b', 'c'];
+      expect(commonService.convertToCSV([{ c: 3, a: 1, b: 2 }], columns)).toBe('a,b,c\r\n1,2,3\r\n');
+      expect(commonService.convertToCSV([{ b: 5, a: 4, c: 6 }], columns)).toBe('a,b,c\r\n4,5,6\r\n');
+    });
+
+    it('should leave an empty cell for a given column no row has', () => {
+      expect(commonService.convertToCSV([{ a: 1, c: 3 }], ['a', 'b', 'c'])).toBe('a,b,c\r\n1,,3\r\n');
+    });
+
+    it('should add keys missing from the given columns after them', () => {
+      expect(commonService.convertToCSV([{ z: 9, b: 2, a: 1 }], ['a', 'b'])).toBe('a,b,z\r\n1,2,9\r\n');
+    });
   });
 });

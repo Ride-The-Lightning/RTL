@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ForwardingEvent, SwitchRes } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, LND_FORWARDING_CSV_COLUMNS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -185,7 +185,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   onDownloadCSV() {
     if (this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history', '.json', '.csv', LND_FORWARDING_CSV_COLUMNS);
     }
   }
 

@@ -30,6 +30,18 @@ this release should add its entry under the appropriate section below.
   "Invalid Csrf Token, Form Tempered" until a reload under `/rtl`. Page requests outside
   `/rtl` are now redirected to `/rtl/`, keeping the query string. A backend test asserts the
   redirect and a first login entered at `/`; both failed before the change.
+- **Routing CSV exports keep the same columns in the same order**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD), issue
+  [#1545](https://github.com/Ride-The-Lightning/RTL/issues/1545)). An export's header was every
+  key its rows held, in the order first seen. That order changed with the events in the file:
+  newer LND releases add `incoming_htlc_id` and `outgoing_htlc_id`, and RTL sets the alias of
+  whichever channel it finds first in the channel list, so `alias_in` and `alias_out` could swap
+  places. Files from different months then didn't line up when combined. Rows always matched
+  their own header, so no exported value was ever in the wrong column. The LND forwarding export
+  and the CLN forwarding, failed and local-failed exports now use a fixed column list, with an
+  empty cell where an event lacks a field and any field the list doesn't name added at the end.
+  Specs covering the issue's two event shapes failed before the change. On the regtest fixture,
+  the Reports → Routing export from alice (LND) and CLN gave the fixed headers.
 
 ## Enhancements
 

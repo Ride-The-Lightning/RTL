@@ -285,6 +285,18 @@ export const MONTHS = [
 
 export const SCROLL_RANGES = ['MONTHLY', 'YEARLY'];
 
+// Column order for the routing CSV exports. A row's keys come in the order the node and RTL's alias
+// lookup set them, which differs between rows and node versions, so without a fixed list the
+// columns of an export depended on which events it held (#1545). Keys not listed follow at the end.
+export const LND_FORWARDING_CSV_COLUMNS = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_in', 'amt_out', 'fee', 'fee_msat', 'amt_in_msat', 'amt_out_msat',
+  'timestamp_ns', 'peer_alias_in', 'peer_alias_out', 'incoming_htlc_id', 'outgoing_htlc_id', 'alias_in', 'alias_out'];
+
+export const CLN_FORWARDING_CSV_COLUMNS = ['created_index', 'updated_index', 'payment_hash', 'in_channel', 'in_htlc_id', 'out_channel', 'out_htlc_id',
+  'in_msat', 'out_msat', 'fee_msat', 'status', 'style', 'received_time', 'resolved_time', 'in_channel_alias', 'out_channel_alias'];
+
+export const CLN_FAILED_FORWARDING_CSV_COLUMNS = ['created_index', 'updated_index', 'payment_hash', 'in_channel', 'in_htlc_id', 'out_channel', 'out_htlc_id',
+  'in_msat', 'out_msat', 'fee_msat', 'status', 'style', 'received_time', 'resolved_time', 'failcode', 'failreason', 'in_channel_alias', 'out_channel_alias'];
+
 export enum ServicesEnum {
   LOOP = 'LOOP',
   OFFERS = 'OFFERS',

@@ -268,10 +268,10 @@ export class CommonService implements OnDestroy {
     return value;
   }
 
-  downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
+  downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv', columns: string[] = []) {
     let blob = new Blob();
     if (fromFormat === '.json') {
-      blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
+      blob = new Blob(['\ufeff' + this.convertToCSV(data, columns)], { type: 'text/csv;charset=utf-8;' });
     } else {
       blob = new Blob([data.toString()], { type: 'text/plain;charset=utf-8' });
     }
@@ -289,8 +289,9 @@ export class CommonService implements OnDestroy {
     document.body.removeChild(downloadUrl);
   }
 
-  convertToCSV(objArray: any[]) {
-    const keys: string[] = [];
+  // The header is the given columns, in order, followed by any other key the rows have, in the order first seen.
+  convertToCSV(objArray: any[], columns: string[] = []) {
+    const keys: string[] = [...columns];
     let dataRow = '';
     let arrayField = '';
     let csvStrArray = '';

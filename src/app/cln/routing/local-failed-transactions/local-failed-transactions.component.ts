@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ListForwards, LocalFailedEvent } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS, CLN_FAILED_FORWARDING_CSV_COLUMNS } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -185,7 +185,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
 
   onDownloadCSV() {
     if (this.failedLocalForwardingEvents && this.failedLocalForwardingEvents.data && this.failedLocalForwardingEvents.data.length > 0) {
-      this.commonService.downloadFile(this.failedLocalForwardingEvents.data, 'Local-failed-transactions');
+      this.commonService.downloadFile(this.failedLocalForwardingEvents.data, 'Local-failed-transactions', '.json', '.csv', CLN_FAILED_FORWARDING_CSV_COLUMNS);
     }
   }
 
