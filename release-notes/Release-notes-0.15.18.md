@@ -12,7 +12,7 @@ this release should add its entry under the appropriate section below.
   workflow and natively on a 32-bit ARM board. The 0.15.17 arm/v7 image was built separately on
   `node:22-alpine`. The Dockerfile now picks `node:22-alpine` for 32-bit ARM itself (override with
   the `ARM32_BASE_DISTRO` build argument) and keeps `node:24-alpine` for amd64 and arm64.
-- **An LND wallet restored from a seed shows its on-chain funds** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+- **An LND wallet restored from a seed shows its on-chain funds** ([#1814](https://github.com/Ride-The-Lightning/RTL/pull/1814),
   fixes [#494](https://github.com/Ride-The-Lightning/RTL/issues/494)). RTL initialised the wallet
   without a recovery window, so LND did not scan for the addresses the wallet had used and the
   restored wallet showed a zero balance. Restoring from an existing seed now sends a recovery
