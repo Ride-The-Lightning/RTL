@@ -16,6 +16,14 @@ const parseBase64 = (value): string | null | undefined => {
 // LND takes them as base64 of the UTF-8 text.
 const toLndBase64 = (value: string) => Buffer.from(atob(value)).toString('base64');
 const invalidBase64 = (res, name) => common.invalidQueryParam(res, name, 'a base64 string');
+// The address look-ahead LND scans when restoring a wallet from a seed; an int32 in LND's API.
+// Returns undefined when the value is absent and null when it is not a non-negative int32.
+const MAX_RECOVERY_WINDOW = 2147483647;
+const parseRecoveryWindow = (value): number | null | undefined => {
+  if (value === undefined || value === null || value === '') { return undefined; }
+  const num = (typeof value === 'number') ? value : (typeof value === 'string' && (/^\d+$/).test(value)) ? Number(value) : NaN;
+  return (Number.isInteger(num) && num >= 0 && num <= MAX_RECOVERY_WINDOW) ? num : null;
+};
 
 export const genSeed = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed..' });
@@ -42,7 +50,7 @@ export const genSeed = (req, res, next) => {
 };
 
 export const operateWallet = (req, res, next) => {
-  const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic } = req.body || {};
+  const { wallet_password, aezeed_passphrase, cipher_seed_mnemonic, recovery_window } = req.body || {};
   let err_message = '';
   options = common.getOptions(req);
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
@@ -61,20 +69,18 @@ export const operateWallet = (req, res, next) => {
   } else {
     const passphrase = parseBase64(aezeed_passphrase);
     if (passphrase === null) { return invalidBase64(res, 'aezeed_passphrase'); }
+    // Without a recovery window LND does not scan for used addresses, so a wallet restored
+    // from a seed shows none of its on-chain funds.
+    const recoveryWindow = parseRecoveryWindow(recovery_window);
+    if (recoveryWindow === null) { return common.invalidQueryParam(res, 'recovery_window', 'a non-negative integer'); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Wallet', msg: 'Initializing Wallet..' });
     walletOptions.url = req.session.selectedNode.settings.lnServerUrl + '/v1/initwallet';
-    if (passphrase) {
-      walletOptions.form = JSON.stringify({
-        wallet_password: toLndBase64(password),
-        cipher_seed_mnemonic: cipher_seed_mnemonic,
-        aezeed_passphrase: toLndBase64(passphrase)
-      });
-    } else {
-      walletOptions.form = JSON.stringify({
-        wallet_password: toLndBase64(password),
-        cipher_seed_mnemonic: cipher_seed_mnemonic
-      });
-    }
+    walletOptions.form = JSON.stringify({
+      wallet_password: toLndBase64(password),
+      cipher_seed_mnemonic: cipher_seed_mnemonic,
+      ...(passphrase ? { aezeed_passphrase: toLndBase64(passphrase) } : {}),
+      ...(recoveryWindow !== undefined ? { recovery_window: recoveryWindow } : {})
+    });
     err_message = 'Initializing wallet failed!';
   }
   request(walletOptions).then((body) => {

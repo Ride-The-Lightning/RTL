@@ -50,6 +50,13 @@
           <mat-error *ngIf="cipherFormGroup.controls.cipherSeed.errors?.required">Cipher seed is required.</mat-error>
           <mat-error *ngIf="!cipherFormGroup.controls.cipherSeed.errors?.required && cipherFormGroup.controls.cipherSeed.errors?.invalidCipher">Invalid Cipher. Enter comma separated 24 words cipher seed.</mat-error>
         </mat-form-field>
+        <mat-form-field *ngIf="cipherFormGroup.controls.existingCipher.value" fxLayout="column" fxFlex="75" fxLayoutAlign="start" class="my-1">
+          <mat-label>Recovery Window</mat-label>
+          <input matInput type="number" name="recoveryWindow" formControlName="recoveryWindow" tabindex="9" required [step]="100" [min]="0">
+          <mat-hint>Number of addresses LND scans to find the wallet's on-chain funds. Increase it for a heavily used wallet.</mat-hint>
+          <mat-error *ngIf="cipherFormGroup.controls.recoveryWindow.errors?.required">Recovery window is required.</mat-error>
+          <mat-error *ngIf="!cipherFormGroup.controls.recoveryWindow.errors?.required && cipherFormGroup.controls.recoveryWindow.errors">Recovery window must be a whole number between 0 and 2147483647.</mat-error>
+        </mat-form-field>
       </div>
       <div fxLayout="row" class="mb-2">
         <button mat-stroked-button color="primary" class="mr-1 mt-1" type="reset" tabindex="10" matStepperPrevious>Back</button>

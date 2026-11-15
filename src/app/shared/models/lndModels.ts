@@ -580,6 +580,7 @@ export interface InitWallet {
   pwd: string;
   cipher?: Array<string>;
   passphrase?: string;
+  recoveryWindow?: number;
 }
 
 export interface ChannelLookup {

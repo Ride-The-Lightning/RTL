@@ -19,7 +19,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from './lnd.effects';
-import { sendPayment } from './lnd.actions';
+import { initWallet, sendPayment } from './lnd.actions';
 import { allAPIsCallStatus } from './lnd.selector';
 import { initLNDState } from './lnd.state';
 
@@ -75,6 +75,55 @@ describe('LND Effects: sendPayment', () => {
       expect(alert.payload.data.message.message).toBe('Payment not sent. Nothing was paid. The cheapest route LND found costs 500,000 Sats in fees, more than the default max fee of 500 Sats. ' +
         'If you\'re willing to pay that fee, use Send Payment under Transactions > Payments and set a higher limit in Advanced Options.');
     });
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
+    TestBed.resetTestingModule();
+  });
+});
+
+// Issue #494: the recovery window has to reach the server for LND to rescan a restored wallet.
+describe('LND Effects: initWallet', () => {
+  let actions: ReplaySubject<any>;
+  let effects: LNDEffects;
+  let httpTestingController: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, SharedModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        LNDEffects, CommonService, HttpClient, WebSocketClientService,
+        { provide: SessionService, useClass: mockSessionService },
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        provideMockStore({ initialState: mockRTLStoreState, selectors: [{ selector: allAPIsCallStatus, value: initLNDState.apisCallStatus }] }),
+        provideMockActions(() => actions)
+      ]
+    });
+    effects = TestBed.inject(LNDEffects);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    actions = new ReplaySubject(1);
+  });
+
+  const sentBody = (payload) => {
+    actions.next(initWallet({ payload }));
+    const sub = effects.initWallet.subscribe();
+    const req = httpTestingController.expectOne((request) => request.url.endsWith('/wallet/initwallet'));
+    req.flush('Successful');
+    sub.unsubscribe();
+    return req.request.body;
+  };
+
+  it('posts the recovery window of a restored wallet', () => {
+    expect(sentBody({ pwd: 'cHdk', cipher: ['one', 'two'], recoveryWindow: 2500 })).
+      toEqual({ wallet_password: 'cHdk', cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: '', recovery_window: 2500 });
+    expect(sentBody({ pwd: 'cHdk', cipher: ['one', 'two'], recoveryWindow: 0 }).recovery_window).toBe(0);
+  });
+
+  it('posts no recovery window for a newly generated seed', () => {
+    expect(sentBody({ pwd: 'cHdk', cipher: ['one', 'two'] })).
+      toEqual({ wallet_password: 'cHdk', cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: '' });
   });
 
   afterEach(() => {

@@ -965,7 +965,8 @@ export class LNDEffects implements OnDestroy {
         {
           wallet_password: action.payload.pwd,
           cipher_seed_mnemonic: action.payload.cipher ? action.payload.cipher : '',
-          aezeed_passphrase: action.payload.passphrase ? action.payload.passphrase : ''
+          aezeed_passphrase: action.payload.passphrase ? action.payload.passphrase : '',
+          ...(action.payload.recoveryWindow !== undefined ? { recovery_window: action.payload.recoveryWindow } : {})
         }
       ).pipe(
         map((postRes) => {

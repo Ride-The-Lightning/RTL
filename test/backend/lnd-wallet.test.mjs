@@ -171,6 +171,52 @@ test('operateWallet: a password or passphrase that is not base64 text is refused
   } finally { await lnd.close(); }
 });
 
+// Restoring from an existing seed needs LND to scan for used addresses; without a recovery
+// window LND scans nothing and the restored wallet shows no on-chain funds (issue #494).
+test('operateWallet: the recovery window is forwarded to LND on initwallet', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const base = { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'] };
+    for (const [sent, expected] of [[2500, 2500], ['2500', 2500], [0, 0], [2147483647, 2147483647]]) {
+      const before = lnd.seen.length;
+      const res = await run(operateWallet, buildRequest(lnd.url, { body: { ...base, recovery_window: sent }, params: { operation: 'initwallet' } }));
+      assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+      assert.deepEqual(JSON.parse(lnd.seen[before].body), { ...base, recovery_window: expected });
+    }
+    const withPass = await run(operateWallet, buildRequest(lnd.url, { body: { ...base, aezeed_passphrase: b64('>>>'), recovery_window: 5000 }, params: { operation: 'initwallet' } }));
+    assert.equal(withPass.statusCode, 201, JSON.stringify(withPass.body));
+    assert.deepEqual(JSON.parse(lnd.seen.at(-1).body), { ...base, aezeed_passphrase: b64('>>>'), recovery_window: 5000 });
+  } finally { await lnd.close(); }
+});
+
+test('operateWallet: without a recovery window none is sent, and unlockwallet never sends one', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const base = { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'] };
+    for (const recovery_window of [undefined, null, '']) {
+      const before = lnd.seen.length;
+      const res = await run(operateWallet, buildRequest(lnd.url, { body: { ...base, recovery_window }, params: { operation: 'initwallet' } }));
+      assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+      assert.deepEqual(JSON.parse(lnd.seen[before].body), base);
+    }
+    const unlock = await run(operateWallet, buildRequest(lnd.url, { body: { wallet_password: b64('password123'), recovery_window: 2500 }, params: { operation: 'unlockwallet' } }));
+    assert.equal(unlock.statusCode, 201, JSON.stringify(unlock.body));
+    assert.deepEqual(JSON.parse(lnd.seen.at(-1).body), { wallet_password: b64('password123') });
+  } finally { await lnd.close(); }
+});
+
+test('operateWallet: a recovery window that is not a non-negative 32-bit integer is refused with 400 and never sent upstream', async () => {
+  const lnd = await startFakeLnd({});
+  try {
+    const base = { wallet_password: b64('password123'), cipher_seed_mnemonic: ['one', 'two'] };
+    for (const recovery_window of [-1, 1.5, 2147483648, '-1', '2.5', 'abc', '1e3', ' ', true, [2500], { a: 1 }, NaN]) {
+      const res = await run(operateWallet, buildRequest(lnd.url, { body: { ...base, recovery_window }, params: { operation: 'initwallet' } }));
+      assert.equal(res.statusCode, 400, `accepted ${JSON.stringify(recovery_window)}`);
+    }
+    assert.equal(lnd.seen.length, 0, JSON.stringify(lnd.seen));
+  } finally { await lnd.close(); }
+});
+
 test('the wallet routes take the seed request as a POST', async () => {
   // The guard's error path logs against the process-wide selected node, which app startup sets.
   Common.selectedNode = { index: 1, lnNode: 'test-node', lnImplementation: 'LND', settings: { logLevel: 'ERROR' } };

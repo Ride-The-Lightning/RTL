@@ -21,6 +21,11 @@ export function cipherSeedLength(control: UntypedFormGroup): ValidationErrors | 
   return cipherArr && cipherArr.length !== 24 ? { invalidCipher: true } : null;
 }
 
+// The address look-ahead lncli offers by default when a wallet is restored from a seed.
+export const DEFAULT_RECOVERY_WINDOW = 2500;
+// LND takes the recovery window as an int32.
+export const MAX_RECOVERY_WINDOW = 2147483647;
+
 @Component({
   standalone: false,
   selector: 'rtl-initialize-wallet',
@@ -52,7 +57,8 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     }, { validators: matchedPasswords } as AbstractControlOptions);
     this.cipherFormGroup = this.formBuilder.group({
       existingCipher: [false],
-      cipherSeed: [{ value: '', disabled: true }, [cipherSeedLength]]
+      cipherSeed: [{ value: '', disabled: true }, [cipherSeedLength]],
+      recoveryWindow: [{ value: DEFAULT_RECOVERY_WINDOW, disabled: true }, [Validators.required, Validators.min(0), Validators.max(MAX_RECOVERY_WINDOW), Validators.pattern(/^\d+$/)]]
     });
     this.passphraseFormGroup = this.formBuilder.group({
       enterPassphrase: [false],
@@ -63,9 +69,13 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
       if (checked) {
         this.cipherFormGroup.controls.cipherSeed.setValue('');
         this.cipherFormGroup.controls.cipherSeed.enable();
+        this.cipherFormGroup.controls.recoveryWindow.setValue(DEFAULT_RECOVERY_WINDOW);
+        this.cipherFormGroup.controls.recoveryWindow.enable();
       } else {
         this.cipherFormGroup.controls.cipherSeed.setValue('');
         this.cipherFormGroup.controls.cipherSeed.disable();
+        this.cipherFormGroup.controls.recoveryWindow.setValue(DEFAULT_RECOVERY_WINDOW);
+        this.cipherFormGroup.controls.recoveryWindow.disable();
       }
     });
 
@@ -112,19 +122,23 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     }
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
+      // A restored wallet shows its on-chain funds only if LND scans for the addresses it used.
+      const recoveryWindow = Number(this.cipherFormGroup.controls.recoveryWindow.value);
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
         this.store.dispatch(initWallet({
           payload: {
             pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
             cipher: cipherArr,
-            passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+            passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value),
+            recoveryWindow: recoveryWindow
           }
         }));
       } else {
         this.store.dispatch(initWallet({
           payload: {
             pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-            cipher: cipherArr
+            cipher: cipherArr,
+            recoveryWindow: recoveryWindow
           }
         }));
       }
