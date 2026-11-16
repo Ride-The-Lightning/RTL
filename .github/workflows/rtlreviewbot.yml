@@ -15,7 +15,7 @@
       runs-on: ubuntu-latest
       timeout-minutes: 20
       steps:
-        - uses: Ride-The-Lightning/rtlreviewbot-action@main
+        - uses: Ride-The-Lightning/rtlreviewbot-action@d364ae886fe4ea3ebc78b6b9376c7e35ee93e23c # v0.16.0
           with:
             event_name:      ${{ github.event_name }}
             event_action:    ${{ github.event.action }}
