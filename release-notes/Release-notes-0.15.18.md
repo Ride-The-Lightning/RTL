@@ -58,3 +58,4 @@ this release should add its entry under the appropriate section below.
   loop up -d` now adds Lightning Labs' regtest Loop server, a Loop client daemon on `alice`, and
   an RTL with Loop enabled on port 3002. `docker/scripts/verify-loop.sh` calls every Loop route
   through RTL and takes a Loop Out and a Loop In to completion.
+- Review instructions and a threat model for PR review ([#1822](https://github.com/Ride-The-Lightning/RTL/pull/1822)).
