@@ -149,3 +149,34 @@ test('termsAndQuotes: terms that are valid but quotes that are not is still a 50
     assert.equal(seen.filter((path) => /quote/.test(path)).length, 4);
   } finally { await new Promise((resolve) => server.close(resolve)); }
 });
+
+// looprpc deprecates the string `id` in favour of `id_bytes`, which is also the field RTL's UI
+// reads. A loopd that stops sending `id` must not turn a started swap into a 502.
+test('a started swap or a swap lookup is recognised by id_bytes alone, or by id alone', async () => {
+  for (const identifier of [{ id_bytes: SWAP.id_bytes }, { id: SWAP.id }]) {
+    const server = await startServer(['application/json', JSON.stringify({ ...identifier, state: 'INITIATED', htlc_address: 'bcrt1qexample' })]);
+    try {
+      for (const [name, handler, extra, status] of HANDLERS.filter(([handlerName]) => ['loopOut', 'loopIn', 'swap'].includes(handlerName))) {
+        const res = await run(handler, buildRequest(server.url, extra));
+        assert.equal(res.statusCode, status, `${name} with ${Object.keys(identifier)[0]} answered ${res.statusCode} with ${JSON.stringify(res.body)}`);
+      }
+    } finally { await server.close(); }
+  }
+});
+
+test('loopOut and loopIn: an unrecognised 2xx warns that a swap may have started; read routes do not', async () => {
+  // By the time the reply is checked, loopd has already been asked to start the swap.
+  const server = await startServer(['application/json', JSON.stringify({ htlc_address: 'bcrt1qexample', state: 'INITIATED' })]);
+  try {
+    for (const [name, handler, extra] of HANDLERS) {
+      const res = await run(handler, buildRequest(server.url, extra));
+      assert.equal(res.statusCode, 502, name);
+      if (name === 'loopOut' || name === 'loopIn') {
+        assert.match(res.body.error, /may have started/, name);
+        assert.match(res.body.error, /before trying again/, name);
+      } else {
+        assert.doesNotMatch(res.body.error, /may have started/, name);
+      }
+    }
+  } finally { await server.close(); }
+});

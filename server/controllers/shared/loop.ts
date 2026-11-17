@@ -29,12 +29,20 @@ const isLoopReply = (body, fields: string[]) => !!body && typeof body === 'objec
 const INFO_FIELDS = ['version'];
 const TERMS_FIELDS = ['min_swap_amount', 'max_swap_amount'];
 const QUOTE_FIELDS = ['swap_fee_sat'];
-const SWAP_FIELDS = ['id', 'state'];
-const NEW_SWAP_FIELDS = ['id'];
+const SWAP_FIELDS = ['state'];
 
-const invalidLoopReply = (req, res, errTitle) => {
+// looprpc deprecates the string id in favour of id_bytes, the field the UI reads; either one
+// identifies a swap, so a loopd that stops sending id is still recognised.
+const isLoopSwap = (body, fields: string[] = []) => isLoopReply(body, fields) && (isLoopReply(body, ['id_bytes']) || isLoopReply(body, ['id']));
+
+// swapMayHaveStarted: Loop Out and Loop In check the reply after loopd was asked to start the
+// swap, so an unrecognised 2xx there does not mean nothing happened. A blind retry could start
+// a second swap.
+const invalidLoopReply = (req, res, errTitle, swapMayHaveStarted = false) => {
   // Worded without identifiers or acronyms: the UI title-cases error text word by word.
-  const errMsg = 'The address configured for Loop did not answer like a Loop server. Check that it points at loopd, port 8081 by default, and not at another service.';
+  const errMsg = swapMayHaveStarted ?
+    'The address configured for Loop did not answer like a Loop server, but the swap may have started. Check the swap history before trying again, and check that the address points at loopd, port 8081 by default.' :
+    'The address configured for Loop did not answer like a Loop server. Check that it points at loopd, port 8081 by default, and not at another service.';
   logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Loop', msg: errTitle, error: errMsg + ' (swapServerUrl: ' + req.session.selectedNode.settings.swapServerUrl + ')' });
   return res.status(502).json({ message: errTitle, error: errMsg });
 };
@@ -79,7 +87,7 @@ export const loopOut = (req, res, next) => {
   if (destAddress !== '') { options.body['dest'] = destAddress; }
   logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body });
   request.post(options).then((loopOutRes) => {
-    if (!isLoopReply(loopOutRes, NEW_SWAP_FIELDS)) { return invalidLoopReply(req, res, 'Loop Out Error'); }
+    if (!isLoopSwap(loopOutRes)) { return invalidLoopReply(req, res, 'Loop Out Error', true); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looped Out', data: loopOutRes });
     res.status(201).json(loopOutRes);
   }).catch((errRes) => {
@@ -172,7 +180,7 @@ export const loopIn = (req, res, next) => {
   };
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Body', data: options.body });
   request.post(options).then((body) => {
-    if (!isLoopReply(body, NEW_SWAP_FIELDS)) { return invalidLoopReply(req, res, 'Loop In Error'); }
+    if (!isLoopSwap(body)) { return invalidLoopReply(req, res, 'Loop In Error', true); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looped In', data: body });
     res.status(201).json(body);
   }).catch((errRes) => {
@@ -278,7 +286,7 @@ export const swap = (req, res, next) => {
   }
   options.uri = '/v1/loop/swap/' + req.params.id;
   request(options).then((body) => {
-    if (!isLoopReply(body, SWAP_FIELDS)) { return invalidLoopReply(req, res, 'Get Swap Error'); }
+    if (!isLoopSwap(body, SWAP_FIELDS)) { return invalidLoopReply(req, res, 'Get Swap Error'); }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information Received', data: body });
     res.status(200).json(body);
   }).catch((errRes) => {
