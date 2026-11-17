@@ -33,12 +33,28 @@ const isLoopSwap = (body, fields = []) => isLoopReply(body, fields) && (isLoopRe
 // swapMayHaveStarted: Loop Out and Loop In check the reply after loopd was asked to start the
 // swap, so an unrecognised 2xx there does not mean nothing happened. A blind retry could start
 // a second swap.
-const invalidLoopReply = (req, res, errTitle, swapMayHaveStarted = false) => {
+// The rejected body goes to the server log, never to the client: after a Loop Out or Loop In it
+// may be the only record of a swap that did start, and it tells a changed loopd reply apart from
+// a wrong address. Capped, because it can be a whole HTML page.
+const describeReply = (body) => {
+    let text;
+    try {
+        text = typeof body === 'string' ? body : JSON.stringify(body);
+    }
+    catch (err) {
+        text = undefined;
+    }
+    if (text === undefined) {
+        text = String(body);
+    }
+    return text.length > 1000 ? text.substring(0, 1000) + '... (' + text.length + ' characters)' : text;
+};
+const invalidLoopReply = (req, res, errTitle, body, swapMayHaveStarted = false) => {
     // Worded without identifiers or acronyms: the UI title-cases error text word by word.
     const errMsg = swapMayHaveStarted ?
         'The address configured for Loop did not answer like a Loop server, but the swap may have started. Check the swap history before trying again, and check that the address points at loopd, port 8081 by default.' :
         'The address configured for Loop did not answer like a Loop server. Check that it points at loopd, port 8081 by default, and not at another service.';
-    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Loop', msg: errTitle, error: errMsg + ' (swapServerUrl: ' + req.session.selectedNode.settings.swapServerUrl + ')' });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'ERROR', fileName: 'Loop', msg: errTitle, error: errMsg + ' (swapServerUrl: ' + req.session.selectedNode.settings.swapServerUrl + ', reply: ' + describeReply(body) + ')' });
     return res.status(502).json({ message: errTitle, error: errMsg });
 };
 // Query for the four quote endpoints: conf_target defaults to 2 as before, and
@@ -97,7 +113,7 @@ export const loopOut = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Body', data: options.body });
     request.post(options).then((loopOutRes) => {
         if (!isLoopSwap(loopOutRes)) {
-            return invalidLoopReply(req, res, 'Loop Out Error', true);
+            return invalidLoopReply(req, res, 'Loop Out Error', loopOutRes, true);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looped Out', data: loopOutRes });
         res.status(201).json(loopOutRes);
@@ -115,7 +131,7 @@ export const loopOutTerms = (req, res, next) => {
     options.uri = '/v1/loop/out/terms';
     request(options).then((body) => {
         if (!isLoopReply(body, TERMS_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop Out Terms Error');
+            return invalidLoopReply(req, res, 'Loop Out Terms Error', body);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Out Terms Received', data: body });
         res.status(200).json(body);
@@ -142,7 +158,7 @@ export const loopOutQuote = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Quote URL', data: { uri: quoteOptions.uri, qs } });
     request(quoteOptions).then((quoteRes) => {
         if (!isLoopReply(quoteRes, QUOTE_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop Out Quotes Error');
+            return invalidLoopReply(req, res, 'Loop Out Quotes Error', quoteRes);
         }
         quoteRes.amount = amount;
         quoteRes.swap_payment_dest = quoteRes.swap_payment_dest ? Buffer.from(quoteRes.swap_payment_dest, 'base64').toString('hex') : '';
@@ -166,7 +182,7 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
     options.uri = '/v1/loop/out/terms';
     request(options).then((terms) => {
         if (!isLoopReply(terms, TERMS_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop Out Terms & Quotes Error');
+            return invalidLoopReply(req, res, 'Loop Out Terms & Quotes Error', terms);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms Received', data: terms });
         const options1 = { ...options, uri: '/v1/loop/out/quote/' + terms.min_swap_amount, qs };
@@ -175,7 +191,7 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
         return Promise.all([request(options1), request(options2)]).then((values) => {
             if (!values.every((quote) => isLoopReply(quote, QUOTE_FIELDS))) {
-                return invalidLoopReply(req, res, 'Loop Out Terms & Quotes Error');
+                return invalidLoopReply(req, res, 'Loop Out Terms & Quotes Error', values);
             }
             values[0].amount = +terms.min_swap_amount;
             values[1].amount = +terms.max_swap_amount;
@@ -210,7 +226,7 @@ export const loopIn = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Body', data: options.body });
     request.post(options).then((body) => {
         if (!isLoopSwap(body)) {
-            return invalidLoopReply(req, res, 'Loop In Error', true);
+            return invalidLoopReply(req, res, 'Loop In Error', body, true);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Looped In', data: body });
         res.status(201).json(body);
@@ -228,7 +244,7 @@ export const loopInTerms = (req, res, next) => {
     options.uri = '/v1/loop/in/terms';
     request(options).then((body) => {
         if (!isLoopReply(body, TERMS_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop In Terms Error');
+            return invalidLoopReply(req, res, 'Loop In Terms Error', body);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop In Terms Received', data: body });
         res.status(200).json(body);
@@ -255,7 +271,7 @@ export const loopInQuote = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Quote Options', data: { uri: quoteOptions.uri, qs } });
     request(quoteOptions).then((body) => {
         if (!isLoopReply(body, QUOTE_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop In Quote Error');
+            return invalidLoopReply(req, res, 'Loop In Quote Error', body);
         }
         body.amount = amount;
         body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
@@ -279,7 +295,7 @@ export const loopInTermsAndQuotes = (req, res, next) => {
     options.uri = '/v1/loop/in/terms';
     request(options).then((terms) => {
         if (!isLoopReply(terms, TERMS_FIELDS)) {
-            return invalidLoopReply(req, res, 'Loop In Terms & Quotes Error');
+            return invalidLoopReply(req, res, 'Loop In Terms & Quotes Error', terms);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms Received', data: terms });
         const options1 = { ...options, uri: '/v1/loop/in/quote/' + terms.min_swap_amount, qs };
@@ -288,7 +304,7 @@ export const loopInTermsAndQuotes = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
         return Promise.all([request(options1), request(options2)]).then((values) => {
             if (!values.every((quote) => isLoopReply(quote, QUOTE_FIELDS))) {
-                return invalidLoopReply(req, res, 'Loop In Terms & Quotes Error');
+                return invalidLoopReply(req, res, 'Loop In Terms & Quotes Error', values);
             }
             values[0].amount = +terms.min_swap_amount;
             values[1].amount = +terms.max_swap_amount;
@@ -315,7 +331,7 @@ export const swaps = (req, res, next) => {
     options.uri = '/v1/loop/swaps';
     request(options).then((body) => {
         if (!isLoopReply(body, ['swaps']) || !Array.isArray(body.swaps)) {
-            return invalidLoopReply(req, res, 'List Swaps Error');
+            return invalidLoopReply(req, res, 'List Swaps Error', body);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Swaps Received', data: body });
         res.status(200).json(body.swaps);
@@ -339,7 +355,7 @@ export const swap = (req, res, next) => {
     options.uri = '/v1/loop/swap/' + req.params.id;
     request(options).then((body) => {
         if (!isLoopSwap(body, SWAP_FIELDS)) {
-            return invalidLoopReply(req, res, 'Get Swap Error');
+            return invalidLoopReply(req, res, 'Get Swap Error', body);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Swap Information Received', data: body });
         res.status(200).json(body);
@@ -357,7 +373,7 @@ export const loopInfo = (req, res, next) => {
     options.uri = '/v1/loop/info';
     request(options).then((body) => {
         if (!isLoopReply(body, INFO_FIELDS)) {
-            return invalidLoopReply(req, res, 'Get Loop Info Error');
+            return invalidLoopReply(req, res, 'Get Loop Info Error', body);
         }
         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Loop', msg: 'Loop Information Received', data: body });
         res.status(200).json(body);
