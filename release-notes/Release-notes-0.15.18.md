@@ -25,7 +25,7 @@ this release should add its entry under the appropriate section below.
 
 ## Developer Tooling
 
-- **The regtest fixture can test Loop** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+- **The regtest fixture can test Loop** ([#1816](https://github.com/Ride-The-Lightning/RTL/pull/1816),
   closes [#1815](https://github.com/Ride-The-Lightning/RTL/issues/1815)). RTL's Loop screens had
   no end-to-end test path short of a swap against a public Loop server. `docker compose --profile
   loop up -d` now adds Lightning Labs' regtest Loop server, a Loop client daemon on `alice`, and
