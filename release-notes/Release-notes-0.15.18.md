@@ -6,7 +6,7 @@ this release should add its entry under the appropriate section below.
 ## Bug Fixes
 
 - **A wrong Loop address is reported instead of being taken for a Loop server**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  ([#1821](https://github.com/Ride-The-Lightning/RTL/pull/1821),
   [#660](https://github.com/Ride-The-Lightning/RTL/issues/660)). RTL treated any successful
   reply from `swapServerUrl` as a Loop reply. With the URL pointed at something else, such as
   Lightning Terminal's web page instead of loopd's REST port, the Loop screens showed nothing
