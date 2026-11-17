@@ -32,7 +32,7 @@ this release should add its entry under the appropriate section below.
 ## Dependencies
 
 - **Node.js 22.23.5 / 24.22.3: the Docker image and the supported Node range move to the
-  November 2026 Node.js security releases** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  November 2026 Node.js security releases** ([#1820](https://github.com/Ride-The-Lightning/RTL/pull/1820),
   closes [#1819](https://github.com/Ride-The-Lightning/RTL/issues/1819)). Node.js published 16 CVEs
   on 2026-11-11 ([advisory](https://nodejs.org/en/blog/vulnerability/november-2026-security-releases)).
   None of them reaches RTL as deployed: they are in Node's HTTP/2 and TLS servers, its permission
