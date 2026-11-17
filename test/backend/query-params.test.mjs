@@ -157,9 +157,12 @@ test('getUTXOs (0.14+): max_confs is sent in the JSON body only when given', asy
   } finally { await lnd.close(); }
 });
 
+// The Loop controller takes a reply as Loop's only if it carries the fields it reads (#660).
+const loopQuote = () => ({ swap_fee_sat: '600' });
+
 // Options are built per request from the session (#1714), so no prior loopInfo is needed.
 test('loop quote handlers work without a prior loopInfo call', async () => {
-  const loop = await startFakeServer();
+  const loop = await startFakeServer(loopQuote);
   try {
     const res = await run(loopOutQuote, buildRequest(loop.url, { params: { amount: '1000' } }));
     assert.equal(res.statusCode, 200, JSON.stringify(res.body));
@@ -174,7 +177,7 @@ const LOOP_QUOTES = [
 
 for (const q of LOOP_QUOTES) {
   test(`${q.name}: omitted or empty deadline is left out, empty or zero targetConf keeps the default`, async () => {
-    const loop = await startFakeServer();
+    const loop = await startFakeServer(loopQuote);
     try {
       const res = await run(q.handler, buildRequest(loop.url, { params: { amount: '250000' } }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));
@@ -207,7 +210,7 @@ const LOOP_TERMS = [
 
 for (const t of LOOP_TERMS) {
   test(`${t.name}: quotes the min and max amounts separately with the given query`, async () => {
-    const loop = await startFakeServer((path) => (path.endsWith('/terms') ? { min_swap_amount: '1000', max_swap_amount: '9000' } : {}));
+    const loop = await startFakeServer((path) => (path.endsWith('/terms') ? { min_swap_amount: '1000', max_swap_amount: '9000' } : loopQuote()));
     try {
       const res = await run(t.handler, buildRequest(loop.url, { query: { targetConf: '3', swapPublicationDeadline: '1700000000000' } }));
       assert.equal(res.statusCode, 200, JSON.stringify(res.body));

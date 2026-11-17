@@ -5,6 +5,14 @@ this release should add its entry under the appropriate section below.
 
 ## Bug Fixes
 
+- **A wrong Loop address is reported instead of being taken for a Loop server**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  [#660](https://github.com/Ride-The-Lightning/RTL/issues/660)). RTL treated any successful
+  reply from `swapServerUrl` as a Loop reply. With the URL pointed at something else, such as
+  Lightning Terminal's web page instead of loopd's REST port, the Loop screens showed nothing
+  wrong, and starting a Loop Out or Loop In was reported as started although no swap existed.
+  RTL now checks each reply and shows an error asking you to check the Loop address.
+
 - **The Dockerfile builds on 32-bit ARM again** ([#1808](https://github.com/Ride-The-Lightning/RTL/pull/1808)).
   0.15.17 moved the image to `node:24-alpine`
   ([#1798](https://github.com/Ride-The-Lightning/RTL/pull/1798)), which publishes no

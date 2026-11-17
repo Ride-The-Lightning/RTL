@@ -18,7 +18,8 @@ const startFakeLoop = async () => {
   const server = createServer((req, res) => {
     seen.push({ path: req.url, macaroon: req.headers['grpc-metadata-macaroon'] });
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ swaps: [] }));
+    // One body for every path: the fields the controller needs to take a reply as Loop's.
+    res.end(JSON.stringify({ swaps: [], id: 'ab'.repeat(32), state: 'SUCCESS', version: '0.35.4-beta' }));
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   return { url: `http://127.0.0.1:${server.address().port}`, seen, close: () => new Promise((resolve) => server.close(resolve)) };
