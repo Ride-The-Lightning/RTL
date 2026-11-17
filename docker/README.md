@@ -102,7 +102,8 @@ docker compose up -d          # bitcoind, alice, bob, carol, cln, eclair, rtl
 ```
 
 To also bring up the BTCPay single-sign-on harness, add `--profile sso` — see
-[BTCPay SSO harness](#btcpay-sso-harness).
+[BTCPay SSO harness](#btcpay-sso-harness). To test RTL's Loop screens against a regtest
+Loop server, add `--profile loop` — see [Loop harness](#loop-harness).
 
 Then open <http://localhost:3000> — password `rtldev`. All five nodes (alice, bob,
 carol, cln, eclair) appear in the node switcher.
@@ -149,6 +150,7 @@ bin/ln-cli bob fwdinghistory               # forwarding history
 bin/e-cli getinfo                          # eclair-cli
 bin/e-cli channels
 bin/sso-url                                # BTCPay-style SSO link (needs --profile sso)
+bin/loop-cli listswaps                     # loop CLI against loopd (needs --profile loop)
 docker compose exec cln lightning-cli --network=regtest listpeerchannels   # Core Lightning
 ```
 
@@ -247,6 +249,93 @@ docker build -t shahanafarooqui/rtl:dev /path/to/RTL
 That tests the real composition rather than this reconstruction of it; the harness here
 is the fast everyday check.
 
+## Loop harness
+
+RTL's Loop screens (**Services → Loop**, LND only) talk to a Loop client daemon, `loopd`,
+which swaps against a Loop server. Lightning Labs publishes a regtest-only build of that
+server, so the fixture can run the whole path and take a Loop Out and a Loop In to
+completion.
+
+It is behind a compose profile, so a plain `docker compose up -d` does not start it:
+
+```bash
+docker compose --profile loop up -d
+./scripts/seed.sh                # once, on a fresh network
+./scripts/verify-loop.sh         # 18 assertions, two real swaps
+```
+
+Then open <http://localhost:3002> — password `rtldev` — for an RTL on `alice` with Loop
+enabled. Tear down with `docker compose --profile loop down` (add `-v` to discard state).
+
+```mermaid
+flowchart LR
+    rtl["rtl-loop<br/>localhost:3002"] -->|"REST + loop.macaroon"| loopd
+    loopd -->|"gRPC, no TLS"| loopserver
+    loopd -->|"gRPC + macaroon"| alice["alice (LND)"]
+    loopserver -->|"gRPC + macaroons"| bob["bob (LND)"]
+    loopserver -.-> bitcoind
+    alice =="5M sat"==> bob
+```
+
+| Service | Image | Role |
+|---|---|---|
+| `loopserver` | `lightninglabs/loopserver:v0.1.1` | The swap server, on `bob`. Closed source, regtest only. |
+| `loopd` | `lightninglabs/loop:v0.35.4-beta` | The Loop client daemon, on `alice`. REST on `loopd:8081`. |
+| `rtl-loop-config-init` | `busybox` | Stages `rtl/RTL-Config.loop.json`, as for the standalone RTL. |
+| `rtl-loop` | `RTL_IMAGE` | RTL with `swapServerUrl` and `swapMacaroonPath` set on `alice`. |
+
+The server and the client have to sit on different LND nodes, because a node cannot pay
+itself, and need channel liquidity between them. The seed already provides that: the
+alice→bob channel carries the off-chain legs, and both nodes hold on-chain funds for the
+HTLCs.
+
+This follows the ["Using the Loop server in an existing setup"](https://github.com/lightninglabs/loop/tree/master/regtest#using-the-loop-server-in-an-existing-setup)
+section of Loop's regtest guide rather than that directory's own compose file. The server
+runs with `--insecure` and the client with `--server.notls`, which leaves out the Aperture
+(L402) proxy and its etcd. Every call RTL makes works without them.
+
+It is a second RTL container rather than Loop settings on the first so that the standalone
+RTL is the same whether or not the profile is up; with `swapServerUrl` set there, it would
+show a Loop menu that fails whenever `loopd` is not running. `RTL_IMAGE` overrides
+`rtl-loop` together with the other RTL containers.
+
+### Swapping by hand
+
+A swap only moves when blocks are mined. Start one in the UI, then mine a block at a time
+until it reaches `SUCCESS` (two or three blocks):
+
+```bash
+ADDR=$(bin/b-cli -rpcwallet=rtldev getnewaddress)
+bin/b-cli -rpcwallet=rtldev generatetoaddress 1 "$ADDR"
+bin/loop-cli listswaps
+```
+
+Tick **Fast** on a Loop Out. Without it the server holds the HTLC for up to 30 minutes,
+waiting for other swaps to batch with.
+
+### Things to know
+
+**`verify-loop.sh` moves funds.** Each run swaps 500,000 sats out and back in, and pays
+fees both ways, so alice's balances are no longer the seeded ones afterwards. Reset with
+`down -v` and a fresh seed before taking screenshots that have to be reproducible.
+
+**`loopd` waits for `alice` to sync.** After a restart the chain tip is old, LND reports
+itself out of sync (see below), and until a block arrives `loopd` serves nothing, so every
+Loop call RTL makes fails. `verify-loop.sh` mines a block first for this reason.
+
+**`loopserver` has a fixed address** (`172.30.0.16`), like the Lightning nodes. `loopd`
+keeps dialling the address it first resolved, so a server restart that changed it left
+RTL's Loop screens with a 503, "Unable to Connect to Loop Server", until `loopd` restarted.
+
+**RTL reads `loop.macaroon` from the `loopd_data` volume**, mounted read-only at `/loop`,
+so `swapMacaroonPath` is `/loop/regtest`. `loopd`'s REST listener serves TLS with a
+self-signed certificate, which RTL accepts.
+
+### What it does not cover
+
+Static address Loop In, which RTL has no screens for, and the L402 payment a client makes
+to a production Loop server through Aperture.
+
 ## Notes and gotchas
 
 **RTL's config.** `rtl/RTL-Config.regtest.json` is the tracked template. RTL rewrites
@@ -282,7 +371,7 @@ wait the same way.
 `docker compose down` removes the network, so with Docker-assigned addresses the next `up`
 reshuffled them and every node dialled a stale one: channels stayed inactive, and alice's log
 filled with `chacha20poly1305: message authentication failed`. `docker-compose.yml` therefore
-pins alice, bob, carol, cln and eclair to `172.30.0.11`–`.15` on a `172.30.0.0/24` network;
+pins alice, bob, carol, cln and eclair to `172.30.0.11`–`.15` (and the Loop harness's `loopserver` to `.16`) on a `172.30.0.0/24` network;
 other containers get addresses from `.128` up. If that subnet clashes with another network on
 your machine, change it in one place (`networks:` at the top) and keep the node addresses
 inside it. Volumes seeded before this change still hold the old addresses: reconnect once
@@ -333,3 +422,6 @@ one LND uses, eclair never sees new blocks and channels never confirm.
 BTCPay Server itself (postgres + nbxplorer + btcpayserver). The `sso` profile
 reproduces the entry path BTCPay uses to reach RTL without running BTCPay — see
 [BTCPay SSO harness](#btcpay-sso-harness) for what that covers and what it does not.
+
+Aperture, the L402 proxy in front of a production Loop server. The `loop` profile connects
+`loopd` to the regtest Loop server directly — see [Loop harness](#loop-harness).

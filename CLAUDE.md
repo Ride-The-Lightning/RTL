@@ -152,6 +152,12 @@ like every deep link, reaches the catch-all that mints `XSRF-TOKEN`; before that
 entering at `/rtl/` got a 403 on its first POST (issue #1710), and
 `test/backend/csrf-landing-page.test.mjs` guards it.
 
+A **Loop harness** sits behind a second profile (`docker compose --profile loop up -d`): a
+regtest Loop server on `bob`, `loopd` on `alice`, and a second RTL on port 3002 with Loop
+enabled. Run `docker/scripts/verify-loop.sh` (18 assertions, exits non-zero) after touching
+`server/controllers/shared/loop.ts` or `setSwapServerOptions`; it takes a Loop Out and a
+Loop In to `SUCCESS` through RTL's API.
+
 Backend regression tests live in `test/backend/` (plain `node:test`, run against the
 compiled `backend/`). `npm run test` compiles the backend, then runs them
 (`npm run testbackend`) before the frontend Karma/Jasmine specs, so they never test stale

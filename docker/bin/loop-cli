@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# The loop CLI against the Loop harness's client daemon (loopd, attached to alice).
+#
+#   docker compose --profile loop up -d
+#   bin/loop-cli getinfo
+#   bin/loop-cli terms
+#   bin/loop-cli listswaps
+#   bin/loop-cli monitor                  # follow swaps as blocks are mined
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if ! docker compose --profile loop ps --status running --services 2>/dev/null | grep -qx loopd; then
+  echo "loopd is not running. Start it with: docker compose --profile loop up -d" >&2
+  exit 1
+fi
+
+exec docker compose --profile loop exec -T loopd loop --network=regtest "$@"

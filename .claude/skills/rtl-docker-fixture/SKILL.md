@@ -45,6 +45,20 @@ docker compose --profile sso up -d
 open "$(bin/sso-url)"         # the link BTCPay renders on its Services page
 ```
 
+Testing **Loop** (RTL's Services → Loop screens, LND only) against a regtest Loop server —
+also behind a profile:
+
+```bash
+docker compose --profile loop up -d
+./scripts/verify-loop.sh      # 18 assertions incl. a Loop Out and a Loop In to SUCCESS
+bin/loop-cli listswaps        # the loop CLI against loopd
+```
+
+This adds `loopserver` (on bob), `loopd` (on alice) and `rtl-loop`, a second RTL on
+<http://localhost:3002> (password `rtldev`) with Loop enabled for alice. Swaps only move
+when blocks are mined, and `verify-loop.sh` moves 500,000 sats out and back in on each run,
+so reseed before reproducible screenshots.
+
 Key facts when working with the fixture:
 
 - **Run `scripts/verify-sso.sh` after touching authentication, CSRF or static serving.**
@@ -53,6 +67,8 @@ Key facts when working with the fixture:
   catch-all in `server/utils/app.ts`, and a reverse proxy. `express.static` is mounted
   with `index: false` so `GET /rtl/` also reaches the catch-all that mints `XSRF-TOKEN`
   (issue #1710); `test/backend/csrf-landing-page.test.mjs` guards that.
+- **Run `scripts/verify-loop.sh` after touching the Loop controller, its routes or the swap
+  server options** (`server/controllers/shared/loop.ts`, `setSwapServerOptions`).
 - **`scripts/seed.sh` is deterministic but not idempotent.** Every amount is fixed, so a
   fresh run always produces identical state (screenshots differ only by your change) — so
   **do not introduce randomness**. It refuses to run twice against an already-seeded

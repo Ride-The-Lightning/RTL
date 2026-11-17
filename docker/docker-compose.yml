@@ -21,6 +21,9 @@ volumes:
   rtl_sso_db:
   rtl_sso_config:
   rtl_sso_cookie:
+  loopd_data:
+  rtl_loop_db:
+  rtl_loop_config:
 
 # Lightning nodes remember their peers by the IP address they resolved, not the hostname.
 # 'docker compose down' removes the network, and the next 'up' hands out addresses in a
@@ -430,3 +433,123 @@ services:
       - "${RTL_SSO_PORT:-3001}:80"
     volumes:
       - ./nginx/rtl-sso.conf:/etc/nginx/conf.d/default.conf:ro
+
+  # ---------------------------------------------------------------------------
+  # Loop harness -- profile "loop", so a plain 'up' does not start it:
+  #
+  #     docker compose --profile loop up -d
+  #     ./scripts/verify-loop.sh
+  #
+  # RTL's Loop screens (LND only) talk to a Loop client daemon, loopd, which
+  # in turn needs a Loop server to swap against. Lightning Labs publishes a
+  # regtest-only build of that server, so the whole swap path can run here:
+  #
+  #     rtl-loop --REST + loop.macaroon--> loopd --gRPC--> loopserver
+  #                                          |                 |
+  #                                        alice              bob
+  #
+  # This follows "Using the Loop server in an existing setup" in
+  # https://github.com/lightninglabs/loop/tree/master/regtest rather than that
+  # directory's own compose file: the server runs with --insecure and the
+  # client with --server.notls, which leaves out the Aperture (L402) proxy and
+  # its etcd. See README.md, "Loop harness".
+  # ---------------------------------------------------------------------------
+
+  # The swap server. It must sit on a different LND node than the client (a node
+  # cannot pay itself) with channel liquidity between the two: bob, which the
+  # seed gives a channel with alice and on-chain funds for the Loop Out HTLCs.
+  # Published only as a compiled image; regtest is the one network it supports.
+  # It reads bob's TLS certificate and macaroons straight from bob's volume.
+  # A fixed address, like the Lightning nodes and for the same reason: loopd keeps
+  # dialling the address it first resolved, so when a restart handed the server a
+  # new one, every Loop call failed with "no route to host" until loopd restarted.
+  loopserver:
+    container_name: ${COMPOSE_PROJECT_NAME}_loopserver
+    profiles: ["loop"]
+    image: lightninglabs/loopserver:v0.1.1
+    networks:
+      default:
+        ipv4_address: 172.30.0.16
+    restart: unless-stopped
+    depends_on:
+      - bob
+    command:
+      - daemon
+      - --insecure
+      - --maxamt=5000000
+      - --lnd.host=bob:${LIGHTNING_RPC_PORT}
+      - --lnd.macaroondir=/root/.lnd/data/chain/bitcoin/regtest
+      - --lnd.tlspath=/root/.lnd/tls.cert
+      - --bitcoin.host=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}
+      - --bitcoin.user=${BITCOIN_RPC_USER}
+      - --bitcoin.password=${BITCOIN_RPC_PASSWORD}
+      - --bitcoin.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}
+      - --bitcoin.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}
+    volumes:
+      - bob_data:/root/.lnd:ro
+
+  # The Loop client daemon, attached to alice. RTL talks to its REST listener,
+  # which has to bind 0.0.0.0 to be reachable from another container (the
+  # default is localhost). loopd writes loop.macaroon under /root/.loop/regtest;
+  # rtl-loop mounts the same volume read-only to pick it up.
+  loopd:
+    container_name: ${COMPOSE_PROJECT_NAME}_loopd
+    profiles: ["loop"]
+    image: lightninglabs/loop:v0.35.4-beta
+    restart: unless-stopped
+    depends_on:
+      - alice
+      - loopserver
+    command:
+      - loopd
+      - --network=regtest
+      - --server.host=loopserver:11009
+      - --server.notls
+      - --lnd.host=alice:${LIGHTNING_RPC_PORT}
+      - --lnd.macaroonpath=/root/.lnd/data/chain/bitcoin/regtest/admin.macaroon
+      - --lnd.tlspath=/root/.lnd/tls.cert
+      - --restlisten=0.0.0.0:8081
+      - --tlsextradomain=loopd
+    volumes:
+      - alice_data:/root/.lnd:ro
+      - loopd_data:/root/.loop
+
+  # Same copy-into-a-volume dance as rtl-config-init above, and for the same
+  # reason: RTL rewrites its config on startup.
+  rtl-loop-config-init:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_loop_config_init
+    profiles: ["loop"]
+    image: busybox:1.36
+    command: >
+      sh -c "cp /template/RTL-Config.loop.json /config/RTL-Config.json &&
+             chmod 644 /config/RTL-Config.json &&
+             echo 'loop config staged'"
+    volumes:
+      - ./rtl/RTL-Config.loop.json:/template/RTL-Config.loop.json:ro
+      - rtl_loop_config:/config
+
+  # A second RTL rather than Loop settings on the first: the standalone RTL's
+  # config is fixed whether or not this profile is up, and with swapServerUrl
+  # set there it would show a Loop menu that fails whenever loopd is not
+  # running. Only alice is wired up, since loopd serves one LND node.
+  rtl-loop:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl_loop
+    profiles: ["loop"]
+    image: ${RTL_IMAGE:-shahanafarooqui/rtl:v0.15.13}
+    restart: unless-stopped
+    depends_on:
+      rtl-loop-config-init:
+        condition: service_completed_successfully
+      alice:
+        condition: service_started
+      loopd:
+        condition: service_started
+    ports:
+      - "${RTL_LOOP_PORT:-3002}:3000"
+    environment:
+      RTL_CONFIG_PATH: /RTL/config
+    volumes:
+      - rtl_loop_config:/RTL/config
+      - alice_data:/lnd/alice:ro
+      - loopd_data:/loop:ro
+      - rtl_loop_db:/RTL/database
