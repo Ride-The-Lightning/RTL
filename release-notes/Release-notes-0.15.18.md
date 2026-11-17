@@ -29,6 +29,19 @@ this release should add its entry under the appropriate section below.
   either to Loop, so swaps were, and still are, funded from the node's own wallet. The fields
   are gone, and a test keeps a request from switching external funding on.
 
+## Dependencies
+
+- **Node.js 22.23.5 / 24.22.3: the Docker image and the supported Node range move to the
+  November 2026 Node.js security releases** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  closes [#1819](https://github.com/Ride-The-Lightning/RTL/issues/1819)). Node.js published 16 CVEs
+  on 2026-11-11 ([advisory](https://nodejs.org/en/blog/vulnerability/november-2026-security-releases)).
+  None of them reaches RTL as deployed: they are in Node's HTTP/2 and TLS servers, its permission
+  model and a few APIs RTL does not call, while RTL serves plain HTTP and leaves TLS to a reverse
+  proxy. The runtime is updated all the same. `Dockerfile` builds on `node:24-alpine` (and
+  `node:22-alpine` for 32-bit ARM), so the v0.15.18 images are built on Node 24.22.3 and 22.23.5.
+  For bare-metal installs, `engines.node` in `package.json`, the README and `CONTRIBUTING.md` now
+  state Node 22.23.5 or 24.22.3 and above. No RTL code changes.
+
 ## Developer Tooling
 
 - **The regtest fixture can test Loop** ([#1816](https://github.com/Ride-The-Lightning/RTL/pull/1816),

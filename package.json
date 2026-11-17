@@ -22,7 +22,7 @@
   },
   "private": true,
   "engines": {
-    "node": ">=22.23.4 <23 || >=24.22.1"
+    "node": ">=22.23.5 <23 || >=24.22.3"
   },
   "dependencies": {
     "@ngrx/effects": "21.0.1",
