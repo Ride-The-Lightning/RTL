@@ -169,7 +169,7 @@ export class mockLoopService {
   getLoopOutTerms() { };
   getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) { };
   getLoopOutTermsAndQuotes(targetConf: number) { };
-  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) { };
+  loopIn(amount: number, swapFee: number, minerFee: number) { };
   getLoopInTerms() { };
   getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) { };
   getLoopInTermsAndQuotes(targetConf: number) { };

@@ -91,8 +91,8 @@ export class LoopService implements OnDestroy {
     );
   }
 
-  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) {
-    const requestBody = { amount: amount, swapFee: swapFee, minerFee: minerFee, lastHop: lastHop, externalHtlc: externalHtlc };
+  loopIn(amount: number, swapFee: number, minerFee: number) {
+    const requestBody = { amount: amount, swapFee: swapFee, minerFee: minerFee };
     this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/in';
     return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop In', UI_MESSAGES.NO_SPINNER, err)));
   }

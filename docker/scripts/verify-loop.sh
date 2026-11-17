@@ -223,7 +223,7 @@ fi
 
 echo
 echo "5. Loop In: $SWAP_SATS sats from alice's on-chain wallet to her channel"
-resp=$(api_post /loop/in "{\"amount\":$SWAP_SATS,\"swapFee\":${in_swap_fee:-0},\"minerFee\":${in_publish_fee:-0},\"lastHop\":\"\",\"externalHtlc\":true}")
+resp=$(api_post /loop/in "{\"amount\":$SWAP_SATS,\"swapFee\":${in_swap_fee:-0},\"minerFee\":${in_publish_fee:-0}}")
 in_id=$(echo "$resp" | jget id)
 in_id_b64=$(echo "$resp" | jget id_bytes | urlsafe)
 [ -n "$in_id" ] && ok "POST /loop/in -> swap ${in_id:0:16}..." || bad "POST /loop/in: ${resp:0:300}"

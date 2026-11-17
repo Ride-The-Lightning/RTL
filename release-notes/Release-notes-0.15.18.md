@@ -23,6 +23,12 @@ this release should add its entry under the appropriate section below.
 
 ## Code Health
 
+- **Loop In no longer posts two fields the server ignores** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  closes [#1817](https://github.com/Ride-The-Lightning/RTL/issues/1817)). The dialog sent
+  `externalHtlc: true` and an empty `lastHop` with every Loop In. The server has never passed
+  either to Loop, so swaps were, and still are, funded from the node's own wallet. The fields
+  are gone, and a test keeps a request from switching external funding on.
+
 ## Developer Tooling
 
 - **The regtest fixture can test Loop** ([#1816](https://github.com/Ride-The-Lightning/RTL/pull/1816),

@@ -143,7 +143,7 @@ export class LoopModalComponent implements OnInit, OnDestroy {
     this.stepper.selected?.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === LoopTypeEnum.LOOP_IN) {
-      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +(this.quote.swap_fee_sat || 0), +(this.quote.htlc_publish_fee_sat || 0), '', true).pipe(takeUntil(this.unSubs[0])).
+      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +(this.quote.swap_fee_sat || 0), +(this.quote.htlc_publish_fee_sat || 0)).pipe(takeUntil(this.unSubs[0])).
         subscribe({
           next: (loopStatus: any) => {
             this.loopStatus = loopStatus;
