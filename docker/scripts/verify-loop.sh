@@ -65,9 +65,10 @@ bcli() {
 }
 
 # Read one value out of a JSON document on stdin: `jget a.b.0.c`. Prints nothing
-# when the input is not JSON or the path is missing. This matters here more than
-# usual: a wrong API path does not 404, it falls through to RTL's catch-all and
-# returns index.html with a 200, so only the body tells a real answer apart.
+# when the input is not JSON, the path is missing or the value is null. This
+# matters here more than usual: a wrong API path does not 404, it falls through
+# to RTL's catch-all and returns index.html with a 200, so only the body tells a
+# real answer apart.
 jget() {
   python3 -c '
 import sys, json
@@ -75,7 +76,7 @@ try:
     v = json.load(sys.stdin)
     for k in sys.argv[1].split("."):
         v = v[int(k)] if isinstance(v, list) else v[k]
-    print(v if not isinstance(v, bool) else str(v).lower())
+    print("" if v is None else (str(v).lower() if isinstance(v, bool) else v))
 except Exception:
     pass
 ' "$1"
