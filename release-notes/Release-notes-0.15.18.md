@@ -23,8 +23,9 @@ this release should add its entry under the appropriate section below.
   keys `Authentication` and `Settings` to lowercase wrote the file back whether or not it had
   renamed anything. That reformatted a hand-edited file and changed its modification time on each
   start. The file is now written only when a key was renamed. One consequence: with a read-only
-  config file RTL used to refuse to start, and it now starts; saving settings from the UI still
-  needs the file to be writable, and fails with an error at that point.
+  config file RTL used to refuse to start. It now starts, unless the file still has those legacy
+  keys and so needs migrating. Saving settings from the UI still needs the file to be writable,
+  and fails with an error at that point.
 
 ## Enhancements
 

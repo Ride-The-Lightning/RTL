@@ -62,7 +62,9 @@ const writeConfig = ({ keys = ['authentication', 'settings'], serialise = (confi
   return file;
 };
 
-// Starts rtl.js and resolves once it exits or prints the listening line (then it is killed).
+// Starts rtl.js and resolves once it has exited: by itself, or killed after printing the
+// listening line or after the timeout. Waiting for the exit matters because the child keeps
+// its logs and database in the config directory, which is removed when the tests finish.
 const boot = (configFile) => new Promise((resolve) => {
   const configDir = dirname(configFile);
   // The developer's own RTL variables must not reach the child: config.ts honours them.
@@ -75,6 +77,8 @@ const boot = (configFile) => new Promise((resolve) => {
   });
   let stdout = '';
   let stderr = '';
+  // Set when this helper kills the child, and reported in place of its exit code.
+  let outcome = null;
   let settled = false;
   const finish = (code) => {
     if (settled) { return; }
@@ -82,13 +86,18 @@ const boot = (configFile) => new Promise((resolve) => {
     clearTimeout(timer);
     resolve({ code, stdout, stderr });
   };
-  const timer = setTimeout(() => { child.kill(); finish('timeout'); }, 20000);
+  const stop = (reason) => {
+    if (outcome === null) { outcome = reason; child.kill(); }
+  };
+  const timer = setTimeout(() => stop('timeout'), 20000);
   child.stdout.on('data', (chunk) => {
     stdout += chunk;
-    if (/Server is up and running/.test(stdout)) { child.kill(); finish('listening'); }
+    if (/Server is up and running/.test(stdout)) { stop('listening'); }
   });
   child.stderr.on('data', (chunk) => { stderr += chunk; });
-  child.on('exit', (code) => finish(code));
+  child.on('exit', (code) => finish(outcome === null ? code : outcome));
+  // A child that could not be spawned emits 'error' and never 'exit'.
+  child.on('error', (err) => { stderr += String(err); finish('spawn-error'); });
 });
 
 test('a config with no legacy keys is left untouched on start', async () => {
