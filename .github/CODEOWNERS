@@ -1,0 +1,28 @@
+# Paths where a mistake is expensive. A maintainer is asked to review any PR that touches
+# them. The last matching line wins.
+
+# CI and release workflows, and this file
+/.github/workflows/                             @ShahanaFarooqui @saubyk
+/.github/CODEOWNERS                             @ShahanaFarooqui @saubyk
+
+# What the review bot treats as ground truth
+/.github/REVIEW.md                              @ShahanaFarooqui @saubyk
+/.github/THREAT_MODEL.md                        @ShahanaFarooqui @saubyk
+
+# Authentication, sessions, CSRF, CORS and static serving
+/server/utils/app.ts                            @ShahanaFarooqui @saubyk
+/server/utils/authCheck.ts                      @ShahanaFarooqui @saubyk
+/server/utils/csrf.ts                           @ShahanaFarooqui @saubyk
+/server/utils/cors.ts                           @ShahanaFarooqui @saubyk
+/server/utils/webSocketServer.ts                @ShahanaFarooqui @saubyk
+/server/controllers/shared/authenticate.ts      @ShahanaFarooqui @saubyk
+/server/routes/shared/authenticate.ts           @ShahanaFarooqui @saubyk
+
+# Config handling: reads node credentials and writes RTL-Config.json
+/server/utils/config.ts                         @ShahanaFarooqui @saubyk
+/server/controllers/shared/RTLConf.ts           @ShahanaFarooqui @saubyk
+
+# Build and packaging
+/Dockerfile                                     @ShahanaFarooqui @saubyk
+/package.json                                   @ShahanaFarooqui @saubyk
+/package-lock.json                              @ShahanaFarooqui @saubyk
