@@ -455,3 +455,10 @@ test('getListeningMessage falls back to the plain message when the address is no
   assert.equal(Common.getListeningMessage(null, null), 'Server is up and running, please open the UI at your configured url');
   assert.equal(Common.getListeningMessage('/tmp/rtl.sock', null), 'Server is up and running, please open the UI at your configured url');
 });
+
+test('getListeningMessage brackets an IPv6 host that is written differently from the bound address', () => {
+  assert.equal(Common.getListeningMessage({ address: 'fd00::5', family: 'IPv6', port: 3000 }, 'FD00::5'),
+    'Server is up and running on [fd00::5]:3000, please open the UI at http://[fd00::5]:3000 or your proxy configured url');
+  assert.equal(Common.getListeningMessage({ address: '::1', family: 'IPv6', port: 3000 }, '0:0:0:0:0:0:0:1'),
+    'Server is up and running on [::1]:3000, please open the UI at http://[::1]:3000 or your proxy configured url');
+});
