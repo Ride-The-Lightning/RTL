@@ -18,7 +18,8 @@
     "testdev": "ng test --watch=true --code-coverage",
     "testbackend": "node --test test/backend/*.test.mjs",
     "test": "npm run buildbackend && npm run testbackend && ng test --watch=false --browsers=ChromeHeadless",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check": "node .github/scripts/check-changes.mjs"
   },
   "private": true,
   "engines": {

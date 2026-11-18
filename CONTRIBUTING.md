@@ -71,7 +71,15 @@ Contributions via code is the most sought after contribution and something we en
 ##### Create a Pull Request
 * Create a new branch on the github to push your updated code.
 * Commit your updates into the newly created branch.
+* Before opening the pull request, read your diff against the [coding guidelines](.github/docs/Code_guidelines.md), then run `npm run lint`, `npm run test` and `npm run check`. All three must pass, and every warning from `npm run check` is either fixed or explained in the pull request.
 * Create a new pull request once you are satisfied with your updates to be merged into the latest `release` branch with details of your updates and submit it for the review.
+
+##### Coding Guidelines
+* [`.github/docs/Code_guidelines.md`](.github/docs/Code_guidelines.md) lists the TypeScript, Angular and library practices this codebase follows. Read it before writing code; reviewers check a PR against [`.github/REVIEW.md`](.github/REVIEW.md).
+* `npm run check` compares your branch with the newest `Release-x.y.z` branch (or the one you name: `npm run check -- <branch>`) and lints the files you changed. It prints two lists:
+  * **Problems**, which fail the check and must be fixed: a missing release note, a new `eslint-disable`, a dependency version that is not exact, a lint error.
+  * **Warnings**, which do not fail it: patterns in the lines you added that usually, but not always, go against the guidelines, such as a subscription without teardown or a route without `isAuthenticated`, and `server/` or `src/` changed without `backend/` or `frontend/` (the `artifacts` CI job decides that one exactly). Read each one, then fix it or say in the pull request why it stands.
+  * Pull request CI runs the same check once a maintainer approves the run, and shows the problems and warnings on the diff.
 
 ##### Caution about adding new libraries
 * We are conservative in adding new dependencies to the repository. Do your best to not add any new libraries on RTL. We believe this is the best strategy to keep the software safe from vulnerabilites.

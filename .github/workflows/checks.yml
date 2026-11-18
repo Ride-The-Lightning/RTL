@@ -77,6 +77,41 @@ jobs:
       - name: Lint Src and Server
         run: npm run lint
 
+  # The review rules a script can decide (.github/scripts/check-changes.mjs), applied to what the
+  # pull request changes: problems fail the job, warnings are annotated on the diff for the author
+  # and reviewer to judge. Only an open pull request has a diff to check, so merges, tags, releases
+  # and manual runs skip it. The checkout is GitHub's merge of the PR into its base, whose first
+  # parent is the base branch, hence fetch-depth 2 and HEAD^1.
+  guidelines:
+    name: Guidelines on changed lines
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-npm-packages
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-24.x-build-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install NPM dependencies
+        if: steps.cache-npm-packages.outputs.cache-hit != 'true'
+        run: npm ci --legacy-peer-deps
+
+      - name: Check the changes against the guidelines
+        run: npm run check -- HEAD^1
+
   # backend/ and frontend/ are committed and are what a git install runs, but every test compiles
   # the sources afresh, so a PR that forgets to commit the regenerated output passes them all, and
   # a bundle that doesn't come from src/ can't be reviewed by reading the diff. Build each into an
