@@ -16,7 +16,7 @@
         "createDefaultProgram": true
       },
       "env": { "es2022": true },
-      "plugins": ["deprecation"],
+      "plugins": ["deprecation", "@typescript-eslint"],
       "extends": [
         "plugin:@angular-eslint/all",
         "plugin:@angular-eslint/recommended",
@@ -38,7 +38,8 @@
         "@angular-eslint/prefer-host-metadata-property": "off",
         "@angular-eslint/prefer-output-emitter-ref": "off",
         "@typescript-eslint/member-delimiter-style": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",        
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true, "ts-nocheck": true, "ts-expect-error": true }],
         "@typescript-eslint/type-annotation-spacing": 0,
         "quotes": ["error", "single"],
         "comma-dangle": ["error", "never"],
@@ -60,6 +61,7 @@
         "dot-location": "error",
         "no-await-in-loop": "error",
         "no-console": "error",
+        "no-debugger": "error",
         "no-loss-of-precision": "error",
         "no-promise-executor-return": "error",
         "no-template-curly-in-string": "error",
@@ -143,6 +145,27 @@
         "no-restricted-syntax": ["error", {
           "selector": "CallExpression[callee.object.name='window'][callee.property.name='open']:not([arguments.2.value=/noopener/])",
           "message": "Pass 'noopener,noreferrer' as the third argument of window.open, so the opened page gets no handle on the RTL tab."
+        }, {
+          "selector": "CallExpression[callee.name=/^(fdescribe|fit|xdescribe|xit)$/]",
+          "message": "Remove the focused or skipped spec: Karma would skip the rest of the suite without failing."
+        }, {
+          "selector": "CallExpression[callee.property.name='toPromise']",
+          "message": "toPromise is deprecated; use firstValueFrom or lastValueFrom."
+        }, {
+          "selector": "CallExpression[callee.property.name='subscribe'][arguments.length>1]",
+          "message": "Pass subscribe an observer object ({ next, error }), not separate callbacks."
+        }, {
+          "selector": "CallExpression[callee.property.name='addEventListener']",
+          "message": "Use an (event) binding or @HostListener, so Angular removes the listener."
+        }, {
+          "selector": "MemberExpression[object.name='localStorage'], MemberExpression[object.name='window'][property.name='localStorage']",
+          "message": "Nothing goes in localStorage; use SessionService."
+        }, {
+          "selector": "CallExpression[callee.name='fetch'], NewExpression[callee.name='XMLHttpRequest']",
+          "message": "Use HttpClient in src/ (it adds the token and CSRF header) and utils/request.ts in server/."
+        }, {
+          "selector": "CallExpression[callee.object.name='jwt'][callee.property.name='decode']",
+          "message": "jwt.decode does not check the signature; use jwt.verify."
         }],
         "no-tabs": "error",
         "no-unneeded-ternary": "error",
@@ -186,6 +209,70 @@
         "template-curly-spacing": "error",
         "yield-star-spacing": "error",
         "no-cond-assign": "error"
+      }
+    },
+    {
+      "files": ["server/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "paths": [
+            { "name": "axios", "message": "Call the node through server/utils/request.ts, which sets the timeout and strips credentials from errors." },
+            { "name": "sha256", "message": "Use Node's crypto in server/; the sha256 package is for the browser." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["server/utils/request.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "paths": [
+            { "name": "sha256", "message": "Use Node's crypto in server/; the sha256 package is for the browser." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "paths": [
+            { "name": "crypto", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "fs", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "path", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "stream", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "http", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "https", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "os", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "child_process", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "axios", "message": "The browser calls the API through HttpClient." },
+            { "name": "@fortawesome/free-solid-svg-icons", "importNames": ["fas"], "message": "Import icons one by one; the pack puts every icon in the bundle." },
+            { "name": "@fortawesome/free-regular-svg-icons", "importNames": ["far"], "message": "Import icons one by one; the pack puts every icon in the bundle." }
+          ],
+          "patterns": [{ "group": ["node:*"], "message": "No Node built-ins in src/: only Buffer and process are polyfilled." }]
+        }]
+      }
+    },
+    {
+      "files": ["src/**/*.component.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "paths": [
+            { "name": "crypto", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "fs", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "path", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "stream", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "http", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "https", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "os", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "child_process", "message": "No Node built-ins in src/: only Buffer and process are polyfilled." },
+            { "name": "axios", "message": "The browser calls the API through HttpClient." },
+            { "name": "@fortawesome/free-solid-svg-icons", "importNames": ["fas"], "message": "Import icons one by one; the pack puts every icon in the bundle." },
+            { "name": "@fortawesome/free-regular-svg-icons", "importNames": ["far"], "message": "Import icons one by one; the pack puts every icon in the bundle." },
+            { "name": "@angular/common/http", "importNames": ["HttpClient"], "message": "Keep HTTP in effects and services; a component dispatches an action or calls a service." }
+          ],
+          "patterns": [{ "group": ["node:*"], "message": "No Node built-ins in src/: only Buffer and process are polyfilled." }]
+        }]
       }
     },
     {
