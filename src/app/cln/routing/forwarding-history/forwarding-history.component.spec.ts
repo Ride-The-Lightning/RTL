@@ -48,6 +48,31 @@ describe('CLNForwardingHistoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('fee in Sats (#468)', () => {
+    const events = [{ in_channel: '120x1x0', out_channel: '157x1x0', in_msat: 20000201, out_msat: 20000000, fee_msat: 201, status: 'settled',
+      received_time: 1793926243.25, resolved_time: 1793926243.46 }, { in_channel: '120x1x0', out_channel: '157x1x0', in_msat: 50027552,
+      out_msat: 50000000, fee_msat: 27552, status: 'settled', received_time: 1793926300.25, resolved_time: 1793926300.46 }] as any[];
+    const text = (selector: string) => Array.from(fixture.nativeElement.querySelectorAll(selector)).map((el: any) => el.textContent.trim());
+
+    beforeEach(() => {
+      component.displayedColumns = ['received_time', 'in_msatoshi', 'out_msatoshi', 'fee'];
+      component.loadForwardingEventsTable(events);
+      fixture.detectChanges();
+    });
+
+    it('should show the fee in Sats with the mSat part as decimals', () => {
+      expect(text('th.mat-column-fee')).toEqual(['Fee (Sats)']);
+      expect(text('td.mat-column-fee')).toEqual(jasmine.arrayWithExactContents(['0.201', '27.552']));
+    });
+
+    it('should filter the fee column by the Sats value shown', () => {
+      component.selFilterBy = 'fee';
+      component.selFilter = '27.5';
+      component.applyFilter();
+      expect(component.forwardingHistoryEvents.filteredData.map((event) => event.fee_msat)).toEqual([27552]);
+    });
+  });
+
   // The alias lookup sets out_channel_alias first when the out-channel comes first in the channel list (#1545)
   it('should export the fixed CSV columns whichever order an event\'s aliases were set in', async () => {
     component.loadForwardingEventsTable([{ created_index: 1, updated_index: 1, in_channel: '120x1x0', in_htlc_id: 0, out_channel: '157x1x0',

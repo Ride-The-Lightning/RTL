@@ -1,4 +1,20 @@
-import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes } from './consts-enums-functions';
+import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat } from './consts-enums-functions';
+
+describe('msatToSat (#468)', () => {
+  it('should keep the mSat part as decimals', () => {
+    expect(msatToSat(27552)).toBe(27.552);
+    expect(msatToSat('27552')).toBe(27.552);
+    expect(msatToSat('1000')).toBe(1);
+    expect(msatToSat(1)).toBe(0.001);
+  });
+
+  it('should read a missing or unreadable amount as zero', () => {
+    expect(msatToSat(undefined)).toBe(0);
+    expect(msatToSat(null)).toBe(0);
+    expect(msatToSat('')).toBe(0);
+    expect(msatToSat('any')).toBe(0);
+  });
+});
 
 describe('getLNDTxidBytes', () => {
   // txid_str and txid_bytes of the same outpoint, as LND's REST API returned them from the regtest fixture.

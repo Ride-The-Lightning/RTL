@@ -43,15 +43,15 @@
     <mat-divider class="my-1" [inset]="true" />
     <div fxLayout="row">
       <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Value (mSats)</h4>
+        <h4 fxLayoutAlign="start" class="font-bold-500">Value (Sats)</h4>
         <span class="foreground-secondary-text">
-          <div>{{payment?.value_msat | number}}</div>
+          <div>{{+payment?.value_msat / 1000 | number:'1.0-3'}}</div>
         </span>
       </div>
       <div fxFlex="50">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Fee (mSats)</h4>
+        <h4 fxLayoutAlign="start" class="font-bold-500">Fee (Sats)</h4>
         <span class="foreground-secondary-text">
-          <div>{{payment?.fee_msat | number}}</div>
+          <div>{{+payment?.fee_msat / 1000 | number:'1.0-3'}}</div>
         </span>
       </div>
     </div>

@@ -75,13 +75,13 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="fee">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (mSat)</th>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (Sats)</th>
         <td *matCellDef="let fhEvent" mat-cell>
           <span *ngIf="fhEvent?.fee" fxLayoutAlign="end center">
-            {{fhEvent?.fee | number}}
+            {{fhEvent?.fee / 1000 | number:'1.0-3'}}
           </span>
           <span *ngIf="!fhEvent?.fee && fhEvent?.fee_msat" fxLayoutAlign="end center">
-            {{fhEvent?.fee_msat | number}}
+            {{fhEvent?.fee_msat / 1000 | number:'1.0-3'}}
           </span>
         </td>
       </ng-container>

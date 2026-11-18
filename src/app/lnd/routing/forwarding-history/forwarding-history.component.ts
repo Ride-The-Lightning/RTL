@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ForwardingEvent, SwitchRes } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, LND_FORWARDING_CSV_COLUMNS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, SortOrderEnum, LND_DEFAULT_PAGE_SETTINGS, LND_PAGE_DEFS, LND_FORWARDING_CSV_COLUMNS, msatToSat } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -125,7 +125,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
       [{ key: 'timestamp', value: selFEvent.timestamp, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME },
       { key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
       { key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER },
-      { key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER }],
+      { key: 'fee_msat', value: msatToSat(selFEvent.fee_msat), title: 'Fee (Sats)', width: 25, type: DataTypeEnum.NUMBER }],
       [{ key: 'alias_in', value: selFEvent.alias_in, title: 'Inbound Peer Alias', width: 25, type: DataTypeEnum.STRING },
       { key: 'chan_id_in', value: selFEvent.chan_id_in, title: 'Inbound Channel ID', width: 25, type: DataTypeEnum.STRING },
       { key: 'alias_out', value: selFEvent.alias_out, title: 'Outbound Peer Alias', width: 25, type: DataTypeEnum.STRING },
@@ -163,6 +163,10 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
         case 'timestamp':
           rowToFilter = this.datePipe.transform(new Date((rowData[this.selFilterBy] || 0) * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() || '';
+          break;
+
+        case 'fee_msat':
+          rowToFilter = msatToSat(rowData.fee_msat).toString();
           break;
 
         default:

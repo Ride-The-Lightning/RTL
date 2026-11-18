@@ -18,7 +18,7 @@ import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, 
   SetRestoreChannelsList } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { API_URL, API_END_POINTS, RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, getNoRouteMessage } from '../../shared/services/consts-enums-functions';
+import { API_URL, API_END_POINTS, RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, getNoRouteMessage, msatToSat } from '../../shared/services/consts-enums-functions';
 import { closeAllDialogs, closeSpinner, logout, openAlert, openSnackBar, openSpinner, setApiUrl, setNodeData } from '../../store/rtl.actions';
 import { RTLState } from '../../store/rtl.state';
 
@@ -727,7 +727,7 @@ export class LNDEffects implements OnDestroy {
             } else {
               let msg = 'Payment Sent Successfully.';
               if (sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
-                msg = 'Payment sent successfully with the total fee ' + sendRes.payment_route.total_fees_msat + ' (mSats).';
+                msg = 'Payment sent successfully with the total fee ' + msatToSat(sendRes.payment_route.total_fees_msat) + ' (Sats).';
               }
               this.store.dispatch(openSnackBar({ payload: msg }));
             }

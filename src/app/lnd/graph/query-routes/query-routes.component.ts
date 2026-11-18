@@ -8,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Hop } from '../../../shared/models/lndModels';
-import { AlertTypeEnum, DataTypeEnum, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, LND_DEFAULT_PAGE_SETTINGS, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum, msatToSat } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLState } from '../../../store/rtl.state';
@@ -93,7 +93,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedHop: MessageDataField[][] = [
       [{ key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }],
+      { key: 'fee_msat', value: msatToSat(selHop.fee_msat), title: 'Fee (Sats)', width: 34, type: DataTypeEnum.NUMBER }],
       [{ key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity (Sats)', width: 50, type: DataTypeEnum.NUMBER },
       { key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING },

@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS, CLN_FAILED_FORWARDING_CSV_COLUMNS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS, CLN_PAGE_DEFS, CLN_FAILED_FORWARDING_CSV_COLUMNS, msatToSat } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -109,9 +109,9 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
       { key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME }],
       [{ key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'out_channel_alias', value: selFEvent.out_channel_alias, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'in_msatoshi', value: selFEvent.in_msat, title: 'Amount In (mSats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'out_msatoshi', value: selFEvent.out_msat, title: 'Amount Out (mSats)', width: 33, type: DataTypeEnum.NUMBER },
-      { key: 'fee', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 34, type: DataTypeEnum.NUMBER }]
+      [{ key: 'in_msatoshi', value: msatToSat(selFEvent.in_msat), title: 'Amount In (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'out_msatoshi', value: msatToSat(selFEvent.out_msat), title: 'Amount Out (Sats)', width: 33, type: DataTypeEnum.NUMBER },
+      { key: 'fee', value: msatToSat(selFEvent.fee_msat), title: 'Fee (Sats)', width: 34, type: DataTypeEnum.NUMBER }]
     ];
     if (selFEvent.payment_hash) {
       reorderedFHEvent?.unshift([{ key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING }]);
@@ -145,7 +145,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
           (rowData.resolved_time ? this.datePipe.transform(new Date(rowData.resolved_time * 1000), 'dd/MMM/y HH:mm')?.toLowerCase() + ' ' : '') +
           (rowData.in_channel ? rowData.in_channel.toLowerCase() + ' ' : '') + (rowData.out_channel ? rowData.out_channel.toLowerCase() + ' ' : '') +
           (rowData.in_channel_alias ? rowData.in_channel_alias.toLowerCase() + ' ' : '') + (rowData.out_channel_alias ? rowData.out_channel_alias.toLowerCase() + ' ' : '') +
-          (rowData.fee_msat ? rowData.fee_msat + ' ' : '') + (rowData.in_msat ? (+rowData.in_msat / 1000) + ' ' : '') + (rowData.out_msat ? (+rowData.out_msat / 1000) + ' ' : '') + (rowData.fee_msat ? rowData.fee_msat + ' ' : '');
+          (rowData.fee_msat ? msatToSat(rowData.fee_msat) + ' ' : '') + (rowData.in_msat ? (+rowData.in_msat / 1000) + ' ' : '') + (rowData.out_msat ? (+rowData.out_msat / 1000) + ' ' : '') + (rowData.fee_msat ? msatToSat(rowData.fee_msat) + ' ' : '');
           break;
 
         case 'received_time':
@@ -154,7 +154,7 @@ export class CLNFailedTransactionsComponent implements OnInit, AfterViewInit, On
           break;
 
         case 'fee':
-          rowToFilter = ((rowData['fee_msat'] || 0))?.toString() || '';
+          rowToFilter = msatToSat(rowData['fee_msat']).toString();
           break;
 
         case 'in_msatoshi':

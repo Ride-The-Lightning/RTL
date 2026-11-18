@@ -104,6 +104,25 @@ describe('ChannelRebalanceComponent', () => {
     });
   });
 
+  describe('total fees in Sats (#468)', () => {
+    const showResult = (payment_route: any) => {
+      component.flgInvoiceGenerated = true;
+      component.flgPaymentSent = true;
+      component.paymentStatus = { payment_hash: 'ab'.repeat(32), payment_route: payment_route };
+      fixture.detectChanges();
+      const heading: any = Array.from(fixture.nativeElement.querySelectorAll('h4')).find((el: any) => el.textContent.includes('Total Fees'));
+      return [heading.textContent.trim(), heading.nextElementSibling.textContent.trim()];
+    };
+
+    it('should show the mSat total as Sats with decimals', () => {
+      expect(showResult({ total_fees: '27', total_fees_msat: '27552', hops: [{}, {}] })).toEqual(['Total Fees (Sats)', '27.552']);
+    });
+
+    it('should show the Sats total when LND sent no mSat total', () => {
+      expect(showResult({ total_fees: '27', hops: [{}, {}] })).toEqual(['Total Fees (Sats)', '27']);
+    });
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

@@ -1414,6 +1414,11 @@ export function getNoRouteMessage(errMsg: string, feeLimitSat: number | null | u
     'If you\'re willing to pay a higher fee, ' + howToRaise;
 }
 
+// Amounts paid or earned are shown in Sats, with the mSat part as up to three decimals (issue #468).
+export function msatToSat(msat: number | string | null | undefined): number {
+  return (+(msat || 0) || 0) / 1000;
+}
+
 // LND shows a txid as hex in display order, but its wallet RPCs take the raw txid bytes in internal
 // order, which is the reverse, sent over REST as base64. This is what a UTXO's outpoint.txid_bytes holds.
 export function getLNDTxidBytes(txidHex: string | undefined) {

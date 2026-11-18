@@ -29,6 +29,16 @@ this release should add its entry under the appropriate section below.
 
 ## Enhancements
 
+- **Fees are shown in Sats instead of mSats** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  closes [#468](https://github.com/Ride-The-Lightning/RTL/issues/468)). The fee of a circular
+  rebalance, of a forwarding event and of a queried route, and the value and fee of a looked-up
+  payment, were shown in mSats while the amounts beside them were in Sats. They are now in Sats
+  with the mSat part as up to three decimals, so `27552` mSats reads `27.552`. This covers LND
+  and Core Lightning, including the detail dialogs and the payment-sent message; filtering the
+  fee column matches the Sats value. On Eclair the fee of a payment part was already in Sats
+  under a `Fees (mSats)` heading, which now says Sats. Channel policy values (base fee, fee
+  rate, min/max HTLC) stay in mSats, the unit they are set in, and CSV downloads are unchanged.
+
 ## Code Health
 
 - **Loop In no longer posts two fields the server ignores** ([#1818](https://github.com/Ride-The-Lightning/RTL/pull/1818),

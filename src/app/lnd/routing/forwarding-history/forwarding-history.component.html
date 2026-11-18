@@ -63,8 +63,8 @@
       <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent.amt_out | number}}</span></td>
     </ng-container>
     <ng-container matColumnDef="fee_msat">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (mSats)</th>
-      <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{fhEvent.fee_msat | number}}</span></td>
+      <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (Sats)</th>
+      <td *matCellDef="let fhEvent" mat-cell><span fxLayoutAlign="end center">{{+fhEvent.fee_msat / 1000 | number:'1.0-3'}}</span></td>
     </ng-container>
     <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>

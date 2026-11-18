@@ -74,8 +74,8 @@
           </span></td>
       </ng-container>
       <ng-container matColumnDef="fee_msat">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (mSats)</th>
-        <td *matCellDef="let hop" mat-cell><span fxLayoutAlign="end center">{{hop?.fee_msat | number}} </span>
+        <th *matHeaderCellDef mat-header-cell mat-sort-header arrowPosition="before">Fee (Sats)</th>
+        <td *matCellDef="let hop" mat-cell><span fxLayoutAlign="end center">{{+hop?.fee_msat / 1000 | number:'1.0-3'}} </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

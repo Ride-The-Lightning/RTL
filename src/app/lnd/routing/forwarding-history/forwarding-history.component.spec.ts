@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
@@ -44,6 +44,38 @@ describe('ForwardingHistoryComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('fee in Sats (#468)', () => {
+    const events = [{ timestamp: '1717200000', chan_id_in: '111', chan_id_out: '222', amt_in: '50000', amt_out: '49972', fee: '27',
+      fee_msat: '27552', alias_in: 'bob', alias_out: 'eclair' }, { timestamp: '1717200060', chan_id_in: '111', chan_id_out: '222',
+      amt_in: '900', amt_out: '899', fee: '1', fee_msat: '1000', alias_in: 'bob', alias_out: 'eclair' }] as any[];
+    const text = (selector: string) => Array.from(fixture.nativeElement.querySelectorAll(selector)).map((el: any) => el.textContent.trim());
+
+    beforeEach(() => {
+      component.displayedColumns = ['timestamp', 'amt_in', 'amt_out', 'fee_msat'];
+      component.loadForwardingEventsTable(events);
+      fixture.detectChanges();
+    });
+
+    it('should show the fee in Sats with the mSat part as decimals', () => {
+      expect(text('th.mat-column-fee_msat')).toEqual(['Fee (Sats)']);
+      expect(text('td.mat-column-fee_msat')).toEqual(jasmine.arrayWithExactContents(['27.552', '1']));
+    });
+
+    it('should filter the fee column by the Sats value shown', () => {
+      component.selFilterBy = 'fee_msat';
+      component.selFilter = '27.5';
+      component.applyFilter();
+      expect(component.forwardingHistoryEvents.filteredData.map((event) => event.fee_msat)).toEqual(['27552']);
+    });
+
+    it('should open the event details with the fee in Sats', () => {
+      const dispatch = spyOn(TestBed.inject(Store), 'dispatch');
+      component.onForwardingEventClick(events[0], null);
+      const fields = dispatch.calls.mostRecent().args[0]['payload'].data.message.flat();
+      expect(fields.find((field) => field.key === 'fee_msat')).toEqual(jasmine.objectContaining({ value: 27.552, title: 'Fee (Sats)' }));
+    });
   });
 
   describe('CSV export (#1545)', () => {
