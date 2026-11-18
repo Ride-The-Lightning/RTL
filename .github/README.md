@@ -75,6 +75,7 @@ RTL requires its own config file `RTL-Config.json`, to start the server and prov
 * Rename the file `Sample-RTL-Config.json` to `RTL-Config.json` located at`./RTL`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
 * Modify the `RTL-Config.json` file per the example file below
+* If RTL should only be reachable from the machine it runs on, add `"host": "127.0.0.1"`. Without a `host`, RTL listens on all network interfaces; see [which network interfaces RTL listens on](./docs/Application_configurations.md#which-network-interfaces-rtl-listens-on).
 
 Example RTL-Config.json:
 ```
@@ -132,7 +133,9 @@ Run the following command:
 
 If the server started successfully, you should get the below output on the console:
 
-`$ Server is up and running, please open the UI at http://localhost:3000 or your proxy configured url.`
+`$ Server is up and running on 127.0.0.1:3000, please open the UI at http://127.0.0.1:3000 or your proxy configured url.`
+
+That is the output with `"host": "127.0.0.1"` in `RTL-Config.json`. Without a `host` it reads `running on all network interfaces`, which means other machines can connect; see [which network interfaces RTL listens on](./docs/Application_configurations.md#which-network-interfaces-rtl-listens-on).
 
 #### Optional: Running RTL as a service (Rpi or Linux platform users)
 In case you are running a headless Rpi or a Linux node, you can configure RTL as a service.

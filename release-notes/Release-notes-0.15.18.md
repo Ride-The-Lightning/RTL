@@ -39,6 +39,17 @@ this release should add its entry under the appropriate section below.
   under a `Fees (mSats)` heading, which now says Sats. Channel policy values (base fee, fee
   rate, min/max HTLC) stay in mSats, the unit they are set in, and CSV downloads are unchanged.
 
+- **The startup log states the address RTL is listening on, and `host` is documented**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  closes [#731](https://github.com/Ride-The-Lightning/RTL/issues/731)). With no `host` in
+  `RTL-Config.json`, RTL listens on every network interface, but the startup log said
+  `http://localhost:3000` and one line of the docs gave the default as localhost, so an install
+  could be reachable from the network without its operator knowing. The log now reports the
+  address actually bound and, when no `host` is set, says that other machines can connect and
+  how to restrict it. `Application_configurations.md` explains what to set for a local-only,
+  LAN, reverse-proxy or container install. The default is unchanged: to accept local
+  connections only, set `"host": "127.0.0.1"` (or `HOST`).
+
 ## Code Health
 
 - **Loop In no longer posts two fields the server ignores** ([#1818](https://github.com/Ride-The-Lightning/RTL/pull/1818),

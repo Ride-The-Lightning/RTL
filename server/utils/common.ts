@@ -531,6 +531,23 @@ export class CommonService {
     return (family === 4 && bits < 32) || (family === 6 && bits < 128);
   });
 
+  // The startup line, from the address the server is really bound to (server.address()) and
+  // not from the config: with no host set Node listens on every interface (issue #731).
+  public getListeningMessage = (address: { address: string, port: number } | string | null, host?: string | null): string => {
+    if (!address || typeof address === 'string') {
+      return 'Server is up and running, please open the UI at your configured url';
+    }
+    const bound = address.address.includes(':') ? '[' + address.address + ']' : address.address;
+    if (address.address === '::' || address.address === '0.0.0.0') {
+      return 'Server is up and running on all network interfaces (' + address.address + ', port ' + address.port + '), please open the UI at http://localhost:' +
+        address.port + ' or your proxy configured url' + (host ? '' : '. No host is set, so RTL accepts connections from other machines unless a firewall blocks the port. ' +
+        'To accept local connections only, set host to 127.0.0.1 in RTL-Config.json (or HOST in the environment)');
+    }
+    const named = !!host && host !== address.address;
+    return 'Server is up and running on ' + bound + ':' + address.port + (named ? ' (host ' + host + ')' : '') + ', please open the UI at http://' +
+      (named ? host : bound) + ':' + address.port + ' or your proxy configured url';
+  };
+
   public getDummyData = (dataKey, lnImplementation) => {
     const dummyDataFile = this.appConfig.rtlConfFilePath + sep + 'ECLDummyData.log';
     return new Promise((resolve, reject) => {

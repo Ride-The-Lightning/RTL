@@ -94,7 +94,9 @@ Run the following command:
 
 If the server started successfully, you should get the below output on the console:
 
-`$ Server is up and running, please open the UI at http://localhost:3000 or your proxy configured url.`
+`$ Server is up and running on 127.0.0.1:3000, please open the UI at http://127.0.0.1:3000 or your proxy configured url.`
+
+That is the output with `"host": "127.0.0.1"` in `RTL-Config.json`. Without a `host` it reads `running on all network interfaces`, which means other machines can connect; see [which network interfaces RTL listens on](./Application_configurations.md#which-network-interfaces-rtl-listens-on).
 
 Open your browser at the following address: http://localhost:3000 to access the RTL app.
 

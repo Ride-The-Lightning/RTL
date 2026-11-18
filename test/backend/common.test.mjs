@@ -413,3 +413,45 @@ test('overBroadTrustedProxies flags entries that cover more than one host', () =
   assert.deepEqual(Common.overBroadTrustedProxies('uniquelocal'), ['uniquelocal']);
   assert.deepEqual(Common.overBroadTrustedProxies('127.0.0.1, loopback, 10.0.0.0/8, fd00::/8, linklocal'), ['loopback', '10.0.0.0/8', 'fd00::/8', 'linklocal']);
 });
+
+// Issue #731: with no host set, Node listens on every interface while the startup log named localhost.
+const listenOn = (...args) => new Promise((resolve) => {
+  const server = createServer();
+  server.listen(...args, () => resolve(server));
+});
+
+test('getListeningMessage names the address a server bound without a host is really listening on', async () => {
+  const server = await listenOn(0);
+  const { port } = server.address();
+  let msg;
+  try { msg = Common.getListeningMessage(server.address(), null); } finally { server.close(); }
+  assert.match(msg, /running on all network interfaces \((::|0\.0\.0\.0), port \d+\)/);
+  assert.ok(msg.includes('http://localhost:' + port));
+  assert.match(msg, /No host is set, so RTL accepts connections from other machines/);
+  assert.match(msg, /host to 127\.0\.0\.1 in RTL-Config\.json \(or HOST in the environment\)/);
+});
+
+test('getListeningMessage reports a loopback bind without the exposure notice', async () => {
+  const server = await listenOn(0, '127.0.0.1');
+  const { port } = server.address();
+  let msg;
+  try { msg = Common.getListeningMessage(server.address(), '127.0.0.1'); } finally { server.close(); }
+  assert.equal(msg, 'Server is up and running on 127.0.0.1:' + port + ', please open the UI at http://127.0.0.1:' + port + ' or your proxy configured url');
+});
+
+test('getListeningMessage keeps the notice off when all interfaces were asked for by name', () => {
+  const msg = Common.getListeningMessage({ address: '0.0.0.0', family: 'IPv4', port: 3000 }, '0.0.0.0');
+  assert.equal(msg, 'Server is up and running on all network interfaces (0.0.0.0, port 3000), please open the UI at http://localhost:3000 or your proxy configured url');
+});
+
+test('getListeningMessage shows the configured host name beside the address it resolved to', () => {
+  assert.equal(Common.getListeningMessage({ address: '::1', family: 'IPv6', port: 3000 }, 'localhost'),
+    'Server is up and running on [::1]:3000 (host localhost), please open the UI at http://localhost:3000 or your proxy configured url');
+  assert.equal(Common.getListeningMessage({ address: 'fd00::5', family: 'IPv6', port: 3000 }, 'fd00::5'),
+    'Server is up and running on [fd00::5]:3000, please open the UI at http://[fd00::5]:3000 or your proxy configured url');
+});
+
+test('getListeningMessage falls back to the plain message when the address is not a network one', () => {
+  assert.equal(Common.getListeningMessage(null, null), 'Server is up and running, please open the UI at your configured url');
+  assert.equal(Common.getListeningMessage('/tmp/rtl.sock', null), 'Server is up and running, please open the UI at your configured url');
+});
