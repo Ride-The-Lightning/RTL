@@ -61,21 +61,7 @@ Skip to step 5 if you already have Apache2 set up with HTTPS configured.
 6. Restart Apache2.
     - Debian-based distros: `sudo systemctl restart apache2`
     - Fedora-based distros: `sudo systemctl restart httpd`
-7. (Option) Edit ~/.rtl/rtl.js to disable insercure HTTP access to RTL entirely. Find these lines:
-
-    if (common.host) {
-      server.listen(common.port, common.host);
-    } else {
-      server.listen(common.port);
-    }
-
-...and change them to:
-
-    if (common.host) {
-      server.listen(common.port, "127.0.0.1");
-    } else {
-      server.listen(common.port, "127.0.0.1");
-    }
+7. (Option) Disable insecure HTTP access to RTL from other machines entirely: set `"host": "127.0.0.1"` in `RTL-Config.json` (or `HOST=127.0.0.1` in the environment) and restart RTL. See [which network interfaces RTL listens on](./Application_configurations.md#which-network-interfaces-rtl-listens-on).
 
 This disables normal HTTP access to your server except if the client is on the same machine as the server. This will allow you to access http://localhost:3002 (or whatever port number you are using) on a browser that is on the same machine as RTL, but otherwise, you will have to access RTL through the Apache2 reverse proxy at https://yourdomain.tld/rtl, which will secure the connection with HTTPS.
 

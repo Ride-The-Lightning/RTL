@@ -15,15 +15,18 @@ process.on('SIGINT', () => {
   process.exit();
 });
 
+// What a failed listen was for. With no host RTL asks for every interface, so naming localhost would mislead (issue #731).
+const listenTarget = () => ((common.host && common.host !== '') ? 'http://' + common.host + ':' + common.port : 'Port ' + common.port);
+
 const onError = (error) => {
   if (error.syscall !== 'listen') { throw error; }
   switch (error.code) {
     case 'EACCES':
-      logger.log({ level: 'ERROR', fileName: 'RTL', msg: 'http://' + ((common.host && common.host !== '') ? common.host : 'localhost') + ':' + common.port + ' requires elevated privileges' });
+      logger.log({ level: 'ERROR', fileName: 'RTL', msg: listenTarget() + ' requires elevated privileges' });
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      logger.log({ level: 'ERROR', fileName: 'RTL', msg: 'http://' + ((common.host && common.host !== '') ? common.host : 'localhost') + ':' + common.port + ' is already in use' });
+      logger.log({ level: 'ERROR', fileName: 'RTL', msg: listenTarget() + ' is already in use' });
       process.exit(1);
       break;
     case 'ECONNREFUSED':

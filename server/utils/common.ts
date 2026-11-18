@@ -541,7 +541,8 @@ export class CommonService {
     if (address.address === '::' || address.address === '0.0.0.0') {
       return 'Server is up and running on all network interfaces (' + address.address + ', port ' + address.port + '), please open the UI at http://localhost:' +
         address.port + ' or your proxy configured url' + (host ? '' : '. No host is set, so RTL accepts connections from other machines unless a firewall blocks the port. ' +
-        'To accept local connections only, set host to 127.0.0.1 in RTL-Config.json (or HOST in the environment)');
+        'To accept local connections only, set host to 127.0.0.1 in RTL-Config.json (or HOST in the environment). ' +
+        'In a container, leave host unset and restrict the published port instead');
     }
     const named = !!host && !net.isIP(host);
     return 'Server is up and running on ' + bound + ':' + address.port + (named ? ' (host ' + host + ')' : '') + ', please open the UI at http://' +

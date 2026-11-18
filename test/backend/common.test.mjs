@@ -429,6 +429,8 @@ test('getListeningMessage names the address a server bound without a host is rea
   assert.ok(msg.includes('http://localhost:' + port));
   assert.match(msg, /No host is set, so RTL accepts connections from other machines/);
   assert.match(msg, /host to 127\.0\.0\.1 in RTL-Config\.json \(or HOST in the environment\)/);
+  // 127.0.0.1 inside a container makes the published port unreachable, so the advice must not be given bare.
+  assert.match(msg, /In a container, leave host unset and restrict the published port instead/);
 });
 
 test('getListeningMessage reports a loopback bind without the exposure notice', async () => {

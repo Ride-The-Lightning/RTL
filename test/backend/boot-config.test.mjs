@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:http';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -98,4 +99,30 @@ test('an empty TRUSTED_PROXIES switches off the config file list rather than fal
 test('a well-formed trustedProxies list boots (control for the refusals above)', async () => {
   const result = await boot(writeConfig('127.0.0.1, 10.0.0.0/8'));
   assert.equal(result.code, 'listening', 'stderr: ' + result.stderr);
+});
+
+// Issue #731: rtl.js must log the address it really bound, not the one the config implies.
+test('with no host the startup line says RTL is listening on all network interfaces', async () => {
+  const result = await boot(writeConfig());
+  assert.equal(result.code, 'listening', 'stderr: ' + result.stderr);
+  assert.match(result.stdout, /running on all network interfaces \((::|0\.0\.0\.0), port \d+\)/);
+  assert.match(result.stdout, /No host is set, so RTL accepts connections from other machines/);
+});
+
+test('with HOST set to 127.0.0.1 the startup line names that address and carries no notice', async () => {
+  const result = await boot(writeConfig(), { HOST: '127.0.0.1' });
+  assert.equal(result.code, 'listening', 'stderr: ' + result.stderr);
+  assert.match(result.stdout, /running on 127\.0\.0\.1:\d+, please open the UI at http:\/\/127\.0\.0\.1:\d+/);
+  assert.doesNotMatch(result.stdout, /No host is set/);
+});
+
+test('a port already in use is not reported as localhost when no host is set', async () => {
+  const blocker = createServer();
+  await new Promise((resolve) => blocker.listen(0, resolve));
+  const { port } = blocker.address();
+  let result;
+  try { result = await boot(writeConfig(), { PORT: String(port) }); } finally { blocker.close(); }
+  assert.equal(result.code, 1, 'stderr: ' + result.stderr);
+  assert.ok(result.stderr.includes('Port ' + port + ' is already in use'), 'stderr: ' + result.stderr);
+  assert.doesNotMatch(result.stderr, /localhost/);
 });

@@ -48,29 +48,34 @@ parameters have `default` values for initial setup and can be updated after RTL 
 }
 ```
 <br />
-### Which network interfaces RTL listens on<br />
-With no `host` set, RTL listens on **every network interface** of the machine, so it can be reached from other machines on<br />
-the network, and from the internet if the machine has a public address and no firewall blocks the port. RTL serves plain HTTP,<br />
-so the password would cross that network unencrypted.<br />
-<br />
-* RTL and the browser on the same machine, or RTL behind a reverse proxy or Tor hidden service on the same machine: set `"host": "127.0.0.1"`.<br />
-  Prefer `127.0.0.1` to `localhost`, which on some systems resolves to the IPv6 address `::1` only, where a proxy pointed at `127.0.0.1` cannot connect.<br />
-* RTL reached directly from other machines on a trusted network: set `host` to that interface's address, e.g. `"host": "192.168.1.10"`.<br />
-* RTL in a container: leave `host` unset or set it to `0.0.0.0`, and limit access with the published port instead, e.g. `-p 127.0.0.1:3000:3000`.<br />
-  With `127.0.0.1` inside a container the published port does not reach RTL.<br />
-<br />
-The startup log states the address RTL is actually listening on:<br />
+
+### Which network interfaces RTL listens on
+
+With no `host` set, RTL listens on **every network interface** of the machine, so it can be reached from other machines on
+the network, and from the internet if the machine has a public address and no firewall blocks the port. RTL serves plain HTTP,
+so the login (a hash of the password, which is enough to log in) and the session token would cross that network unencrypted.
+
+* RTL and the browser on the same machine, or RTL behind a reverse proxy or Tor hidden service on the same machine: set `"host": "127.0.0.1"`.
+  Prefer `127.0.0.1` to `localhost`, which on some systems resolves to the IPv6 address `::1` only, where a proxy pointed at `127.0.0.1` cannot connect.
+* RTL reached directly from other machines on a trusted network: set `host` to that interface's address, e.g. `"host": "192.168.1.10"`.
+* RTL in a container: leave `host` unset or set it to `0.0.0.0`, and limit access with the published port instead, e.g. `-p 127.0.0.1:3000:3000`.
+  With `127.0.0.1` inside a container the published port does not reach RTL.
+
+The startup log states the address RTL is actually listening on:
+
 ```
 Server is up and running on 127.0.0.1:3000, please open the UI at http://127.0.0.1:3000 or your proxy configured url.
 Server is up and running on all network interfaces (::, port 3000), please open the UI at http://localhost:3000 or your proxy configured url. No host is set, so RTL accepts connections from other machines ...
 ```
+
 <br />
+
 ### Environment variables<br />
 The environment variable can also be used for all of the above configurations except the UI settings.<br />
 If the environment variables are set, it will take precedence over the parameters in the RTL-Config.json file.<br />
 <br />
 PORT (port number for the rtl node server, default 3000, Optional)<br />
-HOST (Address the rtl node server listens on, e.g. 127.0.0.1 to accept connections from the same machine only. Default: all network interfaces, see 'Which network interfaces RTL listens on' below, Optional)<br />
+HOST (Address the rtl node server listens on, e.g. 127.0.0.1 to accept connections from the same machine only. Default: all network interfaces, see 'Which network interfaces RTL listens on' above, Optional)<br />
 TRUSTED_PROXIES (Comma-separated addresses of the reverse proxies in front of RTL, whose X-Forwarded-For header names the client for the login lockout; exact addresses, not ranges that also contain clients. Set empty to switch off a list from the config file. Default none, Optional)<br />
 DB_DIRECTORY_PATH (Path for the folder where rtl database file should be saved, default RTL root directory, Optional)
 APP_PASSWORD (Plaintext password to be provided by the parent container, NOT suggested for standalone RTL applications, only to be used by Vendors providing their own authentication service) (Optional)<br />
