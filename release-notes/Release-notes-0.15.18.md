@@ -29,7 +29,7 @@ this release should add its entry under the appropriate section below.
 
 ## Enhancements
 
-- **Fees are shown in Sats instead of mSats** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+- **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),
   closes [#468](https://github.com/Ride-The-Lightning/RTL/issues/468)). The fee of a circular
   rebalance, of a forwarding event and of a queried route, and the value and fee of a looked-up
   payment, were shown in mSats while the amounts beside them were in Sats. They are now in Sats
