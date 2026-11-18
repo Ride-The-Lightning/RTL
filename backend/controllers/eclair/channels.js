@@ -16,6 +16,8 @@ export const simplifyAllChannels = (selNode, channels) => {
         // commitments yet. Eclair lists it anyway, so read its balances as zero instead of throwing on the
         // missing object and turning the whole channel list into an error.
         const spec = channel.data?.commitments?.active?.[0]?.localCommit?.spec;
+        // '<txid>:<output index>' of the funding output. The channel id is derived from it and is not a txid.
+        const fundingInput = channel.data?.commitments?.active?.[0]?.fundingInput;
         simplifiedChannels.push({
             nodeId: channel.nodeId ? channel.nodeId : '',
             channelId: channel.channelId ? channel.channelId : '',
@@ -27,6 +29,7 @@ export const simplifyAllChannels = (selNode, channels) => {
             isInitiator: channel.data && channel.data.commitments && channel.data.commitments.params && channel.data.commitments.params.localParams && channel.data.commitments.params.localParams.isInitiator ? channel.data.commitments.params.localParams.isInitiator : false,
             feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
             feeProportionalMillionths: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeProportionalMillionths ? channel.data.channelUpdate.feeProportionalMillionths : 0,
+            fundingTxId: (typeof fundingInput === 'string') ? fundingInput.split(':')[0] : '',
             alias: ''
         });
     });

@@ -50,6 +50,14 @@ this release should add its entry under the appropriate section below.
   LAN, reverse-proxy or container install. The default is unchanged: to accept local
   connections only, set `"host": "127.0.0.1"` (or `HOST`).
 
+- **Eclair: the Channel Information dialog shows the funding transaction id**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  closes [#634](https://github.com/Ride-The-Lightning/RTL/issues/634)). On Eclair the dialog
+  showed only the channel id, which is derived from the funding outpoint and cannot be looked up
+  on a block explorer. It now shows the funding transaction id for open, pending and inactive
+  channels, with a link to the node's block explorer, as the Core Lightning dialog does. A
+  channel whose funding transaction does not exist yet has no such row.
+
 ## Code Health
 
 - **Loop In no longer posts two fields the server ignores** ([#1818](https://github.com/Ride-The-Lightning/RTL/pull/1818),

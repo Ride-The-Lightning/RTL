@@ -114,6 +114,7 @@ export interface Channel {
   isInitiator?: boolean;
   feeBaseMsat?: number;
   feeProportionalMillionths?: number;
+  fundingTxId?: string;
   balancedness?: number;
 }
 

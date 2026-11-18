@@ -166,3 +166,22 @@ test('getChannels lists a channel that has no commitments yet, with zero balance
     await node.close();
   }
 });
+
+// Issue #634. Eclair's channel id is derived from the funding outpoint and cannot be looked up on a
+// block explorer. The txid is in the first active commitment's fundingInput ('<txid>:<output index>'),
+// as returned by eclair 0.14.2 on the regtest fixture; 0.13.1 serialises the same field.
+test('getChannels returns the funding transaction id, and none for a channel without a commitment', async () => {
+  const fundingTxId = 'cc69154417fa65d7a8aea539a1b151a4b5a91e559d0de06f9ab180891e94b8bc';
+  const funded = JSON.parse(JSON.stringify(normalChannel));
+  funded.data.commitments.active[0].fundingInput = fundingTxId + ':1';
+  const malformed = JSON.parse(JSON.stringify(normalChannel));
+  malformed.data.commitments.active[0].fundingInput = { txid: fundingTxId };
+  const node = await startFakeEclair({ openReply: '', channels: [funded, openingChannel, normalChannel, malformed] });
+  try {
+    const res = await invoke(getChannels, node, {});
+    assert.equal(res.statusCode, 200, JSON.stringify(res.body));
+    assert.deepEqual(res.body.map((channel) => channel.fundingTxId), [fundingTxId, '', '', '']);
+  } finally {
+    await node.close();
+  }
+});
