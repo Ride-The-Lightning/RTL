@@ -2,7 +2,8 @@
 
 Instructions for reviewers of RTL pull requests, human or automated. `CONTRIBUTING.md` covers
 process and `CLAUDE.md` covers working in the tree; this file covers only what to check in a
-diff.
+diff: security, and the traps specific to this codebase. General TypeScript, Angular and
+library practice is in `docs/Code_guidelines.md`, which is guidance for authors and not a checklist.
 
 Apply "Every PR" always, and the `server/` or `src/` section when the diff touches that tree.
 
@@ -36,6 +37,9 @@ Apply "Every PR" always, and the `server/` or `src/` section when the diff touch
   `npm audit fix` output is not acceptable.
 - **Release note.** `release-notes/Release-notes-<x.y.z>.md` has an entry under the right
   heading, linking the PR and issue and stating the root cause.
+- **Numbers from a node are converted first.** LND returns 64-bit integers as strings, so
+  `+` concatenates and `<` compares as text. A numeric field is converted (`+value`) before
+  arithmetic, comparison or sorting, in `server/` and in `src/`.
 - **Base branch.** The PR targets the current `Release-x.y.z` branch, not `master`.
 
 ## Server (`server/`)
@@ -87,6 +91,26 @@ Apply "Every PR" always, and the `server/` or `src/` section when the diff touch
   cannot truncate the file or widen its permissions.
 - **WebSocket.** The upgrade stays behind `verifyWSUser` (the JWT in the first subprotocol,
   plus the CSRF check), and node events go only to clients watching that node.
+- **Node credentials in WebSocket clients.** The Eclair WebSocket URL contains the API
+  password and the CLN `socket.io-client` handshake carries the rune: neither is logged or
+  sent to the browser.
+- **Request options belong to one request.** `common.getOptions(req)` returns the session's
+  own options object, and controllers keep it in a module-level `options` that every request
+  reassigns. A handler that uses options after the node has answered (an alias lookup, a
+  follow-up call) takes a copy before the first asynchronous step, and a per-call field such
+  as `timeout: 0` or `signal` goes on a copy, never on the shared object (#1725, #1750;
+  `test/backend/cross-session-options.test.mjs`).
+- **Long-lived calls are abortable.** A stream or long poll that sets `timeout: 0` passes an
+  `AbortController` signal and is aborted when it is replaced or no longer watched, as the
+  LND invoice subscriptions are (#1751).
+- **One response per request.** Every branch of a handler ends in exactly one
+  `res.status(...).json(...)`, with `return` on the early ones (the `options.error` check,
+  the dummy-data branch). The status is an integer: Express 5 throws on anything else, so an
+  error path that may carry no `statusCode` supplies one.
+- **2FA parameters match on both sides.** A code is verified with the `totpAuthenticator`
+  clone of `otplib` (`window: 1`). `src/app/shared/services/totp.service.ts` reimplements
+  the same algorithm in the browser, so a parameter changed on one side is changed on the
+  other.
 - **Server-side validation.** Input is checked in the controller even when the Angular form
   already validates it; the browser is not trusted.
 - **Backend fixes have a regression test** in `test/backend/`. A security fix also tests the
@@ -122,6 +146,27 @@ Apply "Every PR" always, and the `server/` or `src/` section when the diff touch
   calls must use `isAuthenticated`.
 - **Sub-path serving.** Asset and API URLs stay relative, so RTL works under `/rtl` behind
   a reverse proxy.
+- **Effects survive an error.** `catchError` sits in the inner pipe returned from the
+  `mergeMap`, and returns an action (`of({ type: RTLActions.VOID })`). On the outer
+  `this.actions.pipe(...)` it completes the effect at the first failure, and that action
+  does nothing until the page is reloaded.
+- **Spinner and call status close on both paths.** An effect that dispatches `openSpinner`
+  or `update*APICallStatus` with `INITIATED` dispatches `closeSpinner` and `COMPLETED` on
+  success, and goes through `handleErrorWithAlert` or `handleErrorWithoutAlert` on failure,
+  with the same action name and `UI_MESSAGES` value it opened with. A mismatch leaves the
+  spinner up or the table loading.
+- **Store state is not mutated.** A reducer returns new objects and arrays, and a component
+  copies data it selected before editing it. The NgRx immutability runtime checks are off in
+  `app.module.ts`, so a mutation fails silently.
+- **Renames reach the templates.** `strictTemplates` is off, so a binding inside `*ngIf` or
+  `*ngFor` is not type-checked: a renamed or removed component property, model field or pipe
+  is searched for in the `.html` files as well.
+- **Implementation modules stay lazy.** `lnd.module.ts`, `cln.module.ts` and `ecl.module.ts`
+  load through `loadChildren` in `app.routing.ts`; `AppModule` and `SharedModule` do not
+  import them, which would move them into the main bundle.
+- **No Node built-ins in `src/`.** `src/polyfills.ts` provides `Buffer` and `process` only.
+  An import of `crypto`, `fs`, `path` or `stream` needs a polyfill and is refused; browser
+  crypto uses WebCrypto, as `totp.service.ts` does.
 - **Frontend fixes have a spec** (`*.spec.ts`) beside the component, service or effect.
 
 ## Do not flag
@@ -133,6 +178,7 @@ Apply "Every PR" always, and the `server/` or `src/` section when the diff touch
   `takeUntil(this.unSubs[n])` rather than `takeUntilDestroyed`. Moving off them is its own PR.
 - `[innerHTML]` on `convertedCurrency.symbol` or `currencyUnit.symbol`. The symbols are
   constants in `consts-enums-functions.ts`.
+- A departure from `docs/Code_guidelines.md` that no rule in this file covers.
 - A missing client-side check where the server enforces the same rule.
 - Anything listed under "Known accepted behaviour" in `.github/THREAT_MODEL.md`, unless the
   PR changes it.
@@ -154,6 +200,9 @@ Apply "Every PR" always, and the `server/` or `src/` section when the diff touch
   reader or deleter left on the old one, a change that breaks an install upgrading from the
   previous release, `trust proxy` trusting more than `trustedProxies`,
   a secret compared with `===` or drawn from `Math.random()`, a confirmation or password
-  prompt removed.
+  prompt removed, an effect whose `catchError` is on the outer stream, store state mutated
+  in place, a spinner or call status left open on an error path, shared request options
+  read or changed after an asynchronous step, a handler that can answer twice or not at all,
+  a node credential in a log line, an unbounded call that nothing aborts.
 - Minor: missing release note, wrong base branch, a focused or skipped spec, unrelated
   reformatting, a config key missing from the sample config or the docs.
