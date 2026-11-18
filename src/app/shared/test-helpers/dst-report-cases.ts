@@ -1,7 +1,8 @@
 // Issue #1331. Moments that the monthly reports booked to the wrong day, or to a day past the end of the
 // month, when the month had a daylight-saving change before them. They are built in the local timezone,
-// so each is the stated wall-clock time wherever the specs run; the specs only tell the old arithmetic
-// from the calendar in a timezone that has daylight saving (Europe for October, the US for November).
+// so each is the stated wall-clock time wherever the specs run. Only a timezone with daylight saving
+// tells the old arithmetic from the calendar (Europe for October and March, the US for November and
+// March), which is why karma.conf.cjs runs the specs in Europe/Berlin.
 export const DST_REPORT_CASES = [
   { label: 'the last hour of October', at: new Date(2025, 9, 31, 23, 30, 0), day: 31 },
   { label: 'the last hour of November', at: new Date(2025, 10, 30, 23, 30, 0), day: 30 },
