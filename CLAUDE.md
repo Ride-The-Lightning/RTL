@@ -97,6 +97,17 @@ frequently do, since the controllers were written in parallel.
   skipped) and on tags/releases, and
   `rtlreviewbot` only on a requested review or a comment. So until a maintainer approves the
   PR run, running both locally is the only check.
+- **Before opening a PR, read the diff against `.github/docs/Code_guidelines.md` and run
+  `npm run check`** as well as lint and test. It compares the branch with the newest
+  `Release-x.y.z` branch (pass another as `npm run check -- <branch>`) and prints problems,
+  which fail it (no release note, a new `eslint-disable`, an inexact dependency version,
+  lint errors in the changed files), and warnings, which do not: patterns on the added
+  lines that usually break a guideline (`.github/scripts/eslint.changed.config.js`), and
+  `server/` or `src/` changed without `backend/` or `frontend/` (the `artifacts` job decides
+  that exactly). Fix each warning or explain it in the PR body. PR CI runs the same check as
+  the `guidelines` job of `checks.yml` (open PRs only, not merges or tags) and annotates the
+  findings on the diff. The guidelines a script cannot see (guarding node data, keeping
+  models current, the same change in the other two implementations) still need reading for.
 - If lint reports hundreds of template "Parsing error" failures, look for a stale
   **`coverage/`** directory (git-ignored Karma output). The template linter walks its HTML
   report. Delete it and re-run.
