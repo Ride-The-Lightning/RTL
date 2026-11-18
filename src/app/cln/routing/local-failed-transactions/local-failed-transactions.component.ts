@@ -10,7 +10,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { ListForwards, LocalFailedEvent } from '../../../shared/models/clnModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum, CLNFailReason, CLNForwardingEventsStatusEnum, SortOrderEnum, CLN_DEFAULT_PAGE_SETTINGS,
-  CLN_PAGE_DEFS, CLN_FAILED_FORWARDING_CSV_COLUMNS, msatToSat } from '../../../shared/services/consts-enums-functions';
+  CLN_PAGE_DEFS, CLN_FAILED_FORWARDING_CSV_COLUMNS, msatToSatIfPresent } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -109,7 +109,7 @@ export class CLNLocalFailedTransactionsComponent implements OnInit, AfterViewIni
     const reorderedFHEvent: MessageDataField[][] = [
       [{ key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'in_channel_alias', value: selFEvent.in_channel_alias, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'in_msatoshi', value: msatToSat(selFEvent.in_msat), title: 'Amount In (Sats)', width: 100, type: DataTypeEnum.NUMBER }],
+      [{ key: 'in_msatoshi', value: msatToSatIfPresent(selFEvent.in_msat), title: 'Amount In (Sats)', width: 100, type: DataTypeEnum.NUMBER }],
       [{ key: 'failreason', value: selFEvent.failreason ? this.CLNFailReason[selFEvent.failreason] : '', title: 'Reason for Failure', width: 100, type: DataTypeEnum.STRING }]
     ];
     this.store.dispatch(openAlert({

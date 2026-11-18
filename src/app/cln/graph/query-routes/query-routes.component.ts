@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Routes } from '../../../shared/models/clnModels';
-import { AlertTypeEnum, CLN_DEFAULT_PAGE_SETTINGS, DataTypeEnum, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum, msatToSat } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, CLN_DEFAULT_PAGE_SETTINGS, DataTypeEnum, PAGE_SIZE, ScreenSizeEnum, SortOrderEnum, msatToSatIfPresent } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLNEffects } from '../../store/cln.effects';
@@ -91,7 +91,7 @@ export class CLNQueryRoutesComponent implements OnInit, OnDestroy {
       [{ key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING },
       { key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'amount_msat', value: msatToSat(selHop.amount_msat), title: 'Amount (Sats)', width: 34, type: DataTypeEnum.NUMBER },
+      [{ key: 'amount_msat', value: msatToSatIfPresent(selHop.amount_msat), title: 'Amount (Sats)', width: 34, type: DataTypeEnum.NUMBER },
       { key: 'direction', value: selHop.direction, title: 'Direction', width: 33, type: DataTypeEnum.STRING },
       { key: 'delay', value: selHop.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER }]
     ];

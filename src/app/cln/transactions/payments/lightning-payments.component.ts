@@ -10,7 +10,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clnModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes, CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS, msatToSat } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES, PaymentTypes,
+  CLN_DEFAULT_PAGE_SETTINGS, SortOrderEnum, CLN_PAGE_DEFS, msatToSatIfPresent } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -293,8 +294,8 @@ export class CLNLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       { key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING }],
       [{ key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME },
       { key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING }],
-      [{ key: 'amount_msat', value: msatToSat(selPayment.amount_msat), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'amount_sent_msat', value: msatToSat(selPayment.amount_sent_msat), title: 'Amount Sent (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
+      [{ key: 'amount_msat', value: msatToSatIfPresent(selPayment.amount_msat), title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'amount_sent_msat', value: msatToSatIfPresent(selPayment.amount_sent_msat), title: 'Amount Sent (Sats)', width: 50, type: DataTypeEnum.NUMBER }]
     ];
     if (selPayment.bolt11 && selPayment.bolt11 !== '') {
       reorderedPayment?.unshift([{ key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING }]);

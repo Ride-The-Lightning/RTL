@@ -12,7 +12,7 @@ import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop, ListPayments } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum,
-  UI_MESSAGES, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, LND_PAGE_DEFS, DEFAULT_FEE_LIMIT_DESCRIPTION, getFeeLimitSat, msatToSat } from '../../../shared/services/consts-enums-functions';
+  UI_MESSAGES, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, LND_PAGE_DEFS, DEFAULT_FEE_LIMIT_DESCRIPTION, getFeeLimitSat, msatToSatIfPresent } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -414,8 +414,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING }],
       [{ key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING },
       { key: 'creation_date', value: selPayment.creation_date, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME }],
-      [{ key: 'value_msat', value: msatToSat(selPayment.value_msat), title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER },
-      { key: 'fee_msat', value: msatToSat(selPayment.fee_msat), title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
+      [{ key: 'value_msat', value: msatToSatIfPresent(selPayment.value_msat), title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER },
+      { key: 'fee_msat', value: msatToSatIfPresent(selPayment.fee_msat), title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER }],
       [{ key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING }]
     ];
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {

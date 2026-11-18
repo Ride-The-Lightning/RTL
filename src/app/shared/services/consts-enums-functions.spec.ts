@@ -1,4 +1,4 @@
-import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat } from './consts-enums-functions';
+import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat, msatToSatIfPresent } from './consts-enums-functions';
 
 describe('msatToSat (#468)', () => {
   it('should keep the mSat part as decimals', () => {
@@ -13,6 +13,21 @@ describe('msatToSat (#468)', () => {
     expect(msatToSat(null)).toBe(0);
     expect(msatToSat('')).toBe(0);
     expect(msatToSat('any')).toBe(0);
+  });
+});
+
+describe('msatToSatIfPresent (#468)', () => {
+  it('should convert an amount the node reported, including a real zero', () => {
+    expect(msatToSatIfPresent(27552)).toBe(27.552);
+    expect(msatToSatIfPresent('27552')).toBe(27.552);
+    expect(msatToSatIfPresent(0)).toBe(0);
+    expect(msatToSatIfPresent('0')).toBe(0);
+  });
+
+  it('should leave an amount the node did not report undefined', () => {
+    expect(msatToSatIfPresent(undefined)).toBeUndefined();
+    expect(msatToSatIfPresent(null)).toBeUndefined();
+    expect(msatToSatIfPresent('')).toBeUndefined();
   });
 });
 

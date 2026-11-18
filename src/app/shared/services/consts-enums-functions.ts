@@ -1419,6 +1419,11 @@ export function msatToSat(msat: number | string | null | undefined): number {
   return (+(msat || 0) || 0) / 1000;
 }
 
+// For a details dialog: an amount the node did not report stays blank instead of reading as a real zero.
+export function msatToSatIfPresent(msat: number | string | null | undefined): number | undefined {
+  return (msat === undefined || msat === null || msat === '') ? undefined : msatToSat(msat);
+}
+
 // LND shows a txid as hex in display order, but its wallet RPCs take the raw txid bytes in internal
 // order, which is the reverse, sent over REST as base64. This is what a UTXO's outpoint.txid_bytes holds.
 export function getLNDTxidBytes(txidHex: string | undefined) {

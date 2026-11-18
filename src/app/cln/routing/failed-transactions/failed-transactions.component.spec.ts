@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { RootReducer } from '../../../store/rtl.reducers';
 import { LNDReducer } from '../../../lnd/store/lnd.reducers';
@@ -46,6 +46,16 @@ describe('CLNFailedTransactionsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  // A failed forward often has no out_msat or fee_msat; the details must leave them blank, not show a zero (#468)
+  it('should open the event details with amounts in Sats and leave an absent amount blank', () => {
+    const dispatch = spyOn(TestBed.inject(Store), 'dispatch');
+    component.onFailedEventClick({ in_channel: '120x1x0', in_msat: 5000050, status: 'failed', received_time: 1793926400.25 } as any);
+    const fields = dispatch.calls.mostRecent().args[0]['payload'].data.message.flat();
+    expect(fields.find((field) => field.key === 'in_msatoshi')).toEqual(jasmine.objectContaining({ value: 5000.05, title: 'Amount In (Sats)' }));
+    expect(fields.find((field) => field.key === 'out_msatoshi').value).toBeUndefined();
+    expect(fields.find((field) => field.key === 'fee').value).toBeUndefined();
   });
 
   // The alias lookup sets out_channel_alias first when the out-channel comes first in the channel list (#1545)
