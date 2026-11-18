@@ -13,6 +13,7 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { DST_REPORT_CASES, daysWithEntries } from '../../../shared/test-helpers/dst-report-cases';
 
 describe('CLNRoutingReportComponent', () => {
   let component: CLNRoutingReportComponent;
@@ -43,6 +44,29 @@ describe('CLNRoutingReportComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('monthly report across a daylight-saving change (#1331)', () => {
+    DST_REPORT_CASES.forEach((dst) => {
+      const select = () => {
+        component.events = [{ received_time: dst.at.getTime() / 1000, in_msat: 1000000, out_msat: 999000, fee_msat: 1000, status: 'settled' }];
+        component.onSelectionChange({ selDate: new Date(dst.at.getFullYear(), dst.at.getMonth(), 1), selScrollRange: 'MONTHLY' });
+      };
+
+      it('should book a forward in ' + dst.label + ' to day ' + dst.day + ' of the fee report', () => {
+        component.selReportBy = component.reportBy.FEES;
+        select();
+        expect(component.routingReportData.length).toBe(dst.day);
+        expect(daysWithEntries(component.routingReportData, (day) => day.extra.totalEvents)).toEqual([dst.day]);
+      });
+
+      it('should book a forward in ' + dst.label + ' to day ' + dst.day + ' of the events report', () => {
+        component.selReportBy = component.reportBy.EVENTS;
+        select();
+        expect(component.routingReportData.length).toBe(dst.day);
+        expect(daysWithEntries(component.routingReportData, (day) => day.value)).toEqual([dst.day]);
+      });
+    });
   });
 
   afterEach(() => {

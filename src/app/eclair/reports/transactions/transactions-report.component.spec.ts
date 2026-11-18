@@ -13,6 +13,7 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { DST_REPORT_CASES, daysWithEntries } from '../../../shared/test-helpers/dst-report-cases';
 
 describe('ECLTransactionsReportComponent', () => {
   let component: ECLTransactionsReportComponent;
@@ -58,6 +59,29 @@ describe('ECLTransactionsReportComponent', () => {
     expect(component.transactionsNonZeroReportData.length).toBe(1);
     expect(component.transactionsNonZeroReportData[0].num_invoices).toBe(3);
     expect(component.transactionsNonZeroReportData[0].amount_received).toBe(168);
+  });
+
+  describe('monthly report across a daylight-saving change (#1331)', () => {
+    DST_REPORT_CASES.forEach((dst) => {
+      describe('with a payment and an invoice in ' + dst.label, () => {
+        beforeEach(() => {
+          component.payments = [{ firstPartTimestamp: dst.at.getTime(), recipientAmount: 1000 }] as any[];
+          component.invoices = [{ status: 'received', timestamp: Math.floor(dst.at.getTime() / 1000), amountSettled: 1000 }] as any[];
+          component.onSelectionChange({ selDate: new Date(dst.at.getFullYear(), dst.at.getMonth(), 1), selScrollRange: 'MONTHLY' });
+        });
+
+        it('should book both to day ' + dst.day, () => {
+          expect(component.transactionsReportData.length).toBe(dst.day);
+          expect(daysWithEntries(component.transactionsReportData, (day) => day.series[0].extra.total)).toEqual([dst.day]);
+          expect(daysWithEntries(component.transactionsReportData, (day) => day.series[1].extra.total)).toEqual([dst.day]);
+        });
+
+        it('should date every day of that month as that day', () => {
+          expect(component.transactionsReportData.map((day) => day.date.getDate())).toEqual(component.transactionsReportData.map((day) => +day.name));
+          expect(component.transactionsNonZeroReportData.map((row) => row.date.getDate())).toEqual([dst.day]);
+        });
+      });
+    });
   });
 
   afterEach(() => {

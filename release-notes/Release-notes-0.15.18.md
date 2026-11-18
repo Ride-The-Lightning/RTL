@@ -27,6 +27,18 @@ this release should add its entry under the appropriate section below.
   window, 2500 addresses by default as `lncli` does, and the Cipher step has a field to raise it
   for a heavily used wallet. A wallet created from a new seed is initialised as before.
 
+- **Monthly reports no longer fail, or book entries to the wrong day, in a month with a
+  daylight-saving change** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  fixes [#1331](https://github.com/Ride-The-Lightning/RTL/issues/1331)). The monthly view of the
+  routing and transactions reports worked out each entry's day by dividing the seconds since the
+  1st by 24 hours. After clocks go back, that put an entry from the last hour of the last day
+  past the end of the month, and the report showed "No routing report for the selected period":
+  every October in European timezones, every November in US ones. It also moved entries from
+  the 23:00 hour to the next day after clocks go back, and from the 00:00 hour to the previous
+  day after they go forward, and the transactions table dated its rows an hour off. The day
+  now comes from the local calendar, for LND, Core Lightning and Eclair. Yearly views were not
+  affected.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),

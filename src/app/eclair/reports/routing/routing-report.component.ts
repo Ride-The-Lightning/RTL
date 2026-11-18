@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { PaymentRelayed, Payments } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES, getDayOfMonthIndex } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import { RTLState } from '../../../store/rtl.state';
@@ -23,7 +23,6 @@ import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 export class ECLRoutingReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
-  public secondsInADay = 24 * 60 * 60;
   public events: PaymentRelayed[] = [];
   public filteredEventsBySelectedPeriod: PaymentRelayed[] = [];
   public eventFilterValue = '';
@@ -108,7 +107,6 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime() / 1000);
     const feeReport: any = [];
     this.totalFeeSat = 0;
     this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
@@ -128,7 +126,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = Math.floor((Math.floor((event.timestamp || 0) / 1000) - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = getDayOfMonthIndex(Math.floor((event.timestamp || 0) / 1000));
         feeReport[dateNumber].value = feeReport[dateNumber].value + ((event.amountIn || 0) - (event.amountOut || 0));
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));
@@ -140,7 +138,6 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
   }
 
   prepareEventsReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime() / 1000);
     const eventsReport: any = [];
     this.totalFeeSat = 0;
     this.logger.info('Events Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
@@ -160,7 +157,7 @@ export class ECLRoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = Math.floor((Math.floor((event.timestamp || 0) / 1000) - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = getDayOfMonthIndex(Math.floor((event.timestamp || 0) / 1000));
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
         eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + ((event.amountIn || 0) - (event.amountOut || 0));
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + ((event.amountIn || 0) - (event.amountOut || 0));

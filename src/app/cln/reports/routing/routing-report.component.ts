@@ -4,7 +4,7 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ForwardingEvent, ListForwards } from '../../../shared/models/clnModels';
-import { APICallStatusEnum, CLNForwardingEventsStatusEnum, MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLNForwardingEventsStatusEnum, MONTHS, ReportBy, ScreenSizeEnum, SCROLL_RANGES, getDayOfMonthIndex } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -25,7 +25,6 @@ import { DataService } from '../../../shared/services/data.service';
 export class CLNRoutingReportComponent implements OnInit, OnDestroy {
 
   public reportPeriod = SCROLL_RANGES[0];
-  public secondsInADay = 24 * 60 * 60;
   public events: ForwardingEvent[] = [];
   public filteredEventsBySelectedPeriod: ForwardingEvent[] = [];
   public eventFilterValue = '';
@@ -124,7 +123,6 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime() / 1000);
     const feeReport: any[] = [];
     this.totalFeeMsat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
@@ -143,7 +141,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
         feeReport.push({ name: i + 1, value: 0.0, extra: { totalEvents: 0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
+        const dateNumber = event.received_time ? getDayOfMonthIndex(event.received_time) : 0;
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+(event.fee_msat || 0) / 1000);
         this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee_msat || 0);
@@ -154,7 +152,6 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
   }
 
   prepareEventsReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime() / 1000);
     const eventsReport: any[] = [];
     this.totalFeeMsat = 0;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
@@ -173,7 +170,7 @@ export class CLNRoutingReportComponent implements OnInit, OnDestroy {
         eventsReport.push({ name: i + 1, value: 0, extra: { totalFees: 0.0 } });
       }
       this.filteredEventsBySelectedPeriod?.map((event) => {
-        const dateNumber = event.received_time ? Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay) : 0;
+        const dateNumber = event.received_time ? getDayOfMonthIndex(event.received_time) : 0;
         eventsReport[dateNumber].value = eventsReport[dateNumber].value + 1;
         eventsReport[dateNumber].extra.totalFees = eventsReport[dateNumber].extra.totalFees + (+(event.fee_msat || 0) / 1000);
         this.totalFeeMsat = (this.totalFeeMsat || 0) + +(event.fee_msat || 0);

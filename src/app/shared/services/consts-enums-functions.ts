@@ -1414,6 +1414,13 @@ export function getNoRouteMessage(errMsg: string, feeLimitSat: number | null | u
     'If you\'re willing to pay a higher fee, ' + howToRaise;
 }
 
+// The slot of a moment (epoch seconds) in a report that has one entry per day of the month. Read from the
+// local calendar: dividing the seconds since the 1st by 86400 is an hour off after a daylight-saving
+// change, which booked events to the wrong day or to a day past the end of the month (issue #1331).
+export function getDayOfMonthIndex(epochSeconds: number | string | null | undefined): number {
+  return new Date(+(epochSeconds || 0) * 1000).getDate() - 1;
+}
+
 // Amounts paid or earned are shown in Sats, with the mSat part as up to three decimals (issue #468).
 export function msatToSat(msat: number | string | null | undefined): number {
   return (+(msat || 0) || 0) / 1000;

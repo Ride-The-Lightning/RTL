@@ -1,4 +1,23 @@
-import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat, msatToSatIfPresent } from './consts-enums-functions';
+import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat, msatToSatIfPresent, getDayOfMonthIndex } from './consts-enums-functions';
+
+describe('getDayOfMonthIndex (#1331)', () => {
+  const seconds = (date: Date) => date.getTime() / 1000;
+
+  // Every local day of 2025, at its first and last second: a daylight-saving change must not move either.
+  it('should give the local day of the month, less one, at both ends of every day of a year', () => {
+    for (let day = new Date(2025, 0, 1); day.getFullYear() === 2025; day = new Date(2025, day.getMonth(), day.getDate() + 1)) {
+      const first = new Date(2025, day.getMonth(), day.getDate(), 0, 0, 0);
+      const last = new Date(2025, day.getMonth(), day.getDate(), 23, 59, 59);
+      expect([day.toDateString(), getDayOfMonthIndex(seconds(first)), getDayOfMonthIndex(seconds(last))]).toEqual([day.toDateString(), day.getDate() - 1, day.getDate() - 1]);
+    }
+  });
+
+  it('should read seconds given as a string or with a fraction', () => {
+    const at = new Date(2025, 9, 31, 23, 30, 0);
+    expect(getDayOfMonthIndex(seconds(at).toString())).toBe(30);
+    expect(getDayOfMonthIndex(seconds(at) + 0.25)).toBe(30);
+  });
+});
 
 describe('msatToSat (#468)', () => {
   it('should keep the mSat part as decimals', () => {

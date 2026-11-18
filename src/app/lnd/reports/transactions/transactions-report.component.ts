@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Payment, Invoice, ListInvoices, ListPayments } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS, MONTHS, PAGE_SIZE, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, LND_DEFAULT_PAGE_SETTINGS, MONTHS, PAGE_SIZE, ScreenSizeEnum, SCROLL_RANGES, SortOrderEnum, getDayOfMonthIndex } from '../../../shared/services/consts-enums-functions';
 import { ApiCallStatusPayload } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -27,7 +27,6 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
 
   public scrollRanges = SCROLL_RANGES;
   public reportPeriod = SCROLL_RANGES[0];
-  public secondsInADay = 24 * 60 * 60;
   public payments: Payment[] = [];
   public invoices: Invoice[] = [];
   public colWidth = '20rem';
@@ -154,17 +153,17 @@ export class TransactionsReportComponent implements OnInit, OnDestroy {
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({ name: (i + 1).toString(), date: new Date((((i) * this.secondsInADay) + startDateInSeconds) * 1000), series: [{ name: 'Paid', value: 0, extra: { total: 0 } }, { name: 'Received', value: 0, extra: { total: 0 } }] });
+        transactionsReport.push({ name: (i + 1).toString(), date: new Date(start.getFullYear(), start.getMonth(), i + 1, 0, 0, 0, 0), series: [{ name: 'Paid', value: 0, extra: { total: 0 } }, { name: 'Received', value: 0, extra: { total: 0 } }] });
       }
       filteredPayments?.map((payment) => {
-        const dateNumber = Math.floor((+(payment.creation_date || 0) - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = getDayOfMonthIndex(payment.creation_date);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+(payment.value_msat || 0)) + (+(payment.fee_msat || 0));
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((+(payment.value_msat || 0) + +(payment.fee_msat || 0)) / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
         return this.transactionsReportSummary;
       });
       filteredInvoices?.map((invoice) => {
-        const dateNumber = Math.floor((+(invoice.creation_date || 0) - startDateInSeconds) / this.secondsInADay);
+        const dateNumber = getDayOfMonthIndex(invoice.creation_date);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (+(invoice.amt_paid_msat || 0));
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (+(invoice.amt_paid_msat || 0) / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;

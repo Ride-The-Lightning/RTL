@@ -12,6 +12,7 @@ import { mockDataService, mockLoggerService } from '../../../shared/test-helpers
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
+import { DST_REPORT_CASES, daysWithEntries } from '../../../shared/test-helpers/dst-report-cases';
 
 describe('CLNTransactionsReportComponent', () => {
   let component: CLNTransactionsReportComponent;
@@ -42,6 +43,30 @@ describe('CLNTransactionsReportComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('monthly report across a daylight-saving change (#1331)', () => {
+    DST_REPORT_CASES.forEach((dst) => {
+      describe('with a payment and an invoice in ' + dst.label, () => {
+        beforeEach(() => {
+          const seconds = Math.floor(dst.at.getTime() / 1000);
+          component.payments = [{ status: 'complete', created_at: seconds, amount_sent_msat: 1000000 }] as any[];
+          component.invoices = [{ status: 'paid', paid_at: seconds, amount_received_msat: 1000000 }] as any[];
+          component.onSelectionChange({ selDate: new Date(dst.at.getFullYear(), dst.at.getMonth(), 1), selScrollRange: 'MONTHLY' });
+        });
+
+        it('should book both to day ' + dst.day, () => {
+          expect(component.transactionsReportData.length).toBe(dst.day);
+          expect(daysWithEntries(component.transactionsReportData, (day) => day.series[0].extra.total)).toEqual([dst.day]);
+          expect(daysWithEntries(component.transactionsReportData, (day) => day.series[1].extra.total)).toEqual([dst.day]);
+        });
+
+        it('should date every day of that month as that day', () => {
+          expect(component.transactionsReportData.map((day) => day.date.getDate())).toEqual(component.transactionsReportData.map((day) => +day.name));
+          expect(component.transactionsNonZeroReportData.map((row) => row.date.getDate())).toEqual([dst.day]);
+        });
+      });
+    });
   });
 
   afterEach(() => {
