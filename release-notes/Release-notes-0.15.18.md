@@ -51,7 +51,7 @@ this release should add its entry under the appropriate section below.
   connections only, set `"host": "127.0.0.1"` (or `HOST`).
 
 - **Eclair: the Channel Information dialog shows the funding transaction id**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  ([#1825](https://github.com/Ride-The-Lightning/RTL/pull/1825),
   closes [#634](https://github.com/Ride-The-Lightning/RTL/issues/634)). On Eclair the dialog
   showed only the channel id, which is derived from the funding outpoint and cannot be looked up
   on a block explorer. It now shows the funding transaction id for open, pending and inactive
