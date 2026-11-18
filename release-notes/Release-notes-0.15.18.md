@@ -40,7 +40,7 @@ this release should add its entry under the appropriate section below.
   rate, min/max HTLC) stay in mSats, the unit they are set in, and CSV downloads are unchanged.
 
 - **The startup log states the address RTL is listening on, and `host` is documented**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  ([#1824](https://github.com/Ride-The-Lightning/RTL/pull/1824),
   closes [#731](https://github.com/Ride-The-Lightning/RTL/issues/731)). With no `host` in
   `RTL-Config.json`, RTL listens on every network interface, but the startup log said
   `http://localhost:3000` and one line of the docs gave the default as localhost, so an install
