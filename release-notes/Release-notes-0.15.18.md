@@ -28,7 +28,7 @@ this release should add its entry under the appropriate section below.
   for a heavily used wallet. A wallet created from a new seed is initialised as before.
 
 - **Monthly reports no longer fail, or book entries to the wrong day, in a month with a
-  daylight-saving change** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD),
+  daylight-saving change** ([#1826](https://github.com/Ride-The-Lightning/RTL/pull/1826),
   fixes [#1331](https://github.com/Ride-The-Lightning/RTL/issues/1331)). The monthly view of the
   routing and transactions reports worked out each entry's day by dividing the seconds since the
   1st by 24 hours. After clocks go back, that put an entry from the last hour of the last day
