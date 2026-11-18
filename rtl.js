@@ -16,7 +16,7 @@ process.on('SIGINT', () => {
 });
 
 // What a failed listen was for. With no host RTL asks for every interface, so naming localhost would mislead (issue #731).
-const listenTarget = () => ((common.host && common.host !== '') ? 'http://' + common.host + ':' + common.port : 'Port ' + common.port);
+const listenTarget = () => ((common.host && common.host !== '') ? 'http://' + (common.host.includes(':') ? '[' + common.host + ']' : common.host) + ':' + common.port : 'Port ' + common.port);
 
 const onError = (error) => {
   if (error.syscall !== 'listen') { throw error; }

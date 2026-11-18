@@ -126,3 +126,17 @@ test('a port already in use is not reported as localhost when no host is set', a
   assert.ok(result.stderr.includes('Port ' + port + ' is already in use'), 'stderr: ' + result.stderr);
   assert.doesNotMatch(result.stderr, /localhost/);
 });
+
+test('a port already in use on an IPv6 host is reported with the host in brackets', async (t) => {
+  const blocker = createServer();
+  const bound = await new Promise((resolve) => {
+    blocker.once('error', () => resolve(false));
+    blocker.listen(0, '::1', () => resolve(true));
+  });
+  if (!bound) { t.skip('no IPv6 loopback on this machine'); return; }
+  const { port } = blocker.address();
+  let result;
+  try { result = await boot(writeConfig(), { HOST: '::1', PORT: String(port) }); } finally { blocker.close(); }
+  assert.equal(result.code, 1, 'stderr: ' + result.stderr);
+  assert.ok(result.stderr.includes('http://[::1]:' + port + ' is already in use'), 'stderr: ' + result.stderr);
+});
