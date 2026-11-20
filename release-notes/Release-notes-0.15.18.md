@@ -40,7 +40,7 @@ this release should add its entry under the appropriate section below.
   affected.
 
 - **LND and Eclair: a pasted payment request or lookup key is sent as one value**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The screens that decode a payment
+  ([#1827](https://github.com/Ride-The-Lightning/RTL/pull/1827)). The screens that decode a payment
   request, or look up a node, channel, payment or invoice, appended the entered text to the
   request URL as it was. Text containing `/`, `?`, `#` or `&` was therefore not sent as entered:
   part of it was dropped or read as a different part of the URL, and the request reached another
