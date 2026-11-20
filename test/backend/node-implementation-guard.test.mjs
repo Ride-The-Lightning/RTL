@@ -161,7 +161,7 @@ const openBrowser = async () => {
 // which is also where the server sets up the node's request options.
 const IMPLEMENTATION_PATH = { 1: 'cln', 2: 'lnd', 3: 'ecl' };
 const switchNode = async (browser, currIndex, prevIndex) => {
-  const res = await browser.call('GET', '/rtl/api/conf/updateSelNode/' + currIndex + '/' + prevIndex);
+  const res = await browser.call('POST', '/rtl/api/conf/updateSelNode/' + currIndex + '/' + prevIndex);
   assert.equal(res.status, 200, 'updateSelNode returned ' + res.status);
   await browser.call('GET', '/rtl/api/' + IMPLEMENTATION_PATH[currIndex] + '/getinfo');
   Object.values(stubs).forEach((stub) => { stub.hits.length = 0; });

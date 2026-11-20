@@ -103,7 +103,7 @@ describe('RTL Root Effects', () => {
     const req = httpTestingController.expectOne(API_END_POINTS.CONF_API + '/updateSelNode/1/-1');
     const expectedResponse = mockResponseData.setSelectedNodeSuccess;
     req.flush(expectedResponse);
-    expect(req.request.method).toEqual('GET');
+    expect(req.request.method).toEqual('POST');
   });
 
   it('should set selected node locally without calling the server when logged out', (done) => {
@@ -136,7 +136,7 @@ describe('RTL Root Effects', () => {
 
   it('should throw error on dispatch set selected node', (done) => {
     const storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(throwError(() => mockResponseData.error));
+    const httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(() => mockResponseData.error));
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,

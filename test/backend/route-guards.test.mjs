@@ -47,9 +47,9 @@ test('POST /api/ecl/channels/circularRebalance rejects a request without a sessi
   });
 });
 
-test('GET /api/conf/updateSelNode rejects a request without a session token', async () => {
+test('POST /api/conf/updateSelNode rejects a request without a session token', async () => {
   await withRouter('/api/conf', rtlConfRoutes, async (base) => {
-    const res = await fetch(base + '/api/conf/updateSelNode/1/-1');
+    const res = await fetch(base + '/api/conf/updateSelNode/1/-1', { method: 'POST' });
     assert.equal(res.status, 401);
     const body = await res.json();
     assert.equal(body.error, 'Authentication Failed! Please Login First!');

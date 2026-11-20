@@ -50,6 +50,15 @@ this release should add its entry under the appropriate section below.
   backup, fetches a block-explorer transaction, and fetches a Loop quote or swap. Core Lightning
   already sent these values in the request body. Specs cover each request.
 
+- **Selecting a node is a POST** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  Selecting a node changes what the session works on, but the request for it was a GET, which
+  the CSRF check does not cover. It is now `POST /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`,
+  under the same check as RTL's other requests that change something, and the node selector
+  posts to it. A client that calls this route itself has to send a POST with the session token
+  and the CSRF token; a GET to that address no longer selects a node. After upgrading, a page
+  still open from before the upgrade needs a reload before it can switch nodes.
+  `node-switch-post.test.mjs` covers the POST, the GET and a POST without the token.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),

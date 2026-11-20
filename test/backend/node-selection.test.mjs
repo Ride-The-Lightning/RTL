@@ -9,7 +9,7 @@ import { Common } from '../../backend/utils/common.js';
 import { Database } from '../../backend/utils/database.js';
 import { WSServer } from '../../backend/utils/webSocketServer.js';
 
-// GET /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex is called by any logged-in session.
+// POST /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex is called by any logged-in session.
 // - An index matching no configured node was stored as the process-wide default node before
 //   anything checked it, so the unauthenticated GET /api/conf, which the login page loads,
 //   failed with a 400 for every client until someone selected a valid node again.

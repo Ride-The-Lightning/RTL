@@ -9,7 +9,8 @@ const router = Router();
 router.get('/', getApplicationSettings);
 router.get('/rates', getCurrencyRates);
 router.get('/file', isAuthenticated, getFile);
-router.get('/updateSelNode/:currNodeIndex/:prevNodeIndex', isAuthenticated, updateSelectedNode);
+// A POST, so the CSRF check applies: selecting a node changes what the session works on.
+router.post('/updateSelNode/:currNodeIndex/:prevNodeIndex', isAuthenticated, updateSelectedNode);
 router.get('/config/:nodeType', isAuthenticated, getConfig);
 router.post('/node', isAuthenticated, updateNodeSettings);
 router.post('/application', isAuthenticated, updateApplicationSettings);

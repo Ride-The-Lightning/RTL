@@ -484,7 +484,7 @@ export class RTLEffects implements OnDestroy {
           if (action.payload.currentLnNode) { this.initializeNode(JSON.parse(JSON.stringify(action.payload.currentLnNode)), action.payload.isInitialSetup); }
           return of({ type: RTLActions.VOID });
         }
-        return this.httpClient.get(API_END_POINTS.CONF_API + '/updateSelNode/' + action.payload.currentLnNode?.index + '/' + action.payload.prevLnNodeIndex).pipe(
+        return this.httpClient.post(API_END_POINTS.CONF_API + '/updateSelNode/' + action.payload.currentLnNode?.index + '/' + action.payload.prevLnNodeIndex, {}).pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED } }));
