@@ -19,7 +19,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from './lnd.effects';
-import { backupChannels, channelLookup, detachPeer, fetchGraphNode, initWallet, invoiceLookup, paymentLookup, peerLookup, restoreChannels, sendPayment, verifyChannel } from './lnd.actions';
+import { backupChannels, channelLookup, closeChannel, detachPeer, fetchGraphNode, getQueryRoutes, initWallet, invoiceLookup, paymentLookup, peerLookup, restoreChannels, sendPayment, verifyChannel } from './lnd.actions';
 import { allAPIsCallStatus } from './lnd.selector';
 import { initLNDState } from './lnd.state';
 
@@ -187,6 +187,19 @@ describe('LND Effects: values in a request path', () => {
     expect(Array.from(byHash.searchParams.entries())).toEqual([['payment_hash', 'ab&cd=ef#g==']]);
     const byAddress = requestedUrl(invoiceLookup({ payload: { openSnackBar: false, paymentAddress: 'ab&cd=ef#g==' } }), 'invoiceLookup');
     expect(Array.from(byAddress.searchParams.entries())).toEqual([['payment_addr', 'ab&cd=ef#g==']]);
+  });
+
+  it('requests the routes route with the destination pubkey and the amount as its last two segments', () => {
+    expect(requestedPath(getQueryRoutes({ payload: { destPubkey: value, amount: 1000 } }), 'queryRoutesFetch')).
+      toBe('/rtl/api/lnd/network/routes/' + encodeURIComponent(value) + '/1000');
+  });
+
+  it('requests the channel route with the closed channel point as its last segment, and its options as query values', () => {
+    const url = requestedUrl(closeChannel({ payload: { channelPoint: value, forcibly: false, targetConf: 6 } }), 'closeChannel');
+    expect(url.pathname).toBe('/rtl/api/lnd/channels/' + encodeURIComponent(value));
+    expect(Array.from(url.searchParams.entries())).toEqual([['force', 'false'], ['target_conf', '6']]);
+    const withFee = requestedUrl(closeChannel({ payload: { channelPoint: value, forcibly: false, satPerVByte: 12 } }), 'closeChannel');
+    expect(Array.from(withFee.searchParams.entries())).toEqual([['force', 'false'], ['sat_per_vbyte', '12']]);
   });
 
   it('requests the peer route with the detached pubkey as its last segment', () => {

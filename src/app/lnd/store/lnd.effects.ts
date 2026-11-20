@@ -343,12 +343,12 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.CLOSE_CHANNEL_LND),
     mergeMap((action: { type: string, payload: CloseChannel }) => {
       this.store.dispatch(openSpinner({ payload: (action.payload.forcibly ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
-      let reqUrl = this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly;
+      let reqUrl = this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/' + encodeURIComponent(action.payload.channelPoint) + '?force=' + encodeURIComponent(action.payload.forcibly);
       if (action.payload.targetConf) {
-        reqUrl = reqUrl + '&target_conf=' + action.payload.targetConf;
+        reqUrl = reqUrl + '&target_conf=' + encodeURIComponent(action.payload.targetConf);
       }
       if (action.payload.satPerVByte) {
-        reqUrl = reqUrl + '&sat_per_vbyte=' + action.payload.satPerVByte;
+        reqUrl = reqUrl + '&sat_per_vbyte=' + encodeURIComponent(action.payload.satPerVByte);
       }
       return this.httpClient.delete(reqUrl).pipe(
         map((postRes: any) => {
@@ -879,7 +879,7 @@ export class LNDEffects implements OnDestroy {
   queryRoutesFetch = createEffect(() => this.actions.pipe(
     ofType(LNDActions.GET_QUERY_ROUTES_LND),
     mergeMap((action: { type: string, payload: GetQueryRoutes }) => {
-      const url = this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount;
+      const url = this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/routes/' + encodeURIComponent(action.payload.destPubkey) + '/' + encodeURIComponent(action.payload.amount);
       return this.httpClient.get(url).pipe(
         map((qrRes: any) => {
           this.logger.info(qrRes);

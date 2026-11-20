@@ -506,7 +506,7 @@ export class RTLEffects implements OnDestroy {
       mergeMap((action: { type: string, payload: FetchFile }) => {
         this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DOWNLOAD_BACKUP_FILE }));
         this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchFile', status: APICallStatusEnum.INITIATED } }));
-        const query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
+        const query = '?channel=' + encodeURIComponent(action.payload.channelPoint) + (action.payload.path ? '&path=' + encodeURIComponent(action.payload.path) : '');
         return this.httpClient.get(API_END_POINTS.CONF_API + '/file' + query).pipe(
           map((fetchedFile: any) => {
             this.store.dispatch(updateRootAPICallStatus({ payload: { action: 'FetchFile', status: APICallStatusEnum.COMPLETED } }));

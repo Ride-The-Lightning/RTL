@@ -368,15 +368,15 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.UPDATE_CHANNEL_ECL),
     mergeMap((action: { type: string, payload: UpdateChannel }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.UPDATE_CHAN_POLICY }));
-      let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
+      let queryParam = '?feeBaseMsat=' + encodeURIComponent(action.payload.baseFeeMsat) + '&feeProportionalMillionths=' + encodeURIComponent(action.payload.feeRate);
       if (action.payload.nodeIds) {
-        queryParam = queryParam + '&nodeIds=' + action.payload.nodeIds;
+        queryParam = queryParam + '&nodeIds=' + encodeURIComponent(action.payload.nodeIds);
       } else if (action.payload.nodeId) {
-        queryParam = queryParam + '&nodeId=' + action.payload.nodeId;
+        queryParam = queryParam + '&nodeId=' + encodeURIComponent(action.payload.nodeId);
       } else if (action.payload.channelIds) {
-        queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
+        queryParam = queryParam + '&channelIds=' + encodeURIComponent(action.payload.channelIds);
       } else {
-        queryParam = queryParam + '&channelId=' + action.payload.channelId;
+        queryParam = queryParam + '&channelId=' + encodeURIComponent(action.payload.channelId);
       }
       return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '/updateRelayFee' + queryParam, {}).
         pipe(
@@ -405,7 +405,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: { type: string, payload: CloseChannel }) => {
       this.store.dispatch(openSpinner({ payload: ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL) }));
-      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force).
+      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.CHANNELS_API + '?channelId=' + encodeURIComponent(action.payload.channelId) + '&force=' + encodeURIComponent(action.payload.force)).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);

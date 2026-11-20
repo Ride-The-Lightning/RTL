@@ -17,7 +17,7 @@ import { DataService } from '../../shared/services/data.service';
 import { WebSocketClientService } from '../../shared/services/web-socket.service';
 
 import { ECLEffects } from './ecl.effects';
-import { disconnectPeer, getQueryRoutes, invoiceLookup, peerLookup, saveNewPeer } from './ecl.actions';
+import { closeChannel, disconnectPeer, getQueryRoutes, invoiceLookup, peerLookup, saveNewPeer, updateChannel } from './ecl.actions';
 import { allAPIsCallStatus } from './ecl.selector';
 import { initECLState } from './ecl.state';
 
@@ -78,6 +78,20 @@ describe('ECL Effects: values in a request URL', () => {
   it('sends the destination of a route query as one query value', () => {
     const url = requestedUrl(getQueryRoutes({ payload: { nodeId: value, amount: 1000 } }), 'queryRoutesFetch');
     expect(Array.from(url.searchParams.entries())).toEqual([['nodeId', value], ['amountMsat', '1000']]);
+  });
+
+  it('sends the id of a closed channel as one query value', () => {
+    const url = requestedUrl(closeChannel({ payload: { channelId: value, force: false } }), 'closeChannel');
+    expect(url.pathname).toBe('/rtl/api/ecl/channels');
+    expect(Array.from(url.searchParams.entries())).toEqual([['channelId', value], ['force', 'false']]);
+  });
+
+  it('sends the channel or node ids of a relay fee update as one query value', () => {
+    ['channelId', 'channelIds', 'nodeId', 'nodeIds'].forEach((key) => {
+      const url = requestedUrl(updateChannel({ payload: { baseFeeMsat: 1000, feeRate: 100, [key]: value } }), 'updateChannel');
+      expect(url.pathname).toBe('/rtl/api/ecl/channels/updateRelayFee');
+      expect(Array.from(url.searchParams.entries())).toEqual([['feeBaseMsat', '1000'], ['feeProportionalMillionths', '100'], [key, value]]);
+    });
   });
 
   afterEach(() => {

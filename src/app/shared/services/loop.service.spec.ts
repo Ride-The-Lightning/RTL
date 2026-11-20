@@ -15,7 +15,7 @@ describe('LoopService', () => {
       post: (url: string, body: any) => { posts.push({ url, body }); return of({}); },
       get: (url: string) => { gets.push(url); return of({}); }
     };
-    loopService = new LoopService(httpClient as any, new LoggerService(), null as any, null as any);
+    loopService = new LoopService(httpClient as any, new LoggerService(), { dispatch: () => undefined } as any, null as any);
   });
 
   describe('loopIn', () => {
@@ -27,6 +27,18 @@ describe('LoopService', () => {
       expect(posts.length).toBe(1);
       expect(posts[0].url).toMatch(/\/loop\/in$/);
       expect(posts[0].body).toEqual({ amount: 250000, swapFee: 600, minerFee: 3875 });
+    });
+  });
+
+  describe('quotes', () => {
+    // The amount is one segment of the request path, whatever it contains.
+    it('should request the quote routes with the amount as their last segment', () => {
+      loopService.getLoopOutQuote('25/../0?a=b#c' as any, 2, 0).subscribe();
+      loopService.getLoopInQuote('25/../0?a=b#c' as any, '2', 0).subscribe();
+      expect(gets.map((url) => new URL(url, 'http://localhost:3000/rtl/').pathname)).toEqual([
+        '/rtl/api/loop/out/quote/' + encodeURIComponent('25/../0?a=b#c'),
+        '/rtl/api/loop/in/quote/' + encodeURIComponent('25/../0?a=b#c')
+      ]);
     });
   });
 

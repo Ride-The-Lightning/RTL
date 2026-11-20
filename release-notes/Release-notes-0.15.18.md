@@ -43,12 +43,12 @@ this release should add its entry under the appropriate section below.
   ([#1827](https://github.com/Ride-The-Lightning/RTL/pull/1827)). The screens that decode a payment
   request, or look up a node, channel, payment or invoice, appended the entered text to the
   request URL as it was. Text containing `/`, `?`, `#` or `&` was therefore not sent as entered:
-  part of it was dropped or read as a different part of the URL, and the request reached another
-  address than the one the screen meant to call. The text is now encoded as a single path segment
-  or query value. The same applies to the ids RTL puts in the URL when it disconnects a peer,
-  backs up, verifies or restores a channel, fetches a block-explorer transaction, queries an
-  Eclair route or connects an Eclair peer, and fetches a Loop swap. Core Lightning already sent
-  these values in the request body. Specs cover each request.
+  part of it was dropped or read as a different part of the URL. The text is now encoded as a
+  single path segment or query value. The same applies to every other value RTL puts in a
+  request URL: when it queries a route, disconnects a peer, closes a channel, updates Eclair
+  relay fees, connects an Eclair peer, backs up, verifies, restores or downloads a channel
+  backup, fetches a block-explorer transaction, and fetches a Loop quote or swap. Core Lightning
+  already sent these values in the request body. Specs cover each request.
 
 ## Enhancements
 

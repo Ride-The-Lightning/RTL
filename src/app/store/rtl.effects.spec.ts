@@ -26,7 +26,7 @@ import { API_END_POINTS, APICallStatusEnum, RTLActions, UI_MESSAGES } from '../s
 
 import { RTLEffects } from './rtl.effects';
 import { RTLState } from './rtl.state';
-import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore, fetchRTLConfig, openSnackBar } from './rtl.actions';
+import { updateRootAPICallStatus, openSpinner, closeSpinner, openAlert, resetRootStore, fetchRTLConfig, openSnackBar, fetchFile } from './rtl.actions';
 import { resetLNDStore, fetchInfoLND, fetchPageSettings as fetchPageSettingsLND } from '../lnd/store/lnd.actions';
 import { resetCLNStore } from '../cln/store/cln.actions';
 import { resetECLStore } from '../eclair/store/ecl.actions';
@@ -315,6 +315,20 @@ describe('RTL Root Effects', () => {
       done();
       setTimeout(() => sub.unsubscribe());
     });
+  });
+
+  // A value that goes into the query of a request URL is one value of it, whatever it contains.
+  it('should send the channel point and the path of a backup file as one query value each', () => {
+    const value = 'ab/../cd?e=f&g=h#i';
+    actions = new ReplaySubject(1);
+    actions.next(fetchFile({ payload: { channelPoint: value, path: value } }));
+    const sub = effects.fetchFile.subscribe();
+    const req = httpTestingController.expectOne(() => true);
+    req.flush('');
+    sub.unsubscribe();
+    const url = new URL(req.request.urlWithParams, 'http://localhost:3000/rtl/');
+    expect(url.pathname).toBe('/rtl/api/conf/file');
+    expect(Array.from(url.searchParams.entries())).toEqual([['channel', value], ['path', value]]);
   });
 
   afterEach(() => {
