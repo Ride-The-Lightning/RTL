@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -88,5 +88,17 @@ describe('LightningPaymentsComponent', () => {
     component.peers = [];
     spyOn(TestBed.inject(DataService), 'getAliasesFromPubkeys').and.returnValue(of({ node: { alias: '<b>carol</b>' } }) as any);
     expect(await component.getHopDetails({ pub_key: '02bb', amt_to_forward: '20000' })).toBe('Channel: ' + '<b>carol</b>'.padEnd(20) + '\t\t\tAmount (Sats): 20,000');
+  });
+
+  it('should describe a hop by its public key when the lookup returns no alias', async () => {
+    component.peers = [];
+    spyOn(TestBed.inject(DataService), 'getAliasesFromPubkeys').and.returnValue(of({ node: {} }) as any);
+    expect(await component.getHopDetails({ pub_key: '02cc' + 'd'.repeat(62), amt_to_forward: '20000' })).toBe('Channel: 02ccddddddddddddd...\t\t\tAmount (Sats): 20,000');
+  });
+
+  it('should describe a hop by its public key when the lookup fails', async () => {
+    component.peers = [];
+    spyOn(TestBed.inject(DataService), 'getAliasesFromPubkeys').and.returnValue(throwError(() => new Error('lookup failed')));
+    expect(await component.getHopDetails({ pub_key: '02cc' + 'd'.repeat(62), amt_to_forward: '20000' })).toBe('Channel: 02ccddddddddddddd...\t\t\tAmount (Sats): 20,000');
   });
 });
