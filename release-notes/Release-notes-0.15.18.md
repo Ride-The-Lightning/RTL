@@ -59,7 +59,7 @@ this release should add its entry under the appropriate section below.
   `node-switch-post.test.mjs` covers the POST, the GET and a POST without the token.
 
 - **Dialogs show list entries as written**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). In the information and
+  ([#1830](https://github.com/Ride-The-Lightning/RTL/pull/1830)). In the information and
   confirmation dialogs, an entry of a list field containing `<`, `>` or `&` was not shown as
   written. The dialogs now show every list entry as plain text. The Hops lines in LND's HTLC
   Information dialog and the address lines in Core Lightning's liquidity ad dialog look as
