@@ -1,3 +1,11 @@
 .display-block {
   display: block;
 }
+
+// A list entry whose columns are aligned with spaces and tabs. The family is named twice so
+// that browsers do not apply their smaller default size for a bare `monospace` on top of this one.
+.list-entry-preformatted {
+  font-family: monospace, monospace;
+  font-size: 0.8125em;
+  white-space: pre;
+}

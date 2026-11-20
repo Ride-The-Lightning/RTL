@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -77,5 +77,16 @@ describe('LightningPaymentsComponent', () => {
 
   afterEach(() => {
     TestBed.resetTestingModule();
+  });
+  // A hop line is plain text: the alias as the node gave it, padded, then the amount.
+  it('should describe a hop with the alias of a connected peer as text', async () => {
+    component.peers = [{ pub_key: '02aa', alias: '<b>bob</b>' }];
+    expect(await component.getHopDetails({ pub_key: '02aa', amt_to_forward: '20000' })).toBe('Channel: ' + '<b>bob</b>'.padEnd(20) + '\t\t\tAmount (Sats): 20,000');
+  });
+
+  it('should describe a hop with the alias looked up for another node as text', async () => {
+    component.peers = [];
+    spyOn(TestBed.inject(DataService), 'getAliasesFromPubkeys').and.returnValue(of({ node: { alias: '<b>carol</b>' } }) as any);
+    expect(await component.getHopDetails({ pub_key: '02bb', amt_to_forward: '20000' })).toBe('Channel: ' + '<b>carol</b>'.padEnd(20) + '\t\t\tAmount (Sats): 20,000');
   });
 });

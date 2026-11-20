@@ -319,13 +319,13 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     return new Promise((resolve, reject) => {
       const peerFound = self.peers.find((peer) => peer.pub_key === currentHop.pub_key);
       if (peerFound && peerFound.alias) {
-        resolve('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
+        resolve('Channel: ' + peerFound.alias.padEnd(20) + '\t\t\tAmount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward));
       } else {
         self.dataService.getAliasesFromPubkeys((currentHop.pub_key || ''), false).
           pipe(takeUntil(self.unSubs[7])).
           subscribe({
-            next: (res: any) => resolve('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key?.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>'),
-            error: (error) => resolve('<pre>Channel: ' + (currentHop.pub_key ? (currentHop.pub_key?.substring(0, 17) + '...') : '') + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>')
+            next: (res: any) => resolve('Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key?.substring(0, 17) + '...')) + '\t\t\tAmount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward)),
+            error: (error) => resolve('Channel: ' + (currentHop.pub_key ? (currentHop.pub_key?.substring(0, 17) + '...') : '') + '\t\t\tAmount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward))
           });
       }
     });
@@ -387,7 +387,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{ key: 'total_amt', value: selHtlc.route?.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'total_fees', value: selHtlc.route?.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER },
       { key: 'total_time_lock', value: selHtlc.route?.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER }],
-      [{ key: 'hops', value: hopsDetails, title: 'Hops', width: 100, type: DataTypeEnum.ARRAY }]
+      [{ key: 'hops', value: hopsDetails, title: 'Hops', width: 100, type: DataTypeEnum.ARRAY, preformatted: true }]
     ];
     if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
       modifiedData.splice(3, 0, [{ key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING }]);

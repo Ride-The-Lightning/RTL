@@ -226,7 +226,7 @@ export class CLNLiquidityAdsListComponent implements OnInit, OnDestroy {
   onViewLeaseInfo(lqNode: LookupNode) {
     const addArr = lqNode.addresses?.reduce((acc, curr) => {
       if (curr.address && curr.address.length > 40) { curr.address = curr.address.substring(0, 39) + '...'; }
-      return acc.concat(JSON.stringify(curr).replace('{', '').replace('}', '').replace(/:/g, ': ').replace(/,/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').replace(/"/g, ''));
+      return acc.concat(JSON.stringify(curr).replace('{', '').replace('}', '').replace(/:/g, ': ').replace(/,/g, '\u00a0'.repeat(8)).replace(/"/g, ''));
     }, <any>[]);
     const featureDescriptions: string[] = [];
     if (lqNode.features && lqNode.features.trim() !== '') {

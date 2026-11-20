@@ -19,6 +19,7 @@ export interface MessageDataField {
   type?: DataTypeEnum;
   digitsInfo?: string;
   explorerLink?: string;
+  preformatted?: boolean; // ARRAY only: show the entries in a fixed-width font and keep their spacing
 }
 
 export interface InputData {

@@ -24,8 +24,8 @@
                 <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                 <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                   <span class="foreground-secondary-text" [ngSwitch]="obj.type">
-                    <ng-container *ngSwitchCase="dataTypeEnum.ARRAY" fxLayout="row wrap" fxLayoutAlign="space-between stretch">
-                      <div *ngFor="let arrayObj of obj.value" [innerHTML]="arrayObj"></div>
+                    <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
+                      <div *ngFor="let arrayObj of obj.value" class="list-entry">{{arrayObj}}</div>
                     </ng-container>
                     <ng-container *ngSwitchCase="dataTypeEnum.DATE_TIME">{{(obj.value * 1000) | date:'dd/MMM/y HH:mm'}}</ng-container>
                     <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>

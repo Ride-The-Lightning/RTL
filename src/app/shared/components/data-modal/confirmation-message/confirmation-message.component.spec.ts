@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { LoggerService } from '../../../services/logger.service';
-import { AlertTypeEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../../services/consts-enums-functions';
 import { mockLoggerService } from '../../../test-helpers/mock-services';
 import { mockRTLStoreState } from '../../../test-helpers/test-data';
 import { SharedModule } from '../../../shared.module';
@@ -76,6 +76,22 @@ describe('ConfirmationMessageComponent', () => {
     dialogRef.close();
     flush();
     expect(closeConfirmationReplies()).toEqual([closeConfirmation({ payload: false })]);
+  }));
+
+  // A list entry is a string from the node or from RTL; the dialog shows it as that string.
+  it('shows each entry of a list field as the text it is', fakeAsync(() => {
+    const entries = ['type: dns    address: <b>node</b> <img src="x.png"> &amp; more', 'type: ipv4    address: 10.0.0.1'];
+    dialog.open(ConfirmationMessageComponent, {
+      data: {
+        type: AlertTypeEnum.CONFIRM, alertTitle: 'Liquidity Ad', noBtnText: 'Cancel', yesBtnText: 'Open Channel',
+        message: [[{ key: 'address', value: entries, title: 'Address', width: 100, type: DataTypeEnum.ARRAY }]]
+      }
+    });
+    flush();
+    const container = document.querySelector('mat-dialog-container') as HTMLElement;
+    const shown = Array.from(container.querySelectorAll('.list-entry')).map((entry) => entry.textContent);
+    expect(shown).toEqual(entries);
+    expect(container.querySelectorAll('.list-entry *').length).toBe(0);
   }));
 
   afterEach(() => {
