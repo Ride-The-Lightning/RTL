@@ -51,10 +51,9 @@ this release should add its entry under the appropriate section below.
   already sent these values in the request body. Specs cover each request.
 
 - **Selecting a node is a POST** ([#1828](https://github.com/Ride-The-Lightning/RTL/pull/1828)).
-  Selecting a node changes what the session works on, but the request for it was a GET, which
-  the CSRF check does not cover. It is now `POST /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`,
-  under the same check as RTL's other requests that change something, and the node selector
-  posts to it. A client that calls this route itself has to send a POST with the session token
+  Selecting a node changes what the session works on, so the request for it is now a POST, like
+  RTL's other requests that change something:
+  `POST /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`. The node selector posts to it. A client that calls this route itself has to send a POST with the session token
   and the CSRF token; a GET to that address no longer selects a node. After upgrading, a page
   still open from before the upgrade needs a reload before it can switch nodes.
   `node-switch-post.test.mjs` covers the POST, the GET and a POST without the token.
