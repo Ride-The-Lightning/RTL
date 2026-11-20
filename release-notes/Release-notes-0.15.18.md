@@ -120,3 +120,5 @@ this release should add its entry under the appropriate section below.
   through RTL and takes a Loop Out and a Loop In to completion.
 - Coding guidelines, review rules, a threat model and `npm run check` for contributors
   ([#1822](https://github.com/Ride-The-Lightning/RTL/pull/1822)).
+- Pull requests that change what a user sees carry before and after screenshots
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).

@@ -108,6 +108,14 @@ frequently do, since the controllers were written in parallel.
   the `guidelines` job of `checks.yml` (open PRs only, not merges or tags) and annotates the
   findings on the diff. The guidelines a script cannot see (guarding node data, keeping
   models current, the same change in the other two implementations) still need reading for.
+- **A PR that changes what a user sees needs before and after screenshots, posted on the PR.**
+  Take both on the docker fixture: "before" with the release branch's build, "after" with the
+  PR's, on the same screen, in the same state and at the same window size. Put them under
+  Testing in the PR body, or in a PR comment; do not commit them to the repo. A frontend change
+  with nothing visible to show (a request URL, a store effect, a refactor) says so under Testing
+  instead. `gh` cannot upload images: attach them through GitHub's web editor, or save them and
+  ask the PR author to. Fixture data is throwaway; in a screenshot taken against a real node,
+  redact pubkeys, channel ids and balances.
 - If lint reports hundreds of template "Parsing error" failures, look for a stale
   **`coverage/`** directory (git-ignored Karma output). The template linter walks its HTML
   report. Delete it and re-run.
