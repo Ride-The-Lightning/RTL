@@ -50,7 +50,7 @@ this release should add its entry under the appropriate section below.
   backup, fetches a block-explorer transaction, and fetches a Loop quote or swap. Core Lightning
   already sent these values in the request body. Specs cover each request.
 
-- **Selecting a node is a POST** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+- **Selecting a node is a POST** ([#1828](https://github.com/Ride-The-Lightning/RTL/pull/1828)).
   Selecting a node changes what the session works on, but the request for it was a GET, which
   the CSRF check does not cover. It is now `POST /api/conf/updateSelNode/:currNodeIndex/:prevNodeIndex`,
   under the same check as RTL's other requests that change something, and the node selector
