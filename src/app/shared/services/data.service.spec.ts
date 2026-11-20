@@ -44,4 +44,57 @@ describe('DataService', () => {
       }
     });
   });
+
+  // A value that goes into the path of a request URL is one segment of it, whatever it contains.
+  describe('values in a request path', () => {
+    const value = 'ab/../cd?e=f#g';
+    // The path the browser requests for a URL, relative ones resolved as it resolves them.
+    const requestedPath = () => new URL(httpClientSpy.get.calls.mostRecent().args[0], 'http://localhost:3000/rtl/').pathname;
+
+    beforeEach(() => {
+      store = jasmine.createSpyObj('Store', ['dispatch']);
+      dataService = new DataService(httpClientSpy as any, store, logger, snackbar, titleCasePipe);
+      httpClientSpy.get.and.returnValue(of({}));
+    });
+
+    ['lnd', 'ecl'].forEach((implementation) => {
+      it('should request the ' + implementation + ' decode route with the payment string as its last segment', (done: DoneFn) => {
+        dataService.setLnImplementation(implementation);
+        dataService.decodePayment(value, true).subscribe({
+          next: () => {
+            expect(requestedPath()).toBe('/rtl/api/' + implementation + '/payments/decode/' + encodeURIComponent(value));
+            done();
+          },
+          error: done.fail
+        });
+      });
+
+      it('should request the ' + implementation + ' node route with the pubkey as its last segment', (done: DoneFn) => {
+        dataService.setLnImplementation(implementation);
+        dataService.getAliasesFromPubkeys(value, false).subscribe({
+          next: () => {
+            expect(requestedPath()).toBe('/rtl/api/' + implementation + '/network/node/' + encodeURIComponent(value));
+            done();
+          },
+          error: done.fail
+        });
+      });
+    });
+
+    it('should request the explorer transaction route with the transaction id as its last segment', () => {
+      dataService.getBlockExplorerTransaction(value).subscribe();
+      expect(requestedPath()).toBe('/rtl/api/conf/explorerTransaction/' + encodeURIComponent(value));
+    });
+
+    it('should leave an ordinary payment string as it is', (done: DoneFn) => {
+      dataService.setLnImplementation('lnd');
+      dataService.decodePayment('lnbcrt100u1test', true).subscribe({
+        next: () => {
+          expect(requestedPath()).toBe('/rtl/api/lnd/payments/decode/lnbcrt100u1test');
+          done();
+        },
+        error: done.fail
+      });
+    });
+  });
 });

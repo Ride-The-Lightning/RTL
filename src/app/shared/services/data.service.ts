@@ -44,7 +44,7 @@ export class DataService implements OnDestroy {
   }
 
   getBlockExplorerTransaction(txid: string) {
-    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerTransaction/' + txid);
+    return this.httpClient.get(API_END_POINTS.CONF_API + '/explorerTransaction/' + encodeURIComponent(txid));
   }
 
   getFiatRates() {
@@ -60,7 +60,7 @@ export class DataService implements OnDestroy {
         const body = { string: payment };
         request$ = this.httpClient.post(url, body, { headers: { 'Content-Type': 'application/json' } });
       } else {
-        const url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + payment;
+        const url = this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.PAYMENTS_API + '/decode/' + encodeURIComponent(payment);
         request$ = this.httpClient.get(url);
       }
       return request$.pipe(
@@ -119,7 +119,7 @@ export class DataService implements OnDestroy {
         const pubkey_params = new HttpParams().set('pubkeys', pubkey);
         return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/nodes', { params: pubkey_params });
       } else {
-        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/node/' + pubkey);
+        return this.httpClient.get(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.NETWORK_API + '/node/' + encodeURIComponent(pubkey));
       }
     }));
   }

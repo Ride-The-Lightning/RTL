@@ -19,7 +19,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from './lnd.effects';
-import { initWallet, sendPayment } from './lnd.actions';
+import { backupChannels, channelLookup, detachPeer, fetchGraphNode, initWallet, invoiceLookup, paymentLookup, peerLookup, restoreChannels, sendPayment, verifyChannel } from './lnd.actions';
 import { allAPIsCallStatus } from './lnd.selector';
 import { initLNDState } from './lnd.state';
 
@@ -124,6 +124,80 @@ describe('LND Effects: initWallet', () => {
   it('posts no recovery window for a newly generated seed', () => {
     expect(sentBody({ pwd: 'cHdk', cipher: ['one', 'two'] })).
       toEqual({ wallet_password: 'cHdk', cipher_seed_mnemonic: ['one', 'two'], aezeed_passphrase: '' });
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
+    TestBed.resetTestingModule();
+  });
+});
+
+// A value that goes into the path of a request URL is one segment of it, whatever it contains.
+describe('LND Effects: values in a request path', () => {
+  let actions: ReplaySubject<any>;
+  let effects: LNDEffects;
+  let httpTestingController: HttpTestingController;
+  const value = 'ab/../cd?e=f#g';
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, SharedModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        LNDEffects, CommonService, HttpClient, WebSocketClientService,
+        { provide: SessionService, useClass: mockSessionService },
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        provideMockStore({ initialState: mockRTLStoreState, selectors: [{ selector: allAPIsCallStatus, value: initLNDState.apisCallStatus }] }),
+        provideMockActions(() => actions)
+      ]
+    });
+    effects = TestBed.inject(LNDEffects);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    actions = new ReplaySubject(1);
+  });
+
+  // The URL the browser requests once the effect has run, relative URLs resolved as it resolves them.
+  const requestedUrl = (action, effect: string) => {
+    actions.next(action);
+    const sub = effects[effect].subscribe();
+    const req = httpTestingController.expectOne(() => true);
+    req.flush({});
+    sub.unsubscribe();
+    return new URL(req.request.urlWithParams, 'http://localhost:3000/rtl/');
+  };
+  const requestedPath = (action, effect: string) => requestedUrl(action, effect).pathname;
+
+  it('requests the node route with the looked up pubkey as its last segment', () => {
+    expect(requestedPath(peerLookup({ payload: value }), 'peerLookup')).toBe('/rtl/api/lnd/network/node/' + encodeURIComponent(value));
+    expect(requestedPath(fetchGraphNode({ payload: { pubkey: value } }), 'graphNodeFetch')).toBe('/rtl/api/lnd/network/node/' + encodeURIComponent(value));
+  });
+
+  it('requests the edge route with the looked up channel id as its last segment', () => {
+    expect(requestedPath(channelLookup({ payload: { uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, channelID: value } }), 'channelLookup')).
+      toBe('/rtl/api/lnd/network/edge/' + encodeURIComponent(value));
+  });
+
+  it('requests the payment lookup route with the payment hash as its last segment', () => {
+    expect(requestedPath(paymentLookup({ payload: value }), 'paymentLookup')).toBe('/rtl/api/lnd/payments/lookup/' + encodeURIComponent(value));
+  });
+
+  it('sends the payment hash or address of an invoice lookup as one query value', () => {
+    const byHash = requestedUrl(invoiceLookup({ payload: { openSnackBar: false, paymentHash: 'ab&cd=ef#g==' } }), 'invoiceLookup');
+    expect(byHash.pathname).toBe('/rtl/api/lnd/invoices/lookup');
+    expect(Array.from(byHash.searchParams.entries())).toEqual([['payment_hash', 'ab&cd=ef#g==']]);
+    const byAddress = requestedUrl(invoiceLookup({ payload: { openSnackBar: false, paymentAddress: 'ab&cd=ef#g==' } }), 'invoiceLookup');
+    expect(Array.from(byAddress.searchParams.entries())).toEqual([['payment_addr', 'ab&cd=ef#g==']]);
+  });
+
+  it('requests the peer route with the detached pubkey as its last segment', () => {
+    expect(requestedPath(detachPeer({ payload: { pubkey: value } }), 'detachPeer')).toBe('/rtl/api/lnd/peers/' + encodeURIComponent(value));
+  });
+
+  it('requests the channel backup routes with the channel point as their last segment', () => {
+    expect(requestedPath(backupChannels({ payload: { uiMessage: UI_MESSAGES.NO_SPINNER, channelPoint: value, showMessage: '' } }), 'backupChannels')).
+      toBe('/rtl/api/lnd/channels/backup/' + encodeURIComponent(value));
+    expect(requestedPath(verifyChannel({ payload: { channelPoint: value } }), 'verifyChannel')).toBe('/rtl/api/lnd/channels/backup/verify/' + encodeURIComponent(value));
+    expect(requestedPath(restoreChannels({ payload: { channelPoint: value } }), 'restoreChannels')).toBe('/rtl/api/lnd/channels/backup/restore/' + encodeURIComponent(value));
   });
 
   afterEach(() => {

@@ -209,7 +209,7 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.DETACH_PEER_LND),
     mergeMap((action: { type: string, payload: { pubkey: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
-      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + action.payload.pubkey).pipe(
+      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + encodeURIComponent(action.payload.pubkey)).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
@@ -372,7 +372,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: any }) => {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'BackupChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint).pipe(
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/' + encodeURIComponent(action.payload.channelPoint)).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'BackupChannels', status: APICallStatusEnum.COMPLETED } }));
@@ -396,7 +396,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { channelPoint: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.VERIFY_CHANNEL }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'VerifyChannel', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, {}).pipe(
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/verify/' + encodeURIComponent(action.payload.channelPoint), {}).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'VerifyChannel', status: APICallStatusEnum.COMPLETED } }));
@@ -420,7 +420,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { channelPoint: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.RESTORE_CHANNEL }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'RestoreChannels', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/restore/' + action.payload.channelPoint, {}).pipe(
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.CHANNELS_BACKUP_API + '/restore/' + encodeURIComponent(action.payload.channelPoint), {}).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'RestoreChannels', status: APICallStatusEnum.COMPLETED } }));
@@ -765,7 +765,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { pubkey: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_NODE_ADDRESS }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'FetchGraphNode', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/node/' + action.payload.pubkey).pipe(
+      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/node/' + encodeURIComponent(action.payload.pubkey)).pipe(
         map((graphNode: any) => {
           this.logger.info(graphNode);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GET_NODE_ADDRESS }));
@@ -1017,7 +1017,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/node/' + action.payload).pipe(
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/node/' + encodeURIComponent(action.payload)).pipe(
         map((resPeer) => {
           this.logger.info(resPeer);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
@@ -1040,7 +1040,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: ChannelLookup }) => {
       this.store.dispatch(openSpinner({ payload: action.payload.uiMessage }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/edge/' + action.payload.channelID).pipe(
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/edge/' + encodeURIComponent(action.payload.channelID)).pipe(
         map((resChannel) => {
           this.logger.info(resChannel);
           this.store.dispatch(closeSpinner({ payload: action.payload.uiMessage }));
@@ -1065,9 +1065,9 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
       let lookupUrl = this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/lookup';
       if (action.payload.paymentAddress && action.payload.paymentAddress !== '') {
-        lookupUrl = lookupUrl + '?payment_addr=' + action.payload.paymentAddress;
+        lookupUrl = lookupUrl + '?payment_addr=' + encodeURIComponent(action.payload.paymentAddress);
       } else {
-        lookupUrl = lookupUrl + '?payment_hash=' + action.payload.paymentHash;
+        lookupUrl = lookupUrl + '?payment_hash=' + encodeURIComponent(action.payload.paymentHash);
       }
       return this.httpClient.get(lookupUrl).pipe(
         map((resInvoice) => {
@@ -1100,7 +1100,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_PAYMENT }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/lookup/' + action.payload).pipe(
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/lookup/' + encodeURIComponent(action.payload)).pipe(
         map((resPayment: any) => {
           this.logger.info(resPayment);
           this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.SEARCHING_PAYMENT }));

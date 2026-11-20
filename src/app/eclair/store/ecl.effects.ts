@@ -289,7 +289,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { id: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {}).
+      return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + encodeURIComponent(action.payload.id)), {}).
         pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
@@ -314,7 +314,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: { type: string, payload: { nodeId: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.DISCONNECT_PEER }));
-      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + action.payload.nodeId).
+      return this.httpClient.delete(this.CHILD_API_URL + API_END_POINTS.PEERS_API + '/' + encodeURIComponent(action.payload.nodeId)).
         pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -427,7 +427,7 @@ export class ECLEffects implements OnDestroy {
 
   queryRoutesFetch = createEffect(() => this.actions.pipe(
     ofType(ECLActions.GET_QUERY_ROUTES_ECL),
-    mergeMap((action: { type: string, payload: GetQueryRoutes }) => this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount).
+    mergeMap((action: { type: string, payload: GetQueryRoutes }) => this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.PAYMENTS_API + '/route?nodeId=' + encodeURIComponent(action.payload.nodeId) + '&amountMsat=' + encodeURIComponent(action.payload.amount)).
       pipe(
         map((qrRes: any) => {
           this.logger.info(qrRes);
@@ -594,7 +594,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_NODE }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/nodes/' + action.payload).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.NETWORK_API + '/nodes/' + encodeURIComponent(action.payload)).
         pipe(
           map((resPeer) => {
             this.logger.info(resPeer);
@@ -618,7 +618,7 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: string }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.SEARCHING_INVOICE }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'Lookup', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/' + action.payload).
+      return this.httpClient.get(this.CHILD_API_URL + API_END_POINTS.INVOICES_API + '/' + encodeURIComponent(action.payload)).
         pipe(
           map((resInvoice) => {
             this.logger.info(resInvoice);

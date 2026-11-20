@@ -64,7 +64,7 @@ export class LoopService implements OnDestroy {
     let params = new HttpParams();
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
-    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/out/quote/' + amount;
+    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/out/quote/' + encodeURIComponent(amount);
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[1]),
@@ -106,7 +106,7 @@ export class LoopService implements OnDestroy {
     let params = new HttpParams();
     params = params.append('targetConf', targetConf.toString());
     params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
-    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/in/quote/' + amount;
+    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/in/quote/' + encodeURIComponent(amount);
     this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GET_QUOTE }));
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(
       takeUntil(this.unSubs[3]),
@@ -134,7 +134,7 @@ export class LoopService implements OnDestroy {
   }
 
   getSwap(id: string) {
-    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/swap/' + id;
+    this.loopUrl = API_URL + API_END_POINTS.LOOP_API + '/swap/' + encodeURIComponent(id);
     return this.httpClient.get(this.loopUrl).pipe(catchError((err) => this.handleErrorWithoutAlert('Loop Get Swap for ID: ' + id, UI_MESSAGES.NO_SPINNER, err)));
   }
 
