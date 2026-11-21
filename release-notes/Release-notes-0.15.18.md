@@ -130,4 +130,4 @@ this release should add its entry under the appropriate section below.
 - Pull requests that change what a user sees carry before and after screenshots
   ([#1829](https://github.com/Ride-The-Lightning/RTL/pull/1829)).
 - `npm run test` runs the frontend specs in about a minute on macOS instead of several
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  ([#1831](https://github.com/Ride-The-Lightning/RTL/pull/1831)).
