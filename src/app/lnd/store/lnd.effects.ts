@@ -15,7 +15,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, Fees, BlockchainBalance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices,
   PendingChannelsSummary, UTXO, ListPayments, SavePeer, SaveInvoice, SaveChannel, CloseChannel, FetchInvoices, FetchPayments,
   SendPayment, LightningNode, GetNewAddress, ChannelsTransaction, GetQueryRoutes, QueryRoutes, InitWallet, ChannelLookup,
-  SetRestoreChannelsList } from '../../shared/models/lndModels';
+  SetRestoreChannelsList, Peer } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { API_URL, API_END_POINTS, RTLActions, LNDActions, AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES, LNDWSEventTypeEnum, LND_DEFAULT_PAGE_SETTINGS, SortOrderEnum, getNoRouteMessage, msatToSat } from '../../shared/services/consts-enums-functions';
@@ -186,7 +186,9 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: SavePeer }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
-      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.PEERS_API, { pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm }).pipe(
+      // LND lists pubkeys in lower case, whatever case was entered.
+      const pubkey = (action.payload.pubkey || '').trim().toLowerCase();
+      return this.httpClient.post(this.CHILD_API_URL + API_END_POINTS.PEERS_API, { pubkey: pubkey, host: action.payload.host, perm: action.payload.perm }).pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(updateLNDAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED } }));
@@ -194,7 +196,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(setPeers({ payload: (postRes || []) }));
           return {
             type: LNDActions.NEWLY_ADDED_PEER_LND,
-            payload: { peer: postRes[0] }
+            payload: { peer: (postRes || []).find((peer: Peer) => peer.pub_key === pubkey) || { pub_key: pubkey } }
           };
         }),
         catchError((err: any) => {

@@ -410,9 +410,14 @@ export class CommonService {
             });
             return temp;
         };
+        // Moves the record whose key equals value to the front. Without such a record the list is returned as it is.
         this.newestOnTop = (array, key, value) => {
-            const newlyAddedRecord = array.splice(array.findIndex((item) => item[key] === value), 1);
-            array?.unshift(newlyAddedRecord[0]);
+            const index = array.findIndex((item) => item[key] === value);
+            if (index < 0) {
+                return array;
+            }
+            const newlyAddedRecord = array.splice(index, 1);
+            array.unshift(newlyAddedRecord[0]);
             return array;
         };
         this.camelCase = (str) => str?.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (word.toUpperCase()))?.replace(/\s+/g, '')?.replace(/-/g, ' ');

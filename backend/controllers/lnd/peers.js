@@ -70,7 +70,8 @@ export const postPeer = (req, res, next) => {
                 // this replaced an explicit inner .catch — a throw here must not hang the POST (#1629 F4).
                 try {
                     if (body.peers) {
-                        body.peers = common.newestOnTop(body.peers, 'pub_key', pubkey);
+                        // LND lists pubkeys in lower case, whatever case the request used.
+                        body.peers = common.newestOnTop(body.peers, 'pub_key', typeof pubkey === 'string' ? pubkey.toLowerCase() : pubkey);
                         logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
                     }
                     res.status(201).json(body.peers);

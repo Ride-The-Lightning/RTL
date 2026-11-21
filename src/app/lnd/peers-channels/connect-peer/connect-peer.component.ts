@@ -279,7 +279,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       case 1:
       case 2:
         if (this.peerFormGroup.controls.peerAddress.value) {
-          this.peerFormLabel = 'Peer Added: ' + this.newlyAddedPeer?.alias;
+          this.peerFormLabel = 'Peer Added: ' + (this.newlyAddedPeer?.alias ? this.newlyAddedPeer.alias : this.newlyAddedPeer?.pub_key);
         } else {
           this.peerFormLabel = 'Peer Details';
         }

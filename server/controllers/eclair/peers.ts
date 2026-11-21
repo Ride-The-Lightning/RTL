@@ -87,7 +87,9 @@ export const connectPeer = (req, res, next) => {
             peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
             return peer;
           });
-          const peers = common.newestOnTop(body || [], 'nodeId', req.query.nodeId ? req.query.nodeId : req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : '');
+          // Eclair lists node ids in lower case, whatever case the request used.
+          const connectedNodeId = req.query.nodeId ? req.query.nodeId : req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : '';
+          const peers = common.newestOnTop(body || [], 'nodeId', typeof connectedNodeId === 'string' ? connectedNodeId.toLowerCase() : connectedNodeId);
           logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: peers });
           res.status(201).json(peers);
         });

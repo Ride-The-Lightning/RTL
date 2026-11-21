@@ -147,6 +147,17 @@ describe('ConnectPeerComponent', () => {
     expect(component.channelFormGroup.controls.fundingAmount.disabled).toBe(false);
   });
 
+  it('should label the peer step with the pubkey of a peer that has no alias', () => {
+    component.peerFormGroup.controls.peerAddress.setValue('03' + 'ab'.repeat(32));
+    component.newlyAddedPeer = { pub_key: '03' + 'ab'.repeat(32) };
+    component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
+    expect(component.peerFormLabel).toEqual('Peer Added: 03' + 'ab'.repeat(32));
+
+    component.newlyAddedPeer = { pub_key: '03' + 'ab'.repeat(32), alias: 'carol' };
+    component.stepSelectionChanged({ selectedIndex: 1, previouslySelectedIndex: 0 });
+    expect(component.peerFormLabel).toEqual('Peer Added: carol');
+  });
+
   it('should label the channel step from the form, without waiting for a step change', () => {
     // The channel step is entered once, before anything is filled in, and flgEditable then
     // blocks a return — so a label only written on selectionChange never shows a choice.

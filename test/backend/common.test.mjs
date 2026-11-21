@@ -464,3 +464,14 @@ test('getListeningMessage brackets an IPv6 host that is written differently from
   assert.equal(Common.getListeningMessage({ address: '::1', family: 'IPv6', port: 3000 }, '0:0:0:0:0:0:0:1'),
     'Server is up and running on [::1]:3000, please open the UI at http://[::1]:3000 or your proxy configured url');
 });
+
+test('newestOnTop moves the matching record to the front and keeps the rest in order', () => {
+  const list = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+  assert.deepEqual(Common.newestOnTop(list, 'id', 'b').map((item) => item.id), ['b', 'a', 'c']);
+});
+
+test('newestOnTop leaves the list as it is when no record matches', () => {
+  const list = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+  assert.deepEqual(Common.newestOnTop(list, 'id', 'z').map((item) => item.id), ['a', 'b', 'c']);
+  assert.deepEqual(Common.newestOnTop([], 'id', 'z'), []);
+});

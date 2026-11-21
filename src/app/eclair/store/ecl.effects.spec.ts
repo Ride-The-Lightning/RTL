@@ -99,3 +99,46 @@ describe('ECL Effects: values in a request URL', () => {
     TestBed.resetTestingModule();
   });
 });
+
+// Eclair lists node ids in lower case. The peer the dialog goes on with is the one that was entered.
+describe('ECL Effects: saveNewPeer', () => {
+  let actions: ReplaySubject<any>;
+  let effects: ECLEffects;
+  let httpTestingController: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, SharedModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        ECLEffects, CommonService, HttpClient, WebSocketClientService,
+        { provide: SessionService, useClass: mockSessionService },
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        provideMockStore({ initialState: mockRTLStoreState, selectors: [{ selector: allAPIsCallStatus, value: initECLState.apisCallStatus }] }),
+        provideMockActions(() => actions)
+      ]
+    });
+    effects = TestBed.inject(ECLEffects);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    actions = new ReplaySubject(1);
+  });
+
+  const keyOne = '02' + '1a'.repeat(32);
+  const keyNew = '03' + 'ab'.repeat(32);
+  const peers = [{ nodeId: keyOne, alias: 'one' }, { nodeId: keyNew, alias: 'new' }];
+
+  const connect = (id: string) => {
+    let emitted: any = null;
+    actions.next(saveNewPeer({ payload: { id: id } }));
+    const sub = effects.saveNewPeer.subscribe((action) => { emitted = action; });
+    httpTestingController.expectOne(() => true).flush(peers);
+    sub.unsubscribe();
+    return emitted.payload.peer;
+  };
+
+  it('reports the entered peer as the newly added one, in whatever case it was entered', () => {
+    expect(connect(keyNew)).toEqual({ nodeId: keyNew, alias: 'new' });
+    expect(connect(keyNew.toUpperCase())).toEqual({ nodeId: keyNew, alias: 'new' });
+    expect(connect(keyNew.toUpperCase() + '@10.0.0.1:9735')).toEqual({ nodeId: keyNew, alias: 'new' });
+  });
+});

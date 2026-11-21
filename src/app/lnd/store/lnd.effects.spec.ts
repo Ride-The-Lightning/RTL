@@ -19,7 +19,7 @@ import { WebSocketClientService } from '../../shared/services/web-socket.service
 import { UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from './lnd.effects';
-import { backupChannels, channelLookup, closeChannel, detachPeer, fetchGraphNode, getQueryRoutes, initWallet, invoiceLookup, paymentLookup, peerLookup, restoreChannels, sendPayment, verifyChannel } from './lnd.actions';
+import { backupChannels, channelLookup, closeChannel, detachPeer, fetchGraphNode, getQueryRoutes, initWallet, invoiceLookup, paymentLookup, peerLookup, restoreChannels, saveNewPeer, sendPayment, verifyChannel } from './lnd.actions';
 import { allAPIsCallStatus } from './lnd.selector';
 import { initLNDState } from './lnd.state';
 
@@ -216,5 +216,58 @@ describe('LND Effects: values in a request path', () => {
   afterEach(() => {
     httpTestingController.verify();
     TestBed.resetTestingModule();
+  });
+});
+
+// LND lists pubkeys in lower case. The peer the dialog goes on with is the one that was entered.
+describe('LND Effects: saveNewPeer', () => {
+  let actions: ReplaySubject<any>;
+  let effects: LNDEffects;
+  let httpTestingController: HttpTestingController;
+  const keyOne = '02' + '1a'.repeat(32);
+  const keyNew = '03' + 'ab'.repeat(32);
+  const keyTwo = '02' + '2c'.repeat(32);
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, SharedModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        LNDEffects, CommonService, HttpClient, WebSocketClientService,
+        { provide: SessionService, useClass: mockSessionService },
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        provideMockStore({ initialState: mockRTLStoreState, selectors: [{ selector: allAPIsCallStatus, value: initLNDState.apisCallStatus }] }),
+        provideMockActions(() => actions)
+      ]
+    });
+    effects = TestBed.inject(LNDEffects);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    actions = new ReplaySubject(1);
+  });
+
+  const connect = (pubkey: string, peersAfterConnect: any[]) => {
+    let emitted: any = null;
+    actions.next(saveNewPeer({ payload: { pubkey: pubkey, host: '10.0.0.1:9735', perm: false } }));
+    const sub = effects.saveNewPeer.subscribe((action) => { emitted = action; });
+    const req = httpTestingController.expectOne(() => true);
+    req.flush(peersAfterConnect);
+    sub.unsubscribe();
+    return { posted: req.request.body, emitted: emitted };
+  };
+
+  it('posts the pubkey in lower case', () => {
+    expect(connect(keyNew.toUpperCase(), []).posted.pubkey).toBe(keyNew);
+  });
+
+  it('reports the entered peer as the newly added one, wherever it is in the list', () => {
+    const peers = [{ pub_key: keyOne, alias: 'one' }, { pub_key: keyTwo, alias: 'two' }, { pub_key: keyNew, alias: 'new' }];
+    expect(connect(keyNew, peers).emitted.payload.peer).toEqual({ pub_key: keyNew, alias: 'new' });
+    expect(connect(keyNew.toUpperCase(), peers).emitted.payload.peer).toEqual({ pub_key: keyNew, alias: 'new' });
+  });
+
+  it('reports the entered pubkey when the list does not have the peer', () => {
+    const peers = [{ pub_key: keyOne, alias: 'one' }, { pub_key: keyTwo, alias: 'two' }];
+    expect(connect(keyNew.toUpperCase(), peers).emitted.payload.peer).toEqual({ pub_key: keyNew });
+    expect(connect(keyNew, []).emitted.payload.peer).toEqual({ pub_key: keyNew });
   });
 });

@@ -214,7 +214,7 @@ export class CLNEffects implements OnDestroy {
             this.store.dispatch(setPeers({ payload: (postRes || []) }));
             return {
               type: CLNActions.NEWLY_ADDED_PEER_CLN,
-              payload: { peer: postRes.find((peer: Peer) => action.payload.id.indexOf(peer.id ? peer.id : '') === 0) }
+              payload: { peer: (postRes || []).find((peer: Peer) => !!peer.id && action.payload.id.trim().toLowerCase().indexOf(peer.id) === 0) }
             };
           }),
           catchError((err: any) => {

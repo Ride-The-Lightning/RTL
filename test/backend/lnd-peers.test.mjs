@@ -148,3 +148,33 @@ test('postPeer: the follow-up peer list and alias lookups keep node A\'s options
     await nodeB.close();
   }
 });
+
+const KEY_ONE = '02' + '1a'.repeat(32);
+const KEY_NEW = '03' + 'ab'.repeat(32);
+const KEY_TWO = '02' + '2c'.repeat(32);
+
+test('postPeer: the connected peer leads the list when its pubkey was sent in upper case', async () => {
+  const node = await startFakeLnd('A', 'macaroon-A', [{ pub_key: KEY_ONE }, { pub_key: KEY_NEW }, { pub_key: KEY_TWO }]);
+  try {
+    const res = buildResponse();
+    postPeer(buildRequest(node, { host: '10.0.0.1:9735', pubkey: KEY_NEW.toUpperCase(), perm: false }), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    assert.deepEqual(res.body.map((p) => p.pub_key), [KEY_NEW, KEY_ONE, KEY_TWO]);
+  } finally {
+    await node.close();
+  }
+});
+
+test('postPeer: the list keeps the node\'s order when the connected peer is not in it', async () => {
+  const node = await startFakeLnd('A', 'macaroon-A', [{ pub_key: KEY_ONE }, { pub_key: KEY_TWO }]);
+  try {
+    const res = buildResponse();
+    postPeer(buildRequest(node, { host: '10.0.0.1:9735', pubkey: KEY_NEW, perm: false }), res, null);
+    await res.done;
+    assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+    assert.deepEqual(res.body.map((p) => p.pub_key), [KEY_ONE, KEY_TWO]);
+  } finally {
+    await node.close();
+  }
+});

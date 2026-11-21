@@ -299,7 +299,7 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(setPeers({ payload: postRes }));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
-              payload: { peer: postRes.find((peer) => peer.nodeId === (action.payload.id.includes('@') ? action.payload.id.substring(0, action.payload.id.indexOf('@')) : action.payload.id)) }
+              payload: { peer: postRes.find((peer) => peer.nodeId === (action.payload.id.includes('@') ? action.payload.id.substring(0, action.payload.id.indexOf('@')) : action.payload.id).trim().toLowerCase()) }
             };
           }),
           catchError((err: any) => {
