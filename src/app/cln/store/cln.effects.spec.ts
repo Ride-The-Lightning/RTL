@@ -62,7 +62,8 @@ describe('CLN Effects: saveNewPeer', () => {
     expect(connect(keyNew.toUpperCase() + '@10.0.0.1:9735', peers)).toEqual({ id: keyNew, alias: 'new' });
   });
 
-  it('reports no peer for a list entry without an id', () => {
-    expect(connect(keyNew, [{ alias: 'no id' }, { id: keyOne, alias: 'one' }])).toBeUndefined();
+  it('reports the entered id when the list does not have the peer', () => {
+    expect(connect(keyNew, [{ alias: 'no id' }, { id: keyOne, alias: 'one' }])).toEqual({ id: keyNew });
+    expect(connect(keyNew.toUpperCase() + '@10.0.0.1:9735', [])).toEqual({ id: keyNew });
   });
 });

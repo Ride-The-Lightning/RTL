@@ -127,11 +127,11 @@ describe('ECL Effects: saveNewPeer', () => {
   const keyNew = '03' + 'ab'.repeat(32);
   const peers = [{ nodeId: keyOne, alias: 'one' }, { nodeId: keyNew, alias: 'new' }];
 
-  const connect = (id: string) => {
+  const connect = (id: string, peersAfterConnect: any[] = peers) => {
     let emitted: any = null;
     actions.next(saveNewPeer({ payload: { id: id } }));
     const sub = effects.saveNewPeer.subscribe((action) => { emitted = action; });
-    httpTestingController.expectOne(() => true).flush(peers);
+    httpTestingController.expectOne(() => true).flush(peersAfterConnect);
     sub.unsubscribe();
     return emitted.payload.peer;
   };
@@ -140,5 +140,10 @@ describe('ECL Effects: saveNewPeer', () => {
     expect(connect(keyNew)).toEqual({ nodeId: keyNew, alias: 'new' });
     expect(connect(keyNew.toUpperCase())).toEqual({ nodeId: keyNew, alias: 'new' });
     expect(connect(keyNew.toUpperCase() + '@10.0.0.1:9735')).toEqual({ nodeId: keyNew, alias: 'new' });
+  });
+
+  it('reports the entered node id when the list does not have the peer', () => {
+    expect(connect(keyNew, [{ nodeId: keyOne, alias: 'one' }])).toEqual({ nodeId: keyNew });
+    expect(connect(keyNew.toUpperCase() + '@10.0.0.1:9735', [])).toEqual({ nodeId: keyNew });
   });
 });

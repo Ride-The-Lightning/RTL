@@ -205,6 +205,8 @@ export class CLNEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { id: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateCLNAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
+      // Core Lightning lists node ids in lower case, whatever case was entered.
+      const enteredId = action.payload.id.split('@')[0].trim().toLowerCase();
       return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API, { id: action.payload.id }).
         pipe(
           map((postRes: Peer[]) => {
@@ -214,7 +216,7 @@ export class CLNEffects implements OnDestroy {
             this.store.dispatch(setPeers({ payload: (postRes || []) }));
             return {
               type: CLNActions.NEWLY_ADDED_PEER_CLN,
-              payload: { peer: (postRes || []).find((peer: Peer) => !!peer.id && action.payload.id.trim().toLowerCase().indexOf(peer.id) === 0) }
+              payload: { peer: (postRes || []).find((peer: Peer) => peer.id === enteredId) || { id: enteredId } }
             };
           }),
           catchError((err: any) => {

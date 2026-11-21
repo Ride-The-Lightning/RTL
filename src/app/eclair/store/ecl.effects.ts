@@ -289,6 +289,8 @@ export class ECLEffects implements OnDestroy {
     mergeMap((action: { type: string, payload: { id: string } }) => {
       this.store.dispatch(openSpinner({ payload: UI_MESSAGES.CONNECT_PEER }));
       this.store.dispatch(updateECLAPICallStatus({ payload: { action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED } }));
+      // Eclair lists node ids in lower case, whatever case was entered.
+      const enteredId = action.payload.id.split('@')[0].trim().toLowerCase();
       return this.httpClient.post<Peer[]>(this.CHILD_API_URL + API_END_POINTS.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + encodeURIComponent(action.payload.id)), {}).
         pipe(
           map((postRes: Peer[]) => {
@@ -299,7 +301,7 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(setPeers({ payload: postRes }));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
-              payload: { peer: postRes.find((peer) => peer.nodeId === (action.payload.id.includes('@') ? action.payload.id.substring(0, action.payload.id.indexOf('@')) : action.payload.id).trim().toLowerCase()) }
+              payload: { peer: postRes.find((peer) => peer.nodeId === enteredId) || { nodeId: enteredId } }
             };
           }),
           catchError((err: any) => {

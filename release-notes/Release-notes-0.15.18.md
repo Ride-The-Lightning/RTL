@@ -70,9 +70,10 @@ this release should add its entry under the appropriate section below.
   looks the new peer up in the node's peer list, to show it first and to label the dialog's
   next step. The lookup compared the pubkey as typed with the lower-case pubkeys the node
   lists, so a pubkey entered in upper case was not found. The comparison is now in lower case
-  on LND, Core Lightning and Eclair, a list without a match keeps the node's order, and the
-  LND dialog shows the pubkey when the peer has no alias. Backend tests and specs cover each
-  implementation.
+  on LND, Core Lightning and Eclair, and a list without a match keeps the node's order. When
+  the list does not have the peer, the dialog carries on with the pubkey that was entered, and
+  the LND dialog shows the pubkey when the peer has no alias. Backend tests and specs cover
+  each implementation.
 
 ## Enhancements
 
