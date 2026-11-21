@@ -68,7 +68,7 @@ export const postPeer = (req, res, next) => {
         try {
           if (body.peers) {
             // LND lists pubkeys in lower case, whatever case the request used.
-            body.peers = common.newestOnTop(body.peers, 'pub_key', typeof pubkey === 'string' ? pubkey.toLowerCase() : pubkey);
+            body.peers = common.newestOnTop(body.peers, 'pub_key', typeof pubkey === 'string' ? pubkey.trim().toLowerCase() : pubkey);
             logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Peers', msg: 'Peers List after Connect Received', data: body });
           }
           res.status(201).json(body.peers);

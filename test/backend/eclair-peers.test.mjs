@@ -74,6 +74,16 @@ test('connectPeer: the connected peer leads the list when its node id was sent i
   assert.deepEqual(byUri.body.map((p) => p.nodeId), [KEY_NEW, KEY_ONE, KEY_TWO]);
 });
 
+test('connectPeer: the connected peer leads the list when its node id was sent with spaces around it', async () => {
+  const byNodeId = await connect(listed(), { nodeId: KEY_NEW + ' ' });
+  assert.equal(byNodeId.statusCode, 201, JSON.stringify(byNodeId.body));
+  assert.deepEqual(byNodeId.body.map((p) => p.nodeId), [KEY_NEW, KEY_ONE, KEY_TWO]);
+
+  const byUri = await connect(listed(), { uri: ' ' + KEY_NEW + ' @10.0.0.1:9735' });
+  assert.equal(byUri.statusCode, 201, JSON.stringify(byUri.body));
+  assert.deepEqual(byUri.body.map((p) => p.nodeId), [KEY_NEW, KEY_ONE, KEY_TWO]);
+});
+
 test('connectPeer: the list keeps the node\'s order when the connected peer is not in it', async () => {
   const res = await connect([{ nodeId: KEY_ONE }, { nodeId: KEY_TWO }], { nodeId: KEY_NEW });
   assert.equal(res.statusCode, 201, JSON.stringify(res.body));
