@@ -7,6 +7,12 @@
 // clock change in March and in October.
 process.env.TZ = 'Europe/Berlin';
 
+// On macOS, Chrome's baseline JIT compiler makes the first run of any code in the test bundle
+// very slow: the specs took about eight minutes on an Apple Silicon Mac with Chrome 157, against
+// 14 seconds for the same specs on Linux. Without the JIT the same run takes under a minute.
+// Linux keeps Chrome's defaults.
+const headlessFlags = process.platform === 'darwin' ? ['--js-flags=--jitless'] : [];
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -39,6 +45,13 @@ module.exports = function (config) {
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
+    customLaunchers: {
+      // What `npm run test` uses.
+      ChromeHeadlessTest: {
+        base: 'ChromeHeadless',
+        flags: headlessFlags
+      }
+    },
     restartOnFileChange: true
   });
 };
