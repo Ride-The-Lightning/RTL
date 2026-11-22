@@ -76,7 +76,7 @@ this release should add its entry under the appropriate section below.
   each implementation.
 
 - **Core Lightning: a liquidity lease is funded at the fee rate entered, and its cost follows
-  every edit** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Open
+  every edit** ([#1833](https://github.com/Ride-The-Lightning/RTL/pull/1833)). The Open
   Liquidity Channel dialog asks for the fee rate in Sats/vByte but sent the number to Core
   Lightning as sats per 1,000 vBytes, so the funding transaction went out at Core Lightning's
   minimum fee rate. It now converts the rate as RTL's other Core Lightning fee rate fields do,
