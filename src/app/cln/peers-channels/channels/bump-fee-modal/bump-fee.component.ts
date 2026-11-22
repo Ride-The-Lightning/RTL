@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { Subject, EMPTY, defer, merge } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faCopy, faInfoCircle, faExclamationTriangle, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +18,7 @@ import { Node } from '../../../../shared/models/RTLconfig';
 import { rootSelectedNode } from '../../../../store/rtl.selector';
 import { RTLState } from '../../../../store/rtl.state';
 import { openSnackBar } from '../../../../store/rtl.actions';
-import { getNewAddress, setChannelTransaction } from '../../../store/cln.actions';
+import { setChannelTransaction } from '../../../store/cln.actions';
 
 @Component({
   standalone: false,
@@ -83,30 +83,39 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     this.bumpFeeError = '';
-    this.store.dispatch(getNewAddress({ payload: ADDRESS_TYPES[0] }));
-    this.actions.pipe(filter((action) => action.type === CLNActions.SET_NEW_ADDRESS_CLN), take(1)).
-      subscribe((action: any) => {
-        this.store.dispatch(setChannelTransaction({
-          payload: {
-            destination: action.payload,
-            satoshi: 'all',
-            feerate: getCLNFeeRatePerKb(this.fees || 0),
-            utxos: [this.bumpFeeChannel.funding_txid + ':' + (this.outputIndex || '').toString()]
-          }
-        }));
-      });
-    this.actions.pipe(filter((action) => action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN), take(1)).
-      subscribe((action: any) => {
-        this.store.dispatch(openSnackBar({ payload: 'Successfully bumped the fee. Use the block explorer to verify transaction.' }));
-        this.dialogRef.close();
-      });
-    this.actions.pipe(filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN), takeUntil(this.unSubs[3])).
-      subscribe((action: any) => {
-        if (action.payload.status === APICallStatusEnum.ERROR && (action.payload.action === 'SetChannelTransaction' || action.payload.action === 'GenerateNewAddress')) {
+    // Spend only to the address this request returns, then wait for that spend's own result.
+    this.dataService.getNewAddress(ADDRESS_TYPES[0]).pipe(
+      switchMap((newAddress: string) => merge(
+        this.actions.pipe(filter((action: any) => action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN ||
+          (action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN && action.payload.action === 'SetChannelTransaction' && action.payload.status === APICallStatusEnum.ERROR))),
+        defer(() => {
+          this.store.dispatch(setChannelTransaction({
+            payload: {
+              destination: newAddress,
+              satoshi: 'all',
+              feerate: getCLNFeeRatePerKb(this.fees || 0),
+              utxos: [this.bumpFeeChannel.funding_txid + ':' + this.outputIndex]
+            }
+          }));
+          return EMPTY;
+        })
+      )),
+      take(1),
+      takeUntil(this.unSubs[3])
+    ).subscribe({
+      next: (action: any) => {
+        if (action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN) {
+          this.store.dispatch(openSnackBar({ payload: 'Successfully bumped the fee. Use the block explorer to verify transaction.' }));
+          this.dialogRef.close();
+        } else {
           this.logger.error(action.payload.message);
           this.bumpFeeError = action.payload.message;
         }
-      });
+      }, error: (err) => {
+        this.logger.error(err);
+        this.bumpFeeError = err.message;
+      }
+    });
   }
 
   onExplorerClicked(txid: string) {

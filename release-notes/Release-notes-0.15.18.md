@@ -102,6 +102,16 @@ this release should add its entry under the appropriate section below.
   the mouse left the previous signature or result on screen next to the new text. Both now react
   to every change. Specs cover both pages on both implementations.
 
+- **Core Lightning: Bump Fee uses the address its own request returns**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Bump Fee dialog asked for a
+  new address and then took the next new address generated anywhere in RTL, and it kept waiting
+  after it closed. If its own request failed, an address generated later, for example on the
+  Receive screen, was taken for its own. The dialog now requests the address directly, spends
+  only to the address that request returns, and stops listening when it closes. A failed address
+  request shows its error inside the dialog, which stays open, instead of in a separate alert.
+  The dialog also sent output index 0 as an empty index (`<txid>:`), so a fee bump on output 0
+  failed; it now sends `<txid>:0`. Specs cover the dialog and the new request.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),

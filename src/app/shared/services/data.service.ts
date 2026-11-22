@@ -353,6 +353,28 @@ export class DataService implements OnDestroy {
     }));
   }
 
+  // Core Lightning: a dialog that spends to the new address uses this request's own reply.
+  getNewAddress(addressType: { addressCode: string }) {
+    return this.lnImplementationUpdated.pipe(first(), mergeMap((updatedLnImplementation) => {
+      this.store.dispatch(openSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
+      return this.httpClient.post(this.APIUrl + '/' + updatedLnImplementation + API_END_POINTS.ON_CHAIN_API + '/newaddr', { addresstype: addressType.addressCode }).pipe(
+        map((res: any) => {
+          this.store.dispatch(closeSpinner({ payload: UI_MESSAGES.GENERATE_NEW_ADDRESS }));
+          if (!res || typeof res[addressType.addressCode] !== 'string' || !res[addressType.addressCode]) {
+            throw new Error('No ' + addressType.addressCode + ' address in the node\'s reply.');
+          }
+          return <string>res[addressType.addressCode];
+        }), catchError((err) => {
+          if (err instanceof Error) {
+            return throwError(() => err);
+          }
+          this.handleErrorWithoutAlert('GenerateNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, err);
+          return throwError(() => new Error(this.extractErrorMessage(err)));
+        })
+      );
+    }));
+  }
+
   circularRebalance(amountMSat: number, sourceShortChannelId: string = '', sourceNodeId: string = '', targetShortChannelId: string = '', targetNodeId: string = '', ignoreNodeIds: string[] = [], maxFeeMsat: number | null = null, format: string = 'shortChannelId') {
     const url = this.APIUrl + '/' + this.lnImplementation + API_END_POINTS.CHANNELS_API + '/circularRebalance';
     const reqBody = { amountMsat: amountMSat, sourceShortChannelId: sourceShortChannelId, sourceNodeId: sourceNodeId, targetShortChannelId: targetShortChannelId, targetNodeId: targetNodeId, ignoreNodeIds: ignoreNodeIds, maxFeeMsat: maxFeeMsat, format: format };

@@ -56,6 +56,10 @@ export class mockDataService {
     return of(mockResponseData.blockExplorerRecommendedFee);
   }
 
+  getNewAddress(addressType: { addressCode: string }) {
+    return of('bcrt1qmocknewaddress');
+  }
+
   getBlockExplorerTransaction(txid: string) {
     return of(mockResponseData.blockExplorerTransaction);
   }

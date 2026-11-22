@@ -8,7 +8,7 @@ import { mockResponseData } from '../test-helpers/test-data';
 import { RTLState } from '../../store/rtl.state';
 
 describe('DataService', () => {
-  let httpClientSpy: { get: jasmine.Spy };
+  let httpClientSpy: { get: jasmine.Spy, post: jasmine.Spy };
   let dataService: DataService;
   let store: Store<RTLState>;
   let logger: LoggerService;
@@ -94,6 +94,50 @@ describe('DataService', () => {
           done();
         },
         error: done.fail
+      });
+    });
+  });
+  describe('getNewAddress', () => {
+    beforeEach(() => {
+      store = jasmine.createSpyObj('Store', ['dispatch']);
+      logger = jasmine.createSpyObj('LoggerService', ['error', 'info']);
+      dataService = new DataService(httpClientSpy as any, store, logger, snackbar, new TitleCasePipe());
+      dataService.setLnImplementation('CLN');
+    });
+
+    it('should request an address of the given type and return it', (done: DoneFn) => {
+      httpClientSpy.post.and.returnValue(of({ bech32: 'bcrt1qnewaddress' }));
+      dataService.getNewAddress({ addressCode: 'bech32' }).subscribe({
+        next: (address) => {
+          expect(address).toBe('bcrt1qnewaddress');
+          const [url, body] = httpClientSpy.post.calls.mostRecent().args;
+          expect(new URL(url, 'http://localhost:3000/rtl/').pathname).toBe('/rtl/api/cln/onchain/newaddr');
+          expect(body).toEqual({ addresstype: 'bech32' });
+          done();
+        },
+        error: done.fail
+      });
+    });
+
+    it('should fail when the reply has no address of that type', (done: DoneFn) => {
+      httpClientSpy.post.and.returnValue(of({ p2tr: 'bcrt1pnewaddress' }));
+      dataService.getNewAddress({ addressCode: 'bech32' }).subscribe({
+        next: () => done.fail('expected an error, not an address'),
+        error: (error) => {
+          expect(error.message).toContain('bech32');
+          done();
+        }
+      });
+    });
+
+    it('should fail with the server\'s message when the request fails', (done: DoneFn) => {
+      httpClientSpy.post.and.returnValue(throwError(() => ({ status: 500, error: { message: 'Connection refused' } })));
+      dataService.getNewAddress({ addressCode: 'bech32' }).subscribe({
+        next: () => done.fail('expected an error, not an address'),
+        error: (error) => {
+          expect(error.message).toBe('Connection Refused');
+          done();
+        }
       });
     });
   });
