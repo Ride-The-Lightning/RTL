@@ -261,6 +261,18 @@ describe('CLNLightningSendPaymentsComponent offer payments', () => {
     expect(dispatched(CLNActions.FETCH_OFFER_INVOICE_CLN).length).toBe(2);
   });
 
+  it('shows the keysend amount in the other currency when it changes without a key press', async () => {
+    component.paymentType = PaymentTypes.KEYSEND;
+    component.selNode = <any>{ settings: { fiatConversion: true, currencyUnits: ['Sats', 'BTC', 'USD'] } };
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input[name="keysendAmount"]');
+    input.value = '10000';
+    input.dispatchEvent(new Event('input'));
+    // 10,000 Sats at the mocked rate of 33,438.82 USD per BTC.
+    expect(component.keysendValueHint).toBe('3.34 USD');
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

@@ -56,7 +56,7 @@
   </mat-form-field>
   <mat-form-field fxLayout="column" fxFlex="100">
     <mat-label>Amount</mat-label>
-    <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount" (keyup)="onKeysendAmountChange()">
+    <input #keysendAmt="ngModel" matInput name="keysendAmount" tabindex="5" required [(ngModel)]="keysendAmount" (ngModelChange)="onKeysendAmountChange()">
     <span matSuffix>Sats </span>
     <mat-hint fxLayout="row wrap" fxFlex="100">
       <span *ngIf="keysendValueHint !== ''" class="mr-3px">= </span>

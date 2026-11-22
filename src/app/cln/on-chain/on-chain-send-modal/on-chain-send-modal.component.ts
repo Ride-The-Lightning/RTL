@@ -14,7 +14,7 @@ import * as sha256 from 'sha256';
 import { Node, RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CLNOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO, LocalRemoteBalance } from '../../../shared/models/clnModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLNActions, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum, CLNActions, ScreenSizeEnum, getCLNFeeRatePerKb } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -220,7 +220,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
         delete this.transaction.minconf;
         this.transaction.feerate = (this.sendFundFormGroup.controls.selFeeRate.value === 'customperkb' &&
         !this.sendFundFormGroup.controls.flgMinConf.value && this.sendFundFormGroup.controls.customFeeRate.value) ?
-          ((this.sendFundFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.sendFundFormGroup.controls.selFeeRate.value;
+          getCLNFeeRatePerKb(this.sendFundFormGroup.controls.customFeeRate.value) : this.sendFundFormGroup.controls.selFeeRate.value;
       }
       delete this.transaction.utxos;
       this.sendInProgress = true;
@@ -278,7 +278,7 @@ export class CLNOnChainSendModalComponent implements OnInit, OnDestroy {
       delete this.transaction.utxos;
     }
     this.transaction.minconf = this.flgMinConf ? this.minConfValue : null;
-    this.transaction['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate !== '' ? this.selFeeRate : null;
+    this.transaction['feerate'] = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? getCLNFeeRatePerKb(this.customFeeRate) : this.selFeeRate !== '' ? this.selFeeRate : null;
     return !((!this.transaction.destination || this.transaction.destination === '') ||
       ((!this.transaction.satoshi || +this.transaction.satoshi <= 0)) ||
       (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0)) ||

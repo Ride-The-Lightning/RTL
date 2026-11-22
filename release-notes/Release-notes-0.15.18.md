@@ -78,13 +78,22 @@ this release should add its entry under the appropriate section below.
 - **Core Lightning: a liquidity lease is funded at the fee rate entered, and its cost follows
   every edit** ([#1833](https://github.com/Ride-The-Lightning/RTL/pull/1833)). The Open
   Liquidity Channel dialog asks for the fee rate in Sats/vByte but sent the number to Core
-  Lightning as sats per 1,000 vBytes, so the funding transaction went out at Core Lightning's
-  minimum fee rate. It now converts the rate as RTL's other Core Lightning fee rate fields do,
-  so the same number now funds the channel at that rate in Sats/vByte. The lease cost, on the
-  Liquidity Ads page and in the dialog, was recalculated only on a key press, so changing the
-  amount or fee rate with the arrow buttons or by pasting left the old cost on screen. It is
-  now recalculated on every change, and when the dialog opens. Specs cover the fee rate sent
-  and both cost displays.
+  Lightning as sats per 1,000 vBytes, so Core Lightning used its minimum fee rate, at which a
+  seller can decline the lease. It now converts the rate as RTL's other Core Lightning fee rate
+  fields do, so the same number now funds the channel at that rate in Sats/vByte. The lease
+  cost, on the Liquidity Ads page and in the dialog, was recalculated only on a key press, so
+  changing the amount or fee rate with the arrow buttons or by pasting left the old cost on
+  screen. It is now recalculated on every change, and when the dialog opens. Every Core
+  Lightning fee rate field (open channel, connect peer, on-chain send, bump fee and the lease)
+  now also sends a whole number: some decimal rates, such as 16.1 Sats/vByte, came out as a
+  fraction that Core Lightning rejects. Specs cover the fee rates sent and both cost displays.
+
+- **The amount in another currency follows every edit of an invoice, offer or keysend amount**
+  ([#1833](https://github.com/Ride-The-Lightning/RTL/pull/1833)). With fiat conversion on, the
+  converted amount under the field was updated only on a key press, so changing the amount with
+  the arrow buttons or by pasting left the old conversion on screen. It is now updated on every
+  change, on LND, Core Lightning and Eclair. Specs cover the create invoice dialog of each
+  implementation and the keysend amount.
 
 ## Enhancements
 

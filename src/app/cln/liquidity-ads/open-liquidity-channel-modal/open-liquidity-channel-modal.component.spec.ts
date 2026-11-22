@@ -96,6 +96,14 @@ describe('CLNOpenLiquidityChannelComponent', () => {
     expect((<any>storeSpy.calls.mostRecent().args[0]).payload.feeRate).toBe('10000perkb');
   });
 
+  it('should send a decimal fee rate as a whole number', () => {
+    const store = TestBed.inject(Store);
+    const storeSpy = spyOn(store, 'dispatch');
+    component.feeRate = 16.1;
+    component.onOpenChannel();
+    expect((<any>storeSpy.calls.mostRecent().args[0]).payload.feeRate).toBe('16100perkb');
+  });
+
   it('should show the lease cost for the amount and fee rate it opens with', () => {
     // 20,000 base + 20,000 * 50 / 10,000 + (666 / 4) * 10 = 21,765
     expect(leaseCostText()).toContain('21,765');

@@ -8,7 +8,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LookupNode } from '../../../shared/models/clnModels';
 import { CLNOpenLiquidityChannelAlert } from '../../../shared/models/alertData';
-import { APICallStatusEnum, CLNActions } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, getCLNFeeRatePerKb } from '../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel } from '../../store/cln.actions';
@@ -77,7 +77,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
     if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount || this.localAmount < 20000) {
       return true;
     }
-    const newChannel = { peerId: this.node.nodeid || '', amount: this.localAmount.toString(), feeRate: (this.feeRate * 1000) + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease, announce: true };
+    const newChannel = { peerId: this.node.nodeid || '', amount: this.localAmount.toString(), feeRate: getCLNFeeRatePerKb(this.feeRate), requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease, announce: true };
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 

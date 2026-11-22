@@ -1,4 +1,4 @@
-import { getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat, msatToSatIfPresent, getDayOfMonthIndex } from './consts-enums-functions';
+import { getCLNFeeRatePerKb, getCLNSweepBlocks, getCLNCloseTxid, getFeeLimitSat, getNoRouteMessage, getLNDTxidBytes, msatToSat, msatToSatIfPresent, getDayOfMonthIndex } from './consts-enums-functions';
 
 describe('getDayOfMonthIndex (#1331)', () => {
   const seconds = (date: Date) => date.getTime() / 1000;
@@ -155,5 +155,20 @@ describe('getNoRouteMessage', () => {
   it('should leave other errors, and a no-route error sent without a limit, unchanged', () => {
     expect(getNoRouteMessage('Insufficient Balance ', 1500, 500000, true, raise)).toBe('Insufficient Balance ');
     expect(getNoRouteMessage('No Route ', undefined, 500000, true, raise)).toBe('No Route ');
+  });
+});
+
+describe('getCLNFeeRatePerKb', () => {
+  it('should send a rate in Sats/vByte as whole sats per 1000 vBytes', () => {
+    expect(getCLNFeeRatePerKb(10)).toBe('10000perkb');
+    expect(getCLNFeeRatePerKb('12')).toBe('12000perkb');
+    expect(getCLNFeeRatePerKb(1.5)).toBe('1500perkb');
+  });
+
+  // Core Lightning accepts only a whole number; these give a fraction when multiplied by 1000 in floating point.
+  it('should round a decimal rate to a whole number', () => {
+    expect(getCLNFeeRatePerKb(16.1)).toBe('16100perkb');
+    expect(getCLNFeeRatePerKb(32.3)).toBe('32300perkb');
+    expect(getCLNFeeRatePerKb(2.01)).toBe('2010perkb');
   });
 });

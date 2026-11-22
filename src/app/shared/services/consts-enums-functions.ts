@@ -254,6 +254,11 @@ export function getCLNCloseTxid(channel: { state?: string, status?: string[], sc
   return (channel.status || []).some((message) => (/Tracking their (?:unilateral|illegal) close/).test(message)) ? null : channel.scratch_txid;
 }
 
+// Fee rate fields take Sats/vByte; Core Lightning takes a whole number of sats per 1000 vBytes.
+export function getCLNFeeRatePerKb(satsPerVByte: number | string): string {
+  return Math.round(+satsPerVByte * 1000) + 'perkb';
+}
+
 export enum LoopStateEnum {
   INITIATED = 'Initiated',
   PREIMAGE_REVEALED = 'Preimage Revealed',

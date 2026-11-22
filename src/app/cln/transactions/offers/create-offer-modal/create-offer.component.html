@@ -15,7 +15,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
           <mat-form-field fxLayout="column" fxFlex="40">
             <mat-label>Amount</mat-label>
-            <input matInput type="number" tabindex="2" name="offerValue" [step]="100" [min]="1" [(ngModel)]="offerValue" (keyup)="onOfferValueChange()">
+            <input matInput type="number" tabindex="2" name="offerValue" [step]="100" [min]="1" [(ngModel)]="offerValue" (ngModelChange)="onOfferValueChange()">
             <span matSuffix>Sats </span>
             <mat-hint>{{offerValueHint}}</mat-hint>
           </mat-form-field>

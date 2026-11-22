@@ -13,7 +13,7 @@ import { DataService } from '../../../../shared/services/data.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { Peer, GetInfo, UTXO, SaveChannel } from '../../../../shared/models/clnModels';
 import { CLNOpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum, getCLNFeeRatePerKb } from '../../../../shared/services/consts-enums-functions';
 
 import { RecommendedFeeRates } from '../../../../shared/models/rtlModels';
 import { RTLState } from '../../../../store/rtl.state';
@@ -209,7 +209,7 @@ export class CLNOpenChannelComponent implements OnInit, OnDestroy {
       return true;
     }
     const newChannel: SaveChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), amount: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, minconf: this.flgMinConf ? this.minConfValue : null };
-    newChannel.feeRate = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? (this.customFeeRate * 1000) + 'perkb' : this.selFeeRate;
+    newChannel.feeRate = (this.selFeeRate === 'customperkb' && !this.flgMinConf && this.customFeeRate) ? getCLNFeeRatePerKb(this.customFeeRate) : this.selFeeRate;
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach((utxo: UTXO) => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));

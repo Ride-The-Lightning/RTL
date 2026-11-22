@@ -10,7 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RecommendedFeeRates, BlockExplorerTransaction } from '../../../../shared/models/rtlModels';
 import { Channel } from '../../../../shared/models/clnModels';
 import { CLNChannelInformation } from '../../../../shared/models/alertData';
-import { ADDRESS_TYPES, APICallStatusEnum, CLNActions } from '../../../../shared/services/consts-enums-functions';
+import { ADDRESS_TYPES, APICallStatusEnum, CLNActions, getCLNFeeRatePerKb } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { DataService } from '../../../../shared/services/data.service';
 
@@ -90,7 +90,7 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
           payload: {
             destination: action.payload,
             satoshi: 'all',
-            feerate: (+(this.fees || 0) * 1000).toString() + 'perkb',
+            feerate: getCLNFeeRatePerKb(this.fees || 0),
             utxos: [this.bumpFeeChannel.funding_txid + ':' + (this.outputIndex || '').toString()]
           }
         }));

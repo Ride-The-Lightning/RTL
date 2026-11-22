@@ -130,6 +130,15 @@ describe('CLNOnChainSendModalComponent', () => {
       expect(sentPayloads()[0].utxos).toEqual(['aa'.repeat(32) + ':1']);
     });
 
+    it('sends a custom fee rate in Sats/vByte as whole sats per 1000 vBytes', () => {
+      component.selFeeRate = 'customperkb';
+      component.flgMinConf = false;
+      component.customFeeRate = 16.1;
+      component.onSendFunds();
+      expect(sentPayloads().length).toBe(1);
+      expect(sentPayloads()[0].feerate).toBe('16100perkb');
+    });
+
     it('sends once when Confirm Send is clicked twice', () => {
       component.selAmountUnit = 'USD';
       component.onSendFunds();

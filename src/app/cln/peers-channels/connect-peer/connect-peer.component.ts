@@ -14,7 +14,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clnModels';
 import { CLNOpenChannelAlert } from '../../../shared/models/alertData';
-import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CLNActions, FEE_RATE_TYPES, ScreenSizeEnum, getCLNFeeRatePerKb } from '../../../shared/services/consts-enums-functions';
 
 import { RTLState } from '../../../store/rtl.state';
 import { saveNewChannel, saveNewPeer } from '../../store/cln.actions';
@@ -161,7 +161,7 @@ export class CLNConnectPeerComponent implements OnInit, OnDestroy {
     this.store.dispatch(saveNewChannel({
       payload: {
         peerId: this.newlyAddedPeer?.id!, amount: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value,
-        feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? ((this.channelFormGroup.controls.customFeeRate.value * 1000) + 'perkb') : this.channelFormGroup.controls.selFeeRate.value,
+        feeRate: (this.channelFormGroup.controls.selFeeRate.value === 'customperkb' && !this.channelFormGroup.controls.flgMinConf.value && this.channelFormGroup.controls.customFeeRate.value) ? getCLNFeeRatePerKb(this.channelFormGroup.controls.customFeeRate.value) : this.channelFormGroup.controls.selFeeRate.value,
         minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
       }
     }));
