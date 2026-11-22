@@ -103,7 +103,7 @@ this release should add its entry under the appropriate section below.
   to every change. Specs cover both pages on both implementations.
 
 - **Core Lightning: Bump Fee uses the address its own request returns**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Bump Fee dialog asked for a
+  ([#1835](https://github.com/Ride-The-Lightning/RTL/pull/1835)). The Bump Fee dialog asked for a
   new address and then took the next new address generated anywhere in RTL, and it kept waiting
   after it closed. If its own request failed, an address generated later, for example on the
   Receive screen, was taken for its own. The dialog now requests the address directly, spends
