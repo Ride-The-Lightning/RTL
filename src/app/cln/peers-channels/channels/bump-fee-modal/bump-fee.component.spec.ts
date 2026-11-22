@@ -2,8 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 import { DataService } from '../../../../shared/services/data.service';
+import { CLNActions } from '../../../../shared/services/consts-enums-functions';
+import { setNewAddress } from '../../../store/cln.actions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { SharedModule } from '../../../../shared/shared.module';
 import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockLoggerService, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
@@ -45,5 +47,18 @@ describe('CLNBumpFeeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should send the fee rate in Sats/vByte as whole sats per 1000 vBytes', () => {
+    const store = TestBed.inject(Store);
+    const dispatch = spyOn(store, 'dispatch').and.callThrough();
+    component.bumpFeeChannel = <any>{ funding_txid: 'aa'.repeat(32) };
+    component.outputIndex = 0;
+    component.fees = 16.1;
+    component.onBumpFee();
+    store.dispatch(setNewAddress({ payload: 'bcrt1qexampleaddress' }));
+    const sent = dispatch.calls.allArgs().map((args) => <any>args[0]).filter((action) => action.type === CLNActions.SET_CHANNEL_TRANSACTION_CLN);
+    expect(sent.length).toBe(1);
+    expect(sent[0].payload.feerate).toBe('16100perkb');
   });
 });

@@ -1,8 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../../shared/services/common.service';
+import { CLNActions } from '../../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../../shared/services/data.service';
 import { RootReducer } from '../../../../store/rtl.reducers';
 import { LNDReducer } from '../../../../lnd/store/lnd.reducers';
@@ -45,6 +46,20 @@ describe('CLNOpenChannelComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should send a custom fee rate in Sats/vByte as whole sats per 1000 vBytes', () => {
+    const dispatch = spyOn(TestBed.inject(Store), 'dispatch');
+    component.peer = <any>{ id: '02'.padEnd(66, 'a') };
+    component.totalBalance = 1000000;
+    component.fundingAmount = 100000;
+    component.flgMinConf = false;
+    component.selFeeRate = 'customperkb';
+    component.customFeeRate = 16.1;
+    component.onOpenChannel();
+    const saved = dispatch.calls.allArgs().map((args) => <any>args[0]).filter((action) => action.type === CLNActions.SAVE_NEW_CHANNEL_CLN);
+    expect(saved.length).toBe(1);
+    expect(saved[0].payload.feeRate).toBe('16100perkb');
   });
 
   afterEach(() => {

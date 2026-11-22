@@ -2,7 +2,7 @@
   <form #form="ngForm" fxLayout="column" fxLayoutAlign="space-between stretch">
     <mat-form-field fxLayout="column" fxFlex="100" fxLayoutAlign="start end">
       <mat-label>Message to sign</mat-label>
-      <textarea autoFocus matInput rows="1" required tabindex="1" name="message" [(ngModel)]="message" (keyup)="onMessageChange()"></textarea>
+      <textarea autoFocus matInput rows="1" required tabindex="1" name="message" [(ngModel)]="message" (ngModelChange)="onMessageChange()"></textarea>
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="my-1">

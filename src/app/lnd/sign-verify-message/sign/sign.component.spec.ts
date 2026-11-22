@@ -43,6 +43,22 @@ describe('SignComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  // Typing into a field: an input event and no key press, as when pasting or dropping with the mouse.
+  const enterValue = (fieldName: string, value: string) => {
+    const field: HTMLInputElement | HTMLTextAreaElement = fixture.nativeElement.querySelector('[name="' + fieldName + '"]');
+    field.value = value;
+    field.dispatchEvent(new Event('input'));
+  };
+
+  it('should clear the signature when the message changes without a key press', async () => {
+    await fixture.whenStable();
+    enterValue('message', 'signed message');
+    component.signedMessage = 'signed message';
+    component.signature = 'signature of the signed message';
+    enterValue('message', 'another message');
+    expect(component.signature).toBe('');
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

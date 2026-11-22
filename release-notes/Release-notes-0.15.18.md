@@ -95,6 +95,13 @@ this release should add its entry under the appropriate section below.
   change, on LND, Core Lightning and Eclair. Specs cover the create invoice dialog of each
   implementation and the keysend amount.
 
+- **Sign and verify message: editing a field clears the previous result**
+  ([#1833](https://github.com/Ride-The-Lightning/RTL/pull/1833)). On LND and Core Lightning, the
+  Sign page cleared the signature when the message changed, and the Verify page hid its result
+  when the message or signature changed, but only on a key press. Pasting or dropping text with
+  the mouse left the previous signature or result on screen next to the new text. Both now react
+  to every change. Specs cover both pages on both implementations.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),
