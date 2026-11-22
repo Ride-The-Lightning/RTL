@@ -42,6 +42,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
     this.requestedAmount = this.data.message?.requestedAmount || 0;
     this.feeRate = this.data.message?.feeRate || 0;
     this.localAmount = this.data.message?.localAmount || 0;
+    this.calculateFee();
     this.actions.pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => action.type === CLNActions.UPDATE_API_CALL_STATUS_CLN || action.type === CLNActions.FETCH_CHANNELS_CLN)).
@@ -76,7 +77,7 @@ export class CLNOpenLiquidityChannelComponent implements OnInit, OnDestroy {
     if (!this.node || !this.node.option_will_fund || !this.requestedAmount || !this.feeRate || !this.localAmount || this.localAmount < 20000) {
       return true;
     }
-    const newChannel = { peerId: this.node.nodeid || '', amount: this.localAmount.toString(), feeRate: this.feeRate + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease, announce: true };
+    const newChannel = { peerId: this.node.nodeid || '', amount: this.localAmount.toString(), feeRate: (this.feeRate * 1000) + 'perkb', requestAmount: this.requestedAmount.toString(), compactLease: this.node.option_will_fund.compact_lease, announce: true };
     this.store.dispatch(saveNewChannel({ payload: newChannel }));
   }
 

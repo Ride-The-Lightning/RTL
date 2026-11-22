@@ -75,6 +75,17 @@ this release should add its entry under the appropriate section below.
   the LND dialog shows the pubkey when the peer has no alias. Backend tests and specs cover
   each implementation.
 
+- **Core Lightning: a liquidity lease is funded at the fee rate entered, and its cost follows
+  every edit** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Open
+  Liquidity Channel dialog asks for the fee rate in Sats/vByte but sent the number to Core
+  Lightning as sats per 1,000 vBytes, so the funding transaction went out at Core Lightning's
+  minimum fee rate. It now converts the rate as RTL's other Core Lightning fee rate fields do,
+  so the same number now funds the channel at that rate in Sats/vByte. The lease cost, on the
+  Liquidity Ads page and in the dialog, was recalculated only on a key press, so changing the
+  amount or fee rate with the arrow buttons or by pasting left the old cost on screen. It is
+  now recalculated on every change, and when the dialog opens. Specs cover the fee rate sent
+  and both cost displays.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),

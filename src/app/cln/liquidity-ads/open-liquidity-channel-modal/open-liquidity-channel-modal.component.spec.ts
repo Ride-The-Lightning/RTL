@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -74,6 +74,43 @@ describe('CLNOpenLiquidityChannelComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  const leaseCostText = () => fixture.nativeElement.querySelector('.alert-info').textContent;
+
+  const enterValue = async (inputName: string, value: string) => {
+    await fixture.whenStable();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input[name="' + inputName + '"]');
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  };
+
+  it('should send the fee rate entered in sats/vByte as sats per 1000 vBytes', () => {
+    const store = TestBed.inject(Store);
+    const storeSpy = spyOn(store, 'dispatch');
+    component.onOpenChannel();
+    expect(storeSpy).toHaveBeenCalledTimes(1);
+    expect((<any>storeSpy.calls.mostRecent().args[0]).payload.feeRate).toBe('10000perkb');
+  });
+
+  it('should show the lease cost for the amount and fee rate it opens with', () => {
+    // 20,000 base + 20,000 * 50 / 10,000 + (666 / 4) * 10 = 21,765
+    expect(leaseCostText()).toContain('21,765');
+  });
+
+  it('should update the lease cost when the requested amount changes without a key press', async () => {
+    await enterValue('ramount', '30000');
+    // 20,000 base + 30,000 * 50 / 10,000 + (666 / 4) * 10 = 21,815
+    expect(leaseCostText()).toContain('21,815');
+  });
+
+  it('should update the lease cost when the fee rate changes without a key press', async () => {
+    await enterValue('feerate', '20');
+    // 20,000 base + 20,000 * 50 / 10,000 + (666 / 4) * 20 = 23,430
+    expect(leaseCostText()).toContain('23,430');
   });
 
   afterEach(() => {

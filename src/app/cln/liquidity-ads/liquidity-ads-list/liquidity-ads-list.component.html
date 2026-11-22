@@ -18,12 +18,12 @@
             </div>
             <mat-form-field fxLayout="column" fxFlex="34">
               <mat-label>Channel Amount (Sats)</mat-label>
-              <input autoFocus matInput name="channelAmount" tabindex="1" type="number" step="10000" required [(ngModel)]="channelAmount" (keyup)="onCalculateOpeningFee()">
+              <input autoFocus matInput name="channelAmount" tabindex="1" type="number" step="10000" required [(ngModel)]="channelAmount" (ngModelChange)="onCalculateOpeningFee()">
               <mat-error *ngIf="!channelAmount">Channel amount is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxLayout="column" fxFlex="34">
               <mat-label>Channel Opening Fee Rate (Sats/vByte)</mat-label>
-              <input matInput name="channel_opening_feeRate" type="number" step="10" tabindex="2" required [(ngModel)]="channel_opening_feeRate" (keyup)="onCalculateOpeningFee()">
+              <input matInput name="channel_opening_feeRate" type="number" step="10" tabindex="2" required [(ngModel)]="channel_opening_feeRate" (ngModelChange)="onCalculateOpeningFee()">
               <mat-error *ngIf="!channel_opening_feeRate">Channel opening fee rate is required.</mat-error>
             </mat-form-field>
           </div>

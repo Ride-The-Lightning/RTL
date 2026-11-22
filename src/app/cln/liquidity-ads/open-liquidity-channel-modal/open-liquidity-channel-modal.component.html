@@ -12,13 +12,13 @@
         <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-sm="space-between center" fxLayout.gt-sm="row wrap">
           <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
             <mat-label>Requested Amount</mat-label>
-            <input #ramount="ngModel" autoFocus matInput type="number" tabindex="1" required name="ramount" [step]="10000" [min]="0" [(ngModel)]="requestedAmount" (keyup)="calculateFee()">
+            <input #ramount="ngModel" autoFocus matInput type="number" tabindex="1" required name="ramount" [step]="10000" [min]="0" [(ngModel)]="requestedAmount" (ngModelChange)="calculateFee()">
             <span matSuffix> Sats </span>
             <mat-error *ngIf="ramount.errors?.required">Requested amount is required.</mat-error>
           </mat-form-field>
           <mat-form-field fxLayout="column" fxFlex="30" fxLayoutAlign="start end">
             <mat-label>Fee Rate</mat-label>
-            <input #feeRt="ngModel" matInput type="number" tabindex="2" required name="feerate" [step]="10" [min]="0" [(ngModel)]="feeRate" (keyup)="calculateFee()">
+            <input #feeRt="ngModel" matInput type="number" tabindex="2" required name="feerate" [step]="10" [min]="0" [(ngModel)]="feeRate" (ngModelChange)="calculateFee()">
             <span matSuffix> Sats/vByte </span>
             <mat-error *ngIf="feeRt.errors?.required">Fee rate is required.</mat-error>
           </mat-form-field>
