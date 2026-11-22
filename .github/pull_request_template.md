@@ -7,7 +7,8 @@
 ## Testing
 
 <!-- What you ran and what you saw: lint, test, `npm run check`, the docker fixture.
-     If the change alters what a user sees, before and after screenshots of the same screen;
+     If the change makes a difference a user can see at a glance, before and after screenshots
+     of the same screen; if the only difference is a value, state the before and after values;
      if it is a frontend change with nothing visible to show, say so.
      For auth, CSRF, cookie or static-serving changes, the result of docker/scripts/verify-sso.sh. -->
 
@@ -22,5 +23,5 @@
 - [ ] `npm run lint`, `npm run test` and `npm run check` pass locally
 - [ ] `backend/` and `frontend/` are rebuilt if `server/` or `src/` changed
 - [ ] The same change is made in the other two implementations, or the PR says why not
-- [ ] Before and after screenshots are posted if the change alters what a user sees
+- [ ] Before and after screenshots are posted if the change makes a difference a user can see at a glance
 - [ ] Release note added in `release-notes/`
