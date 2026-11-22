@@ -83,7 +83,7 @@ export class CLNBumpFeeComponent implements OnInit, OnDestroy {
       return true;
     }
     this.bumpFeeError = '';
-    // Spend only to the address this request returns, then wait for that spend's own result.
+    // Spend only to the address this request returns, then wait for the next send result while the dialog is open.
     this.dataService.getNewAddress(ADDRESS_TYPES[0]).pipe(
       switchMap((newAddress: string) => merge(
         this.actions.pipe(filter((action: any) => action.type === CLNActions.SET_CHANNEL_TRANSACTION_RES_CLN ||
