@@ -112,7 +112,7 @@ this release should add its entry under the appropriate section below.
   The dialog also sent output index 0 as an empty index (`<txid>:`), so a fee bump on output 0
   failed; it now sends `<txid>:0`. Specs cover the dialog and the new request.
 
-- **A session token ends with its session** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+- **A session token ends with its session** ([#1838](https://github.com/Ride-The-Lightning/RTL/pull/1838)).
   The token RTL issues at login was signed with no expiry and checked for its signature only,
   so it stayed valid until RTL restarted: logging out, the inactivity logout and a password
   change ended the session but not the token. Each token now belongs to the session it was
