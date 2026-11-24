@@ -10,6 +10,7 @@ import * as otplib from 'otplib';
 import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, resetForwardedHeaderWarning, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
 import { issueSessionToken } from '../../backend/utils/sessionToken.js';
+import { isAuthenticated } from '../../backend/utils/authCheck.js';
 import { Logger } from '../../backend/utils/logger.js';
 
 const { authenticator } = otplib;
@@ -179,6 +180,14 @@ test('accepts password-only re-authorization from an authenticated session when 
   authenticateUser(mockRequest({ twoFAToken: undefined, authToken: mockSessionToken() }), res, null);
   assert.equal(res.statusCode, 200);
   assert.equal(typeof res.body.token, 'string');
+});
+
+test('requires the 2FA token when the session token was issued to another session', () => {
+  setupAppConfig(true, TOTP_SECRET);
+  const res = mockResponse();
+  authenticateUser(mockRequest({ twoFAToken: undefined, authToken: issueSessionToken('another-session', 'NODE_USER') }), res, null);
+  assert.equal(res.statusCode, 401);
+  assert.match(res.body.error, /2FA/);
 });
 
 test('rejects a wrong password even with an authenticated session when 2FA is enabled', () => {
@@ -616,4 +625,36 @@ test('SSO: the server log names which of the three refusal causes applied', () =
   const unknown = logged({ authenticateWith: '<script>', authenticationValue: 'x' });
   assert.match(unknown, /neither PASSWORD nor JWT/);
   assert.doesNotMatch(unknown, /<script>/, 'the client-supplied mode value is not echoed into the log');
+});
+
+// isAuthenticated with a mock request carrying the token, for the given session.
+const passesAuthCheck = (token, sessionId) => {
+  let passed = false;
+  const res = mockResponse();
+  isAuthenticated({ headers: { authorization: 'Bearer ' + token }, session: { id: sessionId } }, res, () => { passed = true; });
+  return passed;
+};
+
+test('SSO: the token issued for the access key works only with the session that logged in', () => {
+  setupSSOConfig();
+  const res = mockResponse();
+  authenticateUser(mockRequest({ authenticationValue: ssoAccessKey() }), res, null);
+  assert.equal(res.statusCode, 200, 'setup: SSO login');
+  assert.equal(passesAuthCheck(res.body.token, MOCK_SESSION_ID), true);
+  assert.equal(passesAuthCheck(res.body.token, 'another-session'), false);
+});
+
+test('with authentication disabled, the token works only with the session that asked for it', () => {
+  setupAppConfig(false, '');
+  Common.appConfig.disableAuth = true;
+  Common.selectedNode = { index: 1, lnNode: 'node', lnImplementation: 'LND', settings: { logLevel: 'ERROR' } };
+  try {
+    const res = mockResponse();
+    authenticateUser(mockRequest({}), res, null);
+    assert.equal(res.statusCode, 200, 'setup: token issued');
+    assert.equal(passesAuthCheck(res.body.token, MOCK_SESSION_ID), true);
+    assert.equal(passesAuthCheck(res.body.token, 'another-session'), false);
+  } finally {
+    Common.appConfig.disableAuth = false;
+  }
 });

@@ -45,5 +45,9 @@ export const endSessionTokens = (sessionId: string) => {
   });
 };
 
-// Ends every token, of every session.
-export const endAllSessionTokens = () => issuedTokens.clear();
+// Ends the tokens of every session except this one.
+export const endOtherSessionTokens = (sessionId: string) => {
+  issuedTokens.forEach((issued, tokenId) => {
+    if (issued.sessionId !== sessionId) { issuedTokens.delete(tokenId); }
+  });
+};

@@ -202,18 +202,34 @@ test("logout closes the session's open websocket", async () => {
   assert.equal(await closed(socket), true, 'the websocket stayed open after logout');
 });
 
+test('a token issued to another session does not unlock the full settings', async () => {
+  const own = await signedIn();
+  const other = await signedIn();
+  const conf = async (jar, token) => (await fetch(base + '/rtl/api/conf', { headers: { cookie: jar.header(), authorization: 'Bearer ' + token } })).json();
+  assert.notEqual((await conf(own.jar, own.token)).dbDirectoryPath, '', 'setup: the own session gets the full settings');
+  assert.equal((await conf(other.jar, own.token)).dbDirectoryPath, '', "another session's token unlocked the full settings");
+});
+
 // Runs last: it changes the password for the rest of the file.
-test("a password change ends every other token and replaces the caller's", async () => {
+test('a password change ends the tokens of other browsers; the tabs of the browser that made it continue', async () => {
   const caller = await signedIn();
+  // A second tab of the same browser: the same cookies, its own login.
+  const secondTab = await post('/authenticate', caller.jar, null, { authenticateWith: 'PASSWORD', authenticationValue: hashOf(currentPassword) });
+  assert.equal(secondTab.status, 200, 'setup: second tab login');
+  const secondTabToken = (await secondTab.json()).token;
   const other = await signedIn();
   const otherSocket = await openSocket(other.jar, other.token);
-  assert.equal(otherSocket.opened, true, 'setup: the other session has a websocket');
+  assert.equal(otherSocket.opened, true, 'setup: the other browser has a websocket');
+  const callerSocket = await openSocket(caller.jar, caller.token);
+  assert.equal(callerSocket.opened, true, 'setup: the caller has a websocket');
   const res = await post('/authenticate/reset', caller.jar, caller.token, { currPassword: hashOf(currentPassword), newPassword: hashOf('new-password') });
   assert.equal(res.status, 200, 'setup: reset ' + await res.clone().text());
   currentPassword = 'new-password';
   const { token: newToken } = await res.json();
-  assert.equal((await selectNode(other.jar, other.token)).status, 401, "another session's token survived the password change");
-  assert.equal((await selectNode(caller.jar, caller.token)).status, 401, "the caller's old token survived the password change");
+  assert.equal((await selectNode(other.jar, other.token)).status, 401, "another browser's token survived the password change");
+  assert.equal(await closed(otherSocket.socket), true, "another browser's websocket stayed open after the password change");
   assert.equal((await selectNode(caller.jar, newToken)).status, 200, 'the token returned by the reset does not work');
-  assert.equal(await closed(otherSocket.socket), true, "another session's websocket stayed open after the password change");
+  assert.equal((await selectNode(caller.jar, secondTabToken)).status, 200, "the caller's second tab was logged out");
+  assert.equal(callerSocket.socket.readyState, WebSocket.OPEN, "the caller's websocket was closed");
+  callerSocket.socket.close();
 });

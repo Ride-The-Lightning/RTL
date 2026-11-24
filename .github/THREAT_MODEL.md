@@ -129,7 +129,8 @@ control in the table above, that control.
 - The session and CSRF cookies are not marked `secure`, because RTL is commonly served
   over plain HTTP on a LAN or behind a TLS-terminating proxy.
 - The session cookie keeps the default name `connect.sid` and has no `SameSite` attribute.
-  It holds the selected node and binds the CSRF token; it does not log anyone in.
+  It holds the selected node and binds the CSRF token. It does not log anyone in by itself,
+  but the session token is accepted only together with the session cookie it was issued to.
 - With `NODE_ENV` set to `development`, RTL sends permissive CORS headers and turns off the
   CSRF check and WebSocket verification. That mode is for local development only.
 - The JWT is kept in `sessionStorage`, readable by any script running in RTL's origin, so
