@@ -71,6 +71,7 @@ Contributions via code is the most sought after contribution and something we en
 ##### Create a Pull Request
 * Create a new branch on the github to push your updated code.
 * Commit your updates into the newly created branch.
+* If your change alters behavior in an area covered by the [RTL invariants](./docs/invariants/INDEX.md), cite the affected invariant IDs in the PR description and update that index in the same PR.
 * Create a new pull request once you are satisfied with your updates to be merged into the latest `release` branch with details of your updates and submit it for the review.
 
 ##### Caution about adding new libraries
