@@ -174,6 +174,17 @@ export class RTLWebSocketServer {
         };
         this.generateAcceptValue = (acceptKey) => crypto.createHash('sha1').update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary').digest('base64');
         this.getClients = () => this.webSocketServer.clients;
+        // Closes the open websockets of the sessions that match, once their tokens have ended.
+        this.closeClientsOfSessions = (matches) => {
+            if (!this.webSocketServer) {
+                return;
+            }
+            this.webSocketServer.clients.forEach((client) => {
+                if (matches(client.sessionId)) {
+                    client.close(1008, 'Session ended');
+                }
+            });
+        };
         // The ping timer must not hold the event loop open on its own. Creating this singleton is
         // a side effect of importing the module, so without this any process that merely pulls in
         // a controller on the websocket path stays alive for the full hour -- which is what hung

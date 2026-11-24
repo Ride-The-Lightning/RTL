@@ -1,14 +1,19 @@
 import jwt from 'jsonwebtoken';
+import { parse } from 'cookie';
+import * as cookieParser from 'cookie-parser';
 import CSRF from './csrf.js';
 import { Common } from './common.js';
 import { Logger } from './logger.js';
+import { isSessionTokenFor } from './sessionToken.js';
 const common = Common;
 const logger = Logger;
 const csurfProtection = CSRF.csrfProtection;
 export const isAuthenticated = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
-        jwt.verify(token, common.secret_key);
+        if (!isSessionTokenFor(token, req.session.id)) {
+            throw new Error('Not a live token of this session');
+        }
         next();
     }
     catch (error) {
@@ -36,6 +41,12 @@ export const isSelectedNodeImplementation = (lnImplementation) => (req, res, nex
         return res.status(err.statusCode).json({ message: err.message, error: err.error });
     });
 };
+// The handshake does not pass through the session middleware, so the session id is read from
+// the signed session cookie, as mountEventsOnConnection does.
+const wsSessionId = (cookieHeader) => {
+    const cookies = cookieHeader ? parse(cookieHeader) : {};
+    return cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], common.secret_key) : null;
+};
 export const verifyWSUser = (info, next) => {
     const headers = JSON.parse(JSON.stringify(info.req.headers));
     const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
@@ -45,7 +56,7 @@ export const verifyWSUser = (info, next) => {
     }
     else {
         jwt.verify(jwToken, common.secret_key, (verificationErr) => {
-            if (verificationErr) {
+            if (verificationErr || !isSessionTokenFor(jwToken, wsSessionId(info.req.headers.cookie))) {
                 next(false, 401, 'Authentication Failed! Please Login First!');
             }
             else {

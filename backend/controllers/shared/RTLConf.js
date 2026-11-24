@@ -8,6 +8,7 @@ import { Database } from '../../utils/database.js';
 import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
+import { isSessionTokenFor } from '../../utils/sessionToken.js';
 import { Authentication } from '../../models/config.model.js';
 const options = { url: '' };
 const logger = Logger;
@@ -204,7 +205,7 @@ export const getApplicationSettings = (req, res, next) => {
     common.appConfig.selectedNodeIndex = appConfData.selectedNodeIndex;
     const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
     jwt.verify(token, common.secret_key, (err, user) => {
-        if (err) {
+        if (err || !isSessionTokenFor(token, req.session.id)) {
             // Delete unnecessary data for initial response (without security token)
             const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
             delete appConfData.SSO.rtlCookiePath;

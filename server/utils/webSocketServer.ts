@@ -189,6 +189,14 @@ export class RTLWebSocketServer {
 
   public getClients = () => this.webSocketServer.clients;
 
+  // Closes the open websockets of the sessions that match, once their tokens have ended.
+  public closeClientsOfSessions = (matches: (sessionId: string) => boolean) => {
+    if (!this.webSocketServer) { return; }
+    this.webSocketServer.clients.forEach((client) => {
+      if (matches(client.sessionId)) { client.close(1008, 'Session ended'); }
+    });
+  };
+
 }
 
 export const WSServer = new RTLWebSocketServer();

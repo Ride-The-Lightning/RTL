@@ -112,6 +112,18 @@ this release should add its entry under the appropriate section below.
   The dialog also sent output index 0 as an empty index (`<txid>:`), so a fee bump on output 0
   failed; it now sends `<txid>:0`. Specs cover the dialog and the new request.
 
+- **A session token ends with its session** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+  The token RTL issues at login was signed with no expiry and checked for its signature only,
+  so it stayed valid until RTL restarted: logging out, the inactivity logout and a password
+  change ended the session but not the token. Each token now belongs to the session it was
+  issued to, and is accepted only together with that session's cookie, for API requests and
+  for the websocket. Logging out (also on inactivity) ends the session's tokens and closes its
+  websocket. A password change ends the tokens of every session, so other browsers have to
+  log in again; the browser that changed it continues with a new token. A token also expires
+  after one day, as the session cookie does, after which RTL asks for a login again. A script
+  that reuses a token from the browser now needs that browser's session cookie as well.
+  `session-token-lifecycle.test.mjs` covers each case.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),

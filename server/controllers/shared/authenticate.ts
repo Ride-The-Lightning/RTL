@@ -1,9 +1,10 @@
-import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
 import * as crypto from 'crypto';
 import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
+import { WSServer } from '../../utils/webSocketServer.js';
+import { endAllSessionTokens, endSessionTokens, isSessionTokenFor, issueSessionToken } from '../../utils/sessionToken.js';
 
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -118,25 +119,12 @@ const totpAuthenticator = (otplib as any).authenticator.clone({ window: 1 });
 
 export const verifyToken = (twoFAToken) => !!(common.appConfig.secret2FA && common.appConfig.secret2FA !== '' && totpAuthenticator.check(twoFAToken, common.appConfig.secret2FA));
 
-// True only for a session JWT this process minted. jwt.verify throws on everything else
-// (missing, malformed, expired, wrong key); a throw from a controller reaches the catch-all
-// error handler, which answers 400 with the serialised error -- never the right reply to a
-// bad credential.
-const isSessionToken = (token) => {
-  try {
-    jwt.verify(token, common.secret_key);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
 // Mirrors isAuthenticated: a request carrying a valid session JWT has already
 // completed 2FA at login, since tokens are only minted after verification when
 // 2FA is enabled. Used to exempt in-app re-authorization (e.g. the password
 // prompt before on-chain sends) from the TOTP requirement without opening a
 // password-only path.
-const hasValidAuthToken = (req) => isSessionToken(req.headers.authorization?.split(' ')[1]);
+const hasValidAuthToken = (req) => isSessionTokenFor(req.headers.authorization?.split(' ')[1], req.session.id);
 
 // SSO access key check. The key is the hex SHA-256 digest of the cookie file, so a value
 // that is not a string of exactly that byte length can never match -- and must be refused
@@ -156,17 +144,17 @@ export const authenticateUser = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..' });
   if (!!common.appConfig.disableAuth) {
     if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
-    const token = jwt.sign({ user: 'AUTH_DISABLED_USER' }, common.secret_key);
+    const token = issueSessionToken(req.session.id, 'AUTH_DISABLED_USER');
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Disabled Authentication' });
     res.status(200).json({ token: token });
   } else if (+common.appConfig.SSO.rtlSSO) {
-    if (authenticateWith === 'JWT' && isSessionToken(authenticationValue)) {
+    if (authenticateWith === 'JWT' && isSessionTokenFor(authenticationValue, req.session.id)) {
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Password login refused with SSO enabled' });
       res.status(406).json({ message: 'SSO Authentication Error', error: 'Login with Password is not allowed with SSO.' });
     } else if (authenticateWith === 'PASSWORD' && matchesSSOCookie(authenticationValue)) {
       common.refreshCookie();
       if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
-      const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
+      const token = issueSessionToken(req.session.id, 'SSO_USER');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
       res.status(200).json({ token: token });
     } else {
@@ -214,7 +202,7 @@ export const authenticateUser = (req, res, next) => {
       }
       if (!req.session.selectedNode) { req.session.selectedNode = common.selectedNode; }
       failedLoginAttempts.delete(reqIP);
-      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
+      const token = issueSessionToken(req.session.id, 'NODE_USER');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated' });
       res.status(200).json({ token: token });
     } else {
@@ -243,7 +231,11 @@ export const resetPassword = (req, res, next) => {
   } else {
     if (common.appConfig.rtlPass === currPassword) {
       common.appConfig.rtlPass = common.replacePasswordWithHash(newPassword);
-      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
+      // A new password ends every token issued so far, in every session; the caller carries on
+      // with the one returned here.
+      endAllSessionTokens();
+      WSServer.closeClientsOfSessions((sessionId) => sessionId !== req.session.id);
+      const token = issueSessionToken(req.session.id, 'NODE_USER');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful' });
       res.status(200).json({ token: token });
     } else {
@@ -259,6 +251,9 @@ export const logoutUser = (req, res, next) => {
   if (req.session.selectedNode && req.session.selectedNode.index) {
     databaseService.unloadDatabase(+req.session.selectedNode.index, req.session.id);
   }
+  const sessionId = req.session.id;
+  endSessionTokens(sessionId);
+  WSServer.closeClientsOfSessions((clientSessionId) => clientSessionId === sessionId);
   req.session.destroy((err) => {
     // Cookies are set with Path=baseHref; a deletion must name the same path.
     const cookieOptions = { path: common.baseHref || '/' };

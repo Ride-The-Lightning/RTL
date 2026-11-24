@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import * as otplib from 'otplib';
 import { authenticateUser, getFailedInfo, recordFailedAttempt, sweepExpiredAttempts, clearFailedAttempts, trackedAddresses, resetForwardedHeaderWarning, ALLOWED_LOGIN_ATTEMPTS, LOCKING_PERIOD, MAX_TRACKED_ADDRESSES } from '../../backend/controllers/shared/authenticate.js';
 import { Common } from '../../backend/utils/common.js';
+import { issueSessionToken } from '../../backend/utils/sessionToken.js';
 import { Logger } from '../../backend/utils/logger.js';
 
 const { authenticator } = otplib;
@@ -54,6 +55,8 @@ const nextIP = () => {
   ipCounter = ipCounter + 1;
   return '10.' + ((ipCounter >> 16) & 255) + '.' + ((ipCounter >> 8) & 255) + '.' + (ipCounter & 255);
 };
+// Every mock request belongs to this session, so a token issued to it is accepted.
+const MOCK_SESSION_ID = 'mock-session';
 const mockRequest = (opts = {}) => {
   const { twoFAToken, ip, authToken, password, forwardedFor, authenticateWith, noAddress, peer, rawIP } = opts;
   const headers = {};
@@ -66,7 +69,7 @@ const mockRequest = (opts = {}) => {
       authenticationValue: ('authenticationValue' in opts) ? opts.authenticationValue : (password || PASSWORD_HASH),
       twoFAToken: twoFAToken
     },
-    session: {},
+    session: { id: MOCK_SESSION_ID },
     headers: headers,
     // noAddress models a request whose socket is already gone: no req.ip, no peer address.
     // rawIP is what express would hand over verbatim (a trusted proxy's junk); peer is the
@@ -92,7 +95,7 @@ const mockResponse = () => {
   return res;
 };
 
-const mockSessionToken = () => jwt.sign({ user: 'NODE_USER' }, Common.secret_key);
+const mockSessionToken = () => issueSessionToken(MOCK_SESSION_ID, 'NODE_USER');
 
 test('rejects login without a 2FA token when 2FA is enabled', () => {
   setupAppConfig(true, TOTP_SECRET);
