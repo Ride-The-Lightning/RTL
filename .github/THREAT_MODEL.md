@@ -107,9 +107,9 @@ Route guards and form validation in the Angular app run on the untrusted side of
 |---|---|---|
 | Guessing the password or 2FA code | Unauthenticated client | Lockout per address; `trust proxy` limited to `trustedProxies`, so the address cannot be forged (#1656); one error message for a wrong password and a wrong code; TOTP accepts one 30-second step either side |
 | Filling the lockout table | Unauthenticated client | Bounded at 1,000 addresses; a live lockout is evicted last |
-| Forging a session token | Unauthenticated client | JWTs are HMAC-signed with `secret_key`; unsigned tokens are refused |
+| Forging a session token | Unauthenticated client | JWTs are HMAC-signed with `secret_key`; unsigned tokens are refused; a token is accepted only if this process issued it to the session whose cookie comes with it and it has not been ended by a logout or a password change; it expires at most one day after login |
 | Request forgery | Malicious page | The page cannot read the JWT from RTL's `sessionStorage`; `csrf-csrf` double-submit on every non-GET request, with the `_csrf` cookie `SameSite=Strict`; logout is a POST |
-| WebSocket hijacking | Malicious page | `verifyWSUser` requires the JWT and the CSRF token |
+| WebSocket hijacking | Malicious page | `verifyWSUser` requires the JWT, accepted only together with the session cookie it was issued to and within its one-day expiry, and the CSRF token |
 | Script injection | Peer or payer | Angular escaping; `[innerHTML]` stays behind the sanitiser; `bypassSecurityTrust*` takes only constants |
 | A link to an attacker's site | Peer or payer | Links have a fixed origin or the configured `blockExplorerUrl`, and open with `noopener,noreferrer` |
 | Sending a credential to another host | Authenticated user | Server URLs, credential paths and `blockExplorerUrl` are config-only; the settings endpoints are allow-listed |
