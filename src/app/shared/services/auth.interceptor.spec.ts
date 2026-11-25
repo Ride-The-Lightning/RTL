@@ -35,6 +35,15 @@ describe('AuthInterceptor', () => {
     req.flush({});
   });
 
+  it('sends the session cookie with a request made before login, without a token', () => {
+    sessionService.removeItem('token');
+    http.post('/api/authenticate', {}).subscribe();
+    const req = httpTestingController.expectOne('/api/authenticate');
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({});
+  });
+
   it('retries a request refused for a token the tab has since replaced, with the new token', () => {
     let result: any = null;
     http.get('/api/conf').subscribe({ next: (res) => { result = res; } });

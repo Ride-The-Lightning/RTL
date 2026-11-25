@@ -23,7 +23,9 @@ export class AuthInterceptor implements HttpInterceptor {
             switchMap((newToken) => (newToken ? next.handle(this.withToken(req, newToken)) : throwError(() => err))));
         }));
     } else {
-      return next.handle(req);
+      // The login itself needs the session cookie too: the token it returns belongs to that
+      // session. Same-origin requests send it anyway; the dev server on another port needs this.
+      return next.handle(req.clone({ withCredentials: true }));
     }
   }
 
