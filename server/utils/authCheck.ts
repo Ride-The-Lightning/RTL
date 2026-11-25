@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
 import * as cookieParser from 'cookie-parser';
 import CSRF from './csrf.js';
@@ -54,41 +53,35 @@ export const verifyWSUser = (info, next) => {
   const headers = JSON.parse(JSON.stringify(info.req.headers));
   const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
   const jwToken = (protocols && protocols.length > 0) ? protocols[0] : '';
-  if (!jwToken || jwToken === '') {
+  if (!isSessionTokenFor(jwToken, wsSessionId(info.req.headers.cookie))) {
     next(false, 401, 'Authentication Failed! Please Login First!');
   } else {
-    jwt.verify(jwToken, common.secret_key, (verificationErr) => {
-      if (verificationErr || !isSessionTokenFor(jwToken, wsSessionId(info.req.headers.cookie))) {
-        next(false, 401, 'Authentication Failed! Please Login First!');
-      } else {
-        try {
-          let updatedReq = null;
-          try {
-            updatedReq = JSON.parse(JSON.stringify(info.req));
-          } catch (err) {
-            updatedReq = info.req;
-          }
-          let cookies = null;
-          try {
-            cookies = '{"' + headers.cookie?.replace(/ /g, '')?.replace(/;/g, '","').trim()?.replace(/[=]/g, '":"') + '"}';
-            updatedReq['cookies'] = JSON.parse(cookies);
-          } catch (err) {
-            cookies = {};
-            updatedReq['cookies'] = JSON.parse(cookies);
-            logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to read CSRF token cookie', data: err });
-          }
-          csurfProtection(updatedReq, null, (err) => {
-            if (err) {
-              next(false, 403, 'Invalid CSRF token!');
-            } else {
-              next(true);
-            }
-          });
-        } catch (err) {
-          logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to verify CSRF token', data: err });
+    try {
+      let updatedReq = null;
+      try {
+        updatedReq = JSON.parse(JSON.stringify(info.req));
+      } catch (err) {
+        updatedReq = info.req;
+      }
+      let cookies = null;
+      try {
+        cookies = '{"' + headers.cookie?.replace(/ /g, '')?.replace(/;/g, '","').trim()?.replace(/[=]/g, '":"') + '"}';
+        updatedReq['cookies'] = JSON.parse(cookies);
+      } catch (err) {
+        cookies = {};
+        updatedReq['cookies'] = JSON.parse(cookies);
+        logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to read CSRF token cookie', data: err });
+      }
+      csurfProtection(updatedReq, null, (err) => {
+        if (err) {
+          next(false, 403, 'Invalid CSRF token!');
+        } else {
           next(true);
         }
-      }
-    });
+      });
+    } catch (err) {
+      logger.log({ selectedNode: common.selectedNode, level: 'WARN', fileName: 'AuthCheck', msg: '403 Unable to verify CSRF token', data: err });
+      next(true);
+    }
   }
 };

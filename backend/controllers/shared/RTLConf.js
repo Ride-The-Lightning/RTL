@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import { resolve, sep } from 'path';
 import ini from 'ini';
@@ -204,26 +203,24 @@ export const getApplicationSettings = (req, res, next) => {
     appConfData.selectedNodeIndex = (req.session.selectedNode && req.session.selectedNode.index ? req.session.selectedNode.index : common.selectedNode.index);
     common.appConfig.selectedNodeIndex = appConfData.selectedNodeIndex;
     const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
-    jwt.verify(token, common.secret_key, (err, user) => {
-        if (err || !isSessionTokenFor(token, req.session.id)) {
-            // Delete unnecessary data for initial response (without security token)
-            const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
-            delete appConfData.SSO.rtlCookiePath;
-            delete appConfData.SSO.cookieValue;
-            delete appConfData.SSO.logoutRedirectLink;
-            appConfData.dbDirectoryPath = '';
-            appConfData.nodes[selNodeIdx].authentication = new Authentication();
-            delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
-            delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
-            delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
-            delete appConfData.nodes[selNodeIdx].settings.enableOffers;
-            delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
-            delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
-            appConfData.nodes = [appConfData.nodes[selNodeIdx]];
-        }
-        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
-        res.status(200).json(appConfData);
-    });
+    if (!isSessionTokenFor(token, req.session.id)) {
+        // Delete unnecessary data for initial response (without security token)
+        const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
+        delete appConfData.SSO.rtlCookiePath;
+        delete appConfData.SSO.cookieValue;
+        delete appConfData.SSO.logoutRedirectLink;
+        appConfData.dbDirectoryPath = '';
+        appConfData.nodes[selNodeIdx].authentication = new Authentication();
+        delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
+        delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
+        delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
+        delete appConfData.nodes[selNodeIdx].settings.enableOffers;
+        delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
+        delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
+        appConfData.nodes = [appConfData.nodes[selNodeIdx]];
+    }
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
+    res.status(200).json(appConfData);
 };
 export const updateSelectedNode = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..' });
