@@ -658,3 +658,14 @@ test('with authentication disabled, the token works only with the session that a
     Common.appConfig.disableAuth = false;
   }
 });
+
+test('a session token past its expiry is refused, though its id is still registered', () => {
+  setupAppConfig(false, '');
+  Common.selectedNode = { index: 1, lnNode: 'node', lnImplementation: 'LND', settings: { logLevel: 'ERROR' } };
+  const issued = issueSessionToken(MOCK_SESSION_ID, 'NODE_USER');
+  const { jti } = jwt.decode(issued);
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const signedWithExp = (exp) => jwt.sign({ user: 'NODE_USER', jti: jti, iat: nowSeconds - (2 * 24 * 60 * 60), exp: exp }, Common.secret_key);
+  assert.equal(passesAuthCheck(signedWithExp(nowSeconds + 60), MOCK_SESSION_ID), true, 'setup: the same id with a future expiry passes');
+  assert.equal(passesAuthCheck(signedWithExp(nowSeconds - 60), MOCK_SESSION_ID), false, 'an expired token was accepted');
+});
