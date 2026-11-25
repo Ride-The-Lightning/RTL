@@ -1,10 +1,8 @@
-import { parse } from 'cookie';
-import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import { WebSocketServer } from 'ws';
 import { Logger, LoggerService } from './logger.js';
 import { Common, CommonService } from './common.js';
-import { verifyWSUser } from './authCheck.js';
+import { sessionIdOfCookieHeader, verifyWSUser } from './authCheck.js';
 import { EventEmitter } from 'events';
 import { SelectedNode } from '../models/config.model.js';
 
@@ -66,10 +64,9 @@ export class RTLWebSocketServer {
 
   public mountEventsOnConnection = (websocket, request) => {
     const protocols = !request.headers['sec-websocket-protocol'] ? [] : request.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
-    const cookies = request.headers.cookie ? parse(request.headers.cookie) : null;
     websocket.clientId = Date.now();
     websocket.isAlive = true;
-    websocket.sessionId = cookies && cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], this.common.secret_key) : null;
+    websocket.sessionId = sessionIdOfCookieHeader(request.headers.cookie);
     websocket.clientNodeIndex = +protocols[1];
     this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Connected: ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
     websocket.on('error', this.sendErrorToAllLNClients);

@@ -42,9 +42,10 @@ export const isSelectedNodeImplementation = (lnImplementation: string) => (req, 
   });
 };
 
-// The handshake does not pass through the session middleware, so the session id is read from
-// the signed session cookie, as mountEventsOnConnection does.
-const wsSessionId = (cookieHeader) => {
+// The websocket handshake does not pass through the session middleware, so the session id is
+// read from the signed session cookie. verifyWSUser and mountEventsOnConnection both use this,
+// so the session a socket was let in for is the one closeClientsOfSessions matches it by.
+export const sessionIdOfCookieHeader = (cookieHeader) => {
   const cookies = cookieHeader ? parse(cookieHeader) : {};
   return cookies['connect.sid'] ? cookieParser.signedCookie(cookies['connect.sid'], common.secret_key) : null;
 };
@@ -53,7 +54,7 @@ export const verifyWSUser = (info, next) => {
   const headers = JSON.parse(JSON.stringify(info.req.headers));
   const protocols = !info.req.headers['sec-websocket-protocol'] ? [] : info.req.headers['sec-websocket-protocol'].split(',')?.map((s) => s.trim());
   const jwToken = (protocols && protocols.length > 0) ? protocols[0] : '';
-  if (!isSessionTokenFor(jwToken, wsSessionId(info.req.headers.cookie))) {
+  if (!isSessionTokenFor(jwToken, sessionIdOfCookieHeader(info.req.headers.cookie))) {
     next(false, 401, 'Authentication Failed! Please Login First!');
   } else {
     try {
