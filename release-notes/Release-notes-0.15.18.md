@@ -122,7 +122,8 @@ this release should add its entry under the appropriate section below.
   browsers have to log in again. The tab that changed it hands the new token to the other tabs of
   its browser, which reconnect with it; a request one of them sent with its earlier token is sent
   again with the new one rather than logging the browser out. A token also expires
-  after one day, as the session cookie does, after which RTL asks for a login again. A script
+  at most one day after the login that issued it, after which RTL asks for a login again. It is
+  not renewed, so a user who is still active then is logged out too. A script
   that reuses a token from the browser now needs that browser's session cookie as well.
   `session-token-lifecycle.test.mjs` covers each case, and the `AuthInterceptor`,
   `SessionService`, `WebSocketClientService` and `RTLEffects` specs cover the hand-off to the

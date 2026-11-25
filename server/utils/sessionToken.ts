@@ -4,11 +4,14 @@ import { Common, CommonService } from './common.js';
 
 const common: CommonService = Common;
 
-// Same lifetime as the session cookie (app.ts).
+// The session cookie's maxAge (app.ts) is also one day, but its day restarts whenever the
+// session changes. A token's day starts at login and it is not renewed, so it ends at most one
+// day after the login, even for a user who is active then.
 export const SESSION_TOKEN_LIFETIME_SECONDS = 24 * 60 * 60;
 
 // Every token this process issued and has not ended, by its id (jti), with the session it was
 // issued to. Like secret_key it lives in memory only, so a restart ends every token as before.
+// expiresAt only lets forgetExpired() prune the map; the JWT's exp is what refuses an expired token.
 const issuedTokens = new Map<string, { sessionId: string, expiresAt: number }>();
 
 const forgetExpired = () => {
