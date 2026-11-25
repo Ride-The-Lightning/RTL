@@ -118,11 +118,15 @@ this release should add its entry under the appropriate section below.
   change ended the session but not the token. Each token now belongs to the session it was
   issued to, and is accepted only together with that session's cookie, for API requests and
   for the websocket. Logging out (also on inactivity) ends the session's tokens and closes its
-  websocket. A password change ends the tokens of every other session, so other browsers have to
-  log in again; the tabs of the browser that changed it continue. A token also expires
+  websocket. A password change ends every earlier token and closes every websocket, so other
+  browsers have to log in again. The tab that changed it hands the new token to the other tabs of
+  its browser, which reconnect with it; a request one of them sent with its earlier token is sent
+  again with the new one rather than logging the browser out. A token also expires
   after one day, as the session cookie does, after which RTL asks for a login again. A script
   that reuses a token from the browser now needs that browser's session cookie as well.
-  `session-token-lifecycle.test.mjs` covers each case.
+  `session-token-lifecycle.test.mjs` covers each case, and the `AuthInterceptor`,
+  `SessionService`, `WebSocketClientService` and `RTLEffects` specs cover the hand-off to the
+  other tabs.
 
 ## Enhancements
 

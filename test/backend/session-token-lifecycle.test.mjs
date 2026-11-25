@@ -11,7 +11,8 @@ import { createRequire } from 'node:module';
 
 // The session token issued at login belongs to the session it was issued to. It is accepted
 // only together with that session's cookie, it ends when that session logs out, a password
-// change ends every other token, and it carries a one-day expiry like the session cookie.
+// change ends every earlier token (the browser that made it carries on with the new one), and
+// it carries a one-day expiry like the session cookie.
 // Driven against a real rtl.js with CSRF on (the harness is the one in
 // logout-and-password-reset.test.mjs).
 
@@ -211,7 +212,7 @@ test('a token issued to another session does not unlock the full settings', asyn
 });
 
 // Runs last: it changes the password for the rest of the file.
-test('a password change ends the tokens of other browsers; the tabs of the browser that made it continue', async () => {
+test('a password change ends every earlier token, also those of the session that made it', async () => {
   const caller = await signedIn();
   // A second tab of the same browser: the same cookies, its own login.
   const secondTab = await post('/authenticate', caller.jar, null, { authenticateWith: 'PASSWORD', authenticationValue: hashOf(currentPassword) });
@@ -228,8 +229,12 @@ test('a password change ends the tokens of other browsers; the tabs of the brows
   const { token: newToken } = await res.json();
   assert.equal((await selectNode(other.jar, other.token)).status, 401, "another browser's token survived the password change");
   assert.equal(await closed(otherSocket.socket), true, "another browser's websocket stayed open after the password change");
+  assert.equal((await selectNode(caller.jar, caller.token)).status, 401, "the caller's earlier token survived the password change");
+  assert.equal((await selectNode(caller.jar, secondTabToken)).status, 401, "the second tab's earlier token survived the password change");
+  assert.equal(await closed(callerSocket.socket), true, "the caller's websocket opened with an earlier token stayed open");
+  // The session itself continues: its tabs carry on with the token the reset returned.
   assert.equal((await selectNode(caller.jar, newToken)).status, 200, 'the token returned by the reset does not work');
-  assert.equal((await selectNode(caller.jar, secondTabToken)).status, 200, "the caller's second tab was logged out");
-  assert.equal(callerSocket.socket.readyState, WebSocket.OPEN, "the caller's websocket was closed");
-  callerSocket.socket.close();
+  const reopened = await openSocket(caller.jar, newToken);
+  assert.equal(reopened.opened, true, 'a websocket does not open with the token the reset returned');
+  reopened.socket.close();
 });

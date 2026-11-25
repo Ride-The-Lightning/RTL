@@ -456,6 +456,8 @@ export class RTLEffects implements OnDestroy {
             this.logger.info('Password Reset Successful!');
             this.store.dispatch(openSnackBar({ payload: 'Password Reset Successful!' }));
             this.SetToken(postRes.token);
+            // The change ended the token of every other tab of this browser too.
+            this.sessionService.shareToken(postRes.token);
             return {
               type: RTLActions.RESET_PASSWORD_RES,
               payload: postRes.token

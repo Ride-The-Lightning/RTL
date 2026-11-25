@@ -153,6 +153,8 @@ export class mockSessionService {
     return of(this.sessionObj);
   }
 
+  shareToken(token: string) { }
+
   removeItem(key) {
     return of(this.sessionObj);
   }

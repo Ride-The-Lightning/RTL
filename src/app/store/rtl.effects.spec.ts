@@ -331,6 +331,21 @@ describe('RTL Root Effects', () => {
     expect(Array.from(url.searchParams.entries())).toEqual([['channel', value], ['path', value]]);
   });
 
+  it('should hand the token returned by a password change to the other tabs', (done) => {
+    const sessionService = TestBed.inject(SessionService);
+    const shareTokenSpy = spyOn(sessionService, 'shareToken');
+    actions = new ReplaySubject(1);
+    actions.next({ type: RTLActions.RESET_PASSWORD, payload: { currPassword: 'old', newPassword: 'new' } });
+    const sub = effects.resetPassword.subscribe((resetPasswordResponse) => {
+      expect(resetPasswordResponse).toEqual({ type: RTLActions.RESET_PASSWORD_RES, payload: 'new-token' });
+      expect(shareTokenSpy).toHaveBeenCalledOnceWith('new-token');
+      done();
+      setTimeout(() => sub.unsubscribe());
+    });
+    const req = httpTestingController.expectOne(API_END_POINTS.AUTHENTICATE_API + '/reset');
+    req.flush({ token: 'new-token' });
+  });
+
   afterEach(() => {
     httpTestingController.verify();
   });

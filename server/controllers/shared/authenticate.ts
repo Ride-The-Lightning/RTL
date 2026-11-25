@@ -4,7 +4,7 @@ import { Database, DatabaseService } from '../../utils/database.js';
 import { Logger, LoggerService } from '../../utils/logger.js';
 import { Common, CommonService } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
-import { endOtherSessionTokens, endSessionTokens, isSessionTokenFor, issueSessionToken } from '../../utils/sessionToken.js';
+import { endAllSessionTokens, endSessionTokens, isSessionTokenFor, issueSessionToken } from '../../utils/sessionToken.js';
 
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
@@ -231,11 +231,10 @@ export const resetPassword = (req, res, next) => {
   } else {
     if (common.appConfig.rtlPass === currPassword) {
       common.appConfig.rtlPass = common.replacePasswordWithHash(newPassword);
-      // A new password ends the tokens of every other session (other browsers). This session's
-      // tokens stay: its other tabs share the session cookie, and a 401 there would log out
-      // the whole session, the caller included.
-      endOtherSessionTokens(req.session.id);
-      WSServer.closeClientsOfSessions((sessionId) => sessionId !== req.session.id);
+      // A new password ends every earlier token, this session's included. The caller's other
+      // tabs share its session cookie; the frontend hands them the token returned here.
+      endAllSessionTokens();
+      WSServer.closeClientsOfSessions(() => true);
       const token = issueSessionToken(req.session.id, 'NODE_USER');
       logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful' });
       res.status(200).json({ token: token });

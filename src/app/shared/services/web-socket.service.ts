@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { WebSocketSubject } from 'rxjs/webSocket';
 
 import { LoggerService } from '../../shared/services/logger.service';
@@ -26,10 +26,13 @@ export class WebSocketClientService implements OnDestroy {
       this.wsUrl = finalWSUrl;
       this.nodeIndex = nodeIndex;
       this.logger.info('Websocket Url: ' + this.wsUrl);
-      this.socket = new WebSocketSubject({
+      const token = this.sessionService.getItem('token') || '';
+      const socket: WebSocketSubject<any> = new WebSocketSubject({
         url: finalWSUrl,
-        protocol: [(this.sessionService.getItem('token') || ''), nodeIndex]
+        protocol: [token, nodeIndex],
+        closeObserver: { next: () => this.reopenWithNewToken(socket, token) }
       });
+      this.socket = socket;
       this.subscribeToMessages();
     }
   }
@@ -42,6 +45,18 @@ export class WebSocketClientService implements OnDestroy {
       this.connectWebSocket(this.wsUrl, this.nodeIndex);
       this.RECONNECT_TIMEOUT = null;
     }, this.RETRY_SECONDS * 1000);
+  }
+
+  // A password change, in this tab or another of the browser, ends the token the socket opened
+  // with and the server closes it. Reopen it with the token handed to this tab.
+  private reopenWithNewToken(socket: WebSocketSubject<any>, token: string) {
+    if (this.socket !== socket) { return; }
+    this.sessionService.tokenReplacing(token).pipe(take(1)).subscribe((newToken) => {
+      if (newToken && this.socket === socket) {
+        this.socket = null;
+        this.connectWebSocket(this.wsUrl, this.nodeIndex);
+      }
+    });
   }
 
   closeConnection() {
