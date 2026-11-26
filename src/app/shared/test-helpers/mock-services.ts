@@ -155,6 +155,15 @@ export class mockSessionService {
 
   shareToken(token: string) { }
 
+  // The mock's token never changes, so no new one is handed over.
+  tokenReplacing(previousToken: string) {
+    return of(null);
+  }
+
+  nextToken(previousToken: string) {
+    return of(null);
+  }
+
   removeItem(key) {
     return of(this.sessionObj);
   }
