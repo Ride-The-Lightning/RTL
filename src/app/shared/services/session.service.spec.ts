@@ -27,6 +27,16 @@ describe('SessionService', () => {
     expect(otherTab.getItem('token')).toBe('new-token');
   });
 
+  it('clears the reset still due in a tab that takes a shared token', async () => {
+    const changingTab = openTab();
+    const otherTab = openTab();
+    otherTab.setItem('token', 'old-token');
+    otherTab.setItem('defaultPassword', true);
+    changingTab.shareToken('new-token');
+    await delivered();
+    expect(otherTab.getItem('defaultPassword')).toBe('false');
+  });
+
   it('does not log in a tab that has no token', async () => {
     const changingTab = openTab();
     openTab();

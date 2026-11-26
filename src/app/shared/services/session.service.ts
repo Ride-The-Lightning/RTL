@@ -18,7 +18,11 @@ export class SessionService implements OnDestroy {
     if (this.tokenChannel) {
       this.tokenChannel.onmessage = (event) => {
         // Only a logged-in tab takes it; a logged-out one has a login of its own to do.
-        if (typeof event.data === 'string' && event.data !== '' && this.getItem('token')) { this.setItem('token', event.data); }
+        // A token is handed over only after a password change, which also clears a reset still due.
+        if (typeof event.data === 'string' && event.data !== '' && this.getItem('token')) {
+          this.setItem('defaultPassword', false);
+          this.setItem('token', event.data);
+        }
       };
     }
   }
