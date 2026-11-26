@@ -73,6 +73,23 @@ describe('WebSocketClientService', () => {
     expect(FakeWebSocket.opened[1].protocol).toEqual(['new-token', '1']);
   }));
 
+  it('reopens a socket the server closed when the new token arrives late', fakeAsync(() => {
+    FakeWebSocket.opened[0].serverClose(1008);
+    tick(5000);
+    sessionService.setItem('token', 'new-token');
+    tick();
+    expect(FakeWebSocket.opened.length).toBe(2);
+    expect(FakeWebSocket.opened[1].protocol).toEqual(['new-token', '1']);
+  }));
+
+  it('does not reopen a socket the server closed once the tab has logged out', fakeAsync(() => {
+    FakeWebSocket.opened[0].serverClose(1008);
+    sessionService.clearAll();
+    sessionService.setItem('token', 'next-login-token');
+    tick();
+    expect(FakeWebSocket.opened.length).toBe(1);
+  }));
+
   it('does not reopen a socket the server closed when no new token arrives', fakeAsync(() => {
     FakeWebSocket.opened[0].serverClose(1008);
     tick(1000);

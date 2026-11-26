@@ -48,10 +48,11 @@ export class WebSocketClientService implements OnDestroy {
   }
 
   // A password change, in this tab or another of the browser, ends the token the socket opened
-  // with and the server closes it. Reopen it with the token handed to this tab.
+  // with and the server closes it. Reopen it with the token handed to this tab, whenever that
+  // arrives; a closed socket holds up no request, so it can wait.
   private reopenWithNewToken(socket: WebSocketSubject<any>, token: string) {
     if (this.socket !== socket) { return; }
-    this.sessionService.tokenReplacing(token).pipe(take(1)).subscribe((newToken) => {
+    this.sessionService.nextToken(token).pipe(take(1)).subscribe((newToken) => {
       if (newToken && this.socket === socket) {
         this.socket = null;
         this.connectWebSocket(this.wsUrl, this.nodeIndex);

@@ -57,16 +57,19 @@ export class SessionService implements OnDestroy {
   // The tab's token if it is no longer the given one, waiting briefly for one to be handed over;
   // null if none arrives.
   tokenReplacing(previousToken: string): Observable<string | null> {
-    const replacement = () => {
-      const current = this.getItem('token');
-      return (current && current !== previousToken) ? current : null;
-    };
-    if (replacement()) { return of(replacement()); }
+    return this.nextToken(previousToken).pipe(timeout({ first: TOKEN_HANDOFF_WAIT_MS, with: () => of(null) }));
+  }
+
+  // The tab's token once it is no longer the given one, however long that takes; null if the tab
+  // logs out first.
+  nextToken(previousToken: string): Observable<string | null> {
+    const current = this.getItem('token');
+    if (current && current !== previousToken) { return of(current); }
     return this.watchSession().pipe(
-      map(() => replacement()),
-      filter((newToken) => !!newToken),
+      map(() => this.getItem('token')),
+      filter((token) => token !== previousToken),
       take(1),
-      timeout({ first: TOKEN_HANDOFF_WAIT_MS, with: () => of(null) }));
+      map((token) => token || null));
   }
 
   ngOnDestroy() {
