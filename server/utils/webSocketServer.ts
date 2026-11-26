@@ -20,7 +20,7 @@ export class RTLWebSocketServer {
     if (this.webSocketServer.clients.size && this.webSocketServer.clients.size > 0) {
       this.webSocketServer.clients.forEach((client) => {
         if (client.isAlive === false) {
-          this.updateLNWSClientDetails(client.sessionId, -1, client.clientNodeIndex);
+          if (!this.hasOtherClient(client)) { this.updateLNWSClientDetails(client.sessionId, -1, client.clientNodeIndex); }
           return client.terminate();
         }
         client.isAlive = false;
@@ -72,10 +72,22 @@ export class RTLWebSocketServer {
     websocket.on('error', this.sendErrorToAllLNClients);
     websocket.on('message', this.sendEventsToAllLNClients);
     websocket.on('pong', () => { websocket.isAlive = true; });
+    // A websocket reopened after a close (a password change, a network error) gets the node's
+    // events again, without the node being selected anew.
+    if (this.common.findNode(websocket.clientNodeIndex)) { this.connectToNodeClient(websocket.sessionId, websocket.clientNodeIndex); }
     websocket.on('close', (code, reason) => {
-      this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex);
+      // The session's other websockets for this node still need its events.
+      if (!this.hasOtherClient(websocket)) { this.updateLNWSClientDetails(websocket.sessionId, -1, websocket.clientNodeIndex); }
       this.logger.log({ selectedNode: this.common.selectedNode, level: 'INFO', fileName: 'WebSocketServer', msg: 'Disconnected due to ' + code + ' : ' + websocket.clientId + ', Total WS clients: ' + this.webSocketServer.clients.size });
     });
+  };
+
+  public hasOtherClient = (websocket) => {
+    let found = false;
+    this.webSocketServer.clients.forEach((client) => {
+      if (client !== websocket && client.sessionId === websocket.sessionId && +client.clientNodeIndex === +websocket.clientNodeIndex) { found = true; }
+    });
+    return found;
   };
 
   public updateLNWSClientDetails = (sessionId: string, currNodeIndex: number, prevNodeIndex: number) => {
