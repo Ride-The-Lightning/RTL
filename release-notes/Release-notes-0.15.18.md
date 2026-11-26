@@ -121,11 +121,14 @@ this release should add its entry under the appropriate section below.
   websocket. A password change ends every earlier token and closes every websocket, so other
   browsers have to log in again. The tab that changed it hands the new token to the other tabs of
   its browser, which reconnect with it; a request one of them sent with its earlier token is sent
-  again with the new one rather than logging the browser out. A token also expires
+  again with the new one rather than logging the browser out. A websocket that reconnects, after
+  a password change or a network error, receives its node's live updates again, and closing one
+  tab no longer stops them in the browser's other tabs. A token also expires
   at most one day after the login that issued it, after which RTL asks for a login again. It is
   not renewed, so a user who is still active then is logged out too. A script
   that reuses a token from the browser now needs that browser's session cookie as well.
-  `session-token-lifecycle.test.mjs` covers each case, and the `AuthInterceptor`,
+  `session-token-lifecycle.test.mjs` covers each case, `websocket-server.test.mjs` the live
+  updates, and the `AuthInterceptor`,
   `SessionService`, `WebSocketClientService` and `RTLEffects` specs cover the hand-off to the
   other tabs.
 
