@@ -173,10 +173,9 @@ this release should add its entry under the appropriate section below.
 
 - **The configuration served before login carries only what the login page uses**
   ([#1842](https://github.com/Ride-The-Lightning/RTL/pull/1842)). Without a session token,
-  `GET /api/conf` removed a list of fields from the configuration and returned the rest, so
-  fields the login page never reads went out with it. It now returns only `selectedNodeIndex`,
-  `disableAuth`, `enable2FA`, `SSO.rtlSSO` and the selected node's `index`, `userPersona`,
-  `themeMode` and `themeColor`. The full configuration still comes with a valid session token,
+  `GET /api/conf` returned the configuration with a list of fields removed. It now returns only
+  `selectedNodeIndex`, `disableAuth`, `enable2FA`, `SSO.rtlSSO` and the selected node's `index`,
+  `userPersona`, `themeMode` and `themeColor`. The full configuration still comes with a valid session token,
   as the app fetches it after login. A selected index that matches no node now falls back to the
   first node instead of failing. `conf-without-token.test.mjs` covers the answer with and
   without a token.
