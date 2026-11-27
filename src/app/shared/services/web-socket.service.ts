@@ -22,9 +22,11 @@ export class WebSocketClientService implements OnDestroy {
   constructor(private logger: LoggerService, private sessionService: SessionService) { }
 
   connectWebSocket(finalWSUrl: string, nodeIndex: string) {
+    // A node switch keeps the open socket (the server moves it to the new node), so keep the
+    // node it names for when it reopens.
+    this.wsUrl = finalWSUrl;
+    this.nodeIndex = nodeIndex;
     if (!this.socket || this.socket.closed) {
-      this.wsUrl = finalWSUrl;
-      this.nodeIndex = nodeIndex;
       this.logger.info('Websocket Url: ' + this.wsUrl);
       const token = this.sessionService.getItem('token') || '';
       const socket: WebSocketSubject<any> = new WebSocketSubject({

@@ -90,6 +90,15 @@ describe('WebSocketClientService', () => {
     expect(FakeWebSocket.opened.length).toBe(1);
   }));
 
+  it('reopens a socket the server closed for the node selected since it opened', fakeAsync(() => {
+    service.connectWebSocket('ws://localhost/rtl/api/ws', '2');
+    FakeWebSocket.opened[0].serverClose(1008);
+    sessionService.setItem('token', 'new-token');
+    tick();
+    expect(FakeWebSocket.opened.length).toBe(2);
+    expect(FakeWebSocket.opened[1].protocol).toEqual(['new-token', '2']);
+  }));
+
   it('does not reopen a socket the server closed when no new token arrives', fakeAsync(() => {
     FakeWebSocket.opened[0].serverClose(1008);
     tick(1000);
