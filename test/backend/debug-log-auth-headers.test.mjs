@@ -9,9 +9,9 @@ import { getAllLightningTransactions } from '../../backend/controllers/lnd/payme
 import { loopInTermsAndQuotes, loopOutTermsAndQuotes } from '../../backend/controllers/shared/loop.js';
 import { Logger } from '../../backend/utils/logger.js';
 
-// At logLevel DEBUG some handlers logged their whole request options, headers included, so
-// the node's macaroon went into the log file. They now log only the URL and query, and the
-// logger masks any `headers` map it is handed as data.
+// At logLevel DEBUG some handlers logged their whole request options, so header values went
+// into the log file. They now log only the URL and query, and the logger masks any `headers`
+// map it is handed as data, and the authentication headers RTL sends wherever they appear.
 
 const tempDir = () => mkdtempSync(join(tmpdir(), 'rtl-debug-log-'));
 
@@ -104,4 +104,16 @@ test('the logger masks a headers map passed as data', async () => {
   const log = await readLog(logFile, 'Options');
   assert.match(log, /https:\/\/node\/v1\/x/);
   assert.ok(!log.includes('rune-secret') && !log.includes('Basic abc'), 'header values written to the log');
+});
+
+test('the logger masks authentication headers passed without their headers map', async () => {
+  const logFile = join(tempDir(), 'node.log');
+  const selectedNode = { index: 1, settings: { logLevel: 'DEBUG', logFile } };
+  Logger.log({ selectedNode, level: 'DEBUG', fileName: 'Test', msg: 'Headers', data: { 'Grpc-Metadata-macaroon': 'aa11bb22cc33', Rune: 'rune-secret', Authorization: 'Basic abc', accept: 'application/json' } });
+  const log = await readLog(logFile, 'Headers');
+  assert.match(log, /"accept":"application\/json"/);
+  assert.match(log, /"Grpc-Metadata-macaroon":"\*+"/);
+  for (const value of ['aa11bb22cc33', 'rune-secret', 'Basic abc']) {
+    assert.ok(!log.includes(value), value + ' written to the log');
+  }
 });

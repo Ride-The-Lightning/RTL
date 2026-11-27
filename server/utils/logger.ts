@@ -69,9 +69,15 @@ export class LoggerService {
 
 };
 
-// Request header maps carry the node's credentials (macaroon, rune, basic auth): log only their names.
-const maskHeaders = (key, value) => ((key === 'headers' && value && typeof value === 'object') ?
-  Object.keys(value).reduce((masked, headerKey) => { masked[headerKey] = '*'.repeat(20); return masked; }, {}) : value);
+// Request headers carry the node's authentication (macaroon, rune, basic auth): log a headers
+// map with its values masked, and mask those header names wherever else they appear.
+const AUTH_HEADERS = ['grpc-metadata-macaroon', 'rune', 'authorization'];
+const maskHeaders = (key, value) => {
+  if (key === 'headers' && value && typeof value === 'object') {
+    return Object.keys(value).reduce((masked, headerKey) => { masked[headerKey] = '*'.repeat(20); return masked; }, {});
+  }
+  return (AUTH_HEADERS.includes(key.toLowerCase()) && value !== undefined && value !== null) ? '*'.repeat(20) : value;
+};
 
 const prepMsgData = (msgJSON, msgStr) => {
   if (msgJSON.data) {

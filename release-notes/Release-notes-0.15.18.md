@@ -136,7 +136,8 @@ this release should add its entry under the appropriate section below.
   At `logLevel` DEBUG, LND's all-transactions request and the Loop In and Loop Out
   terms-and-quotes requests logged their whole request options, headers included. They now log
   the URL and query only, as the other requests do, and the logger writes any header map it is
-  given with its values masked. `debug-log-auth-headers.test.mjs` covers each request and the
+  given with its values masked, as well as the `Grpc-Metadata-macaroon`, `rune` and
+  `Authorization` headers wherever they appear. `debug-log-auth-headers.test.mjs` covers each request and the
   logger.
 
 - **Core Lightning: the configuration request returns only the option RTL reads**
