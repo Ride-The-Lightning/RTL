@@ -51,13 +51,14 @@ const run = (events, logLevel = 'ERROR') => new Promise((resolve) => {
 
 const EVENT = JSON.stringify({ invoice_payment: { label: 'invoice-1', msat: '1000msat' } });
 
-// At DEBUG the handler also logs the message's data, which serialises the same object.
+// At DEBUG the handler also logs the message's data, which serialises the same object. Node 22
+// and 24 cannot serialise an object this deep, so there the message is skipped. From Node 26
+// JSON.stringify can, so at ERROR the message is passed on. Either way RTL keeps running.
 for (const logLevel of ['ERROR', 'DEBUG']) {
-  test(`a message nested too deeply to pass on is skipped and later events still arrive (logLevel ${logLevel})`, async () => {
+  test(`a message nested too deeply to serialise does not stop RTL and later events still arrive (logLevel ${logLevel})`, async () => {
     const deep = '{"data":' + '['.repeat(20000) + ']'.repeat(20000) + '}';
     const { code, out, err } = await run([deep, EVENT], logLevel);
     assert.equal(code, 0, 'client process ended: ' + err);
-    assert.equal(out.match(/FORWARDED/g).length, 1);
     assert.match(out, /FORWARDED \{"source":"CLN","data":\{"invoice_payment"/);
   });
 }

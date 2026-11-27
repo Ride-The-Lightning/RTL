@@ -21,7 +21,7 @@ const child = (frames) => `
   const wss = new WebSocketServer({ port: 0, host: '127.0.0.1' }, () => {
     ECLWSClient.wsServer.sendEventsToAllLNClients = (msg) => {
       console.log('FORWARDED ' + msg);
-      if (JSON.parse(msg).type === 'payment-received') { process.exit(0); }
+      if (JSON.parse(msg).marker === 'after') { process.exit(0); }
     };
     ECLWSClient.connect({ index: 1, lnNode: 'eclair', lnImplementation: 'ECL', lnVersion: '0.14.2',
       settings: { lnServerUrl: 'http://127.0.0.1:' + wss.address().port, logLevel: 'ERROR' },
@@ -40,7 +40,8 @@ const run = (frames) => new Promise((resolve) => {
   proc.on('close', (code) => resolve({ code, out, err }));
 });
 
-const EVENT = JSON.stringify({ type: 'payment-received', paymentHash: 'ab'.repeat(32), parts: [] });
+// The event sent after the others; the child exits once it has been forwarded.
+const EVENT = JSON.stringify({ type: 'payment-received', paymentHash: 'ab'.repeat(32), parts: [], marker: 'after' });
 
 test('a frame that is not JSON is skipped and later events still arrive', async () => {
   const { code, out, err } = await run(['this is not json {{{', EVENT]);
@@ -54,9 +55,11 @@ test('JSON frames that are not objects are skipped and later events still arrive
   assert.equal(out.match(/FORWARDED/g).length, 1);
 });
 
-test('an event nested too deeply to pass on is skipped and later events still arrive', async () => {
+// Node 22 and 24 cannot serialise an object this deep, so there the event is skipped. From
+// Node 26 JSON.stringify can, and the event is passed on. Either way RTL keeps running.
+test('an event nested too deeply to serialise does not stop RTL and later events still arrive', async () => {
   const deep = '{"type":"payment-received","parts":' + '['.repeat(20000) + ']'.repeat(20000) + '}';
   const { code, out, err } = await run([deep, EVENT]);
   assert.equal(code, 0, 'client process ended: ' + err);
-  assert.equal(out.match(/FORWARDED/g).length, 1);
+  assert.match(out, /FORWARDED .*"marker":"after"/);
 });
