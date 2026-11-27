@@ -150,13 +150,13 @@ this release should add its entry under the appropriate section below.
 
 - **Core Lightning: the Experimental settings page shows the channel funding policy status
   when the node does not report `experimental-dual-fund`**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The page read
+  ([#1840](https://github.com/Ride-The-Lightning/RTL/pull/1840)). The page read
   `configs['experimental-dual-fund'].set` from the node's configuration without checking that
   the option was there, so a reply without it raised an error in the page instead of showing
   the policy as disabled. It now shows it as disabled. A spec covers both replies.
 
 - **LND: channel backups are written to the backup file only, not also to the log**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). At `logLevel` DEBUG, the backup
+  ([#1840](https://github.com/Ride-The-Lightning/RTL/pull/1840)). At `logLevel` DEBUG, the backup
   RTL takes on every LND `getinfo`, and the one taken from the Backup page, were written into the
   node's log as well as into the backup file. The log line now names the node and the backup
   file instead. `channel-backup-log.test.mjs` covers both paths.
