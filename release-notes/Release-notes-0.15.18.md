@@ -172,7 +172,7 @@ this release should add its entry under the appropriate section below.
   cover each kind of message.
 
 - **The configuration served before login carries only what the login page uses**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). Without a session token,
+  ([#1842](https://github.com/Ride-The-Lightning/RTL/pull/1842)). Without a session token,
   `GET /api/conf` removed a list of fields from the configuration and returned the rest, so
   fields the login page never reads went out with it. It now returns only `selectedNodeIndex`,
   `disableAuth`, `enable2FA`, `SSO.rtlSSO` and the selected node's `index`, `userPersona`,
