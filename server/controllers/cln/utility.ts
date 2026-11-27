@@ -5,6 +5,7 @@ import { Common, CommonService } from '../../utils/common.js';
 let options = null;
 const logger: LoggerService = Logger;
 const common: CommonService = Common;
+const LIST_CONFIGS_USED = ['experimental-dual-fund'];
 
 export const decodePayment = (req, res, next) => {
   logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment..' });
@@ -57,8 +58,11 @@ export const listConfigs = (req, res, next) => {
   if (options.error) { return res.status(options.statusCode).json({ message: options.message, error: options.error }); }
   options.url = req.session.selectedNode.settings.lnServerUrl + '/v1/listconfigs';
   request.post(options).then((body) => {
-    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Utility', msg: 'List Configs Received', data: body });
-    res.status(200).json(body);
+    // Return only the options the UI reads, not the node's whole configuration.
+    const configs = {};
+    LIST_CONFIGS_USED.forEach((name) => { if (body && body.configs && body.configs[name]) { configs[name] = body.configs[name]; } });
+    logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Utility', msg: 'List Configs Received', data: configs });
+    res.status(200).json({ configs });
   }).catch((errRes) => {
     const err = common.handleError(errRes, 'Utility', 'List Configs Error', req.session.selectedNode);
     return res.status(err.statusCode).json({ message: err.message, error: err.error });
