@@ -8,7 +8,6 @@ import { Logger } from '../../utils/logger.js';
 import { Common } from '../../utils/common.js';
 import { WSServer } from '../../utils/webSocketServer.js';
 import { isSessionTokenFor } from '../../utils/sessionToken.js';
-import { Authentication } from '../../models/config.model.js';
 const options = { url: '' };
 const logger = Logger;
 const common = Common;
@@ -195,6 +194,17 @@ export const getFile = (req, res, next) => {
         }
     });
 };
+const loginConfig = (appConfData) => {
+    const selNode = appConfData.nodes?.find((node) => node.index === appConfData.selectedNodeIndex) || appConfData.nodes?.[0];
+    const settings = selNode?.settings || {};
+    return {
+        selectedNodeIndex: selNode ? selNode.index : appConfData.selectedNodeIndex,
+        disableAuth: appConfData.disableAuth,
+        enable2FA: appConfData.enable2FA,
+        SSO: { rtlSSO: appConfData.SSO?.rtlSSO },
+        nodes: selNode ? [{ index: selNode.index, settings: { userPersona: settings.userPersona, themeMode: settings.themeMode, themeColor: settings.themeColor } }] : []
+    };
+};
 export const getApplicationSettings = (req, res, next) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..' });
     const appConfData = common.removeSecureData(JSON.parse(JSON.stringify(common.appConfig)));
@@ -204,20 +214,11 @@ export const getApplicationSettings = (req, res, next) => {
     common.appConfig.selectedNodeIndex = appConfData.selectedNodeIndex;
     const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
     if (!isSessionTokenFor(token, req.session.id)) {
-        // Delete unnecessary data for initial response (without security token)
-        const selNodeIdx = appConfData.nodes.findIndex((node) => node.index === appConfData.selectedNodeIndex) || 0;
-        delete appConfData.SSO.rtlCookiePath;
-        delete appConfData.SSO.cookieValue;
-        delete appConfData.SSO.logoutRedirectLink;
-        appConfData.dbDirectoryPath = '';
-        appConfData.nodes[selNodeIdx].authentication = new Authentication();
-        delete appConfData.nodes[selNodeIdx].settings.bitcoindConfigPath;
-        delete appConfData.nodes[selNodeIdx].settings.lnServerUrl;
-        delete appConfData.nodes[selNodeIdx].settings.swapServerUrl;
-        delete appConfData.nodes[selNodeIdx].settings.enableOffers;
-        delete appConfData.nodes[selNodeIdx].settings.enablePeerswap;
-        delete appConfData.nodes[selNodeIdx].settings.channelBackupPath;
-        appConfData.nodes = [appConfData.nodes[selNodeIdx]];
+        // Without the session's token, answer only what the app reads before login: how to log
+        // in, and the selected node's theme. The full configuration is fetched again after login.
+        const loginConfData = loginConfig(appConfData);
+        logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Login Configuration Received', data: loginConfData });
+        return res.status(200).json(loginConfData);
     }
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received', data: appConfData });
     res.status(200).json(appConfData);

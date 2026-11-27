@@ -208,7 +208,7 @@ test('a token issued to another session does not unlock the full settings', asyn
   const other = await signedIn();
   const conf = async (jar, token) => (await fetch(base + '/rtl/api/conf', { headers: { cookie: jar.header(), authorization: 'Bearer ' + token } })).json();
   assert.notEqual((await conf(own.jar, own.token)).dbDirectoryPath, '', 'setup: the own session gets the full settings');
-  assert.equal((await conf(other.jar, own.token)).dbDirectoryPath, '', "another session's token unlocked the full settings");
+  assert.equal((await conf(other.jar, own.token)).dbDirectoryPath, undefined, "another session's token unlocked the full settings");
 });
 
 // Runs last: it changes the password for the rest of the file.
