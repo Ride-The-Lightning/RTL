@@ -161,6 +161,14 @@ this release should add its entry under the appropriate section below.
   node's log as well as into the backup file. The log line now names the node and the backup
   file instead. `channel-backup-log.test.mjs` covers both paths.
 
+- **Eclair: a websocket message that is not a JSON object is skipped**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). RTL's Eclair websocket client
+  parsed each message from Eclair with `JSON.parse` in its message handler and then read its
+  `type`, with nothing to catch an error there, so a message that was not JSON, or was JSON
+  `null`, stopped RTL. Such a message is now skipped with a warning in the node's log, and later
+  events keep arriving. The LND and Core Lightning clients already handled this.
+  `eclair-websocket-frames.test.mjs` covers both kinds of message.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),
