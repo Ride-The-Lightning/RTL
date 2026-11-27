@@ -680,19 +680,19 @@ export class CommonService {
                 const temp_backup_file = channel_backup_file + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
                 const discardTemp = (err) => {
                     fs.unlink(temp_backup_file, () => { });
-                    this.logChannelBackupResult(node, channel_backup_file, body, err);
+                    this.logChannelBackupResult(node, channel_backup_file, err);
                 };
                 fs.writeFile(temp_backup_file, JSON.stringify(body), (writeErr) => {
                     if (writeErr) {
                         return discardTemp(writeErr);
                     }
-                    fs.rename(temp_backup_file, channel_backup_file, (err) => (err ? discardTemp(err) : this.logChannelBackupResult(node, channel_backup_file, body, null)));
+                    fs.rename(temp_backup_file, channel_backup_file, (err) => (err ? discardTemp(err) : this.logChannelBackupResult(node, channel_backup_file, null)));
                 });
             }, (err) => {
                 this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.lnNode, error: err });
             });
         };
-        this.logChannelBackupResult = (node, channel_backup_file, body, err) => {
+        this.logChannelBackupResult = (node, channel_backup_file, err) => {
             if (err) {
                 if (node.lnNode) {
                     this.logger.log({ selectedNode: this.selectedNode, level: 'ERROR', fileName: 'Common', msg: 'Error in Channel Backup for Node ' + node.lnNode, error: err });
@@ -703,10 +703,10 @@ export class CommonService {
             }
             else {
                 if (node.lnNode) {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for Node ' + node.lnNode, data: body });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for Node ' + node.lnNode, data: channel_backup_file });
                 }
                 else {
-                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for File ' + channel_backup_file, data: body });
+                    this.logger.log({ selectedNode: this.selectedNode, level: 'INFO', fileName: 'Common', msg: 'Successful in Channel Backup for File ' + channel_backup_file });
                 }
             }
         };

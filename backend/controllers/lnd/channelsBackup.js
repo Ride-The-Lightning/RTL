@@ -79,14 +79,14 @@ export const getBackup = (req, res, next) => {
         }
     }
     request(options).then((body) => {
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelsBackup', msg: 'Channel Backup Received', data: body });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'ChannelsBackup', msg: 'Channel Backup Received', data: options.url });
         fs.writeFile(channel_backup_file, JSON.stringify(body), (errRes) => {
             if (errRes) {
                 const err = common.handleError(errRes, 'ChannelsBackup', 'Backup Channels Error', req.session.selectedNode);
                 return res.status(err.statusCode).json({ message: err.message, error: err.error });
             }
             else {
-                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backed up and Saved', data: body });
+                logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backed up and Saved', data: channel_backup_file });
                 res.status(200).json({ message: message });
             }
         });
