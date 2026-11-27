@@ -78,7 +78,16 @@ export class ECLWebSocketClient {
 
     eclWsClt.webSocketClient.onmessage = (msg) => {
       this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
-      msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
+      // A frame that is not a JSON object is skipped; throwing here would be uncaught.
+      try {
+        msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
+      } catch (err) {
+        msg = null;
+      }
+      if (!msg || typeof msg !== 'object' || Array.isArray(msg)) {
+        this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'WARN', fileName: 'ECLWebSocket', msg: 'Skipped a message from the server that is not a JSON object' });
+        return;
+      }
       if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
         msg['source'] = 'ECL';
         const msgStr = JSON.stringify(msg);
