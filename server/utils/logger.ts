@@ -69,11 +69,15 @@ export class LoggerService {
 
 };
 
+// Request header maps carry the node's credentials (macaroon, rune, basic auth): log only their names.
+const maskHeaders = (key, value) => ((key === 'headers' && value && typeof value === 'object') ?
+  Object.keys(value).reduce((masked, headerKey) => { masked[headerKey] = '*'.repeat(20); return masked; }, {}) : value);
+
 const prepMsgData = (msgJSON, msgStr) => {
   if (msgJSON.data) {
     msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? (msgJSON.data.message && typeof msgJSON.data.message === 'string') ?
       msgJSON.data.message : (msgJSON.data.stack && typeof msgJSON.data.stack === 'string') ?
-        msgJSON.data.stack : JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '') + '\r\n';
+        msgJSON.data.stack : JSON.stringify(msgJSON.data, maskHeaders) : (typeof msgJSON.data === 'string') ? msgJSON.data : '') + '\r\n';
   } else {
     msgStr = msgStr + '.\r\n';
   }

@@ -187,8 +187,8 @@ export const loopOutTermsAndQuotes = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Terms Received', data: terms });
         const options1 = { ...options, uri: '/v1/loop/out/quote/' + terms.min_swap_amount, qs };
         const options2 = { ...options, uri: '/v1/loop/out/quote/' + terms.max_swap_amount, qs };
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: options1 });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: options2 });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Min Quote Options', data: { uri: options1.uri, qs } });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out Max Quote Options', data: { uri: options2.uri, qs } });
         return Promise.all([request(options1), request(options2)]).then((values) => {
             if (!values.every((quote) => isLoopReply(quote, QUOTE_FIELDS))) {
                 return invalidLoopReply(req, res, 'Loop Out Terms & Quotes Error', values);
@@ -300,8 +300,8 @@ export const loopInTermsAndQuotes = (req, res, next) => {
         logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Terms Received', data: terms });
         const options1 = { ...options, uri: '/v1/loop/in/quote/' + terms.min_swap_amount, qs };
         const options2 = { ...options, uri: '/v1/loop/in/quote/' + terms.max_swap_amount, qs };
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: options1 });
-        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: options2 });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Min Quote Options', data: { uri: options1.uri, qs } });
+        logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Loop', msg: 'Loop In Max Quote Options', data: { uri: options2.uri, qs } });
         return Promise.all([request(options1), request(options2)]).then((values) => {
             if (!values.every((quote) => isLoopReply(quote, QUOTE_FIELDS))) {
                 return invalidLoopReply(req, res, 'Loop In Terms & Quotes Error', values);

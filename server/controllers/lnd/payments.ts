@@ -124,8 +124,8 @@ export const getAllLightningTransactions = (req, res, next) => {
   const options2 = JSON.parse(JSON.stringify(common.getOptions(req)));
   // options1.url = req.session.selectedNode.settings.lnServerUrl + '/v1/payments?max_payments=100000&index_offset=0&reversed=true';
   options2.url = req.session.selectedNode.settings.lnServerUrl + '/v1/invoices?num_max_invoices=100000&index_offset=0&reversed=true';
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1 });
-  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2 });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Payments Options', data: options1.url });
+  logger.log({ selectedNode: req.session.selectedNode, level: 'DEBUG', fileName: 'Payments', msg: 'All Invoices Options', data: options2.url });
   // return Promise.all([request(options1), request(options2)]).then((values) => {
   return Promise.all([{ payments: [] }, request(options2)]).then((values) => {
     logger.log({ selectedNode: req.session.selectedNode, level: 'INFO', fileName: 'Payments', msg: 'All Lightning Transactions Received', data: ({ totalPayments: values[0].payments.length || 0, totalInvoices: values[1].invoices.length || 0 }) });
