@@ -132,7 +132,7 @@ this release should add its entry under the appropriate section below.
   `SessionService`, `WebSocketClientService` and `RTLEffects` specs cover the hand-off to the
   other tabs.
 
-- **Debug logging writes request URLs, not request headers** ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)).
+- **Debug logging writes request URLs, not request headers** ([#1839](https://github.com/Ride-The-Lightning/RTL/pull/1839)).
   At `logLevel` DEBUG, LND's all-transactions request and the Loop In and Loop Out
   terms-and-quotes requests logged their whole request options, headers included. They now log
   the URL and query only, as the other requests do, and the logger writes any header map it is
@@ -140,7 +140,7 @@ this release should add its entry under the appropriate section below.
   logger.
 
 - **Core Lightning: the configuration request returns only the option RTL reads**
-  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The Experimental settings page
+  ([#1839](https://github.com/Ride-The-Lightning/RTL/pull/1839)). The Experimental settings page
   reads one option from Core Lightning's `listconfigs`, `experimental-dual-fund`, but
   `GET /api/cln/utility/listConfigs` returned the node's whole configuration and logged it at
   DEBUG. It now returns, and logs, `{ configs: { "experimental-dual-fund": … } }` only; a
