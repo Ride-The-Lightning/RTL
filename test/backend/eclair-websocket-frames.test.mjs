@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 // The Eclair websocket client parsed every frame from Eclair with JSON.parse inside its
-// message handler, so a frame that was not a JSON object threw out of the handler and ended
-// the RTL process. It now skips such a frame with a warning and keeps the connection.
+// message handler and serialised it again to pass it on, so a frame that was not a JSON
+// object, or was nested too deeply to serialise, threw out of the handler and ended the RTL
+// process. It now skips such a frame with a warning and keeps the connection.
 //
 // The client runs in a child process, so a frame that still ended the process would show up
 // as that process's exit code instead of taking the test runner down with it.
@@ -49,6 +50,13 @@ test('a frame that is not JSON is skipped and later events still arrive', async 
 
 test('JSON frames that are not objects are skipped and later events still arrive', async () => {
   const { code, out, err } = await run(['null', '42', '"text"', EVENT]);
+  assert.equal(code, 0, 'client process ended: ' + err);
+  assert.equal(out.match(/FORWARDED/g).length, 1);
+});
+
+test('an event nested too deeply to pass on is skipped and later events still arrive', async () => {
+  const deep = '{"type":"payment-received","parts":' + '['.repeat(20000) + ']'.repeat(20000) + '}';
+  const { code, out, err } = await run([deep, EVENT]);
   assert.equal(code, 0, 'client process ended: ' + err);
   assert.equal(out.match(/FORWARDED/g).length, 1);
 });

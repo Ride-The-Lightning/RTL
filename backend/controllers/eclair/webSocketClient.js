@@ -66,22 +66,22 @@ export class ECLWebSocketClient {
                 }
             };
             eclWsClt.webSocketClient.onmessage = (msg) => {
-                this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
-                // A frame that is not a JSON object is skipped; throwing here would be uncaught.
+                // An error thrown in this handler would be uncaught, so a message that cannot be read
+                // or passed on (not a JSON object, or nested too deeply to serialise) is skipped.
                 try {
+                    this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'DEBUG', fileName: 'ECLWebSocket', msg: 'Received message from the server..', data: msg.data });
                     msg = (typeof msg.data === 'string') ? JSON.parse(msg.data) : msg.data;
+                    if (!msg || typeof msg !== 'object' || Array.isArray(msg)) {
+                        throw new Error('not a JSON object');
+                    }
+                    if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
+                        msg['source'] = 'ECL';
+                        const msgStr = JSON.stringify(msg);
+                        this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                    }
                 }
                 catch (err) {
-                    msg = null;
-                }
-                if (!msg || typeof msg !== 'object' || Array.isArray(msg)) {
-                    this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'WARN', fileName: 'ECLWebSocket', msg: 'Skipped a message from the server that is not a JSON object' });
-                    return;
-                }
-                if (msg.type && msg.type !== ECLWSEventsEnum.PAY_RELAYED && msg.type !== ECLWSEventsEnum.PAY_SETTLING_ONCHAIN && msg.type !== ECLWSEventsEnum.ONION_MESSAGE_RECEIVED) {
-                    msg['source'] = 'ECL';
-                    const msgStr = JSON.stringify(msg);
-                    this.wsServer.sendEventsToAllLNClients(msgStr, eclWsClt.selectedNode);
+                    this.logger.log({ selectedNode: eclWsClt.selectedNode, level: 'WARN', fileName: 'ECLWebSocket', msg: 'Skipped a message from the server that could not be read or passed on' });
                 }
             };
             eclWsClt.webSocketClient.onerror = (err) => {

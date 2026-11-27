@@ -74,8 +74,15 @@ export class CLWebSocketClient {
                 }
             });
             clWsClt.webSocketClient.on('message', (msg) => {
-                this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'DEBUG', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
-                this.wsServer.sendEventsToAllLNClients(JSON.stringify({ source: 'CLN', data: msg }), clWsClt.selectedNode);
+                // An error thrown in this handler would be uncaught, so a message that cannot be passed
+                // on (nested too deeply to serialise) is skipped.
+                try {
+                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'DEBUG', fileName: 'CLWebSocket', msg: 'Received message from the server..', data: msg.data });
+                    this.wsServer.sendEventsToAllLNClients(JSON.stringify({ source: 'CLN', data: msg }), clWsClt.selectedNode);
+                }
+                catch (err) {
+                    this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'WARN', fileName: 'CLWebSocket', msg: 'Skipped a message from the server that could not be passed on' });
+                }
             });
             clWsClt.webSocketClient.on('error', (err) => {
                 this.logger.log({ selectedNode: clWsClt.selectedNode, level: 'ERROR', fileName: 'CLWebSocket', msg: 'Web socket error', error: err });

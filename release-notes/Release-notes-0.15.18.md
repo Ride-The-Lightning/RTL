@@ -161,13 +161,15 @@ this release should add its entry under the appropriate section below.
   node's log as well as into the backup file. The log line now names the node and the backup
   file instead. `channel-backup-log.test.mjs` covers both paths.
 
-- **Eclair: a websocket message that is not a JSON object is skipped**
+- **Eclair and Core Lightning: a websocket message RTL cannot read or pass on is skipped**
   ([#1841](https://github.com/Ride-The-Lightning/RTL/pull/1841)). RTL's Eclair websocket client
-  parsed each message from Eclair with `JSON.parse` in its message handler and then read its
-  `type`, with nothing to catch an error there, so a message that was not JSON, or was JSON
-  `null`, stopped RTL. Such a message is now skipped with a warning in the node's log, and later
-  events keep arriving. The LND and Core Lightning clients already handled this.
-  `eclair-websocket-frames.test.mjs` covers both kinds of message.
+  parsed each message from Eclair with `JSON.parse` in its message handler, read its `type` and
+  serialised it again to pass it on, and the Core Lightning client serialised each message the
+  same way, with nothing to catch an error in either handler. A message that was not JSON, was
+  JSON `null`, or was nested too deeply to serialise therefore stopped RTL. Such a message is now
+  skipped with a warning in the node's log, and later events keep arriving. The LND client
+  already handled this. `eclair-websocket-frames.test.mjs` and `cln-websocket-messages.test.mjs`
+  cover each kind of message.
 
 ## Enhancements
 
