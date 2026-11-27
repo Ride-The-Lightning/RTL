@@ -388,18 +388,23 @@ export class ConfigService {
             if (!config.nodes) {
                 return;
             }
+            let changed = false;
             config.nodes.map((node) => {
                 if (node.Authentication) {
                     node.authentication = JSON.parse(JSON.stringify(node.Authentication));
                     delete node.Authentication;
+                    changed = true;
                 }
                 if (node.Settings) {
                     node.settings = JSON.parse(JSON.stringify(node.Settings));
                     delete node.Settings;
+                    changed = true;
                 }
                 return node;
             });
-            fs.writeFileSync(confFileFullPath, JSON.stringify(config, null, 2), 'utf-8');
+            if (changed) {
+                fs.writeFileSync(confFileFullPath, JSON.stringify(config, null, 2), 'utf-8');
+            }
         };
         this.setServerConfiguration = () => {
             const rtlConfFilePath = (process?.env?.RTL_CONFIG_PATH) ? process?.env?.RTL_CONFIG_PATH : join(this.directoryName, '../..');

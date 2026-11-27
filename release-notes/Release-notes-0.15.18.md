@@ -26,6 +26,14 @@ this release should add its entry under the appropriate section below.
   restored wallet showed a zero balance. Restoring from an existing seed now sends a recovery
   window, 2500 addresses by default as `lncli` does, and the Cipher step has a field to raise it
   for a heavily used wallet. A wallet created from a new seed is initialised as before.
+- **RTL no longer rewrites `RTL-Config.json` on every start** ([#1813](https://github.com/Ride-The-Lightning/RTL/pull/1813),
+  by [@bitbandi](https://github.com/bitbandi)). The start-up step that renames the pre-0.15.1 node
+  keys `Authentication` and `Settings` to lowercase wrote the file back whether or not it had
+  renamed anything. That reformatted a hand-edited file and changed its modification time on each
+  start. The file is now written only when a key was renamed. One consequence: with a read-only
+  config file RTL used to refuse to start. It now starts, unless the file still has those legacy
+  keys and so needs migrating. Saving settings from the UI still needs the file to be writable,
+  and fails with an error at that point.
 
 - **Monthly reports no longer fail, or book entries to the wrong day, in a month with a
   daylight-saving change** ([#1826](https://github.com/Ride-The-Lightning/RTL/pull/1826),

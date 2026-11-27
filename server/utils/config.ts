@@ -366,18 +366,23 @@ export class ConfigService {
     // Update Config file to change Settings to settings and Authentication to authentication
     // Added in v0.15.1, remove in a year?
     if (!config.nodes) { return; }
+    let changed = false;
     config.nodes.map((node) => {
       if (node.Authentication) {
         node.authentication = JSON.parse(JSON.stringify(node.Authentication));
         delete node.Authentication;
+        changed = true;
       }
       if (node.Settings) {
         node.settings = JSON.parse(JSON.stringify(node.Settings));
         delete node.Settings;
+        changed = true;
       }
       return node;
     });
-    fs.writeFileSync(confFileFullPath, JSON.stringify(config, null, 2), 'utf-8');
+    if (changed) {
+      fs.writeFileSync(confFileFullPath, JSON.stringify(config, null, 2), 'utf-8');
+    }
   };
 
   public setServerConfiguration = () => {
