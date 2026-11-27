@@ -148,6 +148,19 @@ this release should add its entry under the appropriate section below.
   script that read other options from this route has to ask Core Lightning directly.
   `cln-list-configs.test.mjs` covers the reply and the log.
 
+- **Core Lightning: the Experimental settings page shows the channel funding policy status
+  when the node does not report `experimental-dual-fund`**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). The page read
+  `configs['experimental-dual-fund'].set` from the node's configuration without checking that
+  the option was there, so a reply without it raised an error in the page instead of showing
+  the policy as disabled. It now shows it as disabled. A spec covers both replies.
+
+- **LND: channel backups are written to the backup file only, not also to the log**
+  ([#TBD](https://github.com/Ride-The-Lightning/RTL/pull/TBD)). At `logLevel` DEBUG, the backup
+  RTL takes on every LND `getinfo`, and the one taken from the Backup page, were written into the
+  node's log as well as into the backup file. The log line now names the node and the backup
+  file instead. `channel-backup-log.test.mjs` covers both paths.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),
