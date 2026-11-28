@@ -82,16 +82,18 @@
               </mat-select>
             </div>
          </th>
-          <td *matCellDef="let utxo" mat-cell fxLayoutAlign="end center">
-            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-              <mat-select placeholder="Actions" tabindex="2" class="mr-0">
-                <mat-select-trigger />
-                <mat-option (click)="onUTXOClick(utxo)">View Info</mat-option>
-                <mat-option (click)="onLabelUTXO(utxo)">Label</mat-option>
-                <mat-option (click)="onLeaseUTXO(utxo)">Lease</mat-option>
-                <mat-option *ngIf="utxo.label && !(utxo.label | lowercase).includes('sweep') && utxo.confirmations === '0'" (click)="onBumpFee(utxo)">Bump Fee</mat-option>
-              </mat-select>
-            </div>
+          <td *matCellDef="let utxo" mat-cell>
+            <span fxLayoutAlign="end center">
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                <mat-select placeholder="Actions" tabindex="2" class="mr-0">
+                  <mat-select-trigger />
+                  <mat-option (click)="onUTXOClick(utxo)">View Info</mat-option>
+                  <mat-option (click)="onLabelUTXO(utxo)">Label</mat-option>
+                  <mat-option (click)="onLeaseUTXO(utxo)">Lease</mat-option>
+                  <mat-option *ngIf="utxo.label && !(utxo.label | lowercase).includes('sweep') && utxo.confirmations === '0'" (click)="onBumpFee(utxo)">Bump Fee</mat-option>
+                </mat-select>
+              </div>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="no_utxo">

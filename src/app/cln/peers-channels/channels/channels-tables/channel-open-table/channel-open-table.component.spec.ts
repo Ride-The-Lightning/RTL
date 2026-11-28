@@ -82,6 +82,19 @@ describe('CLNChannelOpenTableComponent', () => {
     expect(connectedCellText()).toBe('Disconnected');
   });
 
+  it('should keep the actions cell as a table-cell and align its inner wrapper', () => {
+    component.displayedColumns = ['connected', 'actions'];
+    component.channels = new MatTableDataSource<any>([{ peer_connected: true }]);
+    fixture.detectChanges();
+    const cell = fixture.nativeElement.querySelector('td.mat-column-actions') as HTMLElement;
+    expect(getComputedStyle(cell).display).toBe('table-cell');
+    const wrapper = cell.firstElementChild as HTMLElement;
+    expect(wrapper.tagName).toBe('SPAN');
+    expect(getComputedStyle(wrapper).display).toBe('flex');
+    expect(getComputedStyle(wrapper).justifyContent).toMatch(/^(?:flex|flow)-end$/);
+    expect(getComputedStyle(wrapper).alignItems).toBe('center');
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

@@ -143,16 +143,18 @@
                   </mat-select>
                 </div>
              </th>
-              <td *matCellDef="let lqNode" mat-cell fxLayoutAlign="end center">
-                <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-                  <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                    <mat-select-trigger />
-                    <mat-option (click)="onViewLeaseInfo(lqNode)">View Info</mat-option>
-                    <mat-option (click)="onOpenChannel(lqNode)">Open Channel</mat-option>
-                    <mat-option (click)="viewLeaseOn(lqNode, 'LN')">View on Lnrouter</mat-option>
-                    <mat-option (click)="viewLeaseOn(lqNode, 'AM')">View on Amboss</mat-option>
-                  </mat-select>
-                </div>
+              <td *matCellDef="let lqNode" mat-cell>
+                <span fxLayoutAlign="end center">
+                  <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                    <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                      <mat-select-trigger />
+                      <mat-option (click)="onViewLeaseInfo(lqNode)">View Info</mat-option>
+                      <mat-option (click)="onOpenChannel(lqNode)">Open Channel</mat-option>
+                      <mat-option (click)="viewLeaseOn(lqNode, 'LN')">View on Lnrouter</mat-option>
+                      <mat-option (click)="viewLeaseOn(lqNode, 'AM')">View on Amboss</mat-option>
+                    </mat-select>
+                  </div>
+                </span>
               </td>
             </ng-container>
             <ng-container matColumnDef="no_lqNode">

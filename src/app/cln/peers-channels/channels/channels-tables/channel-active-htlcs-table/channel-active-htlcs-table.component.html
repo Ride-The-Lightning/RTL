@@ -118,13 +118,15 @@
             </mat-select>
           </div>
        </th>
-        <td *matCellDef="let channel" mat-cell class="px-2" fxLayout="column" fxLayoutAlign="center end">
-          <span fxLayoutAlign="end center" class="htlc-group-head">
-            <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="channel.is_expanded = !channel.is_expanded">{{channel.is_expanded ? 'Hide' : 'Show'}}</button>
-          </span>
-          <div *ngIf="channel.is_expanded">
-            <div *ngFor="let htlc of channel?.htlcs; index as i" class="htlc-group-details" fxLayoutAlign="end center">
-              <button mat-stroked-button class="btn-htlc-info" color="primary" type="button" tabindex="6" (click)="onHTLCClick(htlc, channel)">View {{i + 1}}</button>
+        <td *matCellDef="let channel" mat-cell class="px-2">
+          <div fxLayout="column" fxLayoutAlign="center end">
+            <span fxLayoutAlign="end center" class="htlc-group-head">
+              <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="channel.is_expanded = !channel.is_expanded">{{channel.is_expanded ? 'Hide' : 'Show'}}</button>
+            </span>
+            <div *ngIf="channel.is_expanded">
+              <div *ngFor="let htlc of channel?.htlcs; index as i" class="htlc-group-details" fxLayoutAlign="end center">
+                <button mat-stroked-button class="btn-htlc-info" color="primary" type="button" tabindex="6" (click)="onHTLCClick(htlc, channel)">View {{i + 1}}</button>
+              </div>
             </div>
           </div>
         </td>

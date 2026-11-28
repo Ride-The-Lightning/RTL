@@ -73,14 +73,16 @@
             <th *matHeaderCellDef mat-header-cell>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
            </th>
-            <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-                <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                  <mat-select-trigger />
-                  <mat-option (click)="onOpenClick(channel)">View Info</mat-option>
-                  <mat-option (click)="onBumpFee(channel)">Bump Fee</mat-option>
-                </mat-select>
-              </div>
+            <td *matCellDef="let channel" mat-cell>
+              <span fxLayoutAlign="end center">
+                <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                  <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                    <mat-select-trigger />
+                    <mat-option (click)="onOpenClick(channel)">View Info</mat-option>
+                    <mat-option (click)="onBumpFee(channel)">Bump Fee</mat-option>
+                  </mat-select>
+                </div>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_open">
@@ -175,8 +177,10 @@
             <th *matHeaderCellDef mat-header-cell>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
            </th>
-            <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="2" class="table-actions-button" (click)="onForceClosingClick(channel)">View Info</button>
+            <td *matCellDef="let channel" mat-cell>
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="2" class="table-actions-button" (click)="onForceClosingClick(channel)">View Info</button>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
@@ -255,8 +259,10 @@
             <th *matHeaderCellDef mat-header-cell>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
            </th>
-            <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="3" class="table-actions-button" (click)="onClosingClick(channel)">View Info</button>
+            <td *matCellDef="let channel" mat-cell>
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="3" class="table-actions-button" (click)="onClosingClick(channel)">View Info</button>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
@@ -339,8 +345,10 @@
             <th *matHeaderCellDef mat-header-cell>
               <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
            </th>
-            <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onWaitClosingClick(channel)">View Info</button>
+            <td *matCellDef="let channel" mat-cell>
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onWaitClosingClick(channel)">View Info</button>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">

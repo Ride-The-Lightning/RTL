@@ -86,15 +86,17 @@
                 </mat-select>
               </div>
            </th>
-            <td *matCellDef="let peer" mat-cell fxLayoutAlign="end center">
-              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-                <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                  <mat-select-trigger />
-                  <mat-option (click)="onPeerClick(peer, $event)">View Info</mat-option>
-                  <mat-option (click)="onOpenChannel(peer)">Open Channel</mat-option>
-                  <mat-option (click)="onPeerDetach(peer)">Disconnect</mat-option>
-                </mat-select>
-              </div>
+            <td *matCellDef="let peer" mat-cell>
+              <span fxLayoutAlign="end center">
+                <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                  <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                    <mat-select-trigger />
+                    <mat-option (click)="onPeerClick(peer, $event)">View Info</mat-option>
+                    <mat-option (click)="onOpenChannel(peer)">Open Channel</mat-option>
+                    <mat-option (click)="onPeerDetach(peer)">Disconnect</mat-option>
+                  </mat-select>
+                </div>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_peer">

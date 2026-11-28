@@ -146,20 +146,22 @@
             </mat-select>
           </div>
        </th>
-        <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-            <mat-select placeholder="Actions" tabindex="2" class="mr-0">
-              <mat-select-trigger />
-              <perfect-scrollbar>
-                <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-                <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
-                <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
-                <mat-option *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9" (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
-                <mat-option *ngIf="selNode.swapServerUrl" (click)="onLoopOut(channel)">Loop Out</mat-option>
-                <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
-              </perfect-scrollbar>
-            </mat-select>
-          </div>
+        <td *matCellDef="let channel" mat-cell>
+          <span fxLayoutAlign="end center">
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="2" class="mr-0">
+                <mat-select-trigger />
+                <perfect-scrollbar>
+                  <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+                  <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
+                  <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+                  <mat-option *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9" (click)="onCircularRebalance(channel)">Circular Rebalance</mat-option>
+                  <mat-option *ngIf="selNode.swapServerUrl" (click)="onLoopOut(channel)">Loop Out</mat-option>
+                  <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+                </perfect-scrollbar>
+              </mat-select>
+            </div>
+          </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">

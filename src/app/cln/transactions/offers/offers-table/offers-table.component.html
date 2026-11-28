@@ -70,15 +70,17 @@
               </mat-select>
             </div>
          </th>
-          <td *matCellDef="let offer" mat-cell fxLayoutAlign="end center">
-            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-              <mat-select placeholder="Actions" tabindex="4" class="mr-0">
-                <mat-select-trigger />
-                <mat-option (click)="onOfferClick(offer)">View Info</mat-option>
-                <mat-option *ngIf="offer.active" (click)="onDisableOffer(offer)">Disable Offer</mat-option>
-                <mat-option *ngIf="offer.active" (click)="onPrintOffer(offer)">Export QR code</mat-option>
-              </mat-select>
-            </div>
+          <td *matCellDef="let offer" mat-cell>
+            <span fxLayoutAlign="end center">
+              <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                <mat-select placeholder="Actions" tabindex="4" class="mr-0">
+                  <mat-select-trigger />
+                  <mat-option (click)="onOfferClick(offer)">View Info</mat-option>
+                  <mat-option *ngIf="offer.active" (click)="onDisableOffer(offer)">Disable Offer</mat-option>
+                  <mat-option *ngIf="offer.active" (click)="onPrintOffer(offer)">Export QR code</mat-option>
+                </mat-select>
+              </div>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="no_offer">

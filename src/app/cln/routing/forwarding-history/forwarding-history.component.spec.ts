@@ -84,6 +84,20 @@ describe('CLNForwardingHistoryComponent', () => {
       '1,1,,120x1x0,0,157x1x0,0,20000201,20000000,201,settled,tlv,1793926243.25,1793926243.462816,alice,eclair\r\n');
   });
 
+  it('should keep the actions cell as a table-cell and align its inner wrapper', () => {
+    component.displayedColumns = ['received_time', 'fee', 'actions'];
+    component.loadForwardingEventsTable([{ in_channel: '120x1x0', out_channel: '157x1x0', in_msat: 20000201, out_msat: 20000000, fee_msat: 201,
+      status: 'settled', received_time: 1793926243.25, resolved_time: 1793926243.46 }] as any[]);
+    fixture.detectChanges();
+    const cell = fixture.nativeElement.querySelector('td.mat-column-actions') as HTMLElement;
+    expect(getComputedStyle(cell).display).toBe('table-cell');
+    const wrapper = cell.firstElementChild as HTMLElement;
+    expect(wrapper.tagName).toBe('SPAN');
+    expect(getComputedStyle(wrapper).display).toBe('flex');
+    expect(getComputedStyle(wrapper).justifyContent).toMatch(/^(?:flex|flow)-end$/);
+    expect(getComputedStyle(wrapper).alignItems).toBe('center');
+  });
+
   afterEach(() => {
     TestBed.resetTestingModule();
   });

@@ -109,8 +109,10 @@
                 </mat-select>
               </div>
            </th>
-            <td *matCellDef="let payment" mat-cell fxLayoutAlign="end center">
-              <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onPaymentClick(payment)">View Info</button>
+            <td *matCellDef="let payment" mat-cell>
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onPaymentClick(payment)">View Info</button>
+              </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="no_payment">

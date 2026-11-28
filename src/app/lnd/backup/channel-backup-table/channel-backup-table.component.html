@@ -42,16 +42,18 @@
         <th *matHeaderCellDef mat-header-cell>
           <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
        </th>
-        <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-              <mat-select-trigger />
-              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
-              <mat-option (click)="onDownloadBackup(channel)">Download Backup</mat-option>
-              <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
-            </mat-select>
-          </div>
+        <td *matCellDef="let channel" mat-cell>
+          <span fxLayoutAlign="end center">
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                <mat-select-trigger />
+                <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+                <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
+                <mat-option (click)="onDownloadBackup(channel)">Download Backup</mat-option>
+                <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
+              </mat-select>
+            </div>
+          </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_channel">

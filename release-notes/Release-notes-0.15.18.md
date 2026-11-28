@@ -180,6 +180,16 @@ this release should add its entry under the appropriate section below.
   first node instead of failing. `conf-without-token.test.mjs` covers the answer with and
   without a token.
 
+- **Table Actions columns align cleanly in Firefox** (#TBD,
+  fixes [#1811](https://github.com/Ride-The-Lightning/RTL/issues/1811)). Across LND, Core
+  Lightning, Eclair and shared tables, the rightmost Actions `<td>` cells carried `fxLayoutAlign`
+  (and `fxLayout="column"` on the LND and Core Lightning Active HTLCs tables) directly on the
+  table cell, setting `display: flex` on the `<td>` instead of keeping it as a `table-cell` and
+  causing the right-hand side of rows to misalign in Firefox. Those directives now live on an
+  inner `<span fxLayoutAlign="end center">` (or `<div fxLayout="column" fxLayoutAlign="center end">`
+  for the two Active HTLCs tables), matching RTL's other table cells. Specs cover representative
+  button, dropdown and Active HTLCs tables across LND, Core Lightning, Eclair and shared views.
+
 ## Enhancements
 
 - **Fees are shown in Sats instead of mSats** ([#1823](https://github.com/Ride-The-Lightning/RTL/pull/1823),
