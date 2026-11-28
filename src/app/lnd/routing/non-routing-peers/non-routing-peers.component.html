@@ -113,8 +113,10 @@
           <th *matHeaderCellDef mat-header-cell>
             <div class="bordered-box table-actions-select" fxLayoutAlign="center center">Actions</div>
          </th>
-          <td *matCellDef="let nonRPeer" mat-cell fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onManagePeer(nonRPeer)">Manage</button>
+          <td *matCellDef="let nonRPeer" mat-cell>
+            <span fxLayoutAlign="end center">
+              <button mat-stroked-button color="primary" type="button" tabindex="4" class="table-actions-button" (click)="onManagePeer(nonRPeer)">Manage</button>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="no_non_routing_event">

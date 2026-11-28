@@ -117,16 +117,18 @@
             </mat-select>
           </div>
        </th>
-        <td *matCellDef="let channel" mat-cell fxLayoutAlign="end center">
-          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
-            <mat-select placeholder="Actions" tabindex="2" class="mr-0">
-              <mat-select-trigger />
-              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee</mat-option>
-              <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
-              <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
-            </mat-select>
-          </div>
+        <td *matCellDef="let channel" mat-cell>
+          <span fxLayoutAlign="end center">
+            <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
+              <mat-select placeholder="Actions" tabindex="2" class="mr-0">
+                <mat-select-trigger />
+                <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+                <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee</mat-option>
+                <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+                <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+              </mat-select>
+            </div>
+          </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="no_peer">

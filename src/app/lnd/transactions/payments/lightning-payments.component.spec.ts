@@ -16,6 +16,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { LightningPaymentsComponent } from './lightning-payments.component';
 import { sendPayment } from '../../store/lnd.actions';
+import { MatTableDataSource } from '@angular/material/table';
 
 describe('LightningPaymentsComponent', () => {
   let component: LightningPaymentsComponent;
@@ -100,5 +101,20 @@ describe('LightningPaymentsComponent', () => {
     component.peers = [];
     spyOn(TestBed.inject(DataService), 'getAliasesFromPubkeys').and.returnValue(throwError(() => new Error('lookup failed')));
     expect(await component.getHopDetails({ pub_key: '02cc' + 'd'.repeat(62), amt_to_forward: '20000' })).toBe('Channel: 02ccddddddddddddd...\t\t\tAmount (Sats): 20,000');
+  });
+
+  it('should keep the actions cell as a table-cell and align its inner wrapper', () => {
+    component.calledFrom = 'transactions';
+    component.displayedColumns = ['status', 'actions'];
+    component.htlcColumns = ['group_status', 'group_actions'];
+    component.payments = new MatTableDataSource<any>([{ status: 'SUCCEEDED', htlcs: [{}] }]);
+    fixture.detectChanges();
+    const cell = fixture.nativeElement.querySelector('td.mat-column-actions') as HTMLElement;
+    expect(getComputedStyle(cell).display).toBe('table-cell');
+    const wrapper = cell.firstElementChild as HTMLElement;
+    expect(wrapper.tagName).toBe('SPAN');
+    expect(getComputedStyle(wrapper).display).toBe('flex');
+    expect(getComputedStyle(wrapper).justifyContent).toMatch(/^(?:flex|flow)-end$/);
+    expect(getComputedStyle(wrapper).alignItems).toBe('center');
   });
 });

@@ -16,6 +16,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { DataService } from '../../../../../shared/services/data.service';
 import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
 
 describe('ECLChannelOpenTableComponent', () => {
   let component: ECLChannelOpenTableComponent;
@@ -50,6 +51,19 @@ describe('ECLChannelOpenTableComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should keep the actions cell as a table-cell and align its inner wrapper', () => {
+    component.displayedColumns = ['alias', 'actions'];
+    component.channels = new MatTableDataSource<any>([{ alias: 'bob' }]);
+    fixture.detectChanges();
+    const cell = fixture.nativeElement.querySelector('td.mat-column-actions') as HTMLElement;
+    expect(getComputedStyle(cell).display).toBe('table-cell');
+    const wrapper = cell.firstElementChild as HTMLElement;
+    expect(wrapper.tagName).toBe('SPAN');
+    expect(getComputedStyle(wrapper).display).toBe('flex');
+    expect(getComputedStyle(wrapper).justifyContent).toMatch(/^(?:flex|flow)-end$/);
+    expect(getComputedStyle(wrapper).alignItems).toBe('center');
   });
 
   afterEach(() => {

@@ -14,6 +14,7 @@ import { mockDataService, mockLoggerService, mockLoopService } from '../../../..
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
+import { MatTableDataSource } from '@angular/material/table';
 
 describe('SwapsComponent', () => {
   let component: SwapsComponent;
@@ -45,6 +46,19 @@ describe('SwapsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should keep the actions cell as a table-cell and align its inner wrapper', () => {
+    component.displayedColumns = ['state', 'actions'];
+    component.listSwaps = new MatTableDataSource<any>([{ state: 'SUCCESS' }]);
+    fixture.detectChanges();
+    const cell = fixture.nativeElement.querySelector('td.mat-column-actions') as HTMLElement;
+    expect(getComputedStyle(cell).display).toBe('table-cell');
+    const wrapper = cell.firstElementChild as HTMLElement;
+    expect(wrapper.tagName).toBe('SPAN');
+    expect(getComputedStyle(wrapper).display).toBe('flex');
+    expect(getComputedStyle(wrapper).justifyContent).toMatch(/^(?:flex|flow)-end$/);
+    expect(getComputedStyle(wrapper).alignItems).toBe('center');
   });
 
   afterEach(() => {
