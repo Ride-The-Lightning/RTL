@@ -180,7 +180,7 @@ this release should add its entry under the appropriate section below.
   first node instead of failing. `conf-without-token.test.mjs` covers the answer with and
   without a token.
 
-- **Table Actions columns align cleanly in Firefox** (#TBD,
+- **Table Actions columns align cleanly in Firefox** ([#1843](https://github.com/Ride-The-Lightning/RTL/pull/1843),
   fixes [#1811](https://github.com/Ride-The-Lightning/RTL/issues/1811)). Across LND, Core
   Lightning, Eclair and shared tables, the rightmost Actions `<td>` cells carried `fxLayoutAlign`
   (and `fxLayout="column"` on the LND and Core Lightning Active HTLCs tables) directly on the
